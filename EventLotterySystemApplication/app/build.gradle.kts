@@ -38,6 +38,7 @@ dependencies {
     // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore") // firestore service
+    implementation("com.google.firebase:firebase-auth") // auth service
 
     implementation(libs.appcompat)
     implementation(libs.material)

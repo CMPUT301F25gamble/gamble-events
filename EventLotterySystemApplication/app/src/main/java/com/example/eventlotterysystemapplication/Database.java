@@ -14,7 +14,7 @@ public class Database {
     CollectionReference eventRef;
     CollectionReference notificationRef;
 
-    private Database(){
+    public Database(){
         FirebaseFirestore db = getDatabase();
         userRef = db.collection("User");
         eventRef = db.collection("Event");

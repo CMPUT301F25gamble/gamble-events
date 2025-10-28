@@ -10,41 +10,48 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Database {
 
+    private static Database database;
+
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
 
-    public Database(){
-        FirebaseFirestore db = getDatabase();
+    private Database(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         userRef = db.collection("User");
         eventRef = db.collection("Event");
         notificationRef = db.collection("Notification");
     }
 
-    public static FirebaseFirestore getDatabase(){
-        return FirebaseFirestore.getInstance();
+    public static Database getDatabase(){
+        if (database == null){
+            database = new Database();
+        }
+        return database;
     }
 
     public void addUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
+        auth.signInAnonymously().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FirebaseUser authUser = auth.getCurrentUser();
+                DocumentReference userDoc = userRef.document(authUser.getUid());
+                userDoc.set(user);
+            } else {
+                Log.e("Database", "Signing in user failed");
+            }
+        });
+    }
+
+    public void authenticateUser(User user){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
         // Sign user in anonymously so that Firestore security rules can be applied
-        if (auth.getCurrentUser() == null) {
-            auth.signInAnonymously().addOnCompleteListener(task -> {
-               if (task.isSuccessful()) {
-                   FirebaseUser authUser = auth.getCurrentUser();
-                   DocumentReference userDoc = userRef.document(authUser.getUid());
-                   userDoc.set(user);
-               } else {
-                   Log.e("Database", "Signing in user failed");
-               }
-            });
-        } else {
-            FirebaseUser authUser = auth.getCurrentUser();
-            assert authUser != null;
-            DocumentReference userDoc = userRef.document(authUser.getUid());
-            userDoc.set(user);
-        }
+        FirebaseUser authUser = auth.getCurrentUser();
+        assert authUser != null;
+        DocumentReference userDoc = userRef.document(authUser.getUid());
+        userDoc.set(user);
     }
 
     public void addEvent(Event event){

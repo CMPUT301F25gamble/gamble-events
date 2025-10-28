@@ -7,6 +7,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class Database {
 
@@ -28,6 +30,39 @@ public class Database {
             database = new Database();
         }
         return database;
+    }
+
+    /**
+     * Given some input deviceID, this function checks to see if the deviceID exists in the database
+     * in the User collection
+     * @param deviceID The device ID to query for in the database
+     * @return True if the deviceID exists exactly once, false if it exists zero times
+     * @throws IllegalStateException If the query fails or duplicate deviceID is found
+     */
+    public boolean queryDeviceID(String deviceID) throws IllegalStateException{
+        boolean deviceIDInDatabase;
+
+        Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
+
+        deviceIDQuery.get().addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        int numberOfDeviceID = querySnapshot.size();
+                        if (numberOfDeviceID == 0){
+                            deviceIDInDatabase = false;
+                        } else if (numberOfDeviceID == 1){
+                            deviceIDInDatabase = true;
+                        } else {
+                            throw new IllegalStateException("Duplicate DeviceID found in database");
+                        }
+                    } else {
+                        throw new IllegalStateException("Query failed");
+                    }
+                }
+        );
+
+        return deviceIDInDatabase;
     }
 
     public void addUser(User user){

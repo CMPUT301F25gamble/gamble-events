@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
 
-    private static Database database;
+    private static Database database = null;
 
     CollectionReference userRef;
     CollectionReference eventRef;

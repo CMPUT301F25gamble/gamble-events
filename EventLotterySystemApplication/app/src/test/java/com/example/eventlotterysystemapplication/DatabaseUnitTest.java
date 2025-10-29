@@ -32,6 +32,8 @@ public class DatabaseUnitTest {
 
     @Test
     public void testAddUser1(){
+        setup();
+
         User testUser1 = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
 
         database.addUser(testUser1);

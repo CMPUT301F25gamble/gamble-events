@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication;
 import java.time.LocalDateTime;
 
 public class Event {
+    // we need to add in some sort of eventID in here, not sure datatype and implementation
     private String name;
     private String description;
     private LocalDateTime eventTime;

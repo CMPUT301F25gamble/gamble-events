@@ -10,6 +10,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Database {
 
     private static Database database;
@@ -40,7 +43,7 @@ public class Database {
      * @throws IllegalStateException If the query fails or duplicate deviceID is found
      */
     public boolean queryDeviceID(String deviceID) throws IllegalStateException{
-        boolean deviceIDInDatabase;
+        AtomicBoolean deviceIDInDatabase = new AtomicBoolean(false);
 
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
 
@@ -50,9 +53,9 @@ public class Database {
                         QuerySnapshot querySnapshot = task.getResult();
                         int numberOfDeviceID = querySnapshot.size();
                         if (numberOfDeviceID == 0){
-                            deviceIDInDatabase = false;
+                            deviceIDInDatabase.set(false);
                         } else if (numberOfDeviceID == 1){
-                            deviceIDInDatabase = true;
+                            deviceIDInDatabase.set(true);
                         } else {
                             throw new IllegalStateException("Duplicate DeviceID found in database");
                         }
@@ -62,7 +65,41 @@ public class Database {
                 }
         );
 
-        return deviceIDInDatabase;
+        return deviceIDInDatabase.get();
+    }
+
+    /**
+     * Given some input deviceID, returns the User object that is associated with that deviceID
+     * @param deviceID The deviceID of the user
+     * @return A user object containing the corresponding data from the database
+     * @throws IllegalArgumentException If the deviceID does not exist in the database
+     */
+    public User getUserFromDeviceID(String deviceID) throws IllegalArgumentException{
+        if (!queryDeviceID(deviceID)){
+            throw new IllegalArgumentException("Cannot retrieve DeviceID from the database");
+        }
+
+        Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
+
+        final User[] queriedUser = new User[1];
+
+        String email;
+        String name;
+        String phoneNumber;
+
+        deviceIDQuery.get().addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        queriedUser[0] = querySnapshot.toObjects(User.class).get(0);
+                    } else {
+                        throw new IllegalStateException("Query failed");
+                    }
+                }
+        );
+
+        return queriedUser[0];
+
     }
 
     public void addUser(User user){
@@ -88,6 +125,10 @@ public class Database {
         DocumentReference userDoc = userRef.document(authUser.getUid());
         userDoc.set(user);
     }
+
+//    public Event getEvent(/*some arguments*/){
+//        // add in code for getting event from ID here
+//    }
 
     public void addEvent(Event event){
         DocumentReference eventDoc = eventRef.document();

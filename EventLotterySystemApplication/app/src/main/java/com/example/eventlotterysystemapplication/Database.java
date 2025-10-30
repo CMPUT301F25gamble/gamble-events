@@ -101,6 +101,11 @@ public class Database {
 
     }
 
+    /**
+     * Given a user, add it to the database
+     * @param user The user profile
+     * Logs an error if the database cannot add the user
+     */
     public void addUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -117,6 +122,10 @@ public class Database {
         });
     }
 
+    /**
+     * Given a user, update or create their record in the database
+     * @param user The user profile
+     */
     public void modifyUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser authUser = auth.getCurrentUser();
@@ -127,6 +136,23 @@ public class Database {
         }
         DocumentReference userDoc = userRef.document(authUser.getUid());
         userDoc.set(user);
+    }
+
+    /**
+     * Given a user, delete their record from the database
+     * @param user The user profile
+     */
+    public void deleteUser(User user) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser authUser = auth.getCurrentUser();
+
+        if (authUser != null) {
+            userRef.document(authUser.getUid()).delete().addOnSuccessListener(task -> {
+                authUser.delete().addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
+            }).addOnFailureListener(e -> Log.e("Database", "Firebase deleting user document failed"));
+        } else {
+            Log.e("Database", "User not found");
+        }
     }
 
 //    public Event getEvent(/*some arguments*/){

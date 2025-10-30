@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -19,17 +20,29 @@ public class Database {
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
+    FirebaseAuth firebaseAuth;
 
-    private Database(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        userRef = db.collection("User");
-        eventRef = db.collection("Event");
-        notificationRef = db.collection("Notification");
+    public Database() {
+        this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
+    }
+
+    public Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
+        this.userRef = firestore.collection("User");
+        this.eventRef = firestore.collection("Event");
+        this.notificationRef = firestore.collection("Notification");
+        this.firebaseAuth = firebaseAuth;
     }
 
     public static Database getDatabase(){
         if (database == null){
             database = new Database();
+        }
+        return database;
+    }
+
+    public static Database getMockDatabase(FirebaseFirestore db, FirebaseAuth auth){
+        if (database == null){
+            database = new Database(db, auth);
         }
         return database;
     }
@@ -107,12 +120,11 @@ public class Database {
      * Logs an error if the database cannot add the user
      */
     public void addUser(User user){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
 
         // Sign user in anonymously so that Firestore security rules can be applied
-        auth.signInAnonymously().addOnCompleteListener(task -> {
+        firebaseAuth.signInAnonymously().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                FirebaseUser authUser = auth.getCurrentUser();
+                FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user);
@@ -143,12 +155,11 @@ public class Database {
      * @param user The user profile
      */
     public void deleteUser(User user) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser authUser = auth.getCurrentUser();
+        FirebaseUser authUser = firebaseAuth.getCurrentUser();
 
         if (authUser != null) {
             userRef.document(authUser.getUid()).delete().addOnSuccessListener(task -> {
-                authUser.delete().addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
+                authUser.delete().addOnSuccessListener(task2 -> {}).addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
             }).addOnFailureListener(e -> Log.e("Database", "Firebase deleting user document failed"));
         } else {
             Log.e("Database", "User not found");

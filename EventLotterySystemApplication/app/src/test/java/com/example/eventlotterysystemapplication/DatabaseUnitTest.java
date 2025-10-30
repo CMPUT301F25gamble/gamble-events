@@ -1,10 +1,18 @@
 package com.example.eventlotterysystemapplication;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +25,7 @@ import com.google.firebase.firestore.WriteBatch;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import org.junit.Test;
@@ -25,6 +34,7 @@ import org.junit.Test;
 public class DatabaseUnitTest {
     //Tests are ran using the Mockito library. Mockito creates a mocked version of the database.
     //All objects from Firestore must be mocked using @Mock
+
     private Database database;
 
     @Mock
@@ -37,15 +47,26 @@ public class DatabaseUnitTest {
     CollectionReference notificationRef;
 
     @Mock
-    FirebaseFirestore db;
+    DocumentReference docRef;
+
+    @Mock
+    FirebaseFirestore mockDb;
+
+    @Mock
+    FirebaseAuth mockAuth;
+    @Mock
+    FirebaseUser mockAuthUser;
+
 
     @Before
     public void setup() {
-        database = Database.getDatabase();
+        MockitoAnnotations.openMocks(this);
 
-        when(db.collection("User")).thenReturn(userRef);
-        when(db.collection("Event")).thenReturn(eventRef);
-        when(db.collection("Notification")).thenReturn(notificationRef);
+        when(mockDb.collection("User")).thenReturn(userRef);
+        when(mockDb.collection("Event")).thenReturn(eventRef);
+        when(mockDb.collection("Notification")).thenReturn(notificationRef);
+
+        database = Database.getMockDatabase(mockDb, mockAuth);
     }
 
     @Test
@@ -84,10 +105,42 @@ public class DatabaseUnitTest {
 
     @Test
     public void testDeleteUser() {
+        //Tests whether or not deleteUser() deletes both the Firestore user document and the Firebase Auth user record
+        final Task<Void> mockDocDeleteTask = mock(Task.class);
+        final Task<Void> mockAuthDeleteTask = mock(Task.class);
         String deviceID = "deviceID2";
         User user = new User("johndoe@gmail.com", "4036767", "John Doe", deviceID);
-        database.addUser(user);
+
+        //Mocks the current logged-in Firebase user
+        when(mockAuth.getCurrentUser()).thenReturn(mockAuthUser);
+        when(mockAuthUser.getUid()).thenReturn("testUID");
+
+        //Mocks Firestore document references
+        docRef = mock(DocumentReference.class);
+        when(userRef.document("testUID")).thenReturn(docRef);
+
+        //Mocks delete task for Firestore
+        when(docRef.delete()).thenReturn(mockDocDeleteTask);
+        when(mockAuthUser.delete()).thenReturn(mockAuthDeleteTask);
+
+        //Simulates Firestore document delete success
+        doAnswer(invocation -> {
+            OnSuccessListener<Void> listener = invocation.getArgument(0, OnSuccessListener.class);
+            listener.onSuccess(null);
+            return mockDocDeleteTask;
+        }).when(mockDocDeleteTask).addOnSuccessListener(any(OnSuccessListener.class));
+
+        //Simulates Auth delete success
+        doAnswer(invocation -> {
+            OnSuccessListener<Void> listener = invocation.getArgument(0, OnSuccessListener.class);
+            listener.onSuccess(null);
+            return mockAuthDeleteTask;
+        }).when(mockAuthDeleteTask).addOnSuccessListener(any(OnSuccessListener.class));
+
         database.deleteUser(user);
-        assertThrows(IllegalStateException.class, () -> database.getUserFromDeviceID(deviceID));
+
+        //Verifies delete() is called
+        verify(docRef, times(1)).delete();
+        verify(mockAuthUser, times(1)).delete();
     }
 }

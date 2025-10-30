@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_menu_nav_graph"
+    app:startDestination="@id/eventsUIFragment">
+
+    <fragment
+        android:id="@+id/eventsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" />
+    <fragment
+        android:id="@+id/profileUIFragment"
+        android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.eventlotterysystemapplication.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+</navigation>

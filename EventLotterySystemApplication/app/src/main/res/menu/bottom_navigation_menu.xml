@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Profile"
+        android:icon="@drawable/profile_icon"
+        android:id="@+id/profile_icon">
+    </item>
+
+    <item android:title="Event"
+        android:icon="@drawable/events_icon"
+        android:id="@+id/events_icon">
+
+    </item>
+
+    <item android:title="Notifications"
+        android:icon="@drawable/notifications_icon"
+        android:id="@+id/notifications_icon">
+    </item>
+
+    <item android:title="Settings"
+        android:icon="@drawable/settings_icon"
+        android:id="@+id/settings_icon">
+    </item>
+
+</menu>

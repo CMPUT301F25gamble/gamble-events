@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">EventLotterySystemApplication</string>
+    <string name="events_screen_text"><u>Events</u></string>
+    <string name="events_screen_filter_button">Filter</string>
+    <string name="add_event_button">Add Event</string>
+    <string name="navigation_bar_button">Navigation Bar</string>
 </resources>

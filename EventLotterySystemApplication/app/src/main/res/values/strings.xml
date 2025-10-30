@@ -6,7 +6,9 @@
     <string name="placeholder_text">PlaceholderText</string>
     <string name="edit_button_text">Edit</string>
     <string name="email_header_text"><u>Email:</u></string>
-    <string name="phone_header_text"><u>Phone Number</u></string>
+    <string name="phone_header_text"><u>Phone Number:</u></string>
     <string name="show_profile_history_button_text">Show Profile History</string>
     <string name="delete_account_button_text">Delete Account</string>
+    <string name="register_new_account"><u>Register New Account</u></string>
+    <string name="deviceIdentityInfo">Users will be identified by their device, NOT by username and password</string>
 </resources>

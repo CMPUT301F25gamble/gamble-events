@@ -2,9 +2,12 @@ package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -12,6 +15,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,31 +33,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        View bottomNavigationMenuView = binding.bottomNavigationMenu;
+        setContentView(bottomNavigationMenuView);
 
 
-        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+        binding.bottomNavigationMenu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-            switch(item.getItemId()) {
+                Fragment selected_fragment = null;
+                int id = item.getItemId();
 
-                case R.id.profile_button:
-                    break;
-                case R.id.events_button:
-                    break;
-                case R.id.notifications_button:
-                    break;
-                case R.id.settings_button:
-                    break;
+                if (id == R.id.profile_button) {
+                    Toast.makeText(MainActivity.this, "Profile", Toast.LENGTH_SHORT).show();
+                }
+                if (id == R.id.events_button) {
+                    Toast.makeText(MainActivity.this, "Events", Toast.LENGTH_SHORT).show();
+                }
+                if (id == R.id.notifications_button) {
+                    Toast.makeText(MainActivity.this, "Notifications", Toast.LENGTH_SHORT).show();
+                }
+                if (id == R.id.settings_button) {
+                    Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+                }
 
+                return false;
             }
-
-            return true;
         });
-
-    }
-
-    private void replaceFragment(Fragment fragment) {
-
     }
 }

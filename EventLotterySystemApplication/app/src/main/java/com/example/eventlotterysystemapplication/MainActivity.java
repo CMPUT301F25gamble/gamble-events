@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;

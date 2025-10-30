@@ -2,12 +2,16 @@ package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+
+import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,12 +28,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        View view = binding.getRoot();
+        setContentView(view);
+
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
 
+            switch(item.getItemId()) {
+
+                case R.id.profile_button:
+                    break;
+                case R.id.events_button:
+                    break;
+                case R.id.notifications_button:
+                    break;
+                case R.id.settings_button:
+                    break;
+
+            }
+
             return true;
         });
+
+    }
+
+    private void replaceFragment(Fragment fragment) {
 
     }
 }

@@ -4,7 +4,7 @@
 
     <item android:title="@string/profile_nav_menu_text"
         android:icon="@drawable/profile_icon"
-        android:id="@+id/home_button"/>
+        android:id="@+id/profile_button"/>
     <item android:title="@string/events_nav_menu_text"
         android:icon="@drawable/events_icon"
         android:id="@+id/events_button"/>

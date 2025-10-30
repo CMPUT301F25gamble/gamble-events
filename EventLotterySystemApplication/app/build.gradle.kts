@@ -40,6 +40,11 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore") // firestore service
     implementation("com.google.firebase:firebase-auth") // auth service
 
+    //Mockito dependencies
+    testImplementation("org.mockito:mockito-core:5.20.0")
+    androidTestImplementation("org.mockito:mockito-android:5.20.0")
+
+    //Others
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

@@ -2,4 +2,8 @@
     <string name="app_name">EventLotterySystemApplication</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bottom_menu_profile_text">Profile</string>
+    <string name="bottom_menu_event_text">Event</string>
+    <string name="bottom_menu_notifications_text">Notifications</string>
+    <string name="bottom_menu_settings_text">Settings</string>
 </resources>

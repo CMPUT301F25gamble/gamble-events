@@ -25,4 +25,6 @@
     <string name="important">*</string>
     <string name="cancel">CANCEL</string>
     <string name="confirm">CONFIRM</string>
+    <string name="event_detail_image_text">An image of the event</string>
+    <string name="event_tags_text">Tags</string>
 </resources>

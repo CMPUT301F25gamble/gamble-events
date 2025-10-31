@@ -13,8 +13,13 @@
     <string name="bottom_menu_settings_text">Settings</string>
     <string name="profile_name_text"><u>Name:</u></string>
     <string name="placeholder_text">Placeholder Text</string>
-    <string name="profile_email_text"><u>Profile</u>:</string>
+    <string name="profile_email_text"><u>Email:</u>:</string>
     <string name="profile_phone_text"><u>Phone Number:</u></string>
     <string name="profile_history_button_text">Show Profile History</string>
     <string name="delete_profile_button_text">Delete Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dialog_edit_name_header_text">Edit name</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="cancel_text">Cancel</string>
 </resources>

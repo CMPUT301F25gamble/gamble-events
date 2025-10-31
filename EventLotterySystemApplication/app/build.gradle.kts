@@ -46,7 +46,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore") // firestore service
     implementation("com.google.firebase:firebase-auth") // auth service
 
-
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 

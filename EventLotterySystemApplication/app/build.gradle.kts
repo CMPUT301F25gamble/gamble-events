@@ -39,7 +39,6 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.9.5"
 
     // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))

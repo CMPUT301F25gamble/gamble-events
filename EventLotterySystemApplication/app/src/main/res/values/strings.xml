@@ -11,4 +11,11 @@
     <string name="delete_account_button_text">Delete Account</string>
     <string name="register_new_account"><u>Register New Account</u></string>
     <string name="deviceIdentityInfo">Users will be identified by their device, NOT by username and password</string>
+    <string name="events_screen_text"><u>Events</u></string>
+    <string name="events_screen_filter_button">Filter</string>
+    <string name="add_event_button">Add Event</string>
+    <string name="navigation_bar_button">Navigation Bar</string>
+    <string name="back_button_text">Back</string>
+    <string name="event_detail_screen_name_text">Event Name</string>
+    <string name="my_events_button_text">My Events</string>
 </resources>

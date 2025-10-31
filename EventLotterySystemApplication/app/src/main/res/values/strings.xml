@@ -11,6 +11,10 @@
     <string name="bottom_menu_event_text">Events</string>
     <string name="bottom_menu_notifications_text">Notifications</string>
     <string name="bottom_menu_settings_text">Settings</string>
-    <string name="profile_header_text">[USERNAME]\'s Profile</string>
     <string name="profile_name_text"><u>Name:</u></string>
+    <string name="placeholder_text">Placeholder Text</string>
+    <string name="profile_email_text"><u>Profile</u>:</string>
+    <string name="profile_phone_text"><u>Phone Number:</u></string>
+    <string name="profile_history_button_text">Show Profile History</string>
+    <string name="delete_profile_button_text">Delete Profile</string>
 </resources>

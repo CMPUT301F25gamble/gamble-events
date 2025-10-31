@@ -10,7 +10,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
@@ -105,23 +104,27 @@ public class Database {
     public void addUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
+        // Sign user in anonymously so that Firestore security rules can be applied
         auth.signInAnonymously().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 FirebaseUser authUser = auth.getCurrentUser();
+                assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user);
             } else {
-                Log.e("Database", "Signing in user failed");
+                Log.e("Database", "Firebase signing in user failed");
             }
         });
     }
 
-    public void authenticateUser(User user){
+    public void modifyUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        // Sign user in anonymously so that Firestore security rules can be applied
         FirebaseUser authUser = auth.getCurrentUser();
-        assert authUser != null;
+        // Add user if the user does not exist
+        if (authUser == null) {
+            addUser(user);
+            return;
+        }
         DocumentReference userDoc = userRef.document(authUser.getUid());
         userDoc.set(user);
     }

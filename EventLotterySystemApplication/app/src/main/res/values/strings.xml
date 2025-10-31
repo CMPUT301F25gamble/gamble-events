@@ -7,4 +7,8 @@
     <string name="back_button_text">Back</string>
     <string name="event_detail_screen_name_text">Event Name</string>
     <string name="my_events_button_text">My Events</string>
+    <string name="bottom_menu_profile_text">Profile</string>
+    <string name="bottom_menu_event_text">Events</string>
+    <string name="bottom_menu_notifications_text">Notifications</string>
+    <string name="bottom_menu_settings_text">Settings</string>
 </resources>

@@ -4,4 +4,7 @@
     <string name="events_screen_filter_button">Filter</string>
     <string name="add_event_button">Add Event</string>
     <string name="navigation_bar_button">Navigation Bar</string>
+    <string name="back_button_text">Back</string>
+    <string name="event_detail_screen_name_text">Event Name</string>
+    <string name="my_events_button_text">My Events</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
+import android.provider.Settings;
+
 /**
  * An instance of this class represents a single user
  */

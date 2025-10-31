@@ -1,0 +1,122 @@
+<!-- Main Layout -->
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="40dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context=".FirstTimeUserInfoFragment">
+
+    <!-- Title (Register New Account) -->
+    <TextView
+        android:id="@+id/registerAccountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register_new_account"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Enter Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name:"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/nameText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/app_beige"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:layout_marginBottom="14dp" />
+
+    <!-- Enter Email -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email:"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/emailText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/app_beige"
+        android:inputType="textEmailAddress"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:layout_marginBottom="14dp" />
+
+
+    <!-- (OPTIONAL) Enter Phone -->
+    <TextView
+        android:id="@+id/phoneNumText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone Number:"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/phoneText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/app_beige"
+        android:hint="Optional"
+        android:inputType="phone"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Device Identity note -->
+    <TextView
+        android:id="@+id/deviceIdentityInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deviceIdentityInfo"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Spacer pushes the buttons to the bottom -->
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <!-- Cancel & Confirm Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="24dp">
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="135dp"
+            android:layout_height="50dp"
+            android:text="@string/cancel"
+            android:textStyle="bold"
+            android:backgroundTint="@color/red"
+            android:textColor="@color/black"
+            android:layout_marginEnd="30dp" />
+
+        <Button
+            android:id="@+id/confirmButton"
+            android:layout_width="135dp"
+            android:layout_height="50dp"
+            android:text="@string/confirm"
+            android:textStyle="bold"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+</LinearLayout>

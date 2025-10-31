@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/profile_nav_menu_text"
+    <item android:title="@string/bottom_menu_profile_text"
         android:icon="@drawable/profile_icon"
-        android:id="@+id/profile_button"/>
-    <item android:title="@string/events_nav_menu_text"
+        android:id="@+id/profile_ui_fragment">
+    </item>
+
+    <item android:title="@string/bottom_menu_event_text"
         android:icon="@drawable/events_icon"
-        android:id="@+id/events_button"/>
-    <item android:title="@string/notifications_nav_menu_text"
+        android:id="@+id/events_ui_fragment">
+
+    </item>
+
+    <item android:title="@string/bottom_menu_notifications_text"
         android:icon="@drawable/notifications_icon"
-        android:id="@+id/notifications_button"/>
-    <item android:title="@string/settings_nav_menu_text"
+        android:id="@+id/notifications_icon">
+    </item>
+
+    <item android:title="@string/bottom_menu_settings_text"
         android:icon="@drawable/settings_icon"
-        android:id="@+id/settings_button"/>
+        android:id="@+id/settings_icon">
+    </item>
+
 </menu>

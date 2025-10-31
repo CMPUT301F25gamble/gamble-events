@@ -1,64 +1,43 @@
 package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
-import android.provider.Settings;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
-import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        View bottomNavigationMenuView = binding.bottomNavigationMenu;
-        setContentView(bottomNavigationMenuView);
+        // Initialise the BottomNavigationView
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
 
+        NavHostFragment navHostFragment = (NavHostFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
-        binding.bottomNavigationMenu.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        assert navHostFragment != null;
+        NavController navController = navHostFragment.getNavController();
 
-                Fragment selected_fragment = null;
-                int id = item.getItemId();
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
-                if (id == R.id.profile_button) {
-                    Toast.makeText(MainActivity.this, "Profile", Toast.LENGTH_SHORT).show();
-                }
-                if (id == R.id.events_button) {
-                    Toast.makeText(MainActivity.this, "Events", Toast.LENGTH_SHORT).show();
-                }
-                if (id == R.id.notifications_button) {
-                    Toast.makeText(MainActivity.this, "Notifications", Toast.LENGTH_SHORT).show();
-                }
-                if (id == R.id.settings_button) {
-                    Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
-                }
-
-                return false;
-            }
-        });
     }
 }

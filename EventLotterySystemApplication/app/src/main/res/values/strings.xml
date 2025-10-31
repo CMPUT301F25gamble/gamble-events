@@ -11,4 +11,6 @@
     <string name="bottom_menu_event_text">Events</string>
     <string name="bottom_menu_notifications_text">Notifications</string>
     <string name="bottom_menu_settings_text">Settings</string>
+    <string name="profile_header_text">[USERNAME]\'s Profile</string>
+    <string name="profile_name_text"><u>Name:</u></string>
 </resources>

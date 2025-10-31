@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -158,16 +159,40 @@ public class Database {
         FirebaseUser authUser = firebaseAuth.getCurrentUser();
 
         if (authUser != null) {
-            userRef.document(authUser.getUid()).delete().addOnSuccessListener(task -> {
-                authUser.delete().addOnSuccessListener(task2 -> {}).addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
+            String userId = authUser.getUid();
+
+            // deletes from the user collection
+            userRef.document(userId).delete().addOnSuccessListener(task -> {
+                authUser.delete()
+                        .addOnSuccessListener(aVoid -> {})
+                        .addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
             }).addOnFailureListener(e -> Log.e("Database", "Firebase deleting user document failed"));
+
+            // deletes from the event collection
+            eventRef.get().addOnSuccessListener(querySnapshot -> {
+                for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
+                    DocumentReference regDocRef = eventDoc.getReference()
+                            .collection("Registration")
+                            .document(userId);
+                    regDocRef.get().addOnSuccessListener(regDoc -> {
+                        if (regDoc.exists()) {
+                            regDocRef.delete()
+                                    .addOnSuccessListener(aVoid -> {})
+                                    .addOnFailureListener(e ->
+                                            Log.e("Database", "Error deleting registration"));
+                        }
+                    }).addOnFailureListener(e ->
+                            Log.e("Database", "Error checking registration"));
+                }
+            });
         } else {
             Log.e("Database", "User not found");
         }
     }
 
-//    public Event getEvent(/*some arguments*/){
-//        // add in code for getting event from ID here
+//    public Event getEvent(){
+//        // TODO: add in code for getting event from ID
+//
 //    }
 
     public void addEvent(Event event){
@@ -175,7 +200,7 @@ public class Database {
         eventDoc.set(event);
     }
 
-    public void addNotificationLog(/*add in parameters later*/){
-
+    public void addNotificationLog(){
+        // TODO: implement this method
     }
 }

@@ -102,7 +102,7 @@
             android:id="@+id/cancelButton"
             android:layout_width="135dp"
             android:layout_height="50dp"
-            android:text="CANCEL"
+            android:text="@string/cancel"
             android:textStyle="bold"
             android:backgroundTint="@color/red"
             android:textColor="@color/black"
@@ -112,7 +112,7 @@
             android:id="@+id/confirmButton"
             android:layout_width="135dp"
             android:layout_height="50dp"
-            android:text="CONFIRM"
+            android:text="@string/confirm"
             android:textStyle="bold"
             android:backgroundTint="@color/green"
             android:textColor="@color/black" />

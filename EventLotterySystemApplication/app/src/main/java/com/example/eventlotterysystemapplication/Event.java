@@ -3,6 +3,8 @@ package com.example.eventlotterysystemapplication;
 import android.os.Build;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Event {
     // we need to add in some sort of eventID in here, not sure datatype and implementation
@@ -11,6 +13,7 @@ public class Event {
     private LocalDateTime eventTime;
     private LocalDateTime signupDeadline;
     private LocalDateTime invitationAcceptanceDeadline;
+    private ArrayList<String> eventTags;
     private User organizer;
     private String place;
     private EntrantList entrantList;
@@ -29,7 +32,7 @@ public class Event {
      */
 
     public Event(String name, String description, String eventTime, String signupDeadline,
-                 String invitationAcceptanceDeadline, User organizer, String place,
+                 String invitationAcceptanceDeadline, String [] tags, User organizer, String place,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
@@ -38,11 +41,15 @@ public class Event {
             this.signupDeadline = LocalDateTime.parse(signupDeadline);
             this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline);
         }
-
+        this.eventTags = new ArrayList<>(Arrays.asList(tags));
         this.organizer = organizer;
         this.place = place;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
+
+        Database db = Database.getDatabase();
+
+        db.addEvent(this);
     }
 
     public String getName() {
@@ -83,6 +90,22 @@ public class Event {
 
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+    }
+
+    public ArrayList<String> getEventTags() {
+        return eventTags;
+    }
+
+    public void setEventTags(ArrayList<String> eventTags) {
+        this.eventTags = eventTags;
+    }
+
+    public void addEventTag(String tag){
+        this.eventTags.add(tag);
+    }
+
+    public void deleteEventTag(String tag){
+        this.eventTags.remove(tag);
     }
 
     public User getOrganizer() {

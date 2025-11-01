@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
@@ -125,6 +126,9 @@ public class Database {
                 assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user);
+
+                user.setUserID(userDoc.getId());
+
             } else {
                 Log.e("Database", "Firebase signing in user failed");
             }
@@ -186,13 +190,50 @@ public class Database {
         }
     }
 
-//    public Event getEvent(){
-//        // TODO: add in code for getting event from ID
-//
-//    }
+    /**
+     * Given some eventID, this method finds the event and returns that event object from the
+     * database
+     * @param eventID The eventID of the event you are trying to retrieve
+     * @return An event object containing all of the information about the user
+     * @throws IllegalStateException This exception is thrown if no event exists with that eventID
+     */
+    public Event getEvent(String eventID) throws IllegalStateException{
+        DocumentReference eventDocRef = eventRef.document(eventID);
 
+        final Event[] event = new Event[1];
+
+        eventDocRef.get().addOnSuccessListener(task -> {
+           if (task.exists()){
+               event[0] = task.toObject(Event.class);
+               if (event[0] != null) {
+                   event[0].setEventID(eventID);
+               }
+           } else {
+               throw new IllegalStateException("No event exists with that eventID");
+           }
+        });
+
+        return event[0];
+
+    }
+
+    /**
+     * Given some event object, we add its data to the database
+     * @param event The event that we want to add to the database
+     */
     public void addEvent(Event event){
         DocumentReference eventDoc = eventRef.document();
+        eventDoc.set(event);
+
+        event.setEventID(eventDoc.getId());
+    }
+
+    /**
+     * Given some event, we update its data in the database
+     * @param event The event that we want to update in the database
+     */
+    public void updateEvent(Event event){
+        DocumentReference eventDoc = eventRef.document(event.getEventID());
         eventDoc.set(event);
     }
 

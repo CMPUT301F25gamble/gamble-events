@@ -47,15 +47,19 @@ public class User {
         return deviceID;
     }
 
-    public void setDeviceID(String deviceID) {
-        this.deviceID = deviceID;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

@@ -87,8 +87,9 @@ public class Database {
      * @param deviceID The deviceID of the user
      * @return A user object containing the corresponding data from the database
      * @throws IllegalArgumentException If the deviceID does not exist in the database
+     * @throws IllegalStateException If the query fails
      */
-    public User getUserFromDeviceID(String deviceID) throws IllegalArgumentException{
+    public User getUserFromDeviceID(String deviceID) throws IllegalArgumentException, IllegalStateException{
         if (!queryDeviceID(deviceID)){
             throw new IllegalArgumentException("Cannot retrieve DeviceID from the database");
         }
@@ -109,6 +110,27 @@ public class Database {
         );
 
         return queriedUser[0];
+
+    }
+
+
+    public User getUser(String userID) throws IllegalStateException{
+        DocumentReference userDocRef = userRef.document(userID);
+
+        final User[] user = new User[1];
+
+        userDocRef.get().addOnSuccessListener(task -> {
+            if (task.exists()){
+                user[0] = task.toObject(User.class);
+                if (user[0] != null) {
+                    user[0].setUserID(userID);
+                }
+            } else {
+                throw new IllegalStateException("No event exists with that eventID");
+            }
+        });
+
+        return user[0];
 
     }
 

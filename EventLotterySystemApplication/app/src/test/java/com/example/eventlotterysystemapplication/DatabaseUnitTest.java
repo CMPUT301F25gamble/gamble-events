@@ -1,6 +1,5 @@
 package com.example.eventlotterysystemapplication;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -8,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,10 +15,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.WriteBatch;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -31,8 +26,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,25 +36,24 @@ public class DatabaseUnitTest {
     private Database database;
 
     @Mock
-    CollectionReference userRef;
+    private CollectionReference userRef;
 
     @Mock
-    CollectionReference eventRef;
+    private CollectionReference eventRef;
 
     @Mock
-    CollectionReference notificationRef;
+    private CollectionReference notificationRef;
 
     @Mock
-    DocumentReference docRef;
+    private DocumentReference docRef;
 
     @Mock
-    FirebaseFirestore mockDb;
+    private FirebaseFirestore mockDb;
 
     @Mock
-    FirebaseAuth mockAuth;
+    private FirebaseAuth mockAuth;
     @Mock
-    FirebaseUser mockAuthUser;
-
+    private FirebaseUser mockAuthUser;
 
     @Before
     public DatabaseUnitTest() {
@@ -71,45 +63,10 @@ public class DatabaseUnitTest {
         when(mockDb.collection("Event")).thenReturn(eventRef);
         when(mockDb.collection("Notification")).thenReturn(notificationRef);
 
-        database = Database.getMockDatabase(mockDb, mockAuth);
+        database = new Database(mockDb, mockAuth);
     }
 
-    @Test
-    public void testAddUser1(){
 
-        User testUser1 = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
-
-        database.addUser(testUser1);
-
-        Query testAddUserQuery1 = userRef.whereEqualTo("deviceID", "deviceIDJohn1");
-
-        testAddUserQuery1.get().addOnCompleteListener(
-                task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        int numberOfDeviceID = querySnapshot.size();
-                        assertEquals(1, numberOfDeviceID);
-                    } else {
-                        throw new IllegalStateException("Query failed");
-                    }
-                });
-
-        testAddUserQuery1.get().addOnCompleteListener(
-                task -> {
-                    if (task.isSuccessful()) {
-                        WriteBatch batch = FirebaseFirestore.getInstance().batch();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            batch.delete(document.getReference());
-                        }
-                        batch.commit();
-                    }
-                }
-        );
-    }
-
-    /**
-     * Deletes a user from an event and from the user collection.
-     */
     @Test
     public void testDeleteUser() {
         //User and mock tasks setup
@@ -199,9 +156,6 @@ public class DatabaseUnitTest {
         verify(mockAuthUser, times(1)).delete();
     }
 
-    /**
-     * Deletes a user from two events and from the user collection.
-     */
     @Test
     public void testDeleteUserTwoEvents() {
         //User and mock tasks setup

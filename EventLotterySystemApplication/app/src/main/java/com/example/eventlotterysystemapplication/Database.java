@@ -42,12 +42,6 @@ public class Database {
         return database;
     }
 
-    public static Database getMockDatabase(FirebaseFirestore db, FirebaseAuth auth){
-        if (database == null){
-            database = new Database(db, auth);
-        }
-        return database;
-    }
 
     /**
      * Given some input deviceID, this function checks to see if the deviceID exists in the database

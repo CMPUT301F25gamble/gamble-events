@@ -64,7 +64,7 @@ public class DatabaseUnitTest {
 
 
     @Before
-    public void setup() {
+    public DatabaseUnitTest() {
         MockitoAnnotations.openMocks(this);
 
         when(mockDb.collection("User")).thenReturn(userRef);
@@ -76,7 +76,6 @@ public class DatabaseUnitTest {
 
     @Test
     public void testAddUser1(){
-        setup();
 
         User testUser1 = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
 

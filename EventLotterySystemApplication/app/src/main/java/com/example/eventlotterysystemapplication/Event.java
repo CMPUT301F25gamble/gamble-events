@@ -17,6 +17,8 @@ public class Event {
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
 
+    private String eventID;
+
     /*
     Include code to have some attributes that points to an event poster, I wouldn't know how to
     declare attributes of that type yet
@@ -43,5 +45,91 @@ public class Event {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(LocalDateTime eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public LocalDateTime getSignupDeadline() {
+        return signupDeadline;
+    }
+
+    public void setSignupDeadline(LocalDateTime signupDeadline) {
+        this.signupDeadline = signupDeadline;
+    }
+
+    public LocalDateTime getInvitationAcceptanceDeadline() {
+        return invitationAcceptanceDeadline;
+    }
+
+    public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
+        this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+    }
+
+    public User getOrganizer() {
+        return organizer;
+    }
+
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public EntrantList getEntrantList() {
+        return entrantList;
+    }
+
+    public void setEntrantList(EntrantList entrantList) {
+        this.entrantList = entrantList;
+    }
+
+    public int getMaxWaitingListCapacity() {
+        return maxWaitingListCapacity;
+    }
+
+    public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
+        this.maxWaitingListCapacity = maxWaitingListCapacity;
+    }
+
+    public int getMaxFinalListCapacity() {
+        return maxFinalListCapacity;
+    }
+
+    public void setMaxFinalListCapacity(int maxFinalListCapacity) {
+        this.maxFinalListCapacity = maxFinalListCapacity;
+    }
+
+    public String getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
 }

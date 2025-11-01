@@ -8,6 +8,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private String deviceID;
+    private String userID;
     private boolean isAdmin;
 
     public User(String email, String phoneNumber, String name, String deviceID) {

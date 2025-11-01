@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
+import android.os.Build;
+
 import java.time.LocalDateTime;
 
 public class Event {
@@ -23,4 +25,23 @@ public class Event {
     /*
     Geolocation requirement
      */
+
+    public Event(String name, String description, String eventTime, String signupDeadline,
+                 String invitationAcceptanceDeadline, User organizer, String place,
+                 int maxWaitingListCapacity, int maxFinalListCapacity){
+        this.name = name;
+        this.description = description;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.eventTime = LocalDateTime.parse(eventTime);
+            this.signupDeadline = LocalDateTime.parse(signupDeadline);
+            this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline);
+        }
+
+        this.organizer = organizer;
+        this.place = place;
+        this.maxFinalListCapacity = maxFinalListCapacity;
+        this.maxWaitingListCapacity = maxWaitingListCapacity;
+    }
+
+
 }

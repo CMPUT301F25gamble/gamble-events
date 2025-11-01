@@ -56,7 +56,7 @@ public class DatabaseUnitTest {
     private FirebaseUser mockAuthUser;
 
     @Before
-    public DatabaseUnitTest() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
 
         when(mockDb.collection("User")).thenReturn(userRef);

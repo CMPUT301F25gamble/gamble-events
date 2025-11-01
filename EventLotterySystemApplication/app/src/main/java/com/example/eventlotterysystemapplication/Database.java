@@ -82,10 +82,6 @@ public class Database {
 
         final User[] queriedUser = new User[1];
 
-        String email;
-        String name;
-        String phoneNumber;
-
         deviceIDQuery.get().addOnCompleteListener(
                 task -> {
                     if (task.isSuccessful()) {

@@ -1,27 +1,42 @@
 package com.example.eventlotterysystemapplication;
 
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-import com.google.android.gms.tasks.Task;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class DatabaseUnitTest {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class DatabaseIntegrationTests {
     private Database database;
 
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
 
-    public void setup() {
+    public DatabaseIntegrationTests() {
         database = Database.getDatabase();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -32,7 +47,6 @@ public class DatabaseUnitTest {
 
     @Test
     public void testAddUser1(){
-        setup();
 
         User testUser1 = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
 
@@ -59,6 +73,8 @@ public class DatabaseUnitTest {
                             batch.delete(document.getReference());
                         }
                         batch.commit();
+                    } else {
+                        throw new IllegalStateException("Deletion failed");
                     }
                 }
         );

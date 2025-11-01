@@ -41,12 +41,6 @@ public class Database {
         return database;
     }
 
-    public static Database getMockDatabase(FirebaseFirestore db, FirebaseAuth auth){
-        if (database == null){
-            database = new Database(db, auth);
-        }
-        return database;
-    }
 
     /**
      * Given some input deviceID, this function checks to see if the deviceID exists in the database
@@ -186,10 +180,10 @@ public class Database {
         }
     }
 
-//    public Event getEvent(){
-//        // TODO: add in code for getting event from ID
-//
-//    }
+    public Event getEvent(Event event){
+        // TODO: add in code for getting event from ID
+        return event;
+    }
 
     public void addEvent(Event event){
         DocumentReference eventDoc = eventRef.document();

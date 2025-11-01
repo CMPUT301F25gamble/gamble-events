@@ -59,6 +59,14 @@ public class User {
         isAdmin = admin;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     /**
      * Modify one or more user profile info
      * @param user The user profile

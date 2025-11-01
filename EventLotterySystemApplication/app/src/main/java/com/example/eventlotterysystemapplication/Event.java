@@ -32,7 +32,7 @@ public class Event {
      */
 
     public Event(String name, String description, String eventTime, String signupDeadline,
-                 String invitationAcceptanceDeadline, String [] tags, User organizer, String place,
+                 String invitationAcceptanceDeadline, String [] tags, String organizerID, String place,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
@@ -42,12 +42,13 @@ public class Event {
             this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline);
         }
         this.eventTags = new ArrayList<>(Arrays.asList(tags));
-        this.organizer = organizer;
         this.place = place;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
         Database db = Database.getDatabase();
+
+        this.organizer = db.getUser(organizerID);
 
         db.addEvent(this);
     }

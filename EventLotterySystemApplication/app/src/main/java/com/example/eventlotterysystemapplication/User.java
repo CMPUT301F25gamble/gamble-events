@@ -47,10 +47,6 @@ public class User {
         return deviceID;
     }
 
-    public void setDeviceID(String deviceID) {
-        this.deviceID = deviceID;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }

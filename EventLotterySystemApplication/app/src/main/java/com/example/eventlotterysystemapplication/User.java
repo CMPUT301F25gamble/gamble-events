@@ -8,6 +8,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private String deviceID;
+    private String userID;
     private boolean isAdmin;
 
     public User(String email, String phoneNumber, String name, String deviceID) {
@@ -46,15 +47,19 @@ public class User {
         return deviceID;
     }
 
-    public void setDeviceID(String deviceID) {
-        this.deviceID = deviceID;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

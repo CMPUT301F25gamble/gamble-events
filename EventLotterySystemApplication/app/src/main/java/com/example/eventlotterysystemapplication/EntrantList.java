@@ -23,4 +23,20 @@ public class EntrantList {
     public ArrayList<User> getFinalized() {
         return finalized;
     }
+
+    public void setWaiting(ArrayList<User> waiting) {
+        this.waiting = waiting;
+    }
+
+    public void setChosen(ArrayList<User> chosen) {
+        this.chosen = chosen;
+    }
+
+    public void setCancelled(ArrayList<User> cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public void setFinalized(ArrayList<User> finalized) {
+        this.finalized = finalized;
+    }
 }

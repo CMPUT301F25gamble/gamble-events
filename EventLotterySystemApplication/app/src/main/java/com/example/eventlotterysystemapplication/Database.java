@@ -2,10 +2,12 @@ package com.example.eventlotterysystemapplication;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -19,17 +21,29 @@ public class Database {
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
+    FirebaseAuth firebaseAuth;
 
-    private Database(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        userRef = db.collection("User");
-        eventRef = db.collection("Event");
-        notificationRef = db.collection("Notification");
+    public Database() {
+        this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
+    }
+
+    public Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
+        this.userRef = firestore.collection("User");
+        this.eventRef = firestore.collection("Event");
+        this.notificationRef = firestore.collection("Notification");
+        this.firebaseAuth = firebaseAuth;
     }
 
     public static Database getDatabase(){
         if (database == null){
             database = new Database();
+        }
+        return database;
+    }
+
+    public static Database getMockDatabase(FirebaseFirestore db, FirebaseAuth auth){
+        if (database == null){
+            database = new Database(db, auth);
         }
         return database;
     }
@@ -97,13 +111,17 @@ public class Database {
 
     }
 
+    /**
+     * Given a user, add it to the database
+     * @param user The user profile
+     * Logs an error if the database cannot add the user
+     */
     public void addUser(User user){
-        FirebaseAuth auth = FirebaseAuth.getInstance();
 
         // Sign user in anonymously so that Firestore security rules can be applied
-        auth.signInAnonymously().addOnCompleteListener(task -> {
+        firebaseAuth.signInAnonymously().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                FirebaseUser authUser = auth.getCurrentUser();
+                FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user);
@@ -113,6 +131,10 @@ public class Database {
         });
     }
 
+    /**
+     * Given a user, update or create their record in the database
+     * @param user The user profile
+     */
     public void modifyUser(User user){
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser authUser = auth.getCurrentUser();
@@ -125,8 +147,48 @@ public class Database {
         userDoc.set(user);
     }
 
-//    public Event getEvent(/*some arguments*/){
-//        // add in code for getting event from ID here
+    /**
+     * Given a user, delete their record from the database
+     * @param user The user profile
+     */
+    public void deleteUser(User user) {
+        FirebaseUser authUser = firebaseAuth.getCurrentUser();
+
+        if (authUser != null) {
+            String userId = authUser.getUid();
+
+            // deletes from the user collection
+            userRef.document(userId).delete().addOnSuccessListener(task -> {
+                authUser.delete()
+                        .addOnSuccessListener(aVoid -> {})
+                        .addOnFailureListener(e -> Log.e("Database", "Firebase deleting auth failed"));
+            }).addOnFailureListener(e -> Log.e("Database", "Firebase deleting user document failed"));
+
+            // deletes from the event collection
+            eventRef.get().addOnSuccessListener(querySnapshot -> {
+                for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
+                    DocumentReference regDocRef = eventDoc.getReference()
+                            .collection("Registration")
+                            .document(userId);
+                    regDocRef.get().addOnSuccessListener(regDoc -> {
+                        if (regDoc.exists()) {
+                            regDocRef.delete()
+                                    .addOnSuccessListener(aVoid -> {})
+                                    .addOnFailureListener(e ->
+                                            Log.e("Database", "Error deleting registration"));
+                        }
+                    }).addOnFailureListener(e ->
+                            Log.e("Database", "Error checking registration"));
+                }
+            });
+        } else {
+            Log.e("Database", "User not found");
+        }
+    }
+
+//    public Event getEvent(){
+//        // TODO: add in code for getting event from ID
+//
 //    }
 
     public void addEvent(Event event){
@@ -134,7 +196,7 @@ public class Database {
         eventDoc.set(event);
     }
 
-    public void addNotificationLog(/*add in parameters later*/){
-
+    public void addNotificationLog(){
+        // TODO: implement this method
     }
 }

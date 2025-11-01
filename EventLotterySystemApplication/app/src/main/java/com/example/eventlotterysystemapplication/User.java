@@ -58,4 +58,27 @@ public class User {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    /**
+     * Modify one or more user profile info
+     * @param user The user profile
+     * @param name The user name
+     * @param email The user email
+     * @param phoneNumber The user phone number
+     */
+    public void updateUserInfo(User user, String name, String email, String phoneNumber) {
+        if (name != null && !name.isEmpty()) {
+            user.setName(name);
+        }
+        if (email != null && !email.isEmpty()) {
+            user.setEmail(email);
+        }
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            user.setPhoneNumber(phoneNumber);
+        }
+
+        // Will need to comment these out when running UserUnitTest
+        Database database = Database.getDatabase();
+        database.modifyUser(user);
+    }
 }

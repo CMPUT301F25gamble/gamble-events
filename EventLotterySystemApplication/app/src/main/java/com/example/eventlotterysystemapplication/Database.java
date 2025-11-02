@@ -233,6 +233,9 @@ public class Database {
 
     }
 
+    public void viewAvailableEvents() {
+        // TODO
+    }
 
     /**
      * Given a user, delete all the events that the user organizes

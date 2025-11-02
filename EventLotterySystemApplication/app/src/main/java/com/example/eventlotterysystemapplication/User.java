@@ -86,7 +86,7 @@ public class User {
         }
 
         // Will need to comment these out when running UserUnitTest
-        Database database = Database.getDatabase();
+        Database database = new Database();
         database.modifyUser(user);
     }
 }

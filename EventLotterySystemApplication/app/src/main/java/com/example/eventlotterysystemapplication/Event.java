@@ -64,6 +64,9 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public String getDescription() {
@@ -72,6 +75,9 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public LocalDateTime getEventTime() {
@@ -80,6 +86,9 @@ public class Event {
 
     public void setEventTime(LocalDateTime eventTime) {
         this.eventTime = eventTime;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude
@@ -96,6 +105,9 @@ public class Event {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.eventTime = LocalDateTime.parse(dateString, formatter);
         }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public LocalDateTime getSignupDeadline() {
@@ -104,6 +116,9 @@ public class Event {
 
     public void setSignupDeadline(LocalDateTime signupDeadline) {
         this.signupDeadline = signupDeadline;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude
@@ -120,6 +135,9 @@ public class Event {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.signupDeadline = LocalDateTime.parse(dateString, formatter);
         }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public LocalDateTime getInvitationAcceptanceDeadline() {
@@ -128,6 +146,9 @@ public class Event {
 
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude
@@ -144,6 +165,9 @@ public class Event {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.invitationAcceptanceDeadline = LocalDateTime.parse(dateString, formatter);
         }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public ArrayList<String> getEventTags() {
@@ -152,14 +176,23 @@ public class Event {
 
     public void setEventTags(ArrayList<String> eventTags) {
         this.eventTags = eventTags;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public void addEventTag(String tag){
         this.eventTags.add(tag);
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude
@@ -170,6 +203,9 @@ public class Event {
     @Exclude
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public String getOrganizerID(){
@@ -179,6 +215,8 @@ public class Event {
     public void setOrganizerID(String organizerID){
         Database db = Database.getDatabase();
         this.organizer = db.getUser(organizerID);
+
+        db.updateEvent(this);
     }
 
     public String getPlace() {
@@ -187,6 +225,9 @@ public class Event {
 
     public void setPlace(String place) {
         this.place = place;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude
@@ -197,6 +238,75 @@ public class Event {
     @Exclude
     public void setEntrantList(EntrantList entrantList) {
         this.entrantList = entrantList;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
+    }
+
+    @Exclude
+    public void setEntrantListValues(ArrayList<User> entrantListValues, int list) throws IllegalArgumentException{
+        switch (list) {
+            case 0:
+                this.entrantList.setWaiting(entrantListValues);
+                break;
+            case 1:
+                this.entrantList.setChosen(entrantListValues);
+                break;
+            case 2:
+                this.entrantList.setCancelled(entrantListValues);
+                break;
+            case 3:
+                this.entrantList.setFinalized(entrantListValues);
+            default:
+                throw new IllegalArgumentException("List number out of range");
+        }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
+    }
+
+    @Exclude
+    public void addToEntrantList(User user, int list) throws IllegalArgumentException{
+        switch (list) {
+            case 0:
+                this.entrantList.addToWaiting(user);
+                break;
+            case 1:
+                this.entrantList.addToChosen(user);
+                break;
+            case 2:
+                this.entrantList.addToCancelled(user);
+                break;
+            case 3:
+                this.entrantList.addToFinalized(user);
+            default:
+                throw new IllegalArgumentException("List number out of range");
+        }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
+    }
+
+    @Exclude
+    public void removeFromEntrantList(User user, int list) throws IllegalArgumentException{
+        switch (list) {
+            case 0:
+                this.entrantList.removeFromWaiting(user);
+                break;
+            case 1:
+                this.entrantList.removeFromChosen(user);
+                break;
+            case 2:
+                this.entrantList.removeFromCancelled(user);
+                break;
+            case 3:
+                this.entrantList.removeFromCancelled(user);
+            default:
+                throw new IllegalArgumentException("List number out of range");
+        }
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public int getMaxWaitingListCapacity() {
@@ -205,6 +315,9 @@ public class Event {
 
     public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     public int getMaxFinalListCapacity() {
@@ -213,6 +326,9 @@ public class Event {
 
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
         this.maxFinalListCapacity = maxFinalListCapacity;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this);
     }
 
     @Exclude

@@ -27,6 +27,9 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+
+        Database db = Database.getDatabase();
+        db.modifyUser(this);
     }
 
     public String getEmail() {
@@ -35,6 +38,9 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+
+        Database db = Database.getDatabase();
+        db.modifyUser(this);
     }
 
     public String getPhoneNumber() {
@@ -43,6 +49,9 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+
+        Database db = Database.getDatabase();
+        db.modifyUser(this);
     }
 
     public String getDeviceID() {
@@ -55,6 +64,9 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+
+        Database db = Database.getDatabase();
+        db.modifyUser(this);
     }
 
     @Exclude

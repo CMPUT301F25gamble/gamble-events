@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
-
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;

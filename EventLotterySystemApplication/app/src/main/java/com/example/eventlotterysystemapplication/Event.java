@@ -309,6 +309,24 @@ public class Event {
         db.updateEvent(this);
     }
 
+    @Exclude
+    public void joinWaitingList(User user) throws IllegalArgumentException{
+        if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
+            if (!entrantList.getWaiting().contains(user)){
+                addToEntrantList(user, 0);
+            } else {
+                throw new IllegalArgumentException("User is already in waiting list");
+            }
+        } else {
+            throw new IllegalArgumentException("User has already been removed from the waiting list");
+        }
+    }
+
+    @Exclude
+    public void leaveWaitingList(User user){
+        removeFromEntrantList(user, 0);
+    }
+
     public int getMaxWaitingListCapacity() {
         return maxWaitingListCapacity;
     }

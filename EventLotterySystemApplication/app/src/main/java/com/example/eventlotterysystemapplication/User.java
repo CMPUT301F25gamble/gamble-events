@@ -2,10 +2,12 @@ package com.example.eventlotterysystemapplication;
 
 import com.google.firebase.firestore.Exclude;
 
+import java.util.Objects;
+
 /**
  * An instance of this class represents a single user
  */
-public class User {
+public class User{
     private String name;
     private String email;
     private String phoneNumber;
@@ -77,5 +79,19 @@ public class User {
     @Exclude
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public void joinEventWaitingList(Event event){
+        event.joinWaitingList(this);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (!(o instanceof User)){
+            return false;
+        } else {
+            User user2 = (User) o;
+            return Objects.equals(this.userID, user2.userID);
+        }
     }
 }

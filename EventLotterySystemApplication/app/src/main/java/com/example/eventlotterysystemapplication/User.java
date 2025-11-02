@@ -85,6 +85,10 @@ public class User{
         event.joinWaitingList(this);
     }
 
+    public void leaveEventWaitingList(Event event){
+        event.leaveWaitingList(this);
+    }
+
     @Override
     public boolean equals(Object o){
         if (!(o instanceof User)){

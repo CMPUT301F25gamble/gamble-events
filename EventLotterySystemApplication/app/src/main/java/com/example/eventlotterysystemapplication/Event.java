@@ -315,16 +315,20 @@ public class Event {
             if (!entrantList.getWaiting().contains(user)){
                 addToEntrantList(user, 0);
             } else {
-                throw new IllegalArgumentException("User is already in waiting list");
+                throw new IllegalArgumentException("User is already in the waiting list");
             }
         } else {
-            throw new IllegalArgumentException("User has already been removed from the waiting list");
+            throw new IllegalArgumentException("User has already been selected from the waiting list");
         }
     }
 
     @Exclude
     public void leaveWaitingList(User user){
-        removeFromEntrantList(user, 0);
+        if (entrantList.getChosen().contains(user)){
+            removeFromEntrantList(user, 0);
+        } else {
+            throw new IllegalArgumentException("User is not in the waiting list");
+        }
     }
 
     public int getMaxWaitingListCapacity() {

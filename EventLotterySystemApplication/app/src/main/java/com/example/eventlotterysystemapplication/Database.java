@@ -132,17 +132,17 @@ public class Database {
     public void addUser(User user, OnCompleteListener<Void> listener){
 
         // Sign user in anonymously so that Firestore security rules can be applied
-        firebaseAuth.signInAnonymously().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
+        firebaseAuth.signInAnonymously().addOnCompleteListener(authTask -> {
+            if (authTask.isSuccessful()) {
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user)
-                        .addOnCompleteListener(task2 -> {
-                            if (task.isSuccessful()) {
+                        .addOnCompleteListener(setTask -> {
+                            if (setTask.isSuccessful()) {
                                 user.setUserID(userDoc.getId());
                             }
-                            listener.onComplete(task2);
+                            listener.onComplete(setTask);
                         });
 
             } else {

@@ -24,6 +24,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,8 @@ public class DatabaseIntegrationTests {
     CollectionReference eventRef;
     CollectionReference notificationRef;
 
-    public DatabaseIntegrationTests() {
+    @Before
+    public void setup() {
         database = new Database();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -50,11 +52,11 @@ public class DatabaseIntegrationTests {
     }
 
     @Test
-    public void testAddUser1(){
+    public void testAddUser(){
 
-        User testUser1 = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
+        User user = new User("john@john.com", "19034623","John",  "deviceIDJohn1");
 
-        database.addUser(testUser1, task -> {});
+        database.addUser(user, task -> {});
 
         Query testAddUserQuery1 = userRef.whereEqualTo("deviceID", "deviceIDJohn1");
 
@@ -91,7 +93,7 @@ public class DatabaseIntegrationTests {
         database.addUser(user, task -> {});
         database.deleteUser(user);
 
-        userRef.whereEqualTo("deviceID1", user.getDeviceID()).get().addOnCompleteListener(task -> {
+        userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot snapshot = task.getResult();
                 assertEquals(0, snapshot.size());
@@ -140,7 +142,7 @@ public class DatabaseIntegrationTests {
         );
         database.deleteOrganizedEvents(user);
 
-        eventRef.whereEqualTo(user.getUserID(), user.getUserID()).get().addOnCompleteListener(task -> {
+        eventRef.whereEqualTo("OrganizerID", user.getUserID()).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot snapshot = task.getResult();
                 assertEquals(0, snapshot.size());

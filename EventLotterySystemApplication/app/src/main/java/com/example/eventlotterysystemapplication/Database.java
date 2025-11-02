@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -11,6 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Document;
@@ -233,8 +236,25 @@ public class Database {
 
     }
 
-    public void viewAvailableEvents() {
-        // TODO
+    /**
+     * Retrieves all events that the user can join
+     * @param listener a listener
+     */
+    public void viewAvailableEvents(OnCompleteListener<List<Event>> listener) {
+        Timestamp now = Timestamp.now();
+        Query query = eventRef.whereGreaterThanOrEqualTo("RegistrationEndDate", now)
+                .whereLessThanOrEqualTo("RegistrationStartDate", now);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> availableEvents = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    Event event = doc.toObject(Event.class);
+                    availableEvents.add(event);
+                }
+                Task<List<Event>> resultTask = Tasks.forResult(availableEvents);
+                listener.onComplete(resultTask);
+            }
+        });
     }
 
     /**

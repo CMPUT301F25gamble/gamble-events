@@ -16,6 +16,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -231,6 +232,7 @@ public class Database {
         return event[0];
 
     }
+
 
     /**
      * Given a user, delete all the events that the user organizes

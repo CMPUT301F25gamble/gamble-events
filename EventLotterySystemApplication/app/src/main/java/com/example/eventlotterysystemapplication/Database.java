@@ -13,6 +13,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
@@ -107,7 +108,12 @@ public class Database {
 
     }
 
-
+    /**
+     * Given some userID, this function returns the corresponding User object
+     * @param userID The userID to query against
+     * @return A user object corresponding with the userID
+     * @throws IllegalStateException If the userID does not exist in the database
+     */
     public User getUser(String userID) throws IllegalStateException{
         DocumentReference userDocRef = userRef.document(userID);
 
@@ -120,7 +126,7 @@ public class Database {
                     user[0].setUserID(userID);
                 }
             } else {
-                throw new IllegalStateException("No event exists with that eventID");
+                throw new IllegalStateException("No event exists with that userID");
             }
         });
 
@@ -276,10 +282,38 @@ public class Database {
      * @param event The event that we want to add to the database
      */
     public void addEvent(Event event){
-        DocumentReference eventDoc = eventRef.document();
-        eventDoc.set(event);
+        DocumentReference eventDocRef = eventRef.document();
+        eventDocRef.set(event);
 
-        event.setEventID(eventDoc.getId());
+        event.setEventID(eventDocRef.getId());
+        
+        CollectionReference registration = eventDocRef.collection("Registration");
+
+        for (User user : event.getEntrantList().getWaiting()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "waiting"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getChosen()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "chosen"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getCancelled()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "cancelled"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getFinalized()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "finalized"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        event.setEventID(eventDocRef.getId());
     }
 
     /**
@@ -287,8 +321,34 @@ public class Database {
      * @param event The event that we want to update in the database
      */
     public void updateEvent(Event event){
-        DocumentReference eventDoc = eventRef.document(event.getEventID());
-        eventDoc.set(event);
+        DocumentReference eventDocRef = eventRef.document(event.getEventID());
+        eventDocRef.set(event);
+
+        CollectionReference registration = eventDocRef.collection("Registration");
+
+        for (User user : event.getEntrantList().getWaiting()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "waiting"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getChosen()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "chosen"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getCancelled()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "cancelled"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
+
+        for (User user : event.getEntrantList().getFinalized()){
+            DocumentReference registrationDocRef = registration.document(user.getUserID());
+            registrationDocRef.set(new HashMap<String, String>().put("status", "finalized"));
+            registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
+        }
     }
 
     public void addNotificationLog(){

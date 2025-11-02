@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.IllegalFormatFlagsException;
 
 public class Event {
     // we need to add in some sort of eventID in here, not sure datatype and implementation
@@ -36,18 +35,18 @@ public class Event {
     Geolocation requirement
      */
 
-    public Event(String name, String description, String eventTime, String signupDeadline,
-                 String invitationAcceptanceDeadline, String [] eventTags, String organizerID, String place,
+    public Event(String name, String description, LocalDateTime eventTime, LocalDateTime signupDeadline,
+                 LocalDateTime invitationAcceptanceDeadline, ArrayList<String> eventTags, String organizerID, String place,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-            this.eventTime = LocalDateTime.parse(eventTime, formatter);
-            this.signupDeadline = LocalDateTime.parse(signupDeadline, formatter);
-            this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
         }
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+        this.eventTime = eventTime;
+        this.signupDeadline = signupDeadline;
+        this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+        this.eventTags = eventTags;
         this.place = place;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
@@ -75,50 +74,82 @@ public class Event {
         this.description = description;
     }
 
-    @Exclude
     public LocalDateTime getEventTime() {
         return eventTime;
     }
 
-    @Exclude
     public void setEventTime(LocalDateTime eventTime) {
         this.eventTime = eventTime;
     }
 
-//    public String getEventTime(){
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            return this.eventTime.format(formatter);
-//        } else {
-//            throw new IllegalStateException();
-//        }
-//    }
+    @Exclude
+    public String getEventTimeString(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return this.eventTime.format(formatter);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
 
     @Exclude
+    public void setEventTimeString(String dateString){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.eventTime = LocalDateTime.parse(dateString, formatter);
+        }
+    }
+
     public LocalDateTime getSignupDeadline() {
         return signupDeadline;
     }
 
-    @Exclude
     public void setSignupDeadline(LocalDateTime signupDeadline) {
         this.signupDeadline = signupDeadline;
     }
 
     @Exclude
+    public String getSignupDeadlineString(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return this.signupDeadline.format(formatter);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Exclude
+    public void setSignupDeadlineString(String dateString){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.signupDeadline = LocalDateTime.parse(dateString, formatter);
+        }
+    }
+
     public LocalDateTime getInvitationAcceptanceDeadline() {
         return invitationAcceptanceDeadline;
     }
 
-    @Exclude
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
     }
 
     @Exclude
+    public String getInvitationAcceptanceDeadlineString(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return this.invitationAcceptanceDeadline.format(formatter);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Exclude
+    public void setInvitationAcceptanceDeadlineString(String dateString){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.invitationAcceptanceDeadline = LocalDateTime.parse(dateString, formatter);
+        }
+    }
+
     public ArrayList<String> getEventTags() {
         return eventTags;
     }
 
-    @Exclude
     public void setEventTags(ArrayList<String> eventTags) {
         this.eventTags = eventTags;
     }
@@ -158,10 +189,12 @@ public class Event {
         this.place = place;
     }
 
+    @Exclude
     public EntrantList getEntrantList() {
         return entrantList;
     }
 
+    @Exclude
     public void setEntrantList(EntrantList entrantList) {
         this.entrantList = entrantList;
     }
@@ -182,10 +215,12 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
     }
 
+    @Exclude
     public String getEventID() {
         return eventID;
     }
 
+    @Exclude
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }

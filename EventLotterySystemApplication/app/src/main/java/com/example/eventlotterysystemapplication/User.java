@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
+import com.google.firebase.firestore.Exclude;
+
 /**
  * An instance of this class represents a single user
  */
@@ -55,10 +57,12 @@ public class User {
         isAdmin = admin;
     }
 
+    @Exclude
     public String getUserID() {
         return userID;
     }
 
+    @Exclude
     public void setUserID(String userID) {
         this.userID = userID;
     }

@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -12,7 +13,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Document;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
@@ -120,9 +125,10 @@ public class Database {
     /**
      * Given a user, add it to the database
      * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the add operation finishes
      * Logs an error if the database cannot add the user
      */
-    public void addUser(User user){
+    public void addUser(User user, OnCompleteListener<Void> listener){
 
         // Sign user in anonymously so that Firestore security rules can be applied
         firebaseAuth.signInAnonymously().addOnCompleteListener(task -> {
@@ -130,9 +136,13 @@ public class Database {
                 FirebaseUser authUser = firebaseAuth.getCurrentUser();
                 assert authUser != null;
                 DocumentReference userDoc = userRef.document(authUser.getUid());
-                userDoc.set(user);
-
-                user.setUserID(userDoc.getId());
+                userDoc.set(user)
+                        .addOnCompleteListener(task2 -> {
+                            if (task.isSuccessful()) {
+                                user.setUserID(userDoc.getId());
+                            }
+                            listener.onComplete(task2);
+                        });
 
             } else {
                 Log.e("Database", "Firebase signing in user failed");
@@ -149,7 +159,7 @@ public class Database {
         FirebaseUser authUser = auth.getCurrentUser();
         // Add user if the user does not exist
         if (authUser == null) {
-            addUser(user);
+            addUser(user, task -> {});
             return;
         }
         DocumentReference userDoc = userRef.document(authUser.getUid());
@@ -223,6 +233,22 @@ public class Database {
     }
 
     /**
+     * Given a user, delete all the events that the user organizes
+     * @param user The user profile
+     */
+    public void deleteOrganizedEvents(User user) {
+        String userID = user.getUserID();
+        eventRef.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
+                String organizerID = eventDoc.getString("Organizer ID");
+                if (userID.equals(organizerID)) {
+                    eventDoc.getReference().delete();
+                }
+            }
+        });
+    }
+
+    /**
      * Given some event object, we add its data to the database
      * @param event The event that we want to add to the database
      */
@@ -245,4 +271,5 @@ public class Database {
     public void addNotificationLog(){
         // TODO: implement this method
     }
+
 }

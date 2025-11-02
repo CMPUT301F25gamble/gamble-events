@@ -46,7 +46,7 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
 
         this.organizer = db.getUser(organizerID);
 

@@ -5,14 +5,11 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ContentActivity">
 
-    <!--NavHostFragment-->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/register_nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true">
-    </androidx.fragment.app.FragmentContainerView>
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

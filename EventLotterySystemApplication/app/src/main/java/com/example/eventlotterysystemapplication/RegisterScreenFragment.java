@@ -19,12 +19,5 @@ public class RegisterScreenFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // When the "Register" button is clicked, navigate to the FirstTimeUserInfoFragment
-        view.findViewById(R.id.oneTimeRegisterButton).setOnClickListener(v ->
-                NavHostFragment.findNavController(RegisterScreenFragment.this)
-                        .navigate(R.id.firstTimeUserInfoFragment2));
-
-
     }
 }

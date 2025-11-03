@@ -31,4 +31,5 @@
     <string name="bottom_menu_event_text">Event</string>
     <string name="bottom_menu_notifications_text">Notifications</string>
     <string name="bottom_menu_settings_text">Settings</string>
+    <string name="register_button_text">Register</string>
 </resources>

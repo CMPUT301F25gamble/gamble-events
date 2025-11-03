@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -7,15 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,16 +24,32 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialise the BottomNavigationView
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        // Todo: add code to determine if device has already registered
+        // Temporary variable to determine if device has already registered
+        boolean hasRegistered = true;
 
-        NavHostFragment navHostFragment = (NavHostFragment)
-                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (hasRegistered)  {
+            // Create intent
+            Intent goToContentIntent = new Intent(this, ContentActivity.class);
+            startActivity(goToContentIntent);
+        }
+//        else if (!hasRegistered) {
+//            // Create Intent
+//            Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
+//            startActivity(goToRegisterIntent);
+//        }
 
-        assert navHostFragment != null;
-        NavController navController = navHostFragment.getNavController();
 
-        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+//        // Initialise the BottomNavigationView
+//        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+//
+//        NavHostFragment navHostFragment = (NavHostFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+//
+//        assert navHostFragment != null;
+//        NavController navController = navHostFragment.getNavController();
+//
+//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
 
     }
 }

@@ -2,15 +2,15 @@
     <string name="app_name">EventLotterySystemApplication</string>
     <string name="username">[USERNAME]\'s Profile</string>
     <string name="back_button">Back</string>
-    <string name="name_header_text"><u>Name:</u></string>
+    <string name="name_prompt_text">Name:</string>
     <string name="placeholder_text">PlaceholderText</string>
     <string name="edit_button_text">Edit</string>
-    <string name="email_header_text"><u>Email:</u></string>
-    <string name="phone_header_text"><u>Phone Number:</u></string>
+    <string name="email_prompt_text">Email:</string>
+    <string name="phone_prompt_text">Phone Number:</string>
     <string name="show_profile_history_button_text">Show Profile History</string>
     <string name="delete_account_button_text">Delete Account</string>
-    <string name="register_new_account"><u>Register New Account</u></string>
-    <string name="deviceIdentityInfo">Users will be identified by their device, NOT by username and password</string>
+    <string name="register_account_header_text"><u>Register New Account</u></string>
+    <string name="device_identity_info">Users will be identified by their device, NOT by username and password</string>
     <string name="events_screen_text"><u>Events</u></string>
     <string name="events_screen_filter_button">Filter</string>
     <string name="add_event_button">Add Event</string>
@@ -23,8 +23,8 @@
 1. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n2. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n3. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 </string>
     <string name="important">*</string>
-    <string name="cancel">CANCEL</string>
-    <string name="confirm">CONFIRM</string>
+    <string name="cancel_text">CANCEL</string>
+    <string name="confirm_text">CONFIRM</string>
     <string name="event_detail_image_text">An image of the event</string>
     <string name="event_tags_text">Tags</string>
     <string name="bottom_menu_profile_text">Profile</string>

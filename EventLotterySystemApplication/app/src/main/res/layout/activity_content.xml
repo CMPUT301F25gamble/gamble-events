@@ -7,9 +7,23 @@
     android:layout_height="match_parent"
     tools:context=".ContentActivity">
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
+    <!--NavHostFragment-->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/content_nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/content_nav_graph">
+
+    </androidx.fragment.app.FragmentContainerView>
+
+    <!--For displaying menus/fragments-->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/content_fragment_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Content" />
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    </androidx.fragment.app.FragmentContainerView>
 </androidx.constraintlayout.widget.ConstraintLayout>

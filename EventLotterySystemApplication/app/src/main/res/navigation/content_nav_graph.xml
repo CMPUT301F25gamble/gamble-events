@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_nav_graph"
+    app:startDestination="@id/eventsUIFragment">
+
+    <fragment
+        android:id="@+id/eventsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" />
+    <fragment
+        android:id="@+id/notificationsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.NotificationsUIFragment"
+        android:label="fragment_notifications_ui"
+        tools:layout="@layout/fragment_notifications_ui" />
+    <fragment
+        android:id="@+id/profileUIFragment"
+        android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" />
+    <fragment
+        android:id="@+id/settingsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
+        android:label="fragment_settings_ui"
+        tools:layout="@layout/fragment_settings_ui" />
+</navigation>

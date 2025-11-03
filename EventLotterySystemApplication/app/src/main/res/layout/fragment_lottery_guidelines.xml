@@ -58,20 +58,20 @@
             android:layout_marginTop="40dp">
 
             <Button
-                android:id="@+id/cancelButton"
+                android:id="@+id/register_cancel_button"
                 android:layout_width="135dp"
                 android:layout_height="50dp"
-                android:text="@string/cancel"
+                android:text="@string/cancel_text"
                 android:textStyle="bold"
                 android:backgroundTint="@color/red"
                 android:textColor="@color/black"
                 android:layout_marginEnd="30dp" />
 
             <Button
-                android:id="@+id/confirmButton"
+                android:id="@+id/register_confirm_button"
                 android:layout_width="135dp"
                 android:layout_height="50dp"
-                android:text="@string/confirm"
+                android:text="@string/confirm_text"
                 android:textStyle="bold"
                 android:backgroundTint="@color/green"
                 android:textColor="@color/black" />

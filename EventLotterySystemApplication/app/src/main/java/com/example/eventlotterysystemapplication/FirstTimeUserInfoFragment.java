@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,42 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
+
+import java.util.Objects;
+
 public class FirstTimeUserInfoFragment extends Fragment {
+
+    private FragmentFirstTimeInputBinding binding;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_first_time_input, container, false);
+        binding = FragmentFirstTimeInputBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Add cancel button functionality
+        binding.registerCancelButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                    .navigate(R.id.action_first_time_user_info_fragment_to_register_screen_fragment);
+        });
+
+        binding.registerConfirmButton.setOnClickListener(v -> {
+            // Get user input from text fields
+            // Todo: add functionality for using these values to create a new account
+            String userName = binding.nameEditText.getText().toString();
+            String userEmail = binding.emailEditText.getText().toString();
+            String userPhone = binding.phoneEditText.getText().toString();
+
+            // Create new intent
+            Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
+            startActivity(nextActivityIntent);
+            Objects.requireNonNull(getActivity()).finish();
+        });
     }
 }

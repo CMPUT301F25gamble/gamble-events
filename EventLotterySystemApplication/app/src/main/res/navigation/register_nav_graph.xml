@@ -18,5 +18,9 @@
         android:id="@+id/first_time_user_info_fragment"
         android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
         android:label="fragment_first_time_input"
-        tools:layout="@layout/fragment_first_time_input" />
+        tools:layout="@layout/fragment_first_time_input" >
+        <action
+            android:id="@+id/action_first_time_user_info_fragment_to_register_screen_fragment"
+            app:destination="@id/register_screen_fragment" />
+    </fragment>
 </navigation>

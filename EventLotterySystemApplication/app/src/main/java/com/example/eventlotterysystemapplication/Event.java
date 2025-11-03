@@ -65,6 +65,29 @@ public class Event {
         db.addEvent(this);
     }
 
+    public Event(String name, String description, String eventTime, String signupDeadline,
+                 String invitationAcceptanceDeadline, String[] eventTags, String organizerID, String place,
+                 int maxWaitingListCapacity, int maxFinalListCapacity){
+        this.name = name;
+        this.description = description;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+            this.eventTime = LocalDateTime.parse(eventTime, formatter);
+            this.signupDeadline = LocalDateTime.parse(signupDeadline, formatter);
+            this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
+        }
+        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+        this.place = place;
+        this.maxFinalListCapacity = maxFinalListCapacity;
+        this.maxWaitingListCapacity = maxWaitingListCapacity;
+
+        Database db = new Database();
+
+        this.organizer = db.getUser(organizerID);
+
+        db.addEvent(this);
+    }
+
     public String getName() {
         return name;
     }

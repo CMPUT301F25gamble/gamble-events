@@ -2,20 +2,43 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/registerScreenFragment">
-
+    android:id="@+id/bottom_menu_nav_graph"
+    app:startDestination="@id/events_ui_fragment">
     <fragment
-        android:id="@+id/firstTimeUserInfoFragment2"
-        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
-        android:label="fragment_ft_input"
-        tools:layout="@layout/fragment_ft_input" />
+        android:id="@+id/events_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" />
+    <fragment
+        android:id="@+id/profile_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" />
+    <fragment
+        android:id="@+id/notifications_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.NotificationsUIFragment"
+        android:label="fragment_notifications_ui"
+        tools:layout="@layout/fragment_notifcations_ui" />
+    <fragment
+        android:id="@+id/settings_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
+        android:label="fragment_settings_ui"
+        tools:layout="@layout/fragment_settings_ui" />
     <fragment
         android:id="@+id/registerScreenFragment"
         android:name="com.example.eventlotterysystemapplication.RegisterScreenFragment"
         android:label="RegisterScreenFragment" >
         <action
-            android:id="@+id/action_registerScreenFragment_to_firstTimeUserInfoFragment2"
-            app:destination="@id/firstTimeUserInfoFragment2" />
+            android:id="@+id/action_registerScreenFragment_to_firstTimeUserInfoFragment"
+            app:destination="@id/firstTimeUserInfoFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/firstTimeUserInfoFragment"
+        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:label="fragment_ft_input"
+        tools:layout="@layout/fragment_ft_input" />
+    <fragment
+        android:id="@+id/eventScreen"
+        android:name="com.example.eventlotterysystemapplication.EventScreen"
+        android:label="EventScreen" />
 </navigation>

@@ -138,7 +138,7 @@ public class Database {
                 DocumentReference userDoc = userRef.document(authUser.getUid());
                 userDoc.set(user)
                         .addOnCompleteListener(task2 -> {
-                            if (task.isSuccessful()) {
+                            if (task2.isSuccessful()) {
                                 user.setUserID(userDoc.getId());
                             }
                             listener.onComplete(task2);

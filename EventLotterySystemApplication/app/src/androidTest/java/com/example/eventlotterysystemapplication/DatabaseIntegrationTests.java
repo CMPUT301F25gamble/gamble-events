@@ -12,6 +12,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.util.Log;
+
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -104,14 +106,16 @@ public class DatabaseIntegrationTests {
         User user = new User("wizard@wizard.com", "676767","Wizard",  "deviceID2");
 
         CountDownLatch latch = new CountDownLatch(1);
-        database.addUser(user, task -> {latch.countDown();});
+        database.addUser(user, task -> {
+            latch.countDown();
+            Log.d("User ID: ", user.getUserID());
+        });
+
         try {
             latch.await(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException("Test interrupted while waiting for async task", e);
         }
-
-        assertNotNull(user.getUserID());
 
         Event event1 = new Event(
                 "Wizard training",
@@ -146,5 +150,7 @@ public class DatabaseIntegrationTests {
                 assertEquals(0, snapshot.size());
             }
         });
+
+        assertNotNull(user.getUserID());
     }
 }

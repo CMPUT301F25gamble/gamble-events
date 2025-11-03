@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication;
 import com.google.firebase.firestore.Exclude;
 
 import java.util.Objects;
+import android.provider.Settings;
 
 /**
  * An instance of this class represents a single user
@@ -60,6 +61,10 @@ public class User{
         return deviceID;
     }
 
+    public void setDeviceID(String deviceID) {
+        this.deviceID = deviceID;
+    }
+
     public boolean isAdmin() {
         return isAdmin;
     }
@@ -97,5 +102,26 @@ public class User{
             User user2 = (User) o;
             return Objects.equals(this.userID, user2.userID);
         }
+    /**
+     * Modify one or more user profile info
+     * @param user The user profile
+     * @param name The user name
+     * @param email The user email
+     * @param phoneNumber The user phone number
+     */
+    public void updateUserInfo(User user, String name, String email, String phoneNumber) {
+        if (name != null && !name.isEmpty()) {
+            user.setName(name);
+        }
+        if (email != null && !email.isEmpty()) {
+            user.setEmail(email);
+        }
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            user.setPhoneNumber(phoneNumber);
+        }
+
+        // Will need to comment these out when running UserUnitTest
+        Database database = new Database();
+        database.modifyUser(user);
     }
 }

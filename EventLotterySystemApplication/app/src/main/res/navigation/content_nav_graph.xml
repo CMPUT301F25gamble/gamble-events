@@ -16,7 +16,7 @@
         android:label="fragment_notifications_ui"
         tools:layout="@layout/fragment_notifications_ui" />
     <fragment
-        android:id="@+id/notifications_ui_fragment"
+        android:id="@+id/profile_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
         android:label="fragment_profile_ui"
         tools:layout="@layout/fragment_profile_ui" />

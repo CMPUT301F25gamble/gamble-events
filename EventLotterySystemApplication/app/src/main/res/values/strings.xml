@@ -34,4 +34,7 @@
     <string name="register_button_text">Register</string>
     <string name="profile_history_button_text">Show Profile History</string>
     <string name="delete_profile_button_text">Delete Account</string>
+    <string name="name_edit_button_content_description">Edit Name</string>
+    <string name="email_edit_button_content_description">Edit Email</string>
+    <string name="edit_phone_number_content_description">Edit Phone Number</string>
 </resources>

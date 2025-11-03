@@ -33,7 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_header" />
 
     <TextView
-        android:id="@+id/profile_emailer_header"
+        android:id="@+id/profile_email_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_emailer_header" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_email_header" />
 
     <TextView
         android:id="@+id/profile_phone"
@@ -107,9 +107,10 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_phone_header" />
 
     <ImageButton
-        android:id="@+id/profile_name_edit_button"
+        android:id="@+id/name_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/name_edit_button_content_description"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/profile_name"
@@ -119,11 +120,12 @@
         app:layout_constraintTop_toTopOf="@+id/profile_name" />
 
     <ImageButton
-        android:id="@+id/profile_email_edit_button"
+        android:id="@+id/email_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/email_edit_button_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/profile_email"
         app:layout_constraintEnd_toEndOf="@+id/profile_email"
         app:layout_constraintHorizontal_bias="1.0"
@@ -131,11 +133,12 @@
         app:layout_constraintTop_toTopOf="@+id/profile_email" />
 
     <ImageButton
-        android:id="@+id/profile_phone_edit_button"
+        android:id="@+id/phone_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/edit_phone_number_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/profile_phone"
         app:layout_constraintEnd_toEndOf="@+id/profile_phone"
         app:layout_constraintHorizontal_bias="1.0"

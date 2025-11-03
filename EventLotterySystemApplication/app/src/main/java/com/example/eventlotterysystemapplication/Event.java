@@ -1,8 +1,13 @@
 package com.example.eventlotterysystemapplication;
 
+import android.graphics.Bitmap;
 import android.os.Build;
+import android.widget.ImageView;
 
 import com.google.firebase.firestore.Exclude;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +30,8 @@ public class Event {
     private int maxFinalListCapacity;
 
     private String eventID;
+
+    private Bitmap QRCodeBitmap;
 
     /*
     Include code to have some attributes that points to an event poster, I wouldn't know how to
@@ -351,6 +358,21 @@ public class Event {
 
         Database db = new Database();
         db.updateEvent(this);
+    }
+
+    @Exclude
+    public void generateQRCode(String data){
+        try {
+            QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
+        } catch (WriterException e){
+            e.printStackTrace();
+        }
+    }
+
+    public ImageView QRCodeImageView(){
+        ImageView QRCodeImageView = null;
+        QRCodeImageView.setImageBitmap(QRCodeBitmap);
+        return QRCodeImageView;
     }
 
     @Exclude

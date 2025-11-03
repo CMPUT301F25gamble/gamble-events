@@ -117,7 +117,7 @@ public class Database {
                     user[0].setUserID(userID);
                 }
             } else {
-                Log.e("Database","No event exists with that userID");
+                Log.e("Database","No user exists with that userID");
             }
         });
 

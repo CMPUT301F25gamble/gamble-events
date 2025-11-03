@@ -29,12 +29,13 @@ public class FirstTimeUserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Add cancel button functionality
+        // Cancel button to go back to previous register screen
         binding.registerCancelButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
                     .navigate(R.id.action_first_time_user_info_fragment_to_register_screen_fragment);
         });
 
+        // Confirm button to get user inputs and move to content activity
         binding.registerConfirmButton.setOnClickListener(v -> {
             // Get user input from text fields
             // Todo: add functionality for using these values to create a new account
@@ -45,7 +46,7 @@ public class FirstTimeUserInfoFragment extends Fragment {
             // Create new intent
             Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
             startActivity(nextActivityIntent);
-            Objects.requireNonNull(getActivity()).finish();
+            Objects.requireNonNull(getActivity()).finish();  // finish the activity to free memory
         });
     }
 }

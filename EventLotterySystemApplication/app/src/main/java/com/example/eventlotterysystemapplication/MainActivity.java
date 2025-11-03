@@ -38,18 +38,5 @@ public class MainActivity extends AppCompatActivity {
             Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
             startActivity(goToRegisterIntent);
         }
-
-
-//        // Initialise the BottomNavigationView
-//        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-//
-//        NavHostFragment navHostFragment = (NavHostFragment)
-//                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-//
-//        assert navHostFragment != null;
-//        NavController navController = navHostFragment.getNavController();
-//
-//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
-
     }
 }

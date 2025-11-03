@@ -26,18 +26,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Todo: add code to determine if device has already registered
         // Temporary variable to determine if device has already registered
-        boolean hasRegistered = true;
+        boolean hasRegistered = false;
 
         if (hasRegistered)  {
             // Create intent
             Intent goToContentIntent = new Intent(this, ContentActivity.class);
             startActivity(goToContentIntent);
         }
-//        else if (!hasRegistered) {
-//            // Create Intent
-//            Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
-//            startActivity(goToRegisterIntent);
-//        }
+        else if (!hasRegistered) {
+            // Create Intent
+            Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
+            startActivity(goToRegisterIntent);
+        }
 
 
 //        // Initialise the BottomNavigationView

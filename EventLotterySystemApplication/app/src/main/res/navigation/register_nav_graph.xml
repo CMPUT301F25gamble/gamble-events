@@ -3,14 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/register_nav_graph"
-    app:startDestination="@id/registerScreenFragment">
+    app:startDestination="@id/register_screen_fragment">
 
     <fragment
-        android:id="@+id/registerScreenFragment"
+        android:id="@+id/register_screen_fragment"
         android:name="com.example.eventlotterysystemapplication.RegisterScreenFragment"
-        android:label="RegisterScreenFragment" />
+        android:label="fragment_register_screen"
+        tools:layout="@layout/fragment_register_screen">
+        <action
+            android:id="@+id/action_registerScreenFragment_to_firstTimeUserInfoFragment2"
+            app:destination="@id/first_time_user_info_fragment" />
+    </fragment>
     <fragment
-        android:id="@+id/firstTimeUserInfoFragment"
+        android:id="@+id/first_time_user_info_fragment"
         android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
         android:label="fragment_first_time_input"
         tools:layout="@layout/fragment_first_time_input" />

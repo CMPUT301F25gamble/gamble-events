@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -23,5 +25,16 @@ public class RegisterActivity extends AppCompatActivity {
 
             return insets;
         });
+
+        // get HavHostFragment
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.register_nav_host_fragment);
+
+        assert navHostFragment != null;
+
+        // get NavController
+        NavController navController = navHostFragment.getNavController();
+
+
     }
 }

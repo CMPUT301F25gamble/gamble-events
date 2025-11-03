@@ -22,7 +22,7 @@ public class EventScreen extends Fragment {
 
         // When the "CANCEL" button is clicked, navigate back to the register screen
         view.findViewById(R.id.cancelButton).setOnClickListener(v ->
-                NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                NavHostFragment.findNavController(EventScreen.this)
                         .navigate(R.id.registerScreenFragment));
 
 

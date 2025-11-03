@@ -8,6 +8,13 @@ public class EntrantList {
     private ArrayList<User> cancelled;
     private ArrayList<User> finalized;
 
+    public EntrantList(){
+        waiting = new ArrayList<>();
+        chosen = new ArrayList<>();
+        cancelled = new ArrayList<>();
+        finalized = new ArrayList<>();
+    }
+
     public ArrayList<User> getWaiting() {
         return waiting;
     }
@@ -38,5 +45,35 @@ public class EntrantList {
 
     public void setFinalized(ArrayList<User> finalized) {
         this.finalized = finalized;
+    }
+
+    public void addToWaiting(User user){
+        this.waiting.add(user);
+    }
+
+    public void addToChosen(User user){
+        this.chosen.add(user);
+    }
+
+    public void addToCancelled(User user){
+        this.cancelled.add(user);
+    }
+
+    public void addToFinalized(User user){
+        this.finalized.add(user);
+    }
+
+    public void removeFromWaiting(User user){
+        this.waiting.remove(user);
+    }
+
+    public void removeFromChosen(User user){
+        this.chosen.remove(user);
+    }
+    public void removeFromCancelled(User user){
+        this.cancelled.remove(user);
+    }
+    public void removeFromFinalized(User user){
+        this.finalized.remove(user);
     }
 }

@@ -10,16 +10,21 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.databinding.ActivityRegisterBinding;
+
 public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityRegisterBinding binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_register);
+        setContentView(binding.getRoot());
 
         // R.id.register_nav_host_fragment because otherwise it causes a crash
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.register_nav_host_fragment), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                findViewById(binding.registerNavHostFragment.getId()),
+                (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 

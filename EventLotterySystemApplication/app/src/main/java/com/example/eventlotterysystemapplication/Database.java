@@ -60,7 +60,7 @@ public class Database {
                             throw new IllegalStateException("Duplicate DeviceID found in database");
                         }
                     } else {
-                        throw new IllegalStateException("Query failed");
+                        Log.e("Database","Query failed");
                     }
                 }
         );
@@ -90,7 +90,7 @@ public class Database {
                         QuerySnapshot querySnapshot = task.getResult();
                         queriedUser[0] = querySnapshot.toObjects(User.class).get(0);
                     } else {
-                        throw new IllegalStateException("Query failed");
+                        Log.e("Database","Query failed");
                     }
                 }
         );
@@ -117,7 +117,7 @@ public class Database {
                     user[0].setUserID(userID);
                 }
             } else {
-                throw new IllegalStateException("No event exists with that userID");
+                Log.e("Database","No event exists with that userID");
             }
         });
 
@@ -340,6 +340,8 @@ public class Database {
             registrationDocRef.set(new HashMap<String, String>().put("status", "finalized"));
             registrationDocRef.set(new HashMap<String, String>().put("organizerID", event.getOrganizerID()));
         }
+
+        event.setEventID(eventDocRef.getId());
     }
 
     public void deleteEvent(Event event){

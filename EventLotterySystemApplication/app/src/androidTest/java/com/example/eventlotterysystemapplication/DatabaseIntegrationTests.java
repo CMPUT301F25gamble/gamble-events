@@ -37,7 +37,7 @@ public class DatabaseIntegrationTests {
     CollectionReference notificationRef;
 
     public DatabaseIntegrationTests() {
-        database = Database.getDatabase();
+        database = new Database();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         userRef = db.collection("User");

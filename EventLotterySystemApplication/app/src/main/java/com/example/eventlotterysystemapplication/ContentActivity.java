@@ -22,8 +22,7 @@ public class ContentActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(
-                findViewById(binding.contentNavHostFragment.getId()),
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

@@ -22,8 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // R.id.register_nav_host_fragment because otherwise it causes a crash
-        ViewCompat.setOnApplyWindowInsetsListener(
-                findViewById(binding.registerNavHostFragment.getId()),
+        ViewCompat.setOnApplyWindowInsetsListener(binding.registerNavHostFragment,
                 (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

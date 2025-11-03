@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         // Turn off the decor fitting system windows, which allows us to handle insets)
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(binding.main.getId()), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             Intent goToContentIntent = new Intent(this, ContentActivity.class);
             startActivity(goToContentIntent);
         }
-        else if (!hasRegistered) {
+        else {
             // Create Intent
             Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
             startActivity(goToRegisterIntent);

@@ -95,13 +95,15 @@ public class User{
     }
 
     @Override
-    public boolean equals(Object o){
-        if (!(o instanceof User)){
+    public boolean equals(Object o) {
+        if (!(o instanceof User)) {
             return false;
         } else {
             User user2 = (User) o;
             return Objects.equals(this.userID, user2.userID);
         }
+    }
+
     /**
      * Modify one or more user profile info
      * @param user The user profile

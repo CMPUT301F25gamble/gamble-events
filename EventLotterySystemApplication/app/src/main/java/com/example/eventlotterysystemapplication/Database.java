@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
 
-    private static Database database = null;
-
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
@@ -34,13 +32,6 @@ public class Database {
         this.eventRef = firestore.collection("Event");
         this.notificationRef = firestore.collection("Notification");
         this.firebaseAuth = firebaseAuth;
-    }
-
-    public static Database getDatabase(){
-        if (database == null){
-            database = new Database();
-        }
-        return database;
     }
 
 

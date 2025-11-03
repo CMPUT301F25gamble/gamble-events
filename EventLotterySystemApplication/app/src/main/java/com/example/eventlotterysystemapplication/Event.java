@@ -51,7 +51,7 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
 
         this.organizer = db.getUser(organizerID);
 
@@ -65,7 +65,7 @@ public class Event {
     public void setName(String name) {
         this.name = name;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -76,7 +76,7 @@ public class Event {
     public void setDescription(String description) {
         this.description = description;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -87,7 +87,7 @@ public class Event {
     public void setEventTime(LocalDateTime eventTime) {
         this.eventTime = eventTime;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -106,7 +106,7 @@ public class Event {
             this.eventTime = LocalDateTime.parse(dateString, formatter);
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -117,7 +117,7 @@ public class Event {
     public void setSignupDeadline(LocalDateTime signupDeadline) {
         this.signupDeadline = signupDeadline;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -136,7 +136,7 @@ public class Event {
             this.signupDeadline = LocalDateTime.parse(dateString, formatter);
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -147,7 +147,7 @@ public class Event {
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -166,7 +166,7 @@ public class Event {
             this.invitationAcceptanceDeadline = LocalDateTime.parse(dateString, formatter);
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -177,21 +177,21 @@ public class Event {
     public void setEventTags(ArrayList<String> eventTags) {
         this.eventTags = eventTags;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
     public void addEventTag(String tag){
         this.eventTags.add(tag);
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -204,7 +204,7 @@ public class Event {
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -213,7 +213,7 @@ public class Event {
     }
 
     public void setOrganizerID(String organizerID){
-        Database db = Database.getDatabase();
+        Database db = new Database();
         this.organizer = db.getUser(organizerID);
 
         db.updateEvent(this);
@@ -226,7 +226,7 @@ public class Event {
     public void setPlace(String place) {
         this.place = place;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -239,7 +239,7 @@ public class Event {
     public void setEntrantList(EntrantList entrantList) {
         this.entrantList = entrantList;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -261,7 +261,7 @@ public class Event {
                 throw new IllegalArgumentException("List number out of range");
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -283,7 +283,7 @@ public class Event {
                 throw new IllegalArgumentException("List number out of range");
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -305,7 +305,7 @@ public class Event {
                 throw new IllegalArgumentException("List number out of range");
         }
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -338,7 +338,7 @@ public class Event {
     public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 
@@ -349,7 +349,7 @@ public class Event {
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
         this.maxFinalListCapacity = maxFinalListCapacity;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.updateEvent(this);
     }
 

@@ -30,7 +30,7 @@ public class User{
     public void setName(String name) {
         this.name = name;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.modifyUser(this);
     }
 
@@ -41,7 +41,7 @@ public class User{
     public void setEmail(String email) {
         this.email = email;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.modifyUser(this);
     }
 
@@ -52,7 +52,7 @@ public class User{
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.modifyUser(this);
     }
 
@@ -67,7 +67,7 @@ public class User{
     public void setAdmin(boolean admin) {
         isAdmin = admin;
 
-        Database db = Database.getDatabase();
+        Database db = new Database();
         db.modifyUser(this);
     }
 

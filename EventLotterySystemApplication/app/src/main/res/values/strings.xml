@@ -27,4 +27,8 @@
     <string name="confirm">CONFIRM</string>
     <string name="event_detail_image_text">An image of the event</string>
     <string name="event_tags_text">Tags</string>
+    <string name="bottom_menu_profile_text">Profile</string>
+    <string name="bottom_menu_event_text">Event</string>
+    <string name="bottom_menu_notifications_text">Notifications</string>
+    <string name="bottom_menu_settings_text">Settings</string>
 </resources>

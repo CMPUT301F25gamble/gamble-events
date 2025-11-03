@@ -13,7 +13,7 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="true">
-    </androidx.fragment.app.FragmentContainerView>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/register_nav_graph" /> <!-- This will now work -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

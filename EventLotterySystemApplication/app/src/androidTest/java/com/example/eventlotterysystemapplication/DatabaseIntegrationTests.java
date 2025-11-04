@@ -16,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -218,6 +219,41 @@ public class DatabaseIntegrationTests {
         CountDownLatch deleteUserLatch = new CountDownLatch(1);
         database.deleteUser(user, task -> deleteUserLatch.countDown());
         deleteUserLatch.await(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testUpdateUser() throws InterruptedException{
+        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID4");
+
+        CountDownLatch addUserLatch = new CountDownLatch(1);
+        database.addUser(user, task -> addUserLatch.countDown());
+        addUserLatch.await(10, TimeUnit.SECONDS);
+
+        DocumentReference userDocRef = userRef.document(user.getUserID());
+        createdUserIds.add(user.getUserID());
+
+        CountDownLatch updateUserLatch = new CountDownLatch(1);
+        user.updateUserInfo(user, "Roberto", null, null);
+        updateUserLatch.countDown();
+        updateUserLatch.await(10, TimeUnit.SECONDS);
+
+        CountDownLatch latch = new CountDownLatch(1);
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Checks values in the Firebase document
+                assertEquals("Roberto", documentSnapshot.getString("name"));
+                assertEquals("deviceID4", documentSnapshot.getString("deviceID"));
+                assertEquals("wizard@wizard.com", documentSnapshot.getString("email"));
+                assertEquals("676767", documentSnapshot.getString("phoneNumber"));
+                // Checks values in the user object
+                assertEquals("Roberto", user.getName());
+                assertEquals("deviceID4", user.getDeviceID());
+                assertEquals("wizard@wizard.com", user.getEmail());
+                assertEquals("676767", user.getPhoneNumber());
+            }
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
     }
 
     @After

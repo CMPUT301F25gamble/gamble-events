@@ -383,6 +383,14 @@ public class Event {
         db.updateEvent(this);
     }
 
+    public Bitmap getQRCodeBitmap() {
+        return QRCodeBitmap;
+    }
+
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
+    }
+
     @Exclude
     public void generateQRCode(String data){
         try {

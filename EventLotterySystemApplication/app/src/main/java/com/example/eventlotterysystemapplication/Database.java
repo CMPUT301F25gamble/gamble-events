@@ -370,6 +370,7 @@ public class Database {
 
     public void deleteEvent(Event event){
 
+
     }
 
     public void addNotificationLog(){

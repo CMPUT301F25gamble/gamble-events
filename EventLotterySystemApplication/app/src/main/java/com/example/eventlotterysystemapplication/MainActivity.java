@@ -17,12 +17,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
         Intent intent = getIntent();
-        String action = intent.getAction();
         Uri data = intent.getData();
+        String action = intent.getAction();
         assert action != null;
-        Log.d("Action", action);
+        if (data != null){
+            String eventID = data.getLastPathSegment();
+            // TODO First check that the deviceID and user are registered in the database, and only
+            //  then do we open up events page with eventID
+        } else {
+            setContentView(R.layout.activity_main);
+        }
     }
 }

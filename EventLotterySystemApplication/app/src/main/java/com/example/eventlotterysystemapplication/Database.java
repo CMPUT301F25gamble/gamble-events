@@ -363,38 +363,43 @@ public class Database {
 
     /**
      * Retrieves all events that the user can join
+     * @param user The user profile
      * @param listener An OnCompleteListener for callback
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void viewAvailableEvents(OnCompleteListener<List<Event>> listener) {
+    public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
         Timestamp now = Timestamp.now();
         // Queries events that are open for registration
-        Query query = eventRef.whereLessThanOrEqualTo("RegistrationStartDate", now)
-                .whereGreaterThanOrEqualTo("RegistrationEndDate", now);
+        Query query = eventRef.whereGreaterThanOrEqualTo("signUpDeadline", now);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                Log.d("Database", "Fetch successful");
                 List<Event> availableEvents = new ArrayList<>();
                 List<Task<QuerySnapshot>> subTasks = new ArrayList<>();
                 for (QueryDocumentSnapshot doc : task.getResult()) {
-                    DocumentReference eventRef = doc.getReference();
-                    CollectionReference regDocRef = eventRef.collection("Registration");
-                    double waitListCapacity = doc.getDouble("maxWaitingListCapacity");
-                    // Checks if wait list is not full
-                    Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
-                        int count = regCount.size();
-                        if (count < waitListCapacity) {
-                            Event event = doc.toObject(Event.class);
-                            event.setEventID(doc.getId());
-                            event.parseTimestamps();
-                            availableEvents.add(event);
-                        }
-                    });
-                    subTasks.add(regTask);
+                    if (!doc.getString("organizerID").equals(user.getUserID())) {
+                        DocumentReference eventRef = doc.getReference();
+                        CollectionReference regDocRef = eventRef.collection("Registration");
+                        double waitListCapacity = doc.getDouble("maxWaitingListCapacity");
+                        // Checks if wait list is not full
+                        Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
+                            int count = regCount.size();
+                            if (count < waitListCapacity) {
+                                Event event = doc.toObject(Event.class);
+                                event.setEventID(doc.getId());
+                                event.parseTimestamps();
+                                availableEvents.add(event);
+                            }
+                        });
+                        subTasks.add(regTask);
+                    }
                 }
                 Tasks.whenAllComplete(subTasks).addOnCompleteListener(done -> {
                     listener.onComplete(Tasks.forResult(availableEvents));
                 });
+            } else {
+                Log.e("Database", "Fetch failed");
             }
         });
     }

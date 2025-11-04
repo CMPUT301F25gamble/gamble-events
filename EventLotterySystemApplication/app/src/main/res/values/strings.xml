@@ -27,4 +27,6 @@
     <string name="confirm">CONFIRM</string>
     <string name="event_detail_image_text">An image of the event</string>
     <string name="event_tags_text">Tags</string>
+    <string name="event_details_title_text">Event Details</string>
+    <string name="join_waitlist_text">Join Waitlist</string>
 </resources>

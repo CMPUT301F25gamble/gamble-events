@@ -7,6 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -149,7 +151,11 @@ public class DatabaseUnitTest {
         }).when(mockRegDeleteTask).addOnSuccessListener(any(OnSuccessListener.class));
 
 
-        database.deleteUser(user);
+        database.deleteUser(user, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Deletion failed");
+            }
+        });
 
         //Verifies deletion
         verify(docRef, times(1)).delete();
@@ -260,7 +266,11 @@ public class DatabaseUnitTest {
         }).when(mockRegDeleteTask2).addOnSuccessListener(any());
 
 
-        database.deleteUser(user);
+        database.deleteUser(user, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Deletion failed");
+            }
+        });
 
         //Verifies deletions
         verify(docRef, times(1)).delete();

@@ -256,6 +256,26 @@ public class DatabaseIntegrationTests {
         latch.await(5, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testViewAvailableEvents() throws InterruptedException{
+        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID5");
+
+        CountDownLatch addUserLatch = new CountDownLatch(1);
+        database.addUser(user, task -> addUserLatch.countDown());
+        addUserLatch.await(10, TimeUnit.SECONDS);
+        createdUserIds.add(user.getUserID());
+
+        CountDownLatch latch = new CountDownLatch(1);
+        database.viewAvailableEvents(user, task ->{
+            if (task.isSuccessful()) {
+                List<Event> events = task.getResult();
+                assertEquals(2, events.size()); // Skiing and Wizard Training
+            }
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
+    }
+
     @After
     public void tearDown() throws InterruptedException {
         // Deletes any users and events created during tests

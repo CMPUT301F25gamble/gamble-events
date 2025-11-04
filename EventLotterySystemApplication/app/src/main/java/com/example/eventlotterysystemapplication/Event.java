@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.widget.ImageView;
@@ -392,8 +394,9 @@ public class Event {
     }
 
     @Exclude
-    public void generateQRCode(String data){
+    public void generateQRCode(){
         try {
+            String data = "cmput301gamblers://gamble/"+this.eventID;
             QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
         } catch (WriterException e){
             e.printStackTrace();

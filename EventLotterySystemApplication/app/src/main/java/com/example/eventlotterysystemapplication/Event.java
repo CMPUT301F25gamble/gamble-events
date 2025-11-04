@@ -1,9 +1,8 @@
 package com.example.eventlotterysystemapplication;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.firebase.firestore.Exclude;
@@ -31,14 +30,11 @@ public class Event {
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
 
-    private String eventID;
-
     private Bitmap QRCodeBitmap;
 
-    /*
-    Include code to have some attributes that points to an event poster, I wouldn't know how to
-    declare attributes of that type yet
-     */
+    private ArrayList<Bitmap> posters;
+
+    private String eventID;
 
     /*
     Geolocation requirement
@@ -46,7 +42,7 @@ public class Event {
 
     public Event(String name, String description, LocalDateTime eventTime, LocalDateTime signupDeadline,
                  LocalDateTime invitationAcceptanceDeadline, ArrayList<String> eventTags, String organizerID, String place,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, ArrayList<Bitmap> posters){
         this.name = name;
         this.description = description;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -59,6 +55,7 @@ public class Event {
         this.place = place;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.posters = posters;
 
         Database db = new Database();
 
@@ -385,7 +382,35 @@ public class Event {
         db.updateEvent(this);
     }
 
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+    }
+
+    @Exclude
+    public void addPoster(Bitmap poster){
+        posters.add(poster);
+    }
+
+    public void deletePoster(Bitmap poster){
+        posters.remove(poster);
+    }
+
+    public void deletePoster(int position) {
+        if (0 <= position && position < posters.size()) {
+            posters.remove(position);
+        } else {
+            Log.e("Poster Removal", "Index out of bounds");
+        }
+    }
+
     public Bitmap getQRCodeBitmap() {
+        if (QRCodeBitmap == null){
+            generateQRCode();
+        }
         return QRCodeBitmap;
     }
 
@@ -401,14 +426,6 @@ public class Event {
         } catch (WriterException e){
             e.printStackTrace();
         }
-    }
-
-    public ImageView QRCodeImageView(){
-        generateQRCode();
-
-        ImageView QRCodeImageView = null;
-        QRCodeImageView.setImageBitmap(QRCodeBitmap);
-        return QRCodeImageView;
     }
 
     @Exclude

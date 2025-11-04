@@ -404,6 +404,8 @@ public class Event {
     }
 
     public ImageView QRCodeImageView(){
+        generateQRCode();
+
         ImageView QRCodeImageView = null;
         QRCodeImageView.setImageBitmap(QRCodeBitmap);
         return QRCodeImageView;

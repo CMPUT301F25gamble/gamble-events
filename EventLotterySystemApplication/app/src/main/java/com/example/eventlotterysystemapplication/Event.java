@@ -5,86 +5,145 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.RequiresApi;
+
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Event {
-    // we need to add in some sort of eventID in here, not sure datatype and implementation
     private String name;
     private String description;
-    private LocalDateTime eventTime;
-    private LocalDateTime signupDeadline;
-    private LocalDateTime invitationAcceptanceDeadline;
     private static DateTimeFormatter formatter;
     private ArrayList<String> eventTags;
     private User organizer;
+    private String organizerID;
     private String place;
     private EntrantList entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
 
+    private String eventID;
+
+    // Firestore timestamp format
+    private Timestamp eventTimeTS;
+
+    private Timestamp signupDeadlineTS;
+
+
+    private Timestamp invitationAcceptanceDeadlineTS;
+
+
+    // Should not serialize LocalDataTime objects
+    private transient LocalDateTime eventTime;
+    private transient LocalDateTime signupDeadline;
+    private transient LocalDateTime invitationAcceptanceDeadline;
+
+
     private Bitmap QRCodeBitmap;
 
     private ArrayList<Bitmap> posters;
 
-    private String eventID;
+    /*
+    Include code to have some attributes that points to an event poster, I wouldn't know how to
+    declare attributes of that type yet
+     */
 
     /*
     Geolocation requirement
      */
 
+
+    public Event() {
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, LocalDateTime eventTime, LocalDateTime signupDeadline,
                  LocalDateTime invitationAcceptanceDeadline, ArrayList<String> eventTags, String organizerID, String place,
                  int maxWaitingListCapacity, int maxFinalListCapacity, ArrayList<Bitmap> posters){
         this.name = name;
         this.description = description;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        }
+
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventTime = eventTime;
         this.signupDeadline = signupDeadline;
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+        // Convert LocalDateTime to Timestamp for Firestore
+        this.eventTimeTS = new Timestamp(eventTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.signupDeadlineTS = new Timestamp(signupDeadline.atZone(ZoneId.systemDefault()).toInstant());
+        this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+
         this.eventTags = eventTags;
+        this.organizerID = organizerID;
         this.place = place;
+        this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
         this.posters = posters;
 
         Database db = new Database();
-
-        this.organizer = db.getUser(organizerID);
-
-        db.addEvent(this);
+        db.getUser(organizerID, task -> {
+            if (task.isSuccessful()) {
+                this.organizer = task.getResult();
+            } else {
+                Log.e("Database", "Cannot get user info");
+            }
+        });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String eventTime, String signupDeadline,
                  String invitationAcceptanceDeadline, String[] eventTags, String organizerID, String place,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
+
         this.name = name;
         this.description = description;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-            this.eventTime = LocalDateTime.parse(eventTime, formatter);
-            this.signupDeadline = LocalDateTime.parse(signupDeadline, formatter);
-            this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-        }
+
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        this.eventTime = LocalDateTime.parse(eventTime, formatter);
+        this.signupDeadline = LocalDateTime.parse(signupDeadline, formatter);
+        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
+
+        this.eventTimeTS = new Timestamp(this.eventTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.signupDeadlineTS = new Timestamp(this.signupDeadline.atZone(ZoneId.systemDefault()).toInstant());
+        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+        this.organizerID = organizerID;
         this.place = place;
+        this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
         Database db = new Database();
+        db.getUser(organizerID, task -> {
+            if (task.isSuccessful()) {
+                this.organizer = task.getResult();
+            } else {
+                Log.e("Database", "Cannot get user info");
+            }
+        });
 
-        this.organizer = db.getUser(organizerID);
+    }
 
-        db.addEvent(this);
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void parseTimestamps() {
+        if (eventTimeTS != null)
+            eventTime = eventTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (signupDeadlineTS != null)
+            signupDeadline = signupDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (invitationAcceptanceDeadlineTS != null)
+            invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     public String getName() {
@@ -95,7 +154,11 @@ public class Event {
         this.name = name;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public String getDescription() {
@@ -106,18 +169,28 @@ public class Event {
         this.description = description;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
+    @Exclude
     public LocalDateTime getEventTime() {
         return eventTime;
     }
 
+    @Exclude
     public void setEventTime(LocalDateTime eventTime) {
         this.eventTime = eventTime;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -136,18 +209,40 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
+
+    @PropertyName("eventTime")
+    public Timestamp getEventTimeTS() {
+        return eventTimeTS;
+    }
+
+
+    @PropertyName("eventTime")
+    public void setEventTimeTS(Timestamp eventTimeTS) {
+        this.eventTimeTS = eventTimeTS;
+    }
+
+    @Exclude
     public LocalDateTime getSignupDeadline() {
         return signupDeadline;
     }
 
+    @Exclude
     public void setSignupDeadline(LocalDateTime signupDeadline) {
         this.signupDeadline = signupDeadline;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -166,18 +261,40 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
+
+    @PropertyName("signUpDeadline")
+    public Timestamp getSignupDeadlineTS() {
+        return signupDeadlineTS;
+    }
+
+
+    @PropertyName("signUpDeadline")
+    public void setSignupDeadlineTS(Timestamp signupDeadlineTS) {
+        this.signupDeadlineTS = signupDeadlineTS;
+    }
+
+    @Exclude
     public LocalDateTime getInvitationAcceptanceDeadline() {
         return invitationAcceptanceDeadline;
     }
 
+    @Exclude
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -196,7 +313,23 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
+    }
+
+
+    @PropertyName("invitationAcceptanceDeadline")
+    public Timestamp getInvitationAcceptanceDeadlineTS() {
+        return invitationAcceptanceDeadlineTS;
+    }
+
+
+    @PropertyName("invitationAcceptanceDeadline")
+    public void setInvitationAcceptanceDeadlineTS(Timestamp invitationAcceptanceDeadlineTS) {
+        this.invitationAcceptanceDeadlineTS = invitationAcceptanceDeadlineTS;
     }
 
     public ArrayList<String> getEventTags() {
@@ -207,21 +340,33 @@ public class Event {
         this.eventTags = eventTags;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public void addEventTag(String tag){
         this.eventTags.add(tag);
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -234,18 +379,33 @@ public class Event {
         this.organizer = organizer;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public String getOrganizerID(){
-        return organizer.getUserID();
+        return organizerID;
     }
 
     public void setOrganizerID(String organizerID){
         Database db = new Database();
-        this.organizer = db.getUser(organizerID);
 
-        db.updateEvent(this);
+        db.getUser(organizerID, task -> {
+            if (task.isSuccessful()) {
+                this.organizer = task.getResult();
+            } else {
+                Log.e("Database", "Cannot get user info");
+            }
+        });
+
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public String getPlace() {
@@ -256,7 +416,11 @@ public class Event {
         this.place = place;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -269,7 +433,11 @@ public class Event {
         this.entrantList = entrantList;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -291,7 +459,11 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -313,7 +485,11 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -335,7 +511,11 @@ public class Event {
         }
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
@@ -368,7 +548,11 @@ public class Event {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public int getMaxFinalListCapacity() {
@@ -379,7 +563,11 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
 
         Database db = new Database();
-        db.updateEvent(this);
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public ArrayList<Bitmap> getPosters() {

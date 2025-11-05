@@ -28,19 +28,20 @@ public class User{
         isAdmin = false;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
     }
 
     public String getEmail() {
@@ -49,13 +50,6 @@ public class User{
 
     public void setEmail(String email) {
         this.email = email;
-
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
     }
 
     public String getPhoneNumber() {
@@ -64,13 +58,6 @@ public class User{
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
     }
 
     public String getDeviceID() {
@@ -87,21 +74,6 @@ public class User{
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
-
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public void joinEventWaitingList(Event event){
@@ -110,6 +82,26 @@ public class User{
 
     public void leaveEventWaitingList(Event event){
         event.leaveWaitingList(this);
+    }
+
+    public void joinEventChosenList(Event event) {
+        event.joinChosenList(this);
+    }
+
+    public void leaveEventChosenList(Event event) {
+        event.leaveChosenList(this);
+    }
+
+    public void joinEventCancelledList(Event event) {
+        event.joinCancelledList(this);
+    }
+
+    public void joinEventFinalizedList(Event event) {
+        event.joinFinalizedList(this);
+    }
+
+    public void leaveEventFinalizedList(Event event) {
+        event.leaveFinalizedList(this);
     }
 
     @Override

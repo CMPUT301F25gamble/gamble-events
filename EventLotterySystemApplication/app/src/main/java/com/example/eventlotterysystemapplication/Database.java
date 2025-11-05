@@ -115,6 +115,8 @@ public class Database {
      * @throws IllegalStateException If the userID does not exist in the database
      */
     public User getUser(String userID) throws IllegalStateException{
+        AtomicBoolean queryReturned = new AtomicBoolean(false);
+
         DocumentReference userDocRef = userRef.document(userID);
 
         final User[] user = new User[1];
@@ -128,7 +130,11 @@ public class Database {
             } else {
                 Log.e("Database","No user exists with that userID");
             }
+            queryReturned.set(true);
         });
+
+        while (!queryReturned.get()){
+        }
 
         return user[0];
 
@@ -287,6 +293,8 @@ public class Database {
      * @param user The user profile
      */
     public void deleteOrganizedEvents(User user) {
+        AtomicBoolean queryReturned = new AtomicBoolean(false);
+
         String userID = user.getUserID();
         eventRef.get().addOnSuccessListener(querySnapshot -> {
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
@@ -295,7 +303,11 @@ public class Database {
                     eventDoc.getReference().delete();
                 }
             }
+            queryReturned.set(true);
         });
+
+        while (!queryReturned.get()){
+        }
     }
 
     /**

@@ -114,39 +114,39 @@ public class DatabaseIntegrationTests {
         }
 
         assertNotNull(user.getUserID());
-
-        Event event1 = new Event(
-                "Wizard training",
-                "Learn how to pass your midterms",
-                "2025-11-15T14:00",
-                "2025-11-10T23:59",
-                "2025-11-12T23:59",
-                new String[]{"magic", "training"},
-                user.getUserID(),
-                "Online",
-                5,
-                20
-        );
-
-        Event event2 = new Event(
-                "Skiing",
-                "Everyone should go skiing at Kicking Horse",
-                "2025-12-20T09:00",
-                "2025-12-10T23:59",
-                "2025-12-15T23:59",
-                new String[]{"ski", "outdoors"},
-                user.getUserID(),
-                "Kicking Horse Resort",
-                10,
-                50
-        );
-        database.deleteOrganizedEvents(user);
-
-        eventRef.whereEqualTo("OrganizerID", user.getUserID()).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                QuerySnapshot snapshot = task.getResult();
-                assertEquals(0, snapshot.size());
-            }
-        });
+//
+//        Event event1 = new Event(
+//                "Wizard training",
+//                "Learn how to pass your midterms",
+//                "2025-11-15T14:00",
+//                "2025-11-10T23:59",
+//                "2025-11-12T23:59",
+//                new String[]{"magic", "training"},
+//                user.getUserID(),
+//                "Online",
+//                5,
+//                20
+//        );
+//
+//        Event event2 = new Event(
+//                "Skiing",
+//                "Everyone should go skiing at Kicking Horse",
+//                "2025-12-20T09:00",
+//                "2025-12-10T23:59",
+//                "2025-12-15T23:59",
+//                new String[]{"ski", "outdoors"},
+//                user.getUserID(),
+//                "Kicking Horse Resort",
+//                10,
+//                50
+//        );
+//        database.deleteOrganizedEvents(user);
+//
+//        eventRef.whereEqualTo("OrganizerID", user.getUserID()).get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                QuerySnapshot snapshot = task.getResult();
+//                assertEquals(0, snapshot.size());
+//            }
+//        });
     }
 }

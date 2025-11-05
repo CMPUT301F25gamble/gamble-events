@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/bottom_menu_profile_text"
+        android:icon="@drawable/profile_icon"
+        android:id="@+id/profile_ui_fragment">
+    </item>
+
+    <item android:title="@string/bottom_menu_event_text"
+        android:icon="@drawable/events_icon"
+        android:id="@+id/events_ui_fragment">
+
+    </item>
+
+    <item android:title="@string/bottom_menu_notifications_text"
+        android:icon="@drawable/notifications_icon"
+        android:id="@+id/notifications_ui_fragment">
+    </item>
+
+    <item android:title="@string/bottom_menu_settings_text"
+        android:icon="@drawable/settings_icon"
+        android:id="@+id/settings_ui_fragment">
+    </item>
+
+</menu>

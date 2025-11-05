@@ -1,0 +1,452 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- For formatting -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <ImageButton
+            android:id="@+id/createOrEditEventBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:contentDescription="@string/back_button_text"
+            android:src="@drawable/back_icon"
+            android:background="@drawable/round_button"
+             />
+
+        <TextView
+            android:id="@+id/createOrEditEventTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/create_or_edit_event_text"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <!-- Event Name -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventEventNameAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventEventNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_detail_screen_name_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+        android:id="@+id/createOrEditEventEventNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_list_item"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:layout_marginBottom="14dp" />
+
+
+        <!-- Event Description -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventEventDescAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventEventDescText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_description_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventEventDescEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Tags -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventTagText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tags_separated_by_commas_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventTagsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:layout_marginBottom="14dp" />
+
+
+        <!-- Location -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventLocationAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventLocationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventLocationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Event Date and Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventEventDateAndTimeAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventEventDateAndTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_date_and_time_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventEventDateAndTimeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="datetime"
+            android:inputType="datetime"
+            android:hint="@string/date_time_format_text"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Registration Deadline -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationDeadlineAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationDeadlineText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/registration_deadline_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventRegistrationDeadlineEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="datetime"
+            android:inputType="datetime"
+            android:hint="@string/date_time_format_text"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Invitation Acceptance Deadline -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventInvitationAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventInvitationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/invitation_acceptance_deadline_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventInvitationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="datetime"
+            android:inputType="datetime"
+            android:hint="@string/date_time_format_text"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Upload Poster and Pictures -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventUploadPhotoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upload_event_poster_photo_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/upload_photo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/upload_text"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/app_beige"
+            android:textColor="@color/black"
+             />
+
+        <!-- Limit Waitlist -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventLimitWaitlistText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/limit_waitlist_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditLimitWaitlistEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_list_item"
+            android:hint="@string/enter_max_number_text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:layout_marginBottom="14dp" />
+
+
+        <!-- Number of Selected Entrants -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventSelectedEntrantsNumAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventSelectedEntrantsNumText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_of_selected_entrants_text"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventSelectedEntrantsNumEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:hint="@string/enter_max_number_text"
+            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:layout_marginBottom="14dp" />
+
+        <TextView
+            android:id="@+id/createOrEditEventSetNotifsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_event_settings_text"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/checkbox_enableGeolocation"
+            android:text="@string/enable_geolocation_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_generateORCode"
+            android:text="@string/generate_qr_code_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_notifyEntrant"
+            android:text="@string/notify_entrant_of_successful_waitlist_enrollment_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_notifySelectedEntrant"
+            android:text="@string/notify_selected_entrant_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_notifySignUpConfirmation"
+            android:text="@string/notify_selected_entrant_success_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/checkbox_notifyCancelled"
+            android:text="@string/notify_entrant_if_they_have_cancelled_text"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/done_creating_editing_event_text"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            />
+
+        <!-- For formating -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+</ScrollView>

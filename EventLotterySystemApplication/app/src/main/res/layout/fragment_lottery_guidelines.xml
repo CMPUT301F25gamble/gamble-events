@@ -13,27 +13,27 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="15dp">
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/asterisk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
                 android:text="@string/important"
                 android:textColor="@color/important_field"
-                android:textStyle="bold"
                 android:textSize="25sp"
-                android:layout_marginEnd="4dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/lotteryGuidelineTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lottery_guideline_title"
+                android:textColor="@color/black"
                 android:textSize="25sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Scrollable text box -->
@@ -42,39 +42,39 @@
             android:layout_width="match_parent"
             android:layout_height="475dp"
             android:background="@drawable/rounded_list_item"
+            android:lineSpacingExtra="4dp"
             android:padding="24dp"
             android:scrollbars="vertical"
             android:text="@string/lorem_ipsum_numbered"
             android:textColor="@color/black"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp" />
+            android:textSize="14sp" />
 
         <!-- Cancel & Confirm Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
             android:gravity="center"
-            android:layout_marginTop="40dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/register_cancel_button"
                 android:layout_width="135dp"
                 android:layout_height="50dp"
-                android:text="@string/cancel_text"
-                android:textStyle="bold"
+                android:layout_marginEnd="30dp"
                 android:backgroundTint="@color/red"
+                android:text="@string/cancel_text"
                 android:textColor="@color/black"
-                android:layout_marginEnd="30dp" />
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/register_confirm_button"
                 android:layout_width="135dp"
                 android:layout_height="50dp"
-                android:text="@string/confirm_text"
-                android:textStyle="bold"
                 android:backgroundTint="@color/green"
-                android:textColor="@color/black" />
+                android:text="@string/confirm_text"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

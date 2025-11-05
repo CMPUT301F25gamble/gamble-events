@@ -68,7 +68,7 @@
         android:background="@drawable/rounded_list_item"
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
-        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:drawableEnd="@drawable/edit_icon"
         android:layout_marginBottom="14dp" />
 
 
@@ -105,7 +105,7 @@
             android:background="@drawable/rounded_list_item"
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
-            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
         <!-- Tags -->
@@ -131,7 +131,7 @@
             android:background="@drawable/rounded_list_item"
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
-            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
 
@@ -168,7 +168,7 @@
             android:background="@drawable/rounded_list_item"
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
-            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
         <!-- Event Date and Time -->
@@ -340,7 +340,7 @@
             android:hint="@string/enter_max_number_text"
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
-            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
 
@@ -378,7 +378,7 @@
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
             android:hint="@string/enter_max_number_text"
-            android:drawableEnd="@android:drawable/ic_menu_edit"
+            android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
         <TextView

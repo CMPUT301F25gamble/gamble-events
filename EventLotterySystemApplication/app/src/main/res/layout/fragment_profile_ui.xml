@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="60dp"
-        android:text="@string/placeholder_text"
+        android:text="@string/username"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/name_prompt_text"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/email_prompt_text"
         android:textColor="@color/black"
         android:textSize="20sp"
@@ -45,13 +45,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
-
     <TextView
         android:id="@+id/profile_phone_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/phone_prompt_text"
         android:textColor="@color/black"
         android:textSize="20sp"
@@ -59,30 +58,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_email" />
 
-    <TextView
+    <EditText
         android:id="@+id/profile_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/app_beige"
-        android:text="@string/placeholder_text"
+        android:padding="4dp"
+        android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_name_header" />
 
-    <TextView
+    <EditText
         android:id="@+id/profile_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/app_beige"
-        android:text="@string/placeholder_text"
+        android:padding="4dp"
+        android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,15 +89,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_emailer_header" />
 
-    <TextView
+    <EditText
         android:id="@+id/profile_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/app_beige"
-        android:text="@string/placeholder_text"
+        android:padding="4dp"
+        android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,6 +111,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/profile_name"
         app:layout_constraintEnd_toEndOf="@+id/profile_name"
         app:layout_constraintHorizontal_bias="1.0"
@@ -124,6 +124,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/profile_email"
         app:layout_constraintEnd_toEndOf="@+id/profile_email"
         app:layout_constraintHorizontal_bias="1.0"
@@ -136,6 +137,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/edit_icon"
         android:background="@android:color/transparent"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/profile_phone"
         app:layout_constraintEnd_toEndOf="@+id/profile_phone"
         app:layout_constraintHorizontal_bias="1.0"
@@ -147,8 +149,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/profile_history_button_text"
+        android:backgroundTint="@color/grey"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
 
@@ -157,6 +160,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/important_field"
         android:text="@string/delete_profile_button_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/show_profile_history_button" />

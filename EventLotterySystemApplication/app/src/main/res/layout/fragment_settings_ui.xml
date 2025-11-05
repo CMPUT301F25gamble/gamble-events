@@ -101,8 +101,5 @@
         android:text="Opt in for specific notifications"
         android:textSize="16sp"
         />
-
-
-
-
+    
 </LinearLayout>

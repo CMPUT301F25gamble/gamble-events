@@ -1,15 +1,19 @@
 package com.example.eventlotterysystemapplication;
 
+import com.google.firebase.firestore.Exclude;
+
+import java.util.Objects;
 import android.provider.Settings;
 
 /**
  * An instance of this class represents a single user
  */
-public class User {
+public class User{
     private String name;
     private String email;
     private String phoneNumber;
     private String deviceID;
+    private String userID;
     private boolean isAdmin;
 
     public User(String email, String phoneNumber, String name, String deviceID) {
@@ -26,6 +30,9 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+
+        Database db = new Database();
+        db.modifyUser(this);
     }
 
     public String getEmail() {
@@ -34,6 +41,9 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+
+        Database db = new Database();
+        db.modifyUser(this);
     }
 
     public String getPhoneNumber() {
@@ -42,6 +52,9 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+
+        Database db = new Database();
+        db.modifyUser(this);
     }
 
     public String getDeviceID() {
@@ -58,5 +71,59 @@ public class User {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+
+        Database db = new Database();
+        db.modifyUser(this);
+    }
+
+    @Exclude
+    public String getUserID() {
+        return userID;
+    }
+
+    @Exclude
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public void joinEventWaitingList(Event event){
+        event.joinWaitingList(this);
+    }
+
+    public void leaveEventWaitingList(Event event){
+        event.leaveWaitingList(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User)) {
+            return false;
+        } else {
+            User user2 = (User) o;
+            return Objects.equals(this.userID, user2.userID);
+        }
+    }
+
+    /**
+     * Modify one or more user profile info
+     * @param user The user profile
+     * @param name The user name
+     * @param email The user email
+     * @param phoneNumber The user phone number
+     */
+    public void updateUserInfo(User user, String name, String email, String phoneNumber) {
+        if (name != null && !name.isEmpty()) {
+            user.setName(name);
+        }
+        if (email != null && !email.isEmpty()) {
+            user.setEmail(email);
+        }
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            user.setPhoneNumber(phoneNumber);
+        }
+
+        // Will need to comment these out when running UserUnitTest
+        Database database = new Database();
+        database.modifyUser(user);
     }
 }

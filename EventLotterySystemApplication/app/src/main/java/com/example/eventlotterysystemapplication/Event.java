@@ -609,7 +609,7 @@ public class Event {
     @Exclude
     public void generateQRCode(){
         try {
-            String data = "cmput301gamblers://gamble/"+this.eventID;
+            String data = "cmput301gamblers://gamble/" + eventID;
             QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
         } catch (WriterException e){
             e.printStackTrace();

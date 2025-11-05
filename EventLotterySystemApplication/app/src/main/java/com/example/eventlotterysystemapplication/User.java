@@ -4,6 +4,7 @@ import com.google.firebase.firestore.Exclude;
 
 import java.util.Objects;
 import android.provider.Settings;
+import android.util.Log;
 
 /**
  * An instance of this class represents a single user
@@ -16,6 +17,9 @@ public class User{
     private String userID;
     private boolean isAdmin;
 
+    public User() {
+
+    }
     public User(String email, String phoneNumber, String name, String deviceID) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -32,7 +36,11 @@ public class User{
         this.name = name;
 
         Database db = new Database();
-        db.modifyUser(this);
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     public String getEmail() {
@@ -43,7 +51,11 @@ public class User{
         this.email = email;
 
         Database db = new Database();
-        db.modifyUser(this);
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     public String getPhoneNumber() {
@@ -54,7 +66,11 @@ public class User{
         this.phoneNumber = phoneNumber;
 
         Database db = new Database();
-        db.modifyUser(this);
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     public String getDeviceID() {
@@ -73,7 +89,11 @@ public class User{
         isAdmin = admin;
 
         Database db = new Database();
-        db.modifyUser(this);
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     @Exclude
@@ -123,7 +143,11 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-        Database database = new Database();
-        database.modifyUser(user);
+        Database db = new Database();
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 }

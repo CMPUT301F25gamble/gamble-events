@@ -80,8 +80,6 @@ public class Database {
      * Given some input deviceID, returns the User object that is associated with that deviceID
      * @param deviceID The deviceID of the user
      * @return A user object containing the corresponding data from the database
-     * @throws IllegalArgumentException If the deviceID does not exist in the database
-     * @throws IllegalStateException If the query fails
      */
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
@@ -107,7 +105,6 @@ public class Database {
     /**
      * Given some userID, this function returns the corresponding User object
      * @param userID The userID to query against
-     * @return A user object corresponding with the userID
      * @throws IllegalStateException If the userID does not exist in the database
      */
     public void getUser(String userID, OnCompleteListener<User> listener) {
@@ -274,7 +271,6 @@ public class Database {
      * database
      * @param eventID The eventID of the event you are trying to retrieve
      * @param listener An OnCompleteListener used for callback
-     * @return An event object containing all of the information about the user
      * @throws IllegalStateException This exception is thrown if no event exists with that eventID,
      * if the registration collection retrieval fails, or if the user status is not properly defined
      */

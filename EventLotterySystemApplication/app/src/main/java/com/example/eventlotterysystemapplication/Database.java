@@ -46,6 +46,8 @@ public class Database {
      * @throws IllegalStateException If the query fails or duplicate deviceID is found
      */
     public boolean queryDeviceID(String deviceID) throws IllegalStateException{
+        AtomicBoolean queryReturned = new AtomicBoolean(false);
+
         AtomicBoolean deviceIDInDatabase = new AtomicBoolean(false);
 
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
@@ -65,10 +67,12 @@ public class Database {
                     } else {
                         Log.e("Database","Query failed");
                     }
+                    queryReturned.set(true);
                 }
         );
-
-        return deviceIDInDatabase.get();
+        if (queryReturned.get()){
+            return deviceIDInDatabase.get();
+        }
     }
 
     /**

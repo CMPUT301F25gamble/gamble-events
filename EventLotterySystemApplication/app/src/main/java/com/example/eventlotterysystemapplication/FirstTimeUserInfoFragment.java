@@ -43,10 +43,16 @@ public class FirstTimeUserInfoFragment extends Fragment {
             String userEmail = binding.emailEditText.getText().toString();
             String userPhone = binding.phoneEditText.getText().toString();
 
+            // Todo: Add functionality to verify that the user has input every field
+            NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                    .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
+            /*
+             * As of right now we will move this to the lottery guidelines fragment
+             */
             // Create new intent
-            Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
-            startActivity(nextActivityIntent);
-            requireActivity().finish();  // finish the activity to free memory
+            // Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
+            // startActivity(nextActivityIntent);
+            // requireActivity().finish();  // finish the activity to free memory
         });
     }
 }

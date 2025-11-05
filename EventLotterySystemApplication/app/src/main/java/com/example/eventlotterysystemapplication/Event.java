@@ -7,6 +7,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
@@ -21,32 +23,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Event {
+    private String eventID;
     private String name;
     private String description;
-    private static DateTimeFormatter formatter;
-    private ArrayList<String> eventTags;
-    private User organizer;
-    private String organizerID;
     private String place;
-    private EntrantList entrantList;
+    private ArrayList<String> eventTags;
+    private  User organizer;
+    private String organizerID;
+    private  EntrantList entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
 
-    private String eventID;
+
 
     // Firestore timestamp format
-    private Timestamp eventTimeTS;
-
-    private Timestamp signupDeadlineTS;
-
-
+    private Timestamp eventStartTimeTS;
+    private Timestamp eventEndTimeTS;
+    private Timestamp registrationStartTimeTS;
+    private Timestamp registrationEndTimeTS;
     private Timestamp invitationAcceptanceDeadlineTS;
 
 
     // Should not serialize LocalDataTime objects
-    private transient LocalDateTime eventTime;
-    private transient LocalDateTime signupDeadline;
+    private transient LocalDateTime eventStartTime;
+    private transient LocalDateTime eventEndTime;
+    private transient LocalDateTime registrationStartTime;
+    private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
+    private static DateTimeFormatter formatter;
 
 
     private Bitmap QRCodeBitmap;
@@ -66,24 +70,29 @@ public class Event {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, String description, LocalDateTime eventTime, LocalDateTime signupDeadline,
-                 LocalDateTime invitationAcceptanceDeadline, ArrayList<String> eventTags, String organizerID, String place,
+    public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
+                 LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
-
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.eventTime = eventTime;
-        this.signupDeadline = signupDeadline;
-        this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
-        // Convert LocalDateTime to Timestamp for Firestore
-        this.eventTimeTS = new Timestamp(eventTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.signupDeadlineTS = new Timestamp(signupDeadline.atZone(ZoneId.systemDefault()).toInstant());
-        this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-
+        this.place = place;
         this.eventTags = eventTags;
         this.organizerID = organizerID;
-        this.place = place;
+
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        this.eventStartTime = eventStartTime;
+        this.eventEndTime = eventEndTime;
+        this.registrationStartTime = registrationStartTime;
+        this.registrationEndTime = registrationEndTime;
+        this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
+
+        // Convert LocalDateTime to Timestamp for Firestore
+        this.eventStartTimeTS = new Timestamp(eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.eventEndTimeTS = new Timestamp(eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationStartTimeTS = new Timestamp(registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationEndTimeTS = new Timestamp(registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
@@ -99,25 +108,29 @@ public class Event {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, String description, String eventTime, String signupDeadline,
-                 String invitationAcceptanceDeadline, String[] eventTags, String organizerID, String place,
+    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
+                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
 
         this.name = name;
         this.description = description;
-
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.eventTime = LocalDateTime.parse(eventTime, formatter);
-        this.signupDeadline = LocalDateTime.parse(signupDeadline, formatter);
-        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-
-        this.eventTimeTS = new Timestamp(this.eventTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.signupDeadlineTS = new Timestamp(this.signupDeadline.atZone(ZoneId.systemDefault()).toInstant());
-        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-
+        this.place = place;
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.organizerID = organizerID;
-        this.place = place;
+
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
+        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
+        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
+        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
+        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
+
+        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity;
@@ -135,10 +148,10 @@ public class Event {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseTimestamps() {
-        if (eventTimeTS != null)
-            eventTime = eventTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (signupDeadlineTS != null)
-            signupDeadline = signupDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (eventStartTimeTS != null)
+            eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationEndTimeTS != null)
+            registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (invitationAcceptanceDeadlineTS != null)
             invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
@@ -174,13 +187,13 @@ public class Event {
     }
 
     @Exclude
-    public LocalDateTime getEventTime() {
-        return eventTime;
+    public LocalDateTime getEventStartTime() {
+        return eventStartTime;
     }
 
     @Exclude
-    public void setEventTime(LocalDateTime eventTime) {
-        this.eventTime = eventTime;
+    public void setEventStartTime(LocalDateTime eventStartTime) {
+        this.eventStartTime = eventStartTime;
 
         Database db = new Database();
         db.updateEvent(this, task -> {
@@ -193,7 +206,7 @@ public class Event {
     @Exclude
     public String getEventTimeString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return this.eventTime.format(formatter);
+            return this.eventStartTime.format(formatter);
         } else {
             throw new IllegalStateException();
         }
@@ -202,7 +215,7 @@ public class Event {
     @Exclude
     public void setEventTimeString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.eventTime = LocalDateTime.parse(dateString, formatter);
+            this.eventStartTime = LocalDateTime.parse(dateString, formatter);
         }
 
         Database db = new Database();
@@ -214,25 +227,25 @@ public class Event {
     }
 
 
-    @PropertyName("eventTime")
-    public Timestamp getEventTimeTS() {
-        return eventTimeTS;
+    @PropertyName("eventStartTime")
+    public Timestamp getEventStartTimeTS() {
+        return eventStartTimeTS;
     }
 
 
-    @PropertyName("eventTime")
-    public void setEventTimeTS(Timestamp eventTimeTS) {
-        this.eventTimeTS = eventTimeTS;
-    }
-
-    @Exclude
-    public LocalDateTime getSignupDeadline() {
-        return signupDeadline;
+    @PropertyName("eventStartTime")
+    public void setEventStartTimeTS(Timestamp eventStartTimeTS) {
+        this.eventStartTimeTS = eventStartTimeTS;
     }
 
     @Exclude
-    public void setSignupDeadline(LocalDateTime signupDeadline) {
-        this.signupDeadline = signupDeadline;
+    public LocalDateTime getRegistrationEndTime() {
+        return registrationEndTime;
+    }
+
+    @Exclude
+    public void setRegistrationEndTime(LocalDateTime registrationEndTime) {
+        this.registrationEndTime = registrationEndTime;
 
         Database db = new Database();
         db.updateEvent(this, task -> {
@@ -245,7 +258,7 @@ public class Event {
     @Exclude
     public String getSignupDeadlineString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return this.signupDeadline.format(formatter);
+            return this.registrationEndTime.format(formatter);
         } else {
             throw new IllegalStateException();
         }
@@ -254,7 +267,7 @@ public class Event {
     @Exclude
     public void setSignupDeadlineString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.signupDeadline = LocalDateTime.parse(dateString, formatter);
+            this.registrationEndTime = LocalDateTime.parse(dateString, formatter);
         }
 
         Database db = new Database();
@@ -266,15 +279,15 @@ public class Event {
     }
 
 
-    @PropertyName("signUpDeadline")
-    public Timestamp getSignupDeadlineTS() {
-        return signupDeadlineTS;
+    @PropertyName("registrationEndTime")
+    public Timestamp getRegistrationEndTimeTS() {
+        return registrationEndTimeTS;
     }
 
 
-    @PropertyName("signUpDeadline")
-    public void setSignupDeadlineTS(Timestamp signupDeadlineTS) {
-        this.signupDeadlineTS = signupDeadlineTS;
+    @PropertyName("registrationEndTime")
+    public void setRegistrationEndTimeTS(Timestamp registrationEndTimeTS) {
+        this.registrationEndTimeTS = registrationEndTimeTS;
     }
 
     @Exclude
@@ -344,6 +357,7 @@ public class Event {
         });
     }
 
+    @Exclude
     public void addEventTag(String tag){
         this.eventTags.add(tag);
 
@@ -355,6 +369,7 @@ public class Event {
         });
     }
 
+    @Exclude
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
 
@@ -388,21 +403,7 @@ public class Event {
     }
 
     public void setOrganizerID(String organizerID){
-        Database db = new Database();
-
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Database", "Cannot get user info");
-            }
-        });
-
-        db.updateEvent(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot update event");
-            }
-        });
+        this.organizerID = organizerID;
     }
 
     public String getPlace() {
@@ -464,10 +465,11 @@ public class Event {
     }
 
     @Exclude
-    public void addToEntrantList(User user, int list) throws IllegalArgumentException{
+    public Task<Void> addToEntrantList(User user, int list) throws IllegalArgumentException {
         switch (list) {
             case 0:
                 this.entrantList.addToWaiting(user);
+                Log.d("Database", "Waiting list size now: " + this.entrantList.getWaiting().size());
                 break;
             case 1:
                 this.entrantList.addToChosen(user);
@@ -477,16 +479,22 @@ public class Event {
                 break;
             case 3:
                 this.entrantList.addToFinalized(user);
+                break;
             default:
                 throw new IllegalArgumentException("List number out of range");
         }
 
         Database db = new Database();
+        TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
         db.updateEvent(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot update event");
+            if (task.isSuccessful()) {
+                tcs.setResult(null);
+            } else {
+                tcs.setException(task.getException());
+                Log.e("Database", "Cannot update event", task.getException());
             }
         });
+        return tcs.getTask();
     }
 
     @Exclude
@@ -576,19 +584,40 @@ public class Event {
         }
     }
 
+    @Exclude
     public ImageView QRCodeImageView(){
         ImageView QRCodeImageView = null;
         QRCodeImageView.setImageBitmap(QRCodeBitmap);
         return QRCodeImageView;
     }
 
-    @Exclude
+
     public String getEventID() {
         return eventID;
     }
 
-    @Exclude
+
     public void setEventID(String eventID) {
         this.eventID = eventID;
+    }
+
+    @PropertyName("eventEndTime")
+    public Timestamp getEventEndTimeTS() {
+        return eventEndTimeTS;
+    }
+
+    @PropertyName("eventEndTime")
+    public void setEventEndTimeTS(Timestamp eventEndTimeTS) {
+        this.eventEndTimeTS = eventEndTimeTS;
+    }
+
+    @PropertyName("registrationStartTime")
+    public Timestamp getRegistrationStartTimeTS() {
+        return registrationStartTimeTS;
+    }
+
+    @PropertyName("registrationStartTime")
+    public void setRegistrationStartTimeTS(Timestamp registrationStartTimeTS) {
+        this.registrationStartTimeTS = registrationStartTimeTS;
     }
 }

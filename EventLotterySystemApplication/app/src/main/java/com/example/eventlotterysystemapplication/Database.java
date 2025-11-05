@@ -19,17 +19,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
-import org.w3c.dom.Document;
-
-import java.io.IOException;
-import java.time.ZoneId;
 import java.util.HashMap;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Database {
     CollectionReference userRef;
@@ -184,7 +179,7 @@ public class Database {
         }
 
         DocumentReference userDoc = userRef.document(authUser.getUid());
-        userDoc.set(user).addOnCompleteListener(listener);
+        userDoc.set(user, SetOptions.merge()).addOnCompleteListener(listener);
     }
 
     /**
@@ -208,9 +203,7 @@ public class Database {
                     List<Task<Void>> deleteEventTasks = new ArrayList<>();
 
                     for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
-                        Event event = eventDoc.toObject(Event.class);
-                        event.setEventID(eventDoc.getId());
-                        event.parseTimestamps();
+                        Event event = parseEvent(eventDoc);
                         if (event != null) {
                             TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
                             deleteEvent(event, task -> {
@@ -286,9 +279,7 @@ public class Database {
                 return;
             }
 
-            Event event = eventTask.getResult().toObject(Event.class);
-            event.setEventID(eventTask.getResult().getId());
-            event.parseTimestamps();
+            Event event = parseEvent(eventTask.getResult());
             if (event != null) {
                 event.setEventID(eventID);
             }
@@ -305,7 +296,7 @@ public class Database {
                 }
 
                 for (DocumentSnapshot entrantDoc : regTask.getResult()) {
-                    String status = entrantDoc.getString("Status");
+                    String status = entrantDoc.getString("status");
                     switch (status) {
                         case "waiting":
                             getUser(entrantDoc.getId(), task -> {
@@ -369,7 +360,8 @@ public class Database {
     public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
         Timestamp now = Timestamp.now();
         // Queries events that are open for registration
-        Query query = eventRef.whereGreaterThanOrEqualTo("signUpDeadline", now);
+        Query query = eventRef.whereLessThanOrEqualTo("registrationStartTime", now)
+                .whereGreaterThanOrEqualTo("registrationEndTime", now);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -385,9 +377,7 @@ public class Database {
                         Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
-                                Event event = doc.toObject(Event.class);
-                                event.setEventID(doc.getId());
-                                event.parseTimestamps();
+                                Event event = parseEvent(doc);
                                 availableEvents.add(event);
                             }
                         });
@@ -416,7 +406,7 @@ public class Database {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
-                        Log.d("Database", "Event added successfully with timestamp: " + event.getSignupDeadlineTS());
+                        Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
                         CollectionReference registration = eventDocRef.collection("Registration");
                         List<Task<Void>> regTasks = new ArrayList<>();
 
@@ -477,13 +467,10 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        event.setEventID(eventDocRef.getId());
-        eventDocRef.set(event);
-
-        eventDocRef.set(event)
+        eventDocRef.set(event, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
+                        Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
                         CollectionReference registration = eventDocRef.collection("Registration");
                         List<Task<Void>> regTasks = new ArrayList<>();
@@ -493,7 +480,7 @@ public class Database {
                             Map<String, Object> data = new HashMap<>();
                             data.put("status", "waiting");
                             data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
+                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
                         }
 
                         // Add chosen users
@@ -501,7 +488,7 @@ public class Database {
                             Map<String, Object> data = new HashMap<>();
                             data.put("status", "chosen");
                             data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
+                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
                         }
 
                         // Add cancelled users
@@ -509,7 +496,7 @@ public class Database {
                             Map<String, Object> data = new HashMap<>();
                             data.put("status", "cancelled");
                             data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
+                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
                         }
 
                         // Add finalized users
@@ -517,17 +504,23 @@ public class Database {
                             Map<String, Object> data = new HashMap<>();
                             data.put("status", "finalized");
                             data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
+                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
                         }
 
                         Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-                            listener.onComplete(null);
+                            TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
+                            if (done.isSuccessful()) {
+                                tcs.setResult(null); // everything completed successfully
+                            } else {
+                                tcs.setException(done.getException());
+                            }
+                            listener.onComplete(tcs.getTask());
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
                         listener.onComplete(task);
                     }
-                });
+                }).addOnFailureListener(e -> Log.e("Database", "failed"));
     }
 
     /**
@@ -540,9 +533,7 @@ public class Database {
         eventRef.whereEqualTo("organizerID", userID).get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
-                Event event = eventDoc.toObject(Event.class);
-                event.setEventID(eventDoc.getId());
-                event.parseTimestamps();
+                Event event = parseEvent(eventDoc);
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
                 deleteEvent(event, task -> {
                     if (task.isSuccessful()) {
@@ -580,5 +571,41 @@ public class Database {
     public void addNotificationLog(){
         // TODO: implement this method
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Event parseEvent(DocumentSnapshot doc) {
+        Event event = new Event();
+
+        event.setEventID(doc.getId());
+        event.setName(doc.getString("name"));
+        event.setDescription(doc.getString("description"));
+        event.setPlace(doc.getString("place"));
+        event.setOrganizerID(doc.getString("organizerID"));
+        List<String> tags = (List<String>) doc.get("eventTags");
+        if (tags != null) {
+            event.setEventTags(new ArrayList<>(tags));
+        } else {
+            event.setEventTags(new ArrayList<>());
+        }
+
+        event.setEventStartTimeTS(doc.getTimestamp("eventStartTime"));
+        event.setEventEndTimeTS(doc.getTimestamp("eventEndTime"));
+        event.setRegistrationStartTimeTS(doc.getTimestamp("registrationStartTime"));
+        event.setRegistrationEndTimeTS(doc.getTimestamp("registrationEndTime"));
+        event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
+        event.parseTimestamps();
+
+        event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
+        event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
+
+        if (event.getEntrantList() == null) {
+            event.setEntrantList(new EntrantList());
+            Log.d("ParseEvent", "entrantList initialized");
+        }
+
+        return event;
+    }
+
+
 
 }

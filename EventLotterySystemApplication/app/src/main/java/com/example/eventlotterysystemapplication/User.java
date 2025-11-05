@@ -96,12 +96,10 @@ public class User{
         });
     }
 
-    @Exclude
     public String getUserID() {
         return userID;
     }
 
-    @Exclude
     public void setUserID(String userID) {
         this.userID = userID;
     }

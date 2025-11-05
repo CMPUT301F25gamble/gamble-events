@@ -70,9 +70,11 @@ public class Database {
                     queryReturned.set(true);
                 }
         );
-        if (queryReturned.get()){
-            return deviceIDInDatabase.get();
+
+        while (!queryReturned.get()) {
         }
+
+        return deviceIDInDatabase.get();
     }
 
     /**

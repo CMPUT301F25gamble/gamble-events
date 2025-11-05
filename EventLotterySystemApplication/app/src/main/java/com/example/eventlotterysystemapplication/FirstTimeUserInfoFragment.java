@@ -46,7 +46,7 @@ public class FirstTimeUserInfoFragment extends Fragment {
             // Create new intent
             Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
             startActivity(nextActivityIntent);
-            Objects.requireNonNull(getActivity()).finish();  // finish the activity to free memory
+            requireActivity().finish();  // finish the activity to free memory
         });
     }
 }

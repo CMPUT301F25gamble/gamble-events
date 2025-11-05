@@ -25,4 +25,9 @@
         android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
         android:label="fragment_settings_ui"
         tools:layout="@layout/fragment_settings_ui" />
+    <fragment
+        android:id="@+id/firstTimeUserInfoFragment2"
+        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:label="fragment_first_time_input"
+        tools:layout="@layout/fragment_first_time_input" />
 </navigation>

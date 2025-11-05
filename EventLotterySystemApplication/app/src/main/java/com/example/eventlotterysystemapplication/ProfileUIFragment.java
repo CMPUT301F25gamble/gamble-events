@@ -22,7 +22,7 @@ import com.example.eventlotterysystemapplication.databinding.FragmentProfileUiBi
 public class ProfileUIFragment extends Fragment {
 
     private FragmentProfileUiBinding binding;
-    private Database db;
+    private Database database;
 
     public ProfileUIFragment() {
         // Required empty public constructor
@@ -37,7 +37,7 @@ public class ProfileUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = Database.getDatabase();
+        database = Database.getDatabase();
     }
 
     @Override

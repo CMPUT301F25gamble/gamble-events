@@ -15,6 +15,16 @@ public class RegisterScreenFragment extends Fragment {
 
     private FragmentRegisterScreenBinding binding;
 
+    public RegisterScreenFragment() {
+        // Required empty public constructor
+    }
+
+    public static RegisterScreenFragment newInstance() {
+        RegisterScreenFragment fragment = new RegisterScreenFragment();
+        Bundle args = new Bundle();
+        return fragment;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

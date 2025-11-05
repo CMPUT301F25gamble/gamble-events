@@ -34,4 +34,14 @@
     <string name="register_button_text">Register</string>
     <string name="profile_history_button_text">Show Profile History</string>
     <string name="delete_profile_button_text">Delete Account</string>
+    <string name="entrant_lists_text">Entrant Lists</string>
+    <string name="view_all_entrants_text">View All Entrants</string>
+    <string name="all_chosen_entrants_text">All Chosen Entrants</string>
+    <string name="all_pending_entrants_text">All Pending Entrants</string>
+    <string name="all_cancelled_entrants_text">All Cancelled Entrants</string>
+    <string name="final_list_of_entrants_text">Final List of Entrants</string>
+    <string name="event_details_title_text">Event Details</string>
+    <string name="join_waitlist_text">Join Waitlist</string>
+    <string name="print_list_text">Print List</string>
+    <string name="notify_selectees_button">Notify selectees to sign up</string>
 </resources>

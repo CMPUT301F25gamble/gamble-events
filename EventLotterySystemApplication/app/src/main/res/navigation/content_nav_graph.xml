@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_nav_graph"
+    app:startDestination="@id/events_ui_fragment">
+
+    <fragment
+        android:id="@+id/events_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" />
+    <fragment
+        android:id="@+id/notifications_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.NotificationsUIFragment"
+        android:label="fragment_notifications_ui"
+        tools:layout="@layout/fragment_notifications_ui" />
+    <fragment
+        android:id="@+id/profile_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" />
+    <fragment
+        android:id="@+id/settings_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
+        android:label="fragment_settings_ui"
+        tools:layout="@layout/fragment_settings_ui" />
+    <fragment
+        android:id="@+id/firstTimeUserInfoFragment2"
+        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:label="fragment_first_time_input"
+        tools:layout="@layout/fragment_first_time_input" />
+</navigation>

@@ -9,10 +9,10 @@
 
     <!-- Title (Register New Account) -->
     <TextView
-        android:id="@+id/registerAccountText"
+        android:id="@+id/register_account_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/register_new_account"
+        android:text="@string/register_account_header_text"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="20dp" />
@@ -21,12 +21,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Name:"
+        android:text="@string/name_prompt_text"
         android:textStyle="bold"
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/nameText"
+        android:id="@+id/name_edit_text"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/app_beige"
@@ -39,12 +39,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email:"
+        android:text="@string/email_prompt_text"
         android:textStyle="bold"
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/emailText"
+        android:id="@+id/email_edit_text"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/app_beige"
@@ -57,15 +57,14 @@
 
     <!-- (OPTIONAL) Enter Phone -->
     <TextView
-        android:id="@+id/phoneNumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Phone Number:"
+        android:text="@string/phone_prompt_text"
         android:textSize="18sp"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/phoneText"
+        android:id="@+id/phone_edit_text"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/app_beige"
@@ -78,10 +77,9 @@
 
     <!-- Device Identity note -->
     <TextView
-        android:id="@+id/deviceIdentityInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/deviceIdentityInfo"
+        android:text="@string/device_identity_info"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -99,20 +97,20 @@
         android:layout_marginBottom="24dp">
 
         <Button
-            android:id="@+id/cancelButton"
+            android:id="@+id/register_cancel_button"
             android:layout_width="135dp"
             android:layout_height="50dp"
-            android:text="@string/cancel"
+            android:text="@string/cancel_text"
             android:textStyle="bold"
             android:backgroundTint="@color/red"
             android:textColor="@color/black"
             android:layout_marginEnd="30dp" />
 
         <Button
-            android:id="@+id/confirmButton"
+            android:id="@+id/register_confirm_button"
             android:layout_width="135dp"
             android:layout_height="50dp"
-            android:text="@string/confirm"
+            android:text="@string/confirm_text"
             android:textStyle="bold"
             android:backgroundTint="@color/green"
             android:textColor="@color/black" />

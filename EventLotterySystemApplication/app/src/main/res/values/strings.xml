@@ -65,4 +65,9 @@
     <string name="notify_entrant_of_successful_waitlist_enrollment_text">Notify entrant of successful waitlist enrollment</string>
     <string name="notify_entrant_if_they_have_cancelled_text">Notify entrant if they have cancelled</string>
     <string name="done_creating_editing_event_text">Done Creating/Editing Event</string>
+    <string name="update_notifications">Update Notifications</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="lottery">Lottery</string>
+    <string name="admin">Admin</string>
+    <string name="organizers">Organizers</string>
 </resources>

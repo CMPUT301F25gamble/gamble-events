@@ -52,7 +52,8 @@ public class FirstTimeUserInfoFragment extends Fragment {
             String userPhone = binding.phoneEditText.getText().toString().trim();
 
             if (userName.isEmpty()) {
-                binding.nameEditText.setError("Name is required");
+                binding.phoneEditText.setError("Name is required");
+
                 return;
             }
             if (userEmail.isEmpty()) {

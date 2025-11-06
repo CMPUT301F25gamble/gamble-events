@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="60dp"
-        android:text="@string/username"
+        android:text="Profile"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -65,10 +65,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="4dp"
+        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
+        android:drawableStart="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_name_header" />
@@ -80,10 +81,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="4dp"
+        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
+        android:drawableStart="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,75 +98,37 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="4dp"
+        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
         android:textColor="@color/black"
         android:textSize="20sp"
+        android:drawableStart="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone_header" />
 
-    <ImageButton
-        android:id="@+id/profile_name_edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/edit_icon"
-        android:background="@android:color/transparent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_name"
-        app:layout_constraintEnd_toEndOf="@+id/profile_name"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/profile_name"
-        app:layout_constraintTop_toTopOf="@+id/profile_name" />
 
-    <ImageButton
-        android:id="@+id/profile_email_edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/edit_icon"
-        android:background="@android:color/transparent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_email"
-        app:layout_constraintEnd_toEndOf="@+id/profile_email"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/profile_email"
-        app:layout_constraintTop_toTopOf="@+id/profile_email" />
-
-    <ImageButton
-        android:id="@+id/profile_phone_edit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/edit_icon"
-        android:background="@android:color/transparent"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_phone"
-        app:layout_constraintEnd_toEndOf="@+id/profile_phone"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/profile_phone"
-        app:layout_constraintTop_toTopOf="@+id/profile_phone" />
-
-    <!-- <Button
-        android:id="@+id/show_profile_history_button"
+     <Button
+        android:id="@+id/update_profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/profile_history_button_text"
+        android:text="Update Profile"
         android:backgroundTint="@color/grey"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
-     -->
+
 
     <Button
         android:id="@+id/delete_profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/important_field"
         android:text="@string/delete_profile_button_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
+        app:layout_constraintTop_toBottomOf="@+id/update_profile_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

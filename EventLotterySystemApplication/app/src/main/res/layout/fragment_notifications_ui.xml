@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/grey"
         android:layout_marginTop="16dp"
-        android:text="@string/update_notifications"
+        android:text="@string/refresh_notifications"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

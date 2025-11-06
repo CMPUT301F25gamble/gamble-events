@@ -15,6 +15,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.installations.FirebaseInstallations;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class FirstTimeUserInfoFragment extends Fragment {
     private static final String TAG = "FirstTimeUserInfo"; // For debugging
@@ -56,23 +61,30 @@ public class FirstTimeUserInfoFragment extends Fragment {
                 return;
             }
 
-            // Build user object
-            User user = new User();
-            user.setName(userName);
-            user.setEmail(userEmail);
-            if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
+            // Get device's actual ID
+            FirebaseInstallations.getInstance().getId()
+                    .addOnSuccessListener(deviceId -> {
+                        Log.d(TAG, "Firebase Device ID: " + deviceId);
 
-            // Add to database
-            database.addUser(user, task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
-                            .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
-                } else {
-                    Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
-                    Log.e("Database", "User registration failed", task.getException());
-                }
-            });
+                        // Build user object
+                        User user = new User();
+                        user.setDeviceID(deviceId);
+                        user.setName(userName);
+                        user.setEmail(userEmail);
+                        if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
+
+                        // Add to database
+                        database.addUser(user, task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
+                                NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                                        .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
+                            } else {
+                                Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                                Log.e("Database", "User registration failed", task.getException());
+                            }
+                        });
+                    });
         });
     }
 

@@ -23,6 +23,7 @@ public class EventsUIFragment extends Fragment {
     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
     */
     private FragmentEventsUiBinding binding;
+    private Database database;
 
 
     public EventsUIFragment() {
@@ -38,6 +39,7 @@ public class EventsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override

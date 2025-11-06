@@ -6,12 +6,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +30,9 @@ public class EventsUIFragment extends Fragment {
     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
     */
     private FragmentEventsUiBinding binding;
+    // Holds event names to display in the ListView
+    private ArrayAdapter<String> eventNamesAdapter;
+    private final ArrayList<String> eventNames = new ArrayList<>();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -70,6 +80,15 @@ public class EventsUIFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
+
+        // Simple built-in row layout
+        eventNamesAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                eventNames
+        );
+        binding.eventsList.setAdapter(eventNamesAdapter);
+
         return binding.getRoot();
     }
 
@@ -88,5 +107,28 @@ public class EventsUIFragment extends Fragment {
             NavHostFragment.findNavController(EventsUIFragment.this)
                     .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
         });
+
+        // Fetch all Event docs and display their "name" field in the listView
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Event")
+                .get()
+                .addOnSuccessListener(qs -> {
+                    eventNames.clear();
+                    for (DocumentSnapshot doc : qs.getDocuments()) {
+                        String eventName = doc.getString("name");
+
+                        // Fallback on the doc ID if event name is missing
+                        if (eventName == null) {
+                            eventName = doc.getId();
+                            eventNames.add(eventName);
+                        } else {
+                            eventNames.add(eventName);
+                        }
+                    }
+                    // Notify the adapter that the data set has changed
+                    eventNamesAdapter.notifyDataSetChanged();
+                })
+                // Add a listener to handle errors
+                .addOnFailureListener(e -> Log.e("EventsUI", "Failed to load events", e));
     }
 }

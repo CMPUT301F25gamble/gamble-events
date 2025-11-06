@@ -209,7 +209,7 @@ public class Database {
         String userId = authUser.getUid();
 
         // Deletes all events organized by this user
-        eventRef.whereEqualTo("Organizer ID", userId).get()
+        eventRef.whereEqualTo("organizerID", userId).get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Task<Void>> deleteEventTasks = new ArrayList<>();
 
@@ -618,9 +618,12 @@ public class Database {
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
         event.parseTimestamps();
 
-        event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
-        event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
-
+        if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
+            event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
+        }
+        if (doc.getLong("maxFinalListCapacity").intValue() > 0) {
+            event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
+        }
         if (event.getEntrantList() == null) {
             event.setEntrantList(new EntrantList());
             Log.d("ParseEvent", "entrantList initialized");

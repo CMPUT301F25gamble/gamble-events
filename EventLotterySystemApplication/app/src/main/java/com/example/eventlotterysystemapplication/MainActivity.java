@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.firebase.firestore.AggregateQuery;
@@ -45,18 +46,37 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(deviceId -> {
                     Log.d(TAG, "Firebase Device ID: " + deviceId);
                     // String test = "deviceID67"; // replace deviceId with test to test going to content activity
-                    database.queryDeviceID(deviceId, task -> {
-                        if (task.isSuccessful()) {
-                            Boolean exists = task.getResult();
+
+                    // Check if device in database (ie. User is registered)
+                    database.queryDeviceID(deviceId, queryTask -> {
+                        if (queryTask.isSuccessful()) {
+                            Boolean exists = queryTask.getResult();
                             if (exists != null && exists) {
-                                Log.d(TAG, "Device registered. Going to content activity.");
-                                goToContentActivity();
+                                // Get user info based off of device ID (mainly to check if registration was completely done)
+                                database.getUserFromDeviceID(deviceId, task -> {
+                                    if (task.isSuccessful()) {
+                                        User user = task.getResult();
+                                        if (user != null) {
+                                            if (user.isRegistrationComplete()) {
+                                                // proceed as normal to content activity
+                                                Log.d(TAG, "Device registered. Going to content activity.");
+                                                goToContentActivity();
+                                            } else {
+                                                // User did not accept the guidelines
+                                                // TODO: Connect MainActivity to LotteryGuidelines
+                                            }
+                                        } else  {
+                                            // User not found
+                                            Log.d(TAG, "User not found. Going to registration activity");
+                                        }
+                                }
+                                });
                             } else {
                                 Log.d(TAG, "Device not registered. Going to registration activity.");
                                 goToRegisterActivity();
                             }
                         } else {
-                            Log.e(TAG, "Error querying deviceID", task.getException());
+                            Log.e(TAG, "Error querying deviceID", queryTask.getException());
                             goToRegisterActivity();
                         }
                     });

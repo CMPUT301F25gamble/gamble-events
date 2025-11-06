@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentProfileUiBinding;
@@ -86,6 +87,13 @@ public class ProfileUIFragment extends Fragment {
                 Toast.makeText(getContext(), "User not loaded yet", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Go to delete profile fragment when delete account button clicked
+        binding.deleteProfileButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(ProfileUIFragment.this)
+                    .navigate(R.id.action_profile_ui_fragment_to_delete_profile_fragment);
+        });
+
         return binding.getRoot();
     }
 }

@@ -47,6 +47,7 @@ public class Database {
      * Given some input deviceID, this function checks to see if the deviceID exists in the database
      * in the User collection
      * @param deviceID The device ID to query for in the database
+     * @param listener An OnCompleteListener used to retrieve the boolean
      */
     public void queryDeviceID(String deviceID, OnCompleteListener<Boolean> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
@@ -74,7 +75,7 @@ public class Database {
     /**
      * Given some input deviceID, returns the User object that is associated with that deviceID
      * @param deviceID The deviceID of the user
-     * @return A user object containing the corresponding data from the database
+     * @param listener An OnCompleteListener used to retrieve the User
      */
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
@@ -100,6 +101,7 @@ public class Database {
     /**
      * Given some userID, this function returns the corresponding User object
      * @param userID The userID to query against
+     * @param listener An OnCompleteListener used to retrieve the User
      * @throws IllegalStateException If the userID does not exist in the database
      */
     public void getUser(String userID, OnCompleteListener<User> listener) {
@@ -163,6 +165,7 @@ public class Database {
     /**
      * Given a user, update or create their record in the database
      * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the modify operation finishes
      */
     public void modifyUser(User user, OnCompleteListener<Void> listener) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -185,6 +188,7 @@ public class Database {
     /**
      * Given a user, delete their record from the database
      * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteUser(User user, OnCompleteListener<Void> listener) {
@@ -260,10 +264,9 @@ public class Database {
 
 
     /**
-     * Given some eventID, this method finds the event and returns that event object from the
-     * database
+     * Given some eventID, this method finds the event and returns that event object from the database
      * @param eventID The eventID of the event you are trying to retrieve
-     * @param listener An OnCompleteListener used for callback
+     * @param listener An OnCompleteListener used to retrieve the Event
      * @throws IllegalStateException This exception is thrown if no event exists with that eventID,
      * if the registration collection retrieval fails, or if the user status is not properly defined
      */
@@ -355,7 +358,7 @@ public class Database {
     /**
      * Retrieves all events that the user can join
      * @param user The user profile
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener used to retrieve a list of Events
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
@@ -397,7 +400,7 @@ public class Database {
     /**
      * Given some event object, we add its data to the database
      * @param event The event that we want to add to the database
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the add operation finishes
      */
     public void addEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document();
@@ -455,8 +458,9 @@ public class Database {
 
 
     /**
-     * Given some event, we update its data in the database
+     * Given some event, update its data in the database
      * @param event The event that we want to update in the database
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
      */
     public void updateEvent(Event event, OnCompleteListener<Void> listener){
         if (event.getEventID() == null) {
@@ -527,6 +531,7 @@ public class Database {
     /**
      * Given a user, delete all the events that the user organizes
      * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteOrganizedEvents(User user, OnCompleteListener<Void> listener) {
@@ -553,6 +558,11 @@ public class Database {
         });
     }
 
+    /**
+     * Given an event, delete it from the Event collection
+     * @param event The event
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
+     */
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
         CollectionReference regRef = eventDocRef.collection("Registration");
@@ -573,6 +583,11 @@ public class Database {
         // TODO: implement this method
     }
 
+    /**
+     * Given an event document, manually deserialize it into an Event object
+     * @param doc A document snapshot
+     * @return The deserialized Event object
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event parseEvent(DocumentSnapshot doc) {
         Event event = new Event();
@@ -606,7 +621,5 @@ public class Database {
 
         return event;
     }
-
-
 
 }

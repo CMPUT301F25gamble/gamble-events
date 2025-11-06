@@ -20,6 +20,7 @@ public class User{
     public User() {
         // Empty constructor used by Firebase to deserialize documents into User object
     }
+
     public User(String email, String phoneNumber, String name, String deviceID) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -117,9 +118,9 @@ public class User{
     /**
      * Modify one or more user profile info
      * @param user The user profile
-     * @param name The user name
-     * @param email The user email
-     * @param phoneNumber The user phone number
+     * @param name The user name, or {@code null} if it doesn't need to be updated
+     * @param email The user email, or {@code null} if it doesn't need to be updated
+     * @param phoneNumber The user phone number, or {@code null} if it doesn't need to be updated
      */
     public void updateUserInfo(User user, String name, String email, String phoneNumber) {
         if (name != null && !name.isEmpty()) {

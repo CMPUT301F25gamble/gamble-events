@@ -71,8 +71,7 @@ public class Event {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
-                 LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
         this.place = place;
@@ -95,7 +94,7 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.maxWaitingListCapacity = -1; // Default as no limit
 
         Database db = new Database();
         db.getUser(organizerID, task -> {
@@ -109,8 +108,7 @@ public class Event {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
-                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline, int maxFinalListCapacity){
 
         this.name = name;
         this.description = description;
@@ -133,7 +131,7 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.maxWaitingListCapacity = -1; // Default as no limit
 
         Database db = new Database();
         db.getUser(organizerID, task -> {
@@ -263,7 +261,11 @@ public class Event {
     }
 
     public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        if (maxWaitingListCapacity > 0) {
+            this.maxWaitingListCapacity = maxWaitingListCapacity;
+        } else {
+            throw new IllegalArgumentException("Invalid waiting list capacity");
+        }
     }
 
     public int getMaxFinalListCapacity() {
@@ -271,7 +273,11 @@ public class Event {
     }
 
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
-        this.maxFinalListCapacity = maxFinalListCapacity;
+        if (maxFinalListCapacity > 0) {
+            this.maxFinalListCapacity = maxFinalListCapacity;
+        } else {
+            throw new IllegalArgumentException("Invalid final list capacity");
+        }
     }
 
     @Exclude

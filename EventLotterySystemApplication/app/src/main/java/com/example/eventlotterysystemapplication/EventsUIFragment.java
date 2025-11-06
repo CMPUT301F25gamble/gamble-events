@@ -56,17 +56,6 @@ public class EventsUIFragment extends Fragment {
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
         database = new Database();
 
-        // get user from database
-        FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
-            database.getUserFromDeviceID(deviceId, task -> {
-               if (task.isSuccessful()) {
-                   currentUser = task.getResult();
-               } else {
-                   Log.e("EventsUIFragment", "Error getting user from database", task.getException());
-               }
-            });
-        });
-
         return binding.getRoot();
     }
 

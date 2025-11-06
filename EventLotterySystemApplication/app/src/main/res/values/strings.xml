@@ -71,4 +71,10 @@
     <string name="admin">Admin</string>
     <string name="organizers">Organizers</string>
     <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
+    <string name="organiser_notification_header_text"><u>Notifications</u></string>
+    <string name="waitlist_entrants_text">Waitlist Entrants</string>
+    <string name="chosen_entrants_text">Chosen Entrants</string>
+    <string name="cancelled_entrants_text">Cancelled Entrants</string>
+    <string name="placeholder_text_underline"><u>Placeholder Text</u></string>
+    <string name="notification_message_header_text">Notificiation Message</string>
 </resources>

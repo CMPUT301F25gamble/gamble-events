@@ -197,65 +197,50 @@ public class Database {
 
         String userId = authUser.getUid();
 
-        // Deletes all events organized by this user
-        eventRef.whereEqualTo("Organizer ID", userId).get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<Task<Void>> deleteEventTasks = new ArrayList<>();
+        deleteOrganizedEvents(user, task -> {
+            if (task.isSuccessful()){
+                Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
+            } else {
+                Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
+                listener.onComplete(task);
+            }
+        });
 
-                    for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
-                        Event event = parseEvent(eventDoc);
-                        if (event != null) {
-                            TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-                            deleteEvent(event, task -> {
-                                if (task.isSuccessful()) {
-                                    tcs.setResult(null);
-                                } else {
-                                    tcs.setException(task.getException());
-                                }
-                            });
-                            deleteEventTasks.add(tcs.getTask());
-                        }
-                    }
+        // TODO fix the function, it is currently broken
+        eventRef.get().addOnSuccessListener(allEventsSnapshot -> {
 
-                    Tasks.whenAllComplete(deleteEventTasks).addOnCompleteListener(eventsDone -> {
-                        // Deletes user registrations in all events
-                        eventRef.get().addOnSuccessListener(allEventsSnapshot -> {
-                            List<Task<Void>> regDeleteTasks = new ArrayList<>();
-                            for (DocumentSnapshot eventDoc : allEventsSnapshot.getDocuments()) {
-                                DocumentReference regDocRef = eventDoc.getReference()
-                                        .collection("Registration")
-                                        .document(userId);
-                                Task<Void> deleteTask = regDocRef.get()
-                                        .continueWithTask(regDocTask -> {
-                                            if (regDocTask.isSuccessful() && regDocTask.getResult().exists()) {
-                                                return regDocRef.delete();
-                                            } else {
-                                                return Tasks.forResult(null);
-                                            }
-                                        });
-                                regDeleteTasks.add(deleteTask);
+            List<Task<Void>> regDeleteTasks = new ArrayList<>();
+
+            for (DocumentSnapshot eventDoc : allEventsSnapshot.getDocuments()) {
+                DocumentReference regDocRef = eventDoc.getReference()
+                        .collection("Registration")
+                        .document(userId);
+                Task<Void> deleteTask = regDocRef.get()
+                        .continueWithTask(regDocTask -> {
+                            if (regDocTask.isSuccessful() && regDocTask.getResult().exists()) {
+                                return regDocRef.delete();
+                            } else {
+                                return Tasks.forResult(null);
                             }
-
-                            Tasks.whenAllComplete(regDeleteTasks).addOnCompleteListener(regDone -> {
-                                // Deletes user document
-                                userRef.document(userId).delete().addOnCompleteListener(userDocDone -> {
-                                    // Deletes Firebase auth account
-                                    authUser.delete().addOnCompleteListener(done -> {
-                                        if (done.isSuccessful()) {
-                                            Log.d("Database", "User fully deleted");
-                                            listener.onComplete(Tasks.forResult(null));
-                                        } else {
-                                            Log.e("Database", "Firebase auth deletion failed");
-                                            listener.onComplete(Tasks.forException(done.getException()));
-                                        }});
-                                });
-                            });
                         });
-                    });
-                }).addOnFailureListener(e -> {
-                    Log.e("Database", "Failed to delete organized events", e);
-                    listener.onComplete(Tasks.forException(e));
+                regDeleteTasks.add(deleteTask);
+            }
+
+            Tasks.whenAllComplete(regDeleteTasks).addOnCompleteListener(regDone -> {
+                // Deletes user document
+                userRef.document(userId).delete().addOnCompleteListener(userDocDone -> {
+                    // Deletes Firebase auth account
+                    authUser.delete().addOnCompleteListener(done -> {
+                        if (done.isSuccessful()) {
+                            Log.d("Database", "User fully deleted");
+                            listener.onComplete(Tasks.forResult(null));
+                        } else {
+                            Log.e("Database", "Firebase auth deletion failed");
+                            listener.onComplete(Tasks.forException(done.getException()));
+                        }});
                 });
+            });
+        });
     }
 
 
@@ -313,7 +298,13 @@ public class Database {
                         Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
-                                Event event = parseEvent(doc, );
+                                Event event = parseEvent(doc, task1 -> {
+                                    if (task1.isSuccessful()){
+                                        // TODO
+                                    } else {
+                                        // TODO
+                                    }
+                                });
                                 availableEvents.add(event);
                             }
                         });

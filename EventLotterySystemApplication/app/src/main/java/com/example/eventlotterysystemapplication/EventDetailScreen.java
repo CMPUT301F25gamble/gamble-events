@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -90,6 +92,25 @@ public class EventDetailScreen extends Fragment {
         binding.eventDetailsDescText.setText(eventDesc);
 
         // Fetch tags in DB
+        // Get tags
+        List<String> tags = (List<String>) doc.get("eventTags");
+        if (tags == null) tags = new ArrayList<>(); // prevent NullPointerException if there are no tags by making an empty arraylist
+
+        // Debugging
+        if (tags.isEmpty()) {
+            Toast.makeText(requireContext(), "No tags found", Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            Log.d("EventDetailScreen", "Tags loaded: " + tags.toString());
+        }
+
+        // Setup RecyclerView
+        EventTagsAdapter adapter = new EventTagsAdapter(tags);
+        binding.tagsHorizontalRv.setAdapter(adapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        binding.tagsHorizontalRv.setLayoutManager(layoutManager);
 
     }
 }

@@ -53,24 +53,8 @@ public class MainActivity extends AppCompatActivity {
                             Boolean exists = queryTask.getResult();
                             if (exists != null && exists) {
                                 // Get user info based off of device ID (mainly to check if registration was completely done)
-                                database.getUserFromDeviceID(deviceId, task -> {
-                                    if (task.isSuccessful()) {
-                                        User user = task.getResult();
-                                        if (user != null) {
-                                            if (user.isRegistrationComplete()) {
-                                                // proceed as normal to content activity
-                                                Log.d(TAG, "Device registered. Going to content activity.");
-                                                goToContentActivity();
-                                            } else {
-                                                // User did not accept the guidelines
-                                                // TODO: Connect MainActivity to LotteryGuidelines
-                                            }
-                                        } else  {
-                                            // User not found
-                                            Log.d(TAG, "User not found. Going to registration activity");
-                                        }
-                                }
-                                });
+                                Log.d(TAG, "Device registered. Going to content activity.");
+                                goToContentActivity();
                             } else {
                                 Log.d(TAG, "Device not registered. Going to registration activity.");
                                 goToRegisterActivity();

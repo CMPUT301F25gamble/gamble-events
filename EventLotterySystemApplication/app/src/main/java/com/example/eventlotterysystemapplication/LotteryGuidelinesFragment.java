@@ -29,7 +29,7 @@ public class LotteryGuidelinesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         database = new Database();
-        
+
         // Cancel button to go back to previous register screen
         binding.registerCancelButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(LotteryGuidelinesFragment.this)
@@ -38,31 +38,10 @@ public class LotteryGuidelinesFragment extends Fragment {
 
         // Confirm button to go to next screen
         binding.registerConfirmButton.setOnClickListener(v -> {
-            // Get the current user by deviceID
-            FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
-                database.getUserFromDeviceID(deviceId, task -> {
-                    if (task.isSuccessful()) {
-                        User currentUser = task.getResult();
-                        if (currentUser != null) {
-                            // Mark registration as complete
-                            currentUser.setRegistrationComplete(true);
-
-                            database.modifyUser(currentUser, modifyTask -> {
-                                if (modifyTask.isSuccessful()) {
-                                    // Create new intent
-                                    Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
-                                    startActivity(nextActivityIntent);
-                                    requireActivity().finish();  // finish the activity to free memory
-                                } else {
-                                    Log.e("Database", "Failed to update user registration status", modifyTask.getException());
-                                }
-                            });
-                        }
-                    } else {
-                        Log.e("Database", "Failed to get user by deviceID", task.getException());
-                    }
-                });
-            });
+            // Create new intent
+            Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
+            startActivity(nextActivityIntent);
+            requireActivity().finish();  // finish the activity to free memory
 
         });
     }

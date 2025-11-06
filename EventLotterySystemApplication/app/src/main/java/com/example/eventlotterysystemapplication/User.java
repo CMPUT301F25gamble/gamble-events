@@ -17,8 +17,6 @@ public class User{
     private String userID;
     private boolean isAdmin;
 
-    private boolean registrationComplete = false; // flag to tell if user inputted info AND accepted guidelines
-
     public User() {
 
     }
@@ -114,14 +112,6 @@ public class User{
 
     public void leaveEventWaitingList(Event event){
         event.leaveWaitingList(this);
-    }
-
-    public boolean isRegistrationComplete() {
-        return registrationComplete;
-    }
-
-    public void setRegistrationComplete(boolean bool) {
-        this.registrationComplete = bool;
     }
 
     @Override

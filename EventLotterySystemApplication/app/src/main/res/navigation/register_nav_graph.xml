@@ -29,7 +29,8 @@
     <fragment
         android:id="@+id/lottery_guidelines_fragment"
         android:name="com.example.eventlotterysystemapplication.LotteryGuidelinesFragment"
-        android:label="lottery_guidelines_fragment" >
+        android:label="lottery_guidelines_fragment"
+        tools:layout="@layout/fragment_lottery_guidelines">
         <action
             android:id="@+id/action_lotteryGuidelinesFragment_to_first_time_user_info_fragment"
             app:destination="@id/first_time_user_info_fragment" />

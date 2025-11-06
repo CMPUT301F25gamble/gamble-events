@@ -5,6 +5,8 @@
     android:id="@+id/content_nav_graph"
     app:startDestination="@id/events_ui_fragment">
 
+    <include app:graph="@navigation/register_nav_graph" />
+
     <fragment
         android:id="@+id/events_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
@@ -67,5 +69,8 @@
         <action
             android:id="@+id/action_delete_profile_fragment_to_profile_ui_fragment"
             app:destination="@id/profile_ui_fragment" />
+        <action
+            android:id="@+id/action_delete_profile_fragment_to_register_screen_fragment"
+            app:destination="@id/register_screen_fragment" />
     </fragment>
 </navigation>

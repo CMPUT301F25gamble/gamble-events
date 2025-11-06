@@ -141,6 +141,8 @@ public class Database {
      * Logs an error if the database cannot add the user
      */
     public void addUser(User user, OnCompleteListener<Void> listener) {
+        Log.d("Database", "addUser called from: ", new Exception());
+
         // Sign user in anonymously
         firebaseAuth.signInAnonymously().addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {

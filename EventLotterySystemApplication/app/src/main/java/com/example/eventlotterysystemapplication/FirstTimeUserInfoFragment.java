@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
@@ -25,7 +26,6 @@ public class FirstTimeUserInfoFragment extends Fragment {
     private static final String TAG = "FirstTimeUserInfo"; // For debugging
 
     private FragmentFirstTimeInputBinding binding;
-    private Database database;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -38,7 +38,7 @@ public class FirstTimeUserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        SharedUserViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedUserViewModel.class); // Used to "pass info" to lottery guidelines
 
         // Cancel button to go back to previous register screen
         binding.registerCancelButton.setOnClickListener(v -> {
@@ -73,17 +73,12 @@ public class FirstTimeUserInfoFragment extends Fragment {
                         user.setEmail(userEmail);
                         if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
 
-                        // Add to database
-                        database.addUser(user, task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
-                                NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
-                                        .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
-                            } else {
-                                Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
-                                Log.e("Database", "User registration failed", task.getException());
-                            }
-                        });
+                        // Save temporarily to ViewModel instead of committing just yet
+                        viewModel.setUser(user);
+
+                        // Go to lottery guidelines screen
+                        NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                                .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
                     });
         });
     }

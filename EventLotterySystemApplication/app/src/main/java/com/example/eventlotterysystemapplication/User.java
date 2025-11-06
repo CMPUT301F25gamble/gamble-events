@@ -35,12 +35,12 @@ public class User{
     public void setName(String name) {
         this.name = name;
 
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+//        Database db = new Database();
+//        db.modifyUser(this, task -> {
+//            if (!task.isSuccessful()) {
+//                Log.e("Database", "Cannot modify user");
+//            }
+//        });
     }
 
     public String getEmail() {
@@ -50,12 +50,12 @@ public class User{
     public void setEmail(String email) {
         this.email = email;
 
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+//        Database db = new Database();
+//        db.modifyUser(this, task -> {
+//            if (!task.isSuccessful()) {
+//                Log.e("Database", "Cannot modify user");
+//            }
+//        });
     }
 
     public String getPhoneNumber() {
@@ -65,12 +65,12 @@ public class User{
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
 
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+//        Database db = new Database();
+//        db.modifyUser(this, task -> {
+//            if (!task.isSuccessful()) {
+//                Log.e("Database", "Cannot modify user");
+//            }
+//        });
     }
 
     public String getDeviceID() {
@@ -88,12 +88,12 @@ public class User{
     public void setAdmin(boolean admin) {
         isAdmin = admin;
 
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+//        Database db = new Database();
+//        db.modifyUser(this, task -> {
+//            if (!task.isSuccessful()) {
+//                Log.e("Database", "Cannot modify user");
+//            }
+//        });
     }
 
     @Exclude
@@ -143,11 +143,11 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+//        Database db = new Database();
+//        db.modifyUser(this, task -> {
+//            if (!task.isSuccessful()) {
+//                Log.e("Database", "Cannot modify user");
+//            }
+//        });
     }
 }

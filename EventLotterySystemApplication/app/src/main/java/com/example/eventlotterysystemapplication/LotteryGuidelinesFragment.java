@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentLotteryGuidelinesBinding;
@@ -29,6 +31,7 @@ public class LotteryGuidelinesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         database = new Database();
+        SharedUserViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedUserViewModel.class);
 
         // Cancel button to go back to previous register screen
         binding.registerCancelButton.setOnClickListener(v -> {
@@ -38,11 +41,29 @@ public class LotteryGuidelinesFragment extends Fragment {
 
         // Confirm button to go to next screen
         binding.registerConfirmButton.setOnClickListener(v -> {
-            // Create new intent
-            Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
-            startActivity(nextActivityIntent);
-            requireActivity().finish();  // finish the activity to free memory
+            User user = viewModel.getUser().getValue(); // directly fetch without observing
+            if (user != null) {
+                database.addUser(user, task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(requireContext(), "Registration complete!", Toast.LENGTH_SHORT).show();
 
+                        // go to next activity
+                        Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
+                        startActivity(nextActivityIntent);
+                        requireActivity().finish();
+                    } else {
+                        Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(requireContext(), "Error: No user data found.", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

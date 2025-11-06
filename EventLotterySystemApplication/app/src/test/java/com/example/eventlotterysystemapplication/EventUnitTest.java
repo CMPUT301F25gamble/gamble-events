@@ -86,5 +86,54 @@ public class EventUnitTest {
     }
 
     @Test
-    public void
+    public void testEventStartTimeTS(){
+
+    }
+
+    @Test
+    public void testEventEndTimeTS(){
+
+    }
+
+    @Test
+    public void testRegistrationStartTimeTS(){
+
+    }
+
+    @Test
+    public void testRegistrationEndTimeTS(){
+
+    }
+
+    @Test
+    public void testInvitationAcceptanceDeadlineTS(){
+
+    }
+
+    @Test
+    public void testEventStartTime(){
+
+    }
+
+    @Test
+    public void testEventEndTime(){
+
+    }
+
+    @Test
+    public void testRegistrationStartTime(){
+
+    }
+
+    @Test
+    public void testRegistrationEndTime(){
+
+    }
+
+    @Test
+    public void testInvitationAcceptanceDeadline(){
+
+    }
+
+
 }

@@ -66,7 +66,7 @@ public class Event {
 
 
     public Event() {
-
+        // Empty constructor used by Firebase to deserialize documents into Event object
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

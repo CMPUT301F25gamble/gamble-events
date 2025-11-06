@@ -18,7 +18,7 @@ public class User{
     private boolean isAdmin;
 
     public User() {
-
+        // Empty constructor used by Firebase to deserialize documents into User object
     }
     public User(String email, String phoneNumber, String name, String deviceID) {
         this.email = email;

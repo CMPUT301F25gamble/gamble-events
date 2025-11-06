@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_profile_ui_fragment_to_delete_profile_fragment"
             app:destination="@id/delete_profile_fragment" />
+        <action
+            android:id="@+id/action_profile_ui_fragment_to_user_event_history_fragment"
+            app:destination="@id/user_event_history_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settings_ui_fragment"
@@ -72,5 +75,14 @@
         <action
             android:id="@+id/action_delete_profile_fragment_to_register_screen_fragment"
             app:destination="@id/register_screen_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/user_event_history_fragment"
+        android:name="com.example.eventlotterysystemapplication.UserEventHistoryFragment"
+        android:label="fragment_user_event_history"
+        tools:layout="@layout/fragment_user_event_history" >
+        <action
+            android:id="@+id/action_user_event_history_fragment_to_profile_ui_fragment"
+            app:destination="@id/profile_ui_fragment" />
     </fragment>
 </navigation>

@@ -10,11 +10,11 @@
         android:id="@+id/profile_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginStart="144dp"
+        android:layout_marginTop="72dp"
         android:text="Profile"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -98,37 +98,49 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
+        android:drawableStart="@drawable/edit_icon"
+        android:padding="8dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:drawableStart="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone_header" />
 
 
-     <Button
+    <Button
         android:id="@+id/update_profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="136dp"
         android:layout_marginTop="16dp"
-        android:text="Update Profile"
         android:backgroundTint="@color/grey"
+        android:text="@string/update_profile_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
-
 
     <Button
         android:id="@+id/delete_profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/important_field"
         android:text="@string/delete_profile_button_text"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_history_button" />
+
+    <Button
+        android:id="@+id/profile_history_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="@color/blue"
+        android:text="@string/profile_history_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/update_profile_button" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -94,6 +94,12 @@ public class ProfileUIFragment extends Fragment {
                     .navigate(R.id.action_profile_ui_fragment_to_delete_profile_fragment);
         });
 
+        // Go to profile history fragment
+        binding.profileHistoryButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(ProfileUIFragment.this)
+                    .navigate(R.id.action_profile_ui_fragment_to_user_event_history_fragment);
+        });
+
         return binding.getRoot();
     }
 }

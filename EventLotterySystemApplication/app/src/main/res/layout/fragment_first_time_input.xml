@@ -32,7 +32,7 @@
         android:background="@color/app_beige"
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
-        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:drawableStart="@drawable/edit_icon"
         android:layout_marginBottom="14dp" />
 
     <!-- Enter Email -->
@@ -51,7 +51,7 @@
         android:inputType="textEmailAddress"
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
-        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:drawableStart="@drawable/edit_icon"
         android:layout_marginBottom="14dp" />
 
 
@@ -72,7 +72,7 @@
         android:inputType="phone"
         android:paddingStart="14dp"
         android:paddingEnd="14dp"
-        android:drawableEnd="@android:drawable/ic_menu_edit"
+        android:drawableStart="@drawable/edit_icon"
         android:layout_marginBottom="16dp" />
 
     <!-- Device Identity note -->

@@ -1,79 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".EventsUIFragment">
 
-<TextView
-    android:id="@+id/eventsScreenText"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="24dp"
-    android:layout_marginTop="32dp"
-    android:text="@string/events_screen_text"
-    android:textAllCaps="false"
-    android:textSize="24sp"
-    android:textStyle="bold"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/eventsScreenText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/events_screen_text"
+        android:textAllCaps="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-<ImageButton
-    android:id="@+id/eventsScreenFilterButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:layout_marginEnd="24dp"
-    android:contentDescription="@string/events_screen_filter_button"
-    android:src="@drawable/filter_icon"
-    android:background="@drawable/round_button"
-    android:padding="8dp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <ImageButton
+        android:id="@+id/eventsScreenFilterButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:contentDescription="@string/events_screen_filter_button"
+        android:src="@drawable/filter_icon"
+        android:background="@drawable/round_button"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-<ListView
-    android:id="@+id/eventsList"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
-    android:background="@drawable/rounded_list_item"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHeight_percent="0.65"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/eventsScreenText" />
+    <ListView
+        android:id="@+id/eventsList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/rounded_list_item"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventsScreenText" />
 
-<Button
-    android:id="@+id/myEventsButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="8dp"
-    android:backgroundTint="@color/app_beige"
-    android:text="@string/my_events_button_text"
-    android:textColor="@color/black"
-    android:textStyle="bold"
-    app:layout_constraintEnd_toStartOf="@+id/createEventButton"
-    app:layout_constraintHorizontal_bias="0.5"
-    app:layout_constraintHorizontal_chainStyle="packed"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/eventsList" />
+    <Button
+        android:id="@+id/myEventsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/app_beige"
+        android:text="@string/my_events_button_text"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/createEventButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventsList" />
 
-<ImageButton
-    android:id="@+id/createEventButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="20dp"
-    android:background="@drawable/round_button"
-    android:contentDescription="@string/add_event_button"
-    android:padding="8dp"
-    android:src="@drawable/add_icon"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.5"
-    app:layout_constraintHorizontal_chainStyle="packed"
-    app:layout_constraintStart_toEndOf="@+id/myEventsButton"
-    app:layout_constraintTop_toBottomOf="@+id/eventsList" />
-
+    <ImageButton
+        android:id="@+id/createEventButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/round_button"
+        android:contentDescription="@string/add_event_button"
+        android:padding="8dp"
+        android:src="@drawable/add_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/myEventsButton"
+        app:layout_constraintTop_toBottomOf="@+id/eventsList" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

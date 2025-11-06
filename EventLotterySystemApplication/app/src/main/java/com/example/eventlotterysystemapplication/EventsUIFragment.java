@@ -1,6 +1,5 @@
 package com.example.eventlotterysystemapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,12 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
+import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link EventsUIFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class EventsUIFragment extends Fragment {
+    /* Don't change the char 'i' in the name, Android Studio never generated
+    * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
+    */
+    private FragmentEventsUiBinding binding;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,33 +66,27 @@ public class EventsUIFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_events_ui, container, false);
+        binding = FragmentEventsUiBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Cancel button to go back to previous register screen
-        binding.registerCancelButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
-                    .navigate(R.id.action_first_time_user_info_fragment_to_register_screen_fragment);
+        // Create Event button navigates to event creation page
+        binding.createEventButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment);
         });
 
-        // Confirm button to get user inputs and move to content activity
-        binding.registerConfirmButton.setOnClickListener(v -> {
-            // Get user input from text fields
-            // Todo: add functionality for using these values to create a new account
-            String userName = binding.nameEditText.getText().toString();
-            String userEmail = binding.emailEditText.getText().toString();
-            String userPhone = binding.phoneEditText.getText().toString();
-
-            // Create new intent
-            Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
-            startActivity(nextActivityIntent);
-            requireActivity().finish();  // finish the activity to free memory
+        // My Events button navigates to my events page
+        binding.myEventsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
         });
+    }
 }

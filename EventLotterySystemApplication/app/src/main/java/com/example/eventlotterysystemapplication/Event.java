@@ -583,10 +583,12 @@ public class Event {
         posters.add(poster);
     }
 
+    @Exclude
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
     }
 
+    @Exclude
     public void deletePoster(int position) {
         if (0 <= position && position < posters.size()) {
             posters.remove(position);

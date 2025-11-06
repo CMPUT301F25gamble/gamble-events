@@ -71,6 +71,8 @@
     <string name="admin">Admin</string>
     <string name="organizers">Organizers</string>
     <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
+    <string name="profile_history_button">Profile History</string>
+    <string name="update_profile_button">Update Profile</string>
     <string name="lottery_selection_guidelines_actual_text">
     1. Upon joining the waitlist for an event, all entrants have an equal chance to be selected once registration closes.\n
     If a selected entrant declines or does not respond before the invitation deadline, another entrant may be chosen.\n\n

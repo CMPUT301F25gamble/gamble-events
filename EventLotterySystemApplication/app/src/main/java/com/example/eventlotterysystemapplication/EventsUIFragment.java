@@ -6,12 +6,20 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +31,12 @@ public class EventsUIFragment extends Fragment {
     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
     */
     private FragmentEventsUiBinding binding;
+    // Holds event names to display in the ListView
+    private ArrayAdapter<String> eventNamesAdapter;
+    private final ArrayList<String> eventNames = new ArrayList<>();
+
+    // Parallel list to keep Firestore document IDs (to then pass onto event details screen)
+    private final ArrayList<String> docIds = new ArrayList<>();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -70,6 +84,15 @@ public class EventsUIFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
+
+        // Simple built-in row layout
+        eventNamesAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                eventNames
+        );
+        binding.eventsList.setAdapter(eventNamesAdapter);
+
         return binding.getRoot();
     }
 
@@ -87,6 +110,51 @@ public class EventsUIFragment extends Fragment {
         binding.myEventsButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(EventsUIFragment.this)
                     .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
+        });
+
+        // Show loading and hide content until it is fetched
+        binding.loadingEventUi.setVisibility(View.VISIBLE);
+        binding.contentGroupEventsUi.setVisibility(View.GONE);
+
+        // Fetch all Event docs and display their "name" field in the listView
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Event")
+            .get()
+            .addOnSuccessListener(qs -> {
+                // Hide loading and show content
+                binding.loadingEventUi.setVisibility(View.GONE);
+                binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+                eventNames.clear();
+                for (DocumentSnapshot doc : qs.getDocuments()) {
+                    String eventName = doc.getString("name");
+
+                    // Fallback on the doc ID if event name is missing
+                    if (eventName == null) {
+                        eventName = doc.getId();
+                        eventNames.add(eventName);
+                    } else {
+                        eventNames.add(eventName);
+                    }
+
+                    // Add docId in parallel list
+                    docIds.add(doc.getId());
+                }
+                // Notify the adapter that the data set has changed
+                eventNamesAdapter.notifyDataSetChanged();
+            })
+            // Hide loading and add a listener to handle errors
+            .addOnFailureListener(e -> {
+                binding.loadingEventUi.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            });
+
+        // Handle the on click event for each list item
+        binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
+            String eventId = docIds.get(position); // docIds parallel list you built
+            Bundle eventArgs = new Bundle();
+            eventArgs.putString("eventId", eventId);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, eventArgs);
         });
     }
 }

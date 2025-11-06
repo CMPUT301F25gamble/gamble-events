@@ -10,9 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 import com.google.firebase.installations.FirebaseInstallations;
 
 import java.util.ArrayList;
@@ -27,26 +34,52 @@ public class EventsUIFragment extends Fragment {
     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
     */
     private FragmentEventsUiBinding binding;
-    private Database database;
+    // Holds event names to display in the ListView
+    private ArrayAdapter<String> eventNamesAdapter;
+    private final ArrayList<String> eventNames = new ArrayList<>();
 
-    private ArrayList<Event> eventsList;
+    // Parallel list to keep Firestore document IDs (to then pass onto event details screen)
+    private final ArrayList<String> docIds = new ArrayList<>();
 
-    private User currentUser;
 
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     public EventsUIFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment EventsUIFragment.
+     */
+    // TODO: Rename and change types and number of parameters
     public static EventsUIFragment newInstance(String param1, String param2) {
         EventsUIFragment fragment = new EventsUIFragment();
         Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     @Override
@@ -54,7 +87,14 @@ public class EventsUIFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
-        database = new Database();
+
+        // Simple built-in row layout
+        eventNamesAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                eventNames
+        );
+        binding.eventsList.setAdapter(eventNamesAdapter);
 
         return binding.getRoot();
     }
@@ -73,6 +113,51 @@ public class EventsUIFragment extends Fragment {
         binding.myEventsButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(EventsUIFragment.this)
                     .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
+        });
+
+        // Show loading and hide content until it is fetched
+        binding.loadingEventUi.setVisibility(View.VISIBLE);
+        binding.contentGroupEventsUi.setVisibility(View.GONE);
+
+        // Fetch all Event docs and display their "name" field in the listView
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Event")
+            .get()
+            .addOnSuccessListener(qs -> {
+                // Hide loading and show content
+                binding.loadingEventUi.setVisibility(View.GONE);
+                binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+                eventNames.clear();
+                for (DocumentSnapshot doc : qs.getDocuments()) {
+                    String eventName = doc.getString("name");
+
+                    // Fallback on the doc ID if event name is missing
+                    if (eventName == null) {
+                        eventName = doc.getId();
+                        eventNames.add(eventName);
+                    } else {
+                        eventNames.add(eventName);
+                    }
+
+                    // Add docId in parallel list
+                    docIds.add(doc.getId());
+                }
+                // Notify the adapter that the data set has changed
+                eventNamesAdapter.notifyDataSetChanged();
+            })
+            // Hide loading and add a listener to handle errors
+            .addOnFailureListener(e -> {
+                binding.loadingEventUi.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            });
+
+        // Handle the on click event for each list item
+        binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
+            String eventId = docIds.get(position); // docIds parallel list you built
+            Bundle eventArgs = new Bundle();
+            eventArgs.putString("eventId", eventId);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, eventArgs);
         });
     }
 }

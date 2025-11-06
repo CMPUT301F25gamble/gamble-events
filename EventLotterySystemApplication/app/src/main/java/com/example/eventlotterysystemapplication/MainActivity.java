@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(deviceId -> {
                     Log.d(TAG, "Firebase Device ID: " + deviceId);
                     // String test = "deviceID67"; // replace deviceId with test to test going to content activity
+
+                    // Check to see if device ID is in database
                     database.queryDeviceID(deviceId, task -> {
                         if (task.isSuccessful()) {
                             Boolean exists = task.getResult();

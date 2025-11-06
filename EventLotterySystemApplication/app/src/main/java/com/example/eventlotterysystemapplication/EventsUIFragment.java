@@ -2,11 +2,16 @@ package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+
+import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +19,11 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class EventsUIFragment extends Fragment {
+    /* Don't change the char 'i' in the name, Android Studio never generated
+    * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
+    */
+    private FragmentEventsUiBinding binding;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,9 +66,27 @@ public class EventsUIFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_events_ui, container, false);
+        binding = FragmentEventsUiBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Create Event button navigates to event creation page
+        binding.createEventButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment);
+        });
+
+        // My Events button navigates to my events page
+        binding.myEventsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
+        });
     }
 }

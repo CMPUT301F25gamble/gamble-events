@@ -16,10 +16,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 public class FirstTimeUserInfoFragment extends Fragment {
     private static final String TAG = "FirstTimeUserInfo"; // For debugging
 

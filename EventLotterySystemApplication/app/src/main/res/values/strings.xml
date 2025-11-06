@@ -71,4 +71,12 @@
     <string name="admin">Admin</string>
     <string name="organizers">Organizers</string>
     <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
+    <string name="lottery_selection_guidelines_actual_text">
+    1. Upon joining the waitlist for an event, all entrants have an equal chance to be selected once registration closes.\n
+    If a selected entrant declines or does not respond before the invitation deadline, another entrant may be chosen.\n\n
+    2. You will receive a notification if you were selected or not.\n\n
+    3. Draws are random and are not influenced by organizers or administrators.\n\n
+    4. Your information will only be used for in-app event registration and communication purposes.\n\n
+    5. By pressing the CONFIRM button you are agreeing to these guidelines and understand that selection is random and not guaranteed.
+</string>
 </resources>

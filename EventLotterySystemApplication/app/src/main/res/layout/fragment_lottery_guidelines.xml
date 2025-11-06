@@ -47,7 +47,7 @@
             android:lineSpacingExtra="4dp"
             android:padding="24dp"
             android:scrollbars="vertical"
-            android:text="@string/lorem_ipsum_numbered"
+            android:text="@string/lottery_selection_guidelines_actual_text"
             android:textColor="@color/black"
             android:textSize="14sp" />
 

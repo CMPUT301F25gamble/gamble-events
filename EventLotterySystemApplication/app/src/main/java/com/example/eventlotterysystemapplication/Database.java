@@ -372,10 +372,10 @@ public class Database {
                 for (QueryDocumentSnapshot doc : task.getResult()) {
                     if (!doc.getString("organizerID").equals(user.getUserID())) {
                         DocumentReference eventRef = doc.getReference();
-                        CollectionReference regDocRef = eventRef.collection("Registration");
+                        CollectionReference regRef = eventRef.collection("Registration");
                         double waitListCapacity = doc.getDouble("maxWaitingListCapacity");
                         // Checks if wait list is not full
-                        Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
+                        Task<QuerySnapshot> regTask = regRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
                                 Event event = parseEvent(doc);
@@ -555,8 +555,8 @@ public class Database {
 
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        CollectionReference regDocRef = eventDocRef.collection("Registration");
-        regDocRef.get().addOnSuccessListener(querySnapshot -> {
+        CollectionReference regRef = eventDocRef.collection("Registration");
+        regRef.get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot regDoc: querySnapshot.getDocuments()) {
                 deleteTasks.add(regDoc.getReference().delete()

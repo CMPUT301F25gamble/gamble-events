@@ -70,4 +70,5 @@
     <string name="lottery">Lottery</string>
     <string name="admin">Admin</string>
     <string name="organizers">Organizers</string>
+    <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
 </resources>

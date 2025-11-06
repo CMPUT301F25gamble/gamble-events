@@ -26,7 +26,11 @@
         android:id="@+id/profile_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
         android:label="fragment_profile_ui"
-        tools:layout="@layout/fragment_profile_ui" />
+        tools:layout="@layout/fragment_profile_ui" >
+        <action
+            android:id="@+id/action_profile_ui_fragment_to_delete_profile_fragment"
+            app:destination="@id/delete_profile_fragment" />
+    </fragment>
     <fragment
         android:id="@+id/settings_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
@@ -40,7 +44,8 @@
     <fragment
         android:id="@+id/create_or_edit_event_fragment"
         android:name="com.example.eventlotterysystemapplication.CreateOrEditEventFragment"
-        android:label="create_or_edit_event_fragment" >
+        android:label="create_or_edit_event_fragment"
+        tools:layout="@layout/fragment_create_or_edit_event" >
         <action
             android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
@@ -48,9 +53,19 @@
     <fragment
         android:id="@+id/my_events_fragment"
         android:name="com.example.eventlotterysystemapplication.MyEventsFragment"
-        android:label="my_events_fragment" >
+        android:label="my_events_fragment"
+        tools:layout="@layout/fragment_my_events" >
         <action
             android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/delete_profile_fragment"
+        android:name="com.example.eventlotterysystemapplication.DeleteProfileFragment"
+        android:label="fragment_delete_profile"
+        tools:layout="@layout/fragment_delete_profile" >
+        <action
+            android:id="@+id/action_delete_profile_fragment_to_profile_ui_fragment"
+            app:destination="@id/profile_ui_fragment" />
     </fragment>
 </navigation>

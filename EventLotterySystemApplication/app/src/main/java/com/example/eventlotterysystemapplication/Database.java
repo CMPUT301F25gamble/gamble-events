@@ -279,75 +279,11 @@ public class Database {
                 return;
             }
 
-            Event event = parseEvent(eventTask.getResult());
+            Event event = parseEvent(eventTask.getResult(), listener);
             if (event != null) {
                 event.setEventID(eventID);
             }
 
-            /* takes data from registration subcollection and stores it in the entrant list
-            object that is owned by the event class
-            */
-            eventDocRef.collection("Registration").get().addOnCompleteListener(regTask -> {
-                if (!regTask.isSuccessful()) {
-                    listener.onComplete(Tasks.forException(
-                            new IllegalStateException("Failed to retrieve registration")
-                    ));
-                    return;
-                }
-
-                for (DocumentSnapshot entrantDoc : regTask.getResult()) {
-                    String status = entrantDoc.getString("status");
-                    switch (status) {
-                        case "waiting":
-                            getUser(entrantDoc.getId(), task -> {
-                                if (task.isSuccessful()) {
-                                    User user = task.getResult();
-                                    event.getEntrantList().addToWaiting(user);
-                                } else {
-                                    Log.e("Error", "Failed to get user", task.getException());
-                                }
-                            });
-                            break;
-                        case "chosen":
-                            getUser(entrantDoc.getId(), task -> {
-                                if (task.isSuccessful()) {
-                                    User user = task.getResult();
-                                    event.getEntrantList().addToChosen(user);
-                                } else {
-                                    Log.e("Error", "Failed to get user", task.getException());
-                                }
-                            });
-                            break;
-                        case "cancelled":
-                            getUser(entrantDoc.getId(), task -> {
-                                if (task.isSuccessful()) {
-                                    User user = task.getResult();
-                                    event.getEntrantList().addToCancelled(user);
-                                } else {
-                                    Log.e("Error", "Failed to get user", task.getException());
-                                }
-                            });
-                            break;
-                        case "finalized":
-                            getUser(entrantDoc.getId(), task -> {
-                                if (task.isSuccessful()) {
-                                    User user = task.getResult();
-                                    event.getEntrantList().addToFinalized(user);
-                                } else {
-                                    Log.e("Error", "Failed to get user", task.getException());
-                                }
-                            });
-                            break;
-                        default:
-                            listener.onComplete(Tasks.forException(
-                                    new IllegalStateException("Invalid status")
-                            ));
-                            return;
-                    }
-                }
-
-                listener.onComplete(Tasks.forResult(event));
-            });
         });
     }
 
@@ -377,7 +313,7 @@ public class Database {
                         Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
-                                Event event = parseEvent(doc);
+                                Event event = parseEvent(doc, );
                                 availableEvents.add(event);
                             }
                         });
@@ -407,43 +343,14 @@ public class Database {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
                         Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
-                        CollectionReference registration = eventDocRef.collection("Registration");
-                        List<Task<Void>> regTasks = new ArrayList<>();
 
-                        // Add waiting users
-                        for (User user : event.getEntrantList().getWaiting()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "waiting");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
-                        }
-
-                        // Add chosen users
-                        for (User user : event.getEntrantList().getChosen()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "chosen");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
-                        }
-
-                        // Add cancelled users
-                        for (User user : event.getEntrantList().getCancelled()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "cancelled");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
-                        }
-
-                        // Add finalized users
-                        for (User user : event.getEntrantList().getFinalized()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "finalized");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data));
-                        }
-
-                        Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-                            listener.onComplete(null);
+                        updateEventRegistration(event, eventDocRef, task1 -> {
+                            if (task1.isSuccessful()){
+                                Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                            } else {
+                                Log.e("Database", "Failed to add registration: " + task.getException());
+                                listener.onComplete(task);
+                            }
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
@@ -472,49 +379,13 @@ public class Database {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
-                        CollectionReference registration = eventDocRef.collection("Registration");
-                        List<Task<Void>> regTasks = new ArrayList<>();
-
-                        // Add waiting users
-                        for (User user : event.getEntrantList().getWaiting()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "waiting");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        // Add chosen users
-                        for (User user : event.getEntrantList().getChosen()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "chosen");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        // Add cancelled users
-                        for (User user : event.getEntrantList().getCancelled()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "cancelled");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        // Add finalized users
-                        for (User user : event.getEntrantList().getFinalized()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "finalized");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-                            TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-                            if (done.isSuccessful()) {
-                                tcs.setResult(null); // everything completed successfully
+                        updateEventRegistration(event, eventDocRef, task1 -> {
+                            if (task1.isSuccessful()){
+                                Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
                             } else {
-                                tcs.setException(done.getException());
+                                Log.e("Database", "Failed to update registration: " + task.getException());
+                                listener.onComplete(task);
                             }
-                            listener.onComplete(tcs.getTask());
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
@@ -533,17 +404,21 @@ public class Database {
         eventRef.whereEqualTo("organizerID", userID).get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
-                Event event = parseEvent(eventDoc);
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-                deleteEvent(event, task -> {
-                    if (task.isSuccessful()) {
-                        tcs.setResult(null);
-                    } else {
-                        Log.e("Database", "Failed to delete event");
-                        tcs.setException(task.getException());
+
+                Event event = parseEvent(eventDoc, parseEventTask -> {
+                    if (parseEventTask.isSuccessful()){
+                        deleteEvent(parseEventTask.getResult(), deleteEventTask -> {
+                            if (deleteEventTask.isSuccessful()) {
+                                tcs.setResult(null);
+                            } else {
+                                Log.e("Database", "Failed to delete event");
+                                tcs.setException(deleteEventTask.getException());
+                            }
+                        });
+                        deleteTasks.add(tcs.getTask());
                     }
                 });
-                deleteTasks.add(tcs.getTask());
             }
 
             Tasks.whenAllComplete(deleteTasks).addOnCompleteListener(done -> {
@@ -573,7 +448,7 @@ public class Database {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event parseEvent(DocumentSnapshot doc) {
+    public Event parseEvent(DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
 
         event.setEventID(doc.getId());
@@ -602,45 +477,138 @@ public class Database {
             event.setEntrantList(new EntrantList());
             Log.d("ParseEvent", "entrantList initialized");
 
-            CollectionReference registration = doc.getReference().collection("Registration");
-
-            // Add all the users in the waitingList
-            Query waitingQuery = registration.whereEqualTo("status", "waiting");
-
-            waitingQuery.get().addOnCompleteListener(task -> {
-                List<User> waitingUsersList = task.getResult().toObjects(User.class);
-                ArrayList<User> waitingUsersArrayList = new ArrayList<>(waitingUsersList);
-                event.setEntrantListValues(waitingUsersArrayList, 0);
+            parseEventRegistration(event, doc, task -> {
+                if (task.isSuccessful()){
+                    listener.onComplete(Tasks.forResult(event));
+                } else {
+                    // TODO Failure condition
+                }
             });
 
-            Query chosenQuery = registration.whereEqualTo("status", "chosen");
 
-            chosenQuery.get().addOnCompleteListener(task -> {
-                List<User> chosenUsersList = task.getResult().toObjects(User.class);
-                ArrayList<User> chosenUsersArrayList = new ArrayList<>(chosenUsersList);
-                event.setEntrantListValues(chosenUsersArrayList, 1);
-            });
-
-            Query cancelledQuery = registration.whereEqualTo("status", "cancelled");
-
-            cancelledQuery.get().addOnCompleteListener(task -> {
-                List<User> cancelledUsersList = task.getResult().toObjects(User.class);
-                ArrayList<User> cancelledUsersArrayList = new ArrayList<>(cancelledUsersList);
-                event.setEntrantListValues(cancelledUsersArrayList, 2);
-            });
-
-            Query finalizedQuery = registration.whereEqualTo("status", "finalized");
-
-            finalizedQuery.get().addOnCompleteListener(task -> {
-                List<User> finalizedUsersList = task.getResult().toObjects(User.class);
-                ArrayList<User> finalizedUsersArrayList = new ArrayList<>(finalizedUsersList);
-                event.setEntrantListValues(finalizedUsersArrayList, 0);
-            });
         }
 
         return event;
     }
 
+    /**
+     *
+     * @param event
+     * @param doc
+     * @param listener
+     */
+    public void updateEventRegistration(Event event, DocumentReference doc, OnCompleteListener<Void> listener){
+        CollectionReference registration = doc.collection("Registration");
 
+        List<Task<Void>> regTasks = new ArrayList<>();
+
+        // Add waiting users
+        for (User user : event.getEntrantList().getWaiting()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "waiting");
+            data.put("organizerID", event.getOrganizerID());
+            regTasks.add(registration.document(user.getUserID()).set(data));
+        }
+
+        // Add chosen users
+        for (User user : event.getEntrantList().getChosen()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "chosen");
+            data.put("organizerID", event.getOrganizerID());
+            regTasks.add(registration.document(user.getUserID()).set(data));
+        }
+
+        // Add cancelled users
+        for (User user : event.getEntrantList().getCancelled()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "cancelled");
+            data.put("organizerID", event.getOrganizerID());
+            regTasks.add(registration.document(user.getUserID()).set(data));
+        }
+
+        // Add finalized users
+        for (User user : event.getEntrantList().getFinalized()) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "finalized");
+            data.put("organizerID", event.getOrganizerID());
+            regTasks.add(registration.document(user.getUserID()).set(data));
+        }
+
+        Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
+            listener.onComplete(null);
+        });
+    }
+
+    /**
+     * takes data from registration subcollection and stores it in the entrant list
+     * object that is owned by the event class
+     * @param event
+     * @param doc
+     * @param listener
+     */
+    public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Void> listener){
+        CollectionReference registration = doc.getReference().collection("Registration");
+
+        registration.get().addOnCompleteListener(regTask -> {
+            if (!regTask.isSuccessful()) {
+                listener.onComplete(Tasks.forException(
+                        new IllegalStateException("Failed to retrieve registration")
+                ));
+                return;
+            }
+
+            for (DocumentSnapshot entrantDoc : regTask.getResult()) {
+                String status = entrantDoc.getString("status");
+                switch (status) {
+                    case "waiting":
+                        getUser(entrantDoc.getId(), task -> {
+                            if (task.isSuccessful()) {
+                                User user = task.getResult();
+                                event.addToEntrantList(user, 0);
+                            } else {
+                                Log.e("Error", "Failed to get user", task.getException());
+                            }
+                        });
+                        break;
+                    case "chosen":
+                        getUser(entrantDoc.getId(), task -> {
+                            if (task.isSuccessful()) {
+                                User user = task.getResult();
+                                event.addToEntrantList(user, 1);
+                            } else {
+                                Log.e("Error", "Failed to get user", task.getException());
+                            }
+                        });
+                        break;
+                    case "cancelled":
+                        getUser(entrantDoc.getId(), task -> {
+                            if (task.isSuccessful()) {
+                                User user = task.getResult();
+                                event.addToEntrantList(user, 2);
+                            } else {
+                                Log.e("Error", "Failed to get user", task.getException());
+                            }
+                        });
+                        break;
+                    case "finalized":
+                        getUser(entrantDoc.getId(), task -> {
+                            if (task.isSuccessful()) {
+                                User user = task.getResult();
+                                event.addToEntrantList(user, 3);
+                            } else {
+                                Log.e("Error", "Failed to get user", task.getException());
+                            }
+                        });
+                        break;
+                    default:
+                        listener.onComplete(Tasks.forException(
+                                new IllegalStateException("Invalid status")
+                        ));
+                        return;
+                }
+            }
+            listener.onComplete(null);
+        });
+    }
 
 }

@@ -9,7 +9,11 @@
         android:id="@+id/events_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
         android:label="fragment_events_ui"
-        tools:layout="@layout/fragment_events_ui" />
+        tools:layout="@layout/fragment_events_ui" >
+        <action
+            android:id="@+id/action_events_ui_fragment_to_create_or_edit_event_fragment"
+            app:destination="@id/create_or_edit_event_fragment" />
+    </fragment>
     <fragment
         android:id="@+id/notifications_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.NotificationsUIFragment"
@@ -30,4 +34,12 @@
         android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
         android:label="fragment_first_time_input"
         tools:layout="@layout/fragment_first_time_input" />
+    <fragment
+        android:id="@+id/create_or_edit_event_fragment"
+        android:name="com.example.eventlotterysystemapplication.CreateOrEditEventFragment"
+        android:label="create_or_edit_event_fragment" >
+        <action
+            android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
+    </fragment>
 </navigation>

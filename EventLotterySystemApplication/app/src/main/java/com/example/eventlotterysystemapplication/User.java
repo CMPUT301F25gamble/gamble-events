@@ -20,10 +20,10 @@ public class User{
     public User() {
 
     }
-    public User(String email, String phoneNumber, String name, String deviceID) {
+    public User(String name, String email, String phoneNumber , String deviceID) {
+        this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.name = name;
         this.deviceID = deviceID;
         isAdmin = false;
     }

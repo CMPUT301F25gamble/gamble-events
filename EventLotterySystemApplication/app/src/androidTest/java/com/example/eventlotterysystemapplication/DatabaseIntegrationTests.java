@@ -56,7 +56,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testAddUser() throws InterruptedException {
-        User user = new User("john@john.com", "19034623", "John", "deviceID1");
+        User user = new User("John", "john@john.com", "19034623", "deviceID1");
 
         // Adds user
         database.addUser(user, task -> {
@@ -80,7 +80,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserStartingPoint() throws Exception {
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID2");
+        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2");
 
         // Adds user
         database.addUser(user, task -> {
@@ -149,7 +149,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserOrganizedEventsStartingPoint() throws Exception {
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID3");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3");
 
         // Adds user
         database.addUser(user, task -> {
@@ -250,7 +250,6 @@ public class DatabaseIntegrationTests {
         // Deletes all events organized by user
         database.deleteOrganizedEvents(user, task -> {
             // Verifies deletion
-            CountDownLatch postDeleteLatch = new CountDownLatch(1);
             final List<DocumentSnapshot> postDeleteEvents = new ArrayList<>();
 
             try {
@@ -265,7 +264,6 @@ public class DatabaseIntegrationTests {
         eventRef.whereEqualTo("organizerID", userID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Deletes user last
-                CountDownLatch deleteUserLatch = new CountDownLatch(1);
                 database.deleteUser(user, task1 -> {
 
                 });
@@ -275,37 +273,31 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testUpdateUser() throws InterruptedException{
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID4");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4");
 
-        CountDownLatch addUserLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addUserLatch.countDown());
-        addUserLatch.await(10, TimeUnit.SECONDS);
+        database.addUser(user, task -> {
+            if (task.isSuccessful()){
+                DocumentReference userDocRef = userRef.document(user.getUserID());
+                createdUserIds.add(user.getUserID());
 
-        DocumentReference userDocRef = userRef.document(user.getUserID());
-        createdUserIds.add(user.getUserID());
+                user.updateUserInfo(user, "Roberto", null, null);
 
-        CountDownLatch updateUserLatch = new CountDownLatch(1);
-        user.updateUserInfo(user, "Roberto", null, null);
-        updateUserLatch.countDown();
-        updateUserLatch.await(10, TimeUnit.SECONDS);
-
-        CountDownLatch latch = new CountDownLatch(1);
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Checks values in the Firebase document
-                assertEquals("Roberto", documentSnapshot.getString("name"));
-                assertEquals("deviceID4", documentSnapshot.getString("deviceID"));
-                assertEquals("wizard@wizard.com", documentSnapshot.getString("email"));
-                assertEquals("676767", documentSnapshot.getString("phoneNumber"));
-                // Checks values in the user object
-                assertEquals("Roberto", user.getName());
-                assertEquals("deviceID4", user.getDeviceID());
-                assertEquals("wizard@wizard.com", user.getEmail());
-                assertEquals("676767", user.getPhoneNumber());
+                userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Checks values in the Firebase document
+                        assertEquals("Roberto", documentSnapshot.getString("name"));
+                        assertEquals("deviceID4", documentSnapshot.getString("deviceID"));
+                        assertEquals("wizard@wizard.com", documentSnapshot.getString("email"));
+                        assertEquals("676767", documentSnapshot.getString("phoneNumber"));
+                        // Checks values in the user object
+                        assertEquals("Roberto", user.getName());
+                        assertEquals("deviceID4", user.getDeviceID());
+                        assertEquals("wizard@wizard.com", user.getEmail());
+                        assertEquals("676767", user.getPhoneNumber());
+                    }
+                });
             }
-            latch.countDown();
         });
-        latch.await(5, TimeUnit.SECONDS);
     }
 
 //    @Test
@@ -327,34 +319,40 @@ public class DatabaseIntegrationTests {
 //        );
 //
 //        // Adds both events
-//        CountDownLatch eventLatch1 = new CountDownLatch(1);
 //        database.addEvent(event1, task -> eventLatch1.countDown());
 //        eventLatch1.await(20, TimeUnit.SECONDS);
 //    }
 
     @Test
     public void testViewAvailableEvents() throws InterruptedException{
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID5");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5");
 
-        CountDownLatch addUserLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addUserLatch.countDown());
-        addUserLatch.await(10, TimeUnit.SECONDS);
-        createdUserIds.add(user.getUserID());
+        database.addUser(user, task -> {
+            if (task.isSuccessful()){
+                createdUserIds.add(user.getUserID());
 
-        CountDownLatch latch = new CountDownLatch(1);
-        database.viewAvailableEvents(user, task ->{
-            if (task.isSuccessful()) {
-                List<Event> events = task.getResult();
-                assertEquals(1, events.size()); // watch party only
+                database.viewAvailableEvents(user, task1 ->{
+                    if (task1.isSuccessful()) {
+                        List<Event> events = task1.getResult();
+                        assertEquals(1, events.size()); // watch party only
+                    }
+                });
             }
-            latch.countDown();
         });
-        latch.await(5, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testGetEvent(){
+
+    }
+
+    @Test
+    public void testAddEvent(){
+
     }
 
 //    @Test
 //    public void updateEventEntrant() throws InterruptedException {
-//        CountDownLatch latch = new CountDownLatch(1);
 //
 //        database.getEvent("dmc35tBWVUsLX6foqBDt", task -> {
 //            if (task.isSuccessful()) {
@@ -396,7 +394,6 @@ public class DatabaseIntegrationTests {
             return;
         }
 
-        CountDownLatch latch = new CountDownLatch(1);
         WriteBatch batch = db.batch();
 
         for (String userId : createdUserIds) {
@@ -406,9 +403,11 @@ public class DatabaseIntegrationTests {
             batch.delete(eventRef.document(eventId));
         }
 
-        batch.commit().addOnCompleteListener(task -> latch.countDown());
-        latch.await(10, TimeUnit.SECONDS);
-        auth.signOut();
+        batch.commit().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                auth.signOut();
+            }
+        });
     }
 }
 

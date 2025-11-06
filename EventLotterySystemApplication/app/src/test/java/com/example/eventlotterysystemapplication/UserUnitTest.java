@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class UserUnitTest {
-    private User user = new User("johndoe@gmail.com", "00000", "John Doe", "deviceID");
+    private User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID");
 
     @Test
     public void testUpdateAllUserInfo() {

@@ -3,12 +3,9 @@ package com.example.eventlotterysystemapplication;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
-import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;

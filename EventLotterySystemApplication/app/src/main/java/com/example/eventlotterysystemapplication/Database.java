@@ -429,6 +429,12 @@ public class Database {
         });
     }
 
+    /**
+     * First deletes all of the user documents in its registration subcollection, if it has one.
+     * Then, it delete the event too.
+     * @param event The event to be deleted
+     * @param listener
+     */
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
         CollectionReference regDocRef = eventDocRef.collection("Registration");
@@ -449,6 +455,14 @@ public class Database {
         // TODO: implement this method
     }
 
+    /**
+     * Given some DocumentSnapshot from the "Event" collection, this method takes the fields from
+     * that document and manually matches it up with the fields from the event class, giving us fine
+     * control over what is added to what fields in this class
+     * @param doc The document from the Event collection to be parsed
+     * @param listener
+     * @return
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event parseEvent(DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
@@ -494,9 +508,12 @@ public class Database {
     }
 
     /**
-     *
-     * @param event
-     * @param doc
+     * Given some event and a document containing information for the event, this function will take
+     * the users in the entrant list of the event and add them to the "Registration" subcollection
+     * of the event's document
+     * @param event The event document from which we want to extract the entrant list data
+     * @param doc The DocumentReference of the document that we want to insert the users in the
+     *            entrant list to the registration subcollection
      * @param listener
      */
     public void updateEventRegistration(Event event, DocumentReference doc, OnCompleteListener<Void> listener){
@@ -542,10 +559,11 @@ public class Database {
     }
 
     /**
-     * takes data from registration subcollection and stores it in the entrant list
+     * Takes data from registration subcollection and stores it in the entrant list
      * object that is owned by the event class
-     * @param event
-     * @param doc
+     * @param event The event whose entrant lists we want to populate
+     * @param doc The document from which we want to extract the entrants from its registration
+     *            subcollection
      * @param listener
      */
     public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Void> listener){

@@ -403,6 +403,7 @@ public class Event {
                 break;
             case 3:
                 this.entrantList.setFinalized(entrantListValues);
+                break;
             default:
                 throw new IllegalArgumentException("List number out of range");
         }
@@ -441,6 +442,7 @@ public class Event {
                 break;
             case 3:
                 this.entrantList.removeFromCancelled(user);
+                break;
             default:
                 throw new IllegalArgumentException("List number out of range");
         }

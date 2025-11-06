@@ -601,6 +601,41 @@ public class Database {
         if (event.getEntrantList() == null) {
             event.setEntrantList(new EntrantList());
             Log.d("ParseEvent", "entrantList initialized");
+
+            CollectionReference registration = doc.getReference().collection("Registration");
+
+            // Add all the users in the waitingList
+            Query waitingQuery = registration.whereEqualTo("status", "waiting");
+
+            waitingQuery.get().addOnCompleteListener(task -> {
+                List<User> waitingUsersList = task.getResult().toObjects(User.class);
+                ArrayList<User> waitingUsersArrayList = new ArrayList<>(waitingUsersList);
+                event.setEntrantListValues(waitingUsersArrayList, 0);
+            });
+
+            Query chosenQuery = registration.whereEqualTo("status", "chosen");
+
+            chosenQuery.get().addOnCompleteListener(task -> {
+                List<User> chosenUsersList = task.getResult().toObjects(User.class);
+                ArrayList<User> chosenUsersArrayList = new ArrayList<>(chosenUsersList);
+                event.setEntrantListValues(chosenUsersArrayList, 1);
+            });
+
+            Query cancelledQuery = registration.whereEqualTo("status", "cancelled");
+
+            cancelledQuery.get().addOnCompleteListener(task -> {
+                List<User> cancelledUsersList = task.getResult().toObjects(User.class);
+                ArrayList<User> cancelledUsersArrayList = new ArrayList<>(cancelledUsersList);
+                event.setEntrantListValues(cancelledUsersArrayList, 2);
+            });
+
+            Query finalizedQuery = registration.whereEqualTo("status", "finalized");
+
+            finalizedQuery.get().addOnCompleteListener(task -> {
+                List<User> finalizedUsersList = task.getResult().toObjects(User.class);
+                ArrayList<User> finalizedUsersArrayList = new ArrayList<>(finalizedUsersList);
+                event.setEntrantListValues(finalizedUsersArrayList, 0);
+            });
         }
 
         return event;

@@ -2,21 +2,29 @@ package com.example.eventlotterysystemapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirstTimeUserInfoFragment extends Fragment {
+    private static final String TAG = "FirstTimeUserInfo"; // For debugging
 
     private FragmentFirstTimeInputBinding binding;
+    private Database database;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -29,6 +37,8 @@ public class FirstTimeUserInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        database = new Database();
+
         // Cancel button to go back to previous register screen
         binding.registerCancelButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
@@ -37,15 +47,42 @@ public class FirstTimeUserInfoFragment extends Fragment {
 
         // Confirm button to get user inputs and move to content activity
         binding.registerConfirmButton.setOnClickListener(v -> {
-            // Get user input from text fields
-            // Todo: add functionality for using these values to create a new account
-            String userName = binding.nameEditText.getText().toString();
-            String userEmail = binding.emailEditText.getText().toString();
-            String userPhone = binding.phoneEditText.getText().toString();
+            String userName = binding.nameEditText.getText().toString().trim();
+            String userEmail = binding.emailEditText.getText().toString().trim();
+            String userPhone = binding.phoneEditText.getText().toString().trim();
 
-            // Todo: Add functionality to verify that the user has input every field
-            NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
-                    .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
+            if (userName.isEmpty()) {
+                binding.nameEditText.setError("Name is required");
+                return;
+            }
+            if (userEmail.isEmpty()) {
+                binding.emailEditText.setError("Email is required");
+                return;
+            }
+
+            // Build user object
+            User user = new User();
+            user.setName(userName);
+            user.setEmail(userEmail);
+            if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
+
+            // Add to database
+            database.addUser(user, task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
+                    NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                            .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
+                } else {
+                    Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                    Log.e("Database", "User registration failed", task.getException());
+                }
+            });
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

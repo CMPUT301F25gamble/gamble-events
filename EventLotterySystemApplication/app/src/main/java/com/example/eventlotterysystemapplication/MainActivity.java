@@ -21,8 +21,7 @@ import com.google.firebase.installations.FirebaseInstallations;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
-    // Get an instance of the Firestore Database
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Database database = new Database();
 
     /**
      * Checks if user is registered via device
@@ -45,28 +44,21 @@ public class MainActivity extends AppCompatActivity {
         FirebaseInstallations.getInstance().getId()
                 .addOnSuccessListener(deviceId -> {
                     Log.d(TAG, "Firebase Device ID: " + deviceId);
-
-                    // FOR TESTING - skip registration if it matches
-                    String testDeviceId = "fNnBwGwhaYStDGG6S3vs8sB52PU2";
-
-                    // Force test case uncomment:
-                    // deviceId = testDeviceId;
-
-                    // Reference the collection
-                    CollectionReference usersRef = db.collection("User");
-
-                    // Check Firestore for device ID
-                    usersRef.document(deviceId).get().addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Log.d(TAG, "Device registered in Firestore. Going to content activity.");
-                            goToContentActivity();
+                    // String test = "deviceID67"; // replace deviceId with test to test going to content activity
+                    database.queryDeviceID(deviceId, task -> {
+                        if (task.isSuccessful()) {
+                            Boolean exists = task.getResult();
+                            if (exists != null && exists) {
+                                Log.d(TAG, "Device registered. Going to content activity.");
+                                goToContentActivity();
+                            } else {
+                                Log.d(TAG, "Device not registered. Going to registration activity.");
+                                goToRegisterActivity();
+                            }
                         } else {
-                            Log.d(TAG, "Device not registered. Going to registration activity");
+                            Log.e(TAG, "Error querying deviceID", task.getException());
                             goToRegisterActivity();
                         }
-                    }).addOnFailureListener(e -> {
-                        Log.e(TAG, "Error checking registration", e);
-                        goToRegisterActivity();
                     });
                 })
                 .addOnFailureListener(e -> {

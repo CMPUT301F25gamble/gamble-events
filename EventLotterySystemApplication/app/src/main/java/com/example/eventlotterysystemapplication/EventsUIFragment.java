@@ -77,10 +77,16 @@ public class EventsUIFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Back Button to return to Events page
+        // Create Event button navigates to event creation page
         binding.createEventButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(EventsUIFragment.this)
                     .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment);
+        });
+
+        // My Events button navigates to my events page
+        binding.myEventsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
         });
     }
 }

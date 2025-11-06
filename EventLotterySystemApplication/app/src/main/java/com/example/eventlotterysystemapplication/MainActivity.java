@@ -13,9 +13,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.installations.FirebaseInstallations;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity"; // For debugging
+    // Get an instance of the Firestore Database
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    /**
+     * Checks if user is registered via device
+     * Takes user to event screen if registered, otherwise, to registration screen
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,37 +41,58 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Todo: add code to determine if device has already registered
-        // Temporary variable to determine if device has already registered
-        boolean hasRegistered = false;
+        // Get device's unique ID
+        FirebaseInstallations.getInstance().getId()
+                .addOnSuccessListener(deviceId -> {
+                    Log.d(TAG, "Firebase Device ID: " + deviceId);
 
-        if (hasRegistered)  {
-            // Create intent
-            Intent goToContentIntent = new Intent(this, ContentActivity.class);
-            startActivity(goToContentIntent);
-        }
-        else {
-            // Create Intent
-            Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
-            startActivity(goToRegisterIntent);
-            finish();
-        }
+                    // FOR TESTING - skip registration if it matches
+                    String testDeviceId = "fNnBwGwhaYStDGG6S3vs8sB52PU2";
 
-        /*
-        // From Gaurang Branch
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        String action = intent.getAction();
-        assert action != null;
-        if (data != null){
-            String eventID = data.getLastPathSegment();
+                    // Force test case uncomment:
+                    // deviceId = testDeviceId;
 
+                    // Reference the collection
+                    CollectionReference usersRef = db.collection("User");
 
-            // TODO First check that the deviceID and user are registered in the database, and only
-            //  then do we open up events page with eventID
-        } else {
-            setContentView(R.layout.activity_main);
-        }
-        */
+                    // Check Firestore for device ID
+                    usersRef.document(deviceId).get().addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Log.d(TAG, "Device registered in Firestore. Going to content activity.");
+                            goToContentActivity();
+                        } else {
+                            Log.d(TAG, "Device not registered. Going to registration activity");
+                            goToRegisterActivity();
+                        }
+                    }).addOnFailureListener(e -> {
+                        Log.e(TAG, "Error checking registration", e);
+                        goToRegisterActivity();
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to get device ID", e);
+                    goToRegisterActivity();
+                });
     }
+
+    /**
+     * DeviceID found, send user to content activity
+     */
+    private void goToContentActivity() {
+        // Create intent
+        Intent goToContentIntent = new Intent(this, ContentActivity.class);
+        startActivity(goToContentIntent);
+    }
+
+    /**
+     * If deviceID not found, send user to register activity
+     * Used as fallback
+     */
+    private void goToRegisterActivity() {
+        // Create Intent
+        Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
+        startActivity(goToRegisterIntent);
+        finish();
+    }
+
 }

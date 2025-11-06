@@ -29,5 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             return insets;
         });
+
+        // When
     }
 }

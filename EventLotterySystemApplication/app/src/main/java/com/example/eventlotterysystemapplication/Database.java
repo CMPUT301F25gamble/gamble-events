@@ -26,16 +26,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ */
 public class Database {
     CollectionReference userRef;
     CollectionReference eventRef;
     CollectionReference notificationRef;
     FirebaseAuth firebaseAuth;
 
+    /**
+     *
+     */
     public Database() {
         this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
     }
 
+    /**
+     *
+     * @param firestore
+     * @param firebaseAuth
+     */
     public Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
         this.userRef = firestore.collection("User");
         this.eventRef = firestore.collection("Event");

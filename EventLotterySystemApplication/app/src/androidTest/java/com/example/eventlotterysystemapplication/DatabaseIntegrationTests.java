@@ -59,175 +59,218 @@ public class DatabaseIntegrationTests {
         User user = new User("john@john.com", "19034623", "John", "deviceID1");
 
         // Adds user
-        CountDownLatch addLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addLatch.countDown());
-        addLatch.await(10, TimeUnit.SECONDS);
+        database.addUser(user, task -> {
+            // Verifies user added
+            final List<DocumentSnapshot> results = new ArrayList<>();
 
-        // Verifies user added
-        CountDownLatch verifyLatch = new CountDownLatch(1);
-        final List<DocumentSnapshot> results = new ArrayList<>();
+            userRef.whereEqualTo("deviceID", user.getDeviceID())
+                    .get()
+                    .addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            results.addAll(task1.getResult().getDocuments());
+                        }
+                    });
 
-        userRef.whereEqualTo("deviceID", user.getDeviceID())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        results.addAll(task.getResult().getDocuments());
-                    }
-                    verifyLatch.countDown();
-                });
+            assertEquals(1, results.size());
 
-        verifyLatch.await(10, TimeUnit.SECONDS);
-        assertEquals(1, results.size());
-
-        // Tracks for cleanup
-        createdUserIds.add(results.get(0).getId());
+            // Tracks for cleanup
+            createdUserIds.add(results.get(0).getId());
+        });
     }
 
     @Test
-    public void testDeleteUser() throws Exception {
+    public void testDeleteUserStartingPoint() throws Exception {
         User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID2");
 
         // Adds user
         database.addUser(user, task -> {
             if (task.isSuccessful()) {
-                // Confirms added user exists
-                final List<DocumentSnapshot> beforeDelete = new ArrayList<>();
-                userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        beforeDelete.addAll(task1.getResult().getDocuments());
-
-                        assertEquals(1, beforeDelete.size());
-
-                        // Deletes user
-                        database.deleteUser(user, task2 -> {
-                            if (task2.isSuccessful()) {
-                                // Verifies deletion
-                                final List<DocumentSnapshot> afterDelete = new ArrayList<>();
-                                userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task3 -> {
-                                    if (task3.isSuccessful()) {
-                                        afterDelete.addAll(task3.getResult().getDocuments());
-                                        assertEquals(0, afterDelete.size());
-                                    } else {
-                                        Log.e("Database", "Verification of delete failed");
-                                    }
-                                });
-                            } else {
-                                Log.e("Database", "Deletion failed");
-                            }
-                        });
-                    } else {
-                        Log.e("Database", "Verification of User being added to database failed");
-                    }
-                });
+                try {
+                    testDeleteUserStep2(user);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 Log.e("Database", "Adding user failed");
             }
         });
     }
 
+    public void testDeleteUserStep2(User user) throws Exception {
+        // Confirms added user exists
+        final List<DocumentSnapshot> beforeDelete = new ArrayList<>();
+        userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                beforeDelete.addAll(task.getResult().getDocuments());
+
+                assertEquals(1, beforeDelete.size());
+
+                try {
+                    testDeleteUserStep3(user);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            } else {
+                Log.e("Database", "Verification of User being added to database failed");
+            }
+        });
+    }
+
+    public void testDeleteUserStep3(User user) throws Exception{
+
+
+        // Deletes user
+        database.deleteUser(user, task -> {
+            if (task.isSuccessful()) {
+                // Verifies deletion
+                try {
+                    testDeleteUserStep3(user);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                Log.e("Database", "Deletion failed");
+            }
+        });
+    }
+
+    public void testDeleteUserStep4(User user) throws Exception{
+        final List<DocumentSnapshot> afterDelete = new ArrayList<>();
+        userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                afterDelete.addAll(task.getResult().getDocuments());
+                assertEquals(0, afterDelete.size());
+            } else {
+                Log.e("Database", "Verification of delete failed");
+            }
+        });
+    }
+
     @Test
-    public void testDeleteUserOrganizedEvents() throws Exception {
+    public void testDeleteUserOrganizedEventsStartingPoint() throws Exception {
         User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID3");
 
         // Adds user
-        CountDownLatch addUserLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addUserLatch.countDown());
-        addUserLatch.await(10, TimeUnit.SECONDS);
+        database.addUser(user, task -> {
+            if (task.isSuccessful()){
+                try {
+                    testDeleteUserOrganizedEventsStep2(user);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
+
+    }
+
+    public void testDeleteUserOrganizedEventsStep2(User user) throws Exception{
         // Retrieves user ID from Firestore
-        CountDownLatch getUserLatch = new CountDownLatch(1);
         final List<DocumentSnapshot> userDocs = new ArrayList<>();
 
         userRef.whereEqualTo("deviceID", user.getDeviceID()).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 userDocs.addAll(task.getResult().getDocuments());
+
+                assertEquals(1, userDocs.size());
+
+                String userID = user.getUserID();
+                createdUserIds.add(userID);
+
+                // Creates events for the user
+                Event event1 = new Event(
+                        "Wizard Training",
+                        "Learn how to pass your midterms",
+                        "Online",
+                        new String[]{"magic", "training"},
+                        userID,
+                        "2025-11-15T14:00",
+                        "2025-11-15T16:00",
+                        "2025-11-01T23:59",
+                        "2025-11-10T23:59",
+                        "2025-11-12T23:59",
+                        50,
+                        20
+                );
+
+                Event event2 = new Event(
+                        "Skiing",
+                        "Everyone should go skiing at Kicking Horse",
+                        "Kicking Horse Resort",
+                        new String[]{"ski", "outdoors"},
+                        userID,
+                        "2025-12-20T09:00",
+                        "2025-12-20T12:00",
+                        "2025-11-15T23:59",
+                        "2025-11-30T23:59",
+                        "2025-12-05T23:59",
+                        30,
+                        10
+                );
+
+                database.addEvent(event1, task1 -> {
+                    if (task1.isSuccessful()){
+                        database.addEvent(event2, task2 -> {
+                            try {
+                                testDeleteUserOrganizedEventsStep3(user, userID);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    }
+                });
             }
-            getUserLatch.countDown();
         });
-        getUserLatch.await(10, TimeUnit.SECONDS);
-        assertEquals(1, userDocs.size());
+    }
 
-        String userID = user.getUserID();
-        createdUserIds.add(userID);
-
-        // Creates events for the user
-        Event event1 = new Event(
-                "Wizard Training",
-                "Learn how to pass your midterms",
-                "Online",
-                new String[]{"magic", "training"},
-                userID,
-                "2025-11-15T14:00",
-                "2025-11-15T16:00",
-                "2025-11-01T23:59",
-                "2025-11-10T23:59",
-                "2025-11-12T23:59",
-                50,
-                20
-        );
-
-        Event event2 = new Event(
-                "Skiing",
-                "Everyone should go skiing at Kicking Horse",
-                "Kicking Horse Resort",
-                new String[]{"ski", "outdoors"},
-                userID,
-                "2025-12-20T09:00",
-                "2025-12-20T12:00",
-                "2025-11-15T23:59",
-                "2025-11-30T23:59",
-                "2025-12-05T23:59",
-                30,
-                10
-        );
-
-        // Adds both events
-        CountDownLatch eventLatch1 = new CountDownLatch(1);
-        database.addEvent(event1, task -> eventLatch1.countDown());
-        eventLatch1.await(10, TimeUnit.SECONDS);
-
-        CountDownLatch eventLatch2 = new CountDownLatch(1);
-        database.addEvent(event2, task -> eventLatch2.countDown());
-        eventLatch2.await(10, TimeUnit.SECONDS);
-
+    public void testDeleteUserOrganizedEventsStep3(User user, String userID) throws Exception{
         // Confirms events added
-        CountDownLatch preDeleteLatch = new CountDownLatch(1);
         final List<DocumentSnapshot> preDeleteEvents = new ArrayList<>();
 
         eventRef.whereEqualTo("organizerID", userID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 preDeleteEvents.addAll(task.getResult().getDocuments());
+                assertTrue(preDeleteEvents.size() == 2);
+
+                for (DocumentSnapshot doc : preDeleteEvents) {
+                    createdEventIds.add(doc.getId());
+                }
+
+                try {
+                    testDeleteUserOrganizedEventsStep4(user, userID);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
-            preDeleteLatch.countDown();
         });
-        preDeleteLatch.await(10, TimeUnit.SECONDS);
-        assertTrue(preDeleteEvents.size() >= 2);
+    }
 
-        for (DocumentSnapshot doc : preDeleteEvents) {
-            createdEventIds.add(doc.getId());
-        }
-
+    public void testDeleteUserOrganizedEventsStep4(User user, String userID) throws Exception{
         // Deletes all events organized by user
-        CountDownLatch deleteEventsLatch = new CountDownLatch(1);
-        database.deleteOrganizedEvents(user, task -> deleteEventsLatch.countDown());
-        deleteEventsLatch.await(15, TimeUnit.SECONDS);
+        database.deleteOrganizedEvents(user, task -> {
+            // Verifies deletion
+            CountDownLatch postDeleteLatch = new CountDownLatch(1);
+            final List<DocumentSnapshot> postDeleteEvents = new ArrayList<>();
 
-//        // Verifies deletion
-//        CountDownLatch postDeleteLatch = new CountDownLatch(1);
-//        final List<DocumentSnapshot> postDeleteEvents = new ArrayList<>();
-//        eventRef.whereEqualTo("organizerID", userID).get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                postDeleteEvents.addAll(task.getResult().getDocuments());
-//            }
-//            postDeleteLatch.countDown();
-//        });
-//        postDeleteLatch.await(10, TimeUnit.SECONDS);
-//        assertEquals(0, postDeleteEvents.size());
-//
-//        // Deletes user last
-//        CountDownLatch deleteUserLatch = new CountDownLatch(1);
-//        database.deleteUser(user, task -> deleteUserLatch.countDown());
-//        deleteUserLatch.await(10, TimeUnit.SECONDS);
+            try {
+                testDeleteUserOrganizedEventsStep5(user, userID);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void testDeleteUserOrganizedEventsStep5(User user, String userID) throws Exception{
+        eventRef.whereEqualTo("organizerID", userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Deletes user last
+                CountDownLatch deleteUserLatch = new CountDownLatch(1);
+                database.deleteUser(user, task1 -> {
+
+                });
+            }
+        });
     }
 
     @Test

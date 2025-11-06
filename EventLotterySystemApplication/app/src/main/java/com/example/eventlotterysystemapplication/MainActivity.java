@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         assert action != null;
         if (data != null){
             String eventID = data.getLastPathSegment();
-
+            setContentView(R.layout.activity_main);
 
             // TODO First check that the deviceID and user are registered in the database, and only
             //  then do we open up events page with eventID

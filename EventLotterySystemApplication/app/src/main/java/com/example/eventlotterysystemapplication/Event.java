@@ -576,15 +576,36 @@ public class Event {
 
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
+
+        Database db = new Database();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     @Exclude
     public void addPoster(Bitmap poster){
         posters.add(poster);
+
+        Database db = new Database();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
+
+        Database db = new Database();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public void deletePoster(int position) {
@@ -593,6 +614,13 @@ public class Event {
         } else {
             Log.e("Poster Removal", "Index out of bounds");
         }
+
+        Database db = new Database();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
     }
 
     public Bitmap getQRCodeBitmap() {

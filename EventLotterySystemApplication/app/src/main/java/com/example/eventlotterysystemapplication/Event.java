@@ -6,9 +6,6 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
-
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
@@ -28,9 +25,8 @@ public class Event {
     private String description;
     private String place;
     private ArrayList<String> eventTags;
-    private  User organizer;
     private String organizerID;
-    private  EntrantList entrantList;
+    private EntrantList entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
 
@@ -95,15 +91,6 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = -1; // Default as no limit
-
-        Database db = new Database();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Database", "Cannot get user info");
-            }
-        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -132,16 +119,6 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = -1; // Default as no limit
-
-        Database db = new Database();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Database", "Cannot get user info");
-            }
-        });
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -370,16 +347,6 @@ public class Event {
     }
 
     @Exclude
-    public User getOrganizer() {
-        return organizer;
-    }
-
-    @Exclude
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
-    }
-
-    @Exclude
     public EntrantList getEntrantList() {
         return entrantList;
     }
@@ -569,6 +536,5 @@ public class Event {
         QRCodeImageView.setImageBitmap(QRCodeBitmap);
         return QRCodeImageView;
     }
-
 
 }

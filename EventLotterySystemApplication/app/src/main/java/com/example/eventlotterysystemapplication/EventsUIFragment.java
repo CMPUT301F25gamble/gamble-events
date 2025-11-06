@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 import com.google.firebase.installations.FirebaseInstallations;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +28,10 @@ public class EventsUIFragment extends Fragment {
     */
     private FragmentEventsUiBinding binding;
     private Database database;
+
+    private ArrayList<Event> eventsList;
+
+    private User currentUser;
 
 
     public EventsUIFragment() {
@@ -47,6 +54,19 @@ public class EventsUIFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
+        database = new Database();
+
+        // get user from database
+        FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
+            database.getUserFromDeviceID(deviceId, task -> {
+               if (task.isSuccessful()) {
+                   currentUser = task.getResult();
+               } else {
+                   Log.e("EventsUIFragment", "Error getting user from database", task.getException());
+               }
+            });
+        });
+
         return binding.getRoot();
     }
 

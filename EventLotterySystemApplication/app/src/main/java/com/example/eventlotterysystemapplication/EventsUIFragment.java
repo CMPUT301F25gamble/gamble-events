@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
@@ -33,6 +34,9 @@ public class EventsUIFragment extends Fragment {
     // Holds event names to display in the ListView
     private ArrayAdapter<String> eventNamesAdapter;
     private final ArrayList<String> eventNames = new ArrayList<>();
+
+    // Parallel list to keep Firestore document IDs (to then pass onto event details screen)
+    private final ArrayList<String> docIds = new ArrayList<>();
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -108,27 +112,49 @@ public class EventsUIFragment extends Fragment {
                     .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
         });
 
+        // Show loading and hide content until it is fetched
+        binding.loadingEventUi.setVisibility(View.VISIBLE);
+        binding.contentGroupEventsUi.setVisibility(View.GONE);
+
         // Fetch all Event docs and display their "name" field in the listView
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Event")
-                .get()
-                .addOnSuccessListener(qs -> {
-                    eventNames.clear();
-                    for (DocumentSnapshot doc : qs.getDocuments()) {
-                        String eventName = doc.getString("name");
+            .get()
+            .addOnSuccessListener(qs -> {
+                // Hide loading and show content
+                binding.loadingEventUi.setVisibility(View.GONE);
+                binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+                eventNames.clear();
+                for (DocumentSnapshot doc : qs.getDocuments()) {
+                    String eventName = doc.getString("name");
 
-                        // Fallback on the doc ID if event name is missing
-                        if (eventName == null) {
-                            eventName = doc.getId();
-                            eventNames.add(eventName);
-                        } else {
-                            eventNames.add(eventName);
-                        }
+                    // Fallback on the doc ID if event name is missing
+                    if (eventName == null) {
+                        eventName = doc.getId();
+                        eventNames.add(eventName);
+                    } else {
+                        eventNames.add(eventName);
                     }
-                    // Notify the adapter that the data set has changed
-                    eventNamesAdapter.notifyDataSetChanged();
-                })
-                // Add a listener to handle errors
-                .addOnFailureListener(e -> Log.e("EventsUI", "Failed to load events", e));
+
+                    // Add docId in parallel list
+                    docIds.add(doc.getId());
+                }
+                // Notify the adapter that the data set has changed
+                eventNamesAdapter.notifyDataSetChanged();
+            })
+            // Hide loading and add a listener to handle errors
+            .addOnFailureListener(e -> {
+                binding.loadingEventUi.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            });
+
+        // Handle the on click event for each list item
+        binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
+            String eventId = docIds.get(position); // docIds parallel list you built
+            Bundle eventArgs = new Bundle();
+            eventArgs.putString("eventId", eventId);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, eventArgs);
+        });
     }
 }

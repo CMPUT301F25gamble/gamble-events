@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".EventDetailScreen">
 
+    <ProgressBar
+        android:id="@+id/loading_event_detail_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_events_detail_screen"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            eventNameText,
+            eventImage,
+            eventDetailTagText,
+            tagsHorizontalRv,
+            eventDetailsTitle,
+            eventDetailsDescScrollView,
+            navigationBarButton"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
     <ImageButton
         android:id="@+id/eventDetailScreenBackButton"
         android:layout_width="wrap_content"
@@ -28,7 +52,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_list_item"
         android:padding="8dp"
-        android:text="@string/event_detail_screen_name_text"
+        tools:text="@string/event_detail_screen_name_text"
         android:textAlignment="viewStart"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -108,7 +132,7 @@
             android:id="@+id/eventDetailsDescText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/lorem_ipsum_numbered"
+            tools:text="@string/lorem_ipsum_numbered"
             android:textSize="14sp"
             android:textColor="@color/black"
             android:padding="4dp"/>
@@ -128,4 +152,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventDetailsDescScrollView" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

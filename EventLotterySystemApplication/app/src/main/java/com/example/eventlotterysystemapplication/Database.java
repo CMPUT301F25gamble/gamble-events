@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * An instance of this class represents a connection to the firebase firestore database
  */
 public class Database {
     CollectionReference userRef;
@@ -36,14 +36,14 @@ public class Database {
     FirebaseAuth firebaseAuth;
 
     /**
-     *
+     * Initializes the database object, without being given any database or authorization
      */
     public Database() {
         this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
     }
 
     /**
-     *
+     * Initializes the database object, given some database and authorization
      * @param firestore
      * @param firebaseAuth
      */
@@ -85,6 +85,7 @@ public class Database {
     /**
      * Given some input deviceID, returns the User object that is associated with that deviceID
      * @param deviceID The deviceID of the user
+     * @param listener An OnCompleteListener for callback
      * @return A user object containing the corresponding data from the database
      */
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
@@ -111,6 +112,7 @@ public class Database {
     /**
      * Given some userID, this function returns the corresponding User object
      * @param userID The userID to query against
+     * @param listener An OnCompleteListener for callback
      * @throws IllegalStateException If the userID does not exist in the database
      */
     public void getUser(String userID, OnCompleteListener<User> listener) {
@@ -174,6 +176,7 @@ public class Database {
     /**
      * Given a user, update or create their record in the database
      * @param user The user profile
+     * @param listener An OnCompleteListener for callback
      */
     public void modifyUser(User user, OnCompleteListener<Void> listener) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -196,6 +199,7 @@ public class Database {
     /**
      * Given a user, delete their record from the database
      * @param user The user profile
+     * @param listener An OnCompleteListener for callback
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteUser(User user, OnCompleteListener<Void> listener) {
@@ -286,6 +290,7 @@ public class Database {
 
     /**
      * Retrieves all events that the user can join
+     * @param user The user who wants to check for available events
      * @param listener An OnCompleteListener for callback
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -365,6 +370,7 @@ public class Database {
     /**
      * Given some event, we update its data in the database
      * @param event The event that we want to update in the database
+     * @param listener An OnCompleteListener for callback
      */
     public void updateEvent(Event event, OnCompleteListener<Void> listener){
         if (event.getEventID() == null) {
@@ -399,6 +405,7 @@ public class Database {
     /**
      * Given a user, delete all the events that the user organizes
      * @param user The user profile
+     * @param listener An OnCompleteListener for callback
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteOrganizedEvents(User user, OnCompleteListener<Void> listener) {
@@ -433,7 +440,7 @@ public class Database {
      * First deletes all of the user documents in its registration subcollection, if it has one.
      * Then, it delete the event too.
      * @param event The event to be deleted
-     * @param listener
+     * @param listener An OnCompleteListener for callback
      */
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
@@ -460,8 +467,8 @@ public class Database {
      * that document and manually matches it up with the fields from the event class, giving us fine
      * control over what is added to what fields in this class
      * @param doc The document from the Event collection to be parsed
-     * @param listener
-     * @return
+     * @param listener An OnCompleteListener for callback
+     * @return An event object, where the correct fields are extracted from the document
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event parseEvent(DocumentSnapshot doc, OnCompleteListener<Event> listener) {
@@ -514,7 +521,7 @@ public class Database {
      * @param event The event document from which we want to extract the entrant list data
      * @param doc The DocumentReference of the document that we want to insert the users in the
      *            entrant list to the registration subcollection
-     * @param listener
+     * @param listener An OnCompleteListener for callback
      */
     public void updateEventRegistration(Event event, DocumentReference doc, OnCompleteListener<Void> listener){
         CollectionReference registration = doc.collection("Registration");
@@ -564,7 +571,7 @@ public class Database {
      * @param event The event whose entrant lists we want to populate
      * @param doc The document from which we want to extract the entrants from its registration
      *            subcollection
-     * @param listener
+     * @param listener An OnCompleteListener for callback
      */
     public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Void> listener){
         CollectionReference registration = doc.getReference().collection("Registration");

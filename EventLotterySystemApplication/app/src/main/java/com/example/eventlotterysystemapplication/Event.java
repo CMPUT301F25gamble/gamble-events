@@ -19,6 +19,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ *
+ */
 public class Event {
     private String eventID;
     private String name;
@@ -64,10 +67,28 @@ public class Event {
      */
 
 
+    /**
+     *
+     */
     public Event() {
 
     }
 
+    /**
+     *
+     * @param name
+     * @param description
+     * @param place
+     * @param eventTags
+     * @param organizerID
+     * @param eventStartTime
+     * @param eventEndTime
+     * @param registrationStartTime
+     * @param registrationEndTime
+     * @param invitationAcceptanceDeadline
+     * @param maxWaitingListCapacity
+     * @param maxFinalListCapacity
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
@@ -107,6 +128,21 @@ public class Event {
         });
     }
 
+    /**
+     *
+     * @param name
+     * @param description
+     * @param place
+     * @param eventTags
+     * @param organizerID
+     * @param eventStartTime
+     * @param eventEndTime
+     * @param registrationStartTime
+     * @param registrationEndTime
+     * @param invitationAcceptanceDeadline
+     * @param maxWaitingListCapacity
+     * @param maxFinalListCapacity
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
@@ -149,6 +185,9 @@ public class Event {
 
     }
 
+    /**
+     *
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseTimestamps() {
         if (eventStartTimeTS != null)
@@ -159,134 +198,246 @@ public class Event {
             invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getEventID() {
         return eventID;
     }
 
-
+    /**
+     *
+     * @param eventID
+     */
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     *
+     * @param description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPlace() {
         return place;
     }
 
+    /**
+     *
+     * @param place
+     */
     public void setPlace(String place) {
         this.place = place;
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<String> getEventTags() {
         return eventTags;
     }
 
+    /**
+     *
+     * @param eventTags
+     */
     public void setEventTags(ArrayList<String> eventTags) {
         this.eventTags = eventTags;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getOrganizerID(){
         return organizerID;
     }
 
+    /**
+     *
+     * @param organizerID
+     */
     public void setOrganizerID(String organizerID){
         this.organizerID = organizerID;
     }
 
+    /**
+     *
+     * @return
+     */
     @PropertyName("eventStartTime")
     public Timestamp getEventStartTimeTS() {
         return eventStartTimeTS;
     }
 
-
+    /**
+     *
+     * @param eventStartTimeTS
+     */
     @PropertyName("eventStartTime")
     public void setEventStartTimeTS(Timestamp eventStartTimeTS) {
         this.eventStartTimeTS = eventStartTimeTS;
     }
 
+    /**
+     *
+     * @return
+     */
     @PropertyName("eventEndTime")
     public Timestamp getEventEndTimeTS() {
         return eventEndTimeTS;
     }
 
+    /**
+     *
+     * @param eventEndTimeTS
+     */
     @PropertyName("eventEndTime")
     public void setEventEndTimeTS(Timestamp eventEndTimeTS) {
         this.eventEndTimeTS = eventEndTimeTS;
     }
 
+    /**
+     *
+     * @return
+     */
     @PropertyName("registrationStartTime")
     public Timestamp getRegistrationStartTimeTS() {
         return registrationStartTimeTS;
     }
 
+    /**
+     *
+     * @param registrationStartTimeTS
+     */
     @PropertyName("registrationStartTime")
     public void setRegistrationStartTimeTS(Timestamp registrationStartTimeTS) {
         this.registrationStartTimeTS = registrationStartTimeTS;
     }
 
+    /**
+     *
+     * @return
+     */
     @PropertyName("registrationEndTime")
     public Timestamp getRegistrationEndTimeTS() {
         return registrationEndTimeTS;
     }
 
-
+    /**
+     *
+     * @param registrationEndTimeTS
+     */
     @PropertyName("registrationEndTime")
     public void setRegistrationEndTimeTS(Timestamp registrationEndTimeTS) {
         this.registrationEndTimeTS = registrationEndTimeTS;
     }
 
+    /**
+     *
+     * @return
+     */
     @PropertyName("invitationAcceptanceDeadline")
     public Timestamp getInvitationAcceptanceDeadlineTS() {
         return invitationAcceptanceDeadlineTS;
     }
 
-
+    /**
+     *
+     * @param invitationAcceptanceDeadlineTS
+     */
     @PropertyName("invitationAcceptanceDeadline")
     public void setInvitationAcceptanceDeadlineTS(Timestamp invitationAcceptanceDeadlineTS) {
         this.invitationAcceptanceDeadlineTS = invitationAcceptanceDeadlineTS;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getMaxWaitingListCapacity() {
         return maxWaitingListCapacity;
     }
 
+    /**
+     *
+     * @param maxWaitingListCapacity
+     */
     public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getMaxFinalListCapacity() {
         return maxFinalListCapacity;
     }
 
+    /**
+     *
+     * @param maxFinalListCapacity
+     */
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
         this.maxFinalListCapacity = maxFinalListCapacity;
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public LocalDateTime getEventStartTime() {
         return eventStartTime;
     }
 
+    /**
+     *
+     * @param eventStartTime
+     */
     @Exclude
     public void setEventStartTime(LocalDateTime eventStartTime) {
         this.eventStartTime = eventStartTime;
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public String getEventStartTimeString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -296,6 +447,10 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param dateString
+     */
     @Exclude
     public void setEventStartTimeString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -303,16 +458,28 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public LocalDateTime getRegistrationEndTime() {
         return registrationEndTime;
     }
 
+    /**
+     *
+     * @param registrationEndTime
+     */
     @Exclude
     public void setRegistrationEndTime(LocalDateTime registrationEndTime) {
         this.registrationEndTime = registrationEndTime;
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public String getSignupDeadlineString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -322,6 +489,10 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param dateString
+     */
     @Exclude
     public void setSignupDeadlineString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -329,17 +500,28 @@ public class Event {
         }
     }
 
-
+    /**
+     *
+     * @return
+     */
     @Exclude
     public LocalDateTime getInvitationAcceptanceDeadline() {
         return invitationAcceptanceDeadline;
     }
 
+    /**
+     *
+     * @param invitationAcceptanceDeadline
+     */
     @Exclude
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
         this.invitationAcceptanceDeadline = invitationAcceptanceDeadline;
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public String getInvitationAcceptanceDeadlineString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -349,6 +531,10 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param dateString
+     */
     @Exclude
     public void setInvitationAcceptanceDeadlineString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -356,36 +542,66 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param tag
+     */
     @Exclude
     public void addEventTag(String tag){
         this.eventTags.add(tag);
     }
 
+    /**
+     *
+     * @param tag
+     */
     @Exclude
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public User getOrganizer() {
         return organizer;
     }
 
+    /**
+     *
+     * @param organizer
+     */
     @Exclude
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
     }
 
+    /**
+     *
+     * @return
+     */
     @Exclude
     public EntrantList getEntrantList() {
         return entrantList;
     }
 
+    /**
+     *
+     * @param entrantList
+     */
     @Exclude
     public void setEntrantList(EntrantList entrantList) {
         this.entrantList = entrantList;
     }
 
+    /**
+     *
+     * @param entrantListValues
+     * @param list
+     * @throws IllegalArgumentException
+     */
     @Exclude
     public void setEntrantListValues(ArrayList<User> entrantListValues, int list) throws IllegalArgumentException{
         switch (list) {
@@ -406,6 +622,12 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @param list
+     * @throws IllegalArgumentException
+     */
     public void addToEntrantList(User user, int list) throws IllegalArgumentException {
         switch (list) {
             case 0:
@@ -426,6 +648,12 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @param list
+     * @throws IllegalArgumentException
+     */
     public void removeFromEntrantList(User user, int list) throws IllegalArgumentException{
         switch (list) {
             case 0:
@@ -445,6 +673,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void joinWaitingList(User user) throws IllegalArgumentException{
         if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
             if (!entrantList.getWaiting().contains(user)){
@@ -463,6 +696,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void leaveWaitingList(User user) throws IllegalArgumentException{
         if (entrantList.getWaiting().contains(user)){
             removeFromEntrantList(user, 0);
@@ -477,6 +715,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void joinChosenList(User user) throws IllegalArgumentException{
         if (!(entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
             if (!entrantList.getChosen().contains(user)){
@@ -495,6 +738,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void leaveChosenList(User user) throws IllegalArgumentException{
         if (entrantList.getChosen().contains(user)){
             removeFromEntrantList(user, 1);
@@ -509,6 +757,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void joinCancelledList(User user) throws IllegalArgumentException{
         if (!entrantList.getCancelled().contains(user)){
             addToEntrantList(user, 2);
@@ -523,6 +776,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void joinFinalizedList(User user) throws IllegalArgumentException{
         if(entrantList.getChosen().contains(user)) {
             if (!entrantList.getFinalized().contains(user)){
@@ -541,6 +799,11 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @param user
+     * @throws IllegalArgumentException
+     */
     public void leaveFinalizedList(User user) throws IllegalArgumentException{
         if (entrantList.getFinalized().contains(user)){
             removeFromEntrantList(user, 3);
@@ -555,10 +818,18 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<Bitmap> getPosters() {
         return posters;
     }
 
+    /**
+     *
+     * @param posters
+     */
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
 
@@ -570,6 +841,10 @@ public class Event {
         });
     }
 
+    /**
+     *
+     * @param poster
+     */
     public void addPoster(Bitmap poster){
         posters.add(poster);
 
@@ -581,6 +856,10 @@ public class Event {
         });
     }
 
+    /**
+     *
+     * @param poster
+     */
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
 
@@ -592,6 +871,10 @@ public class Event {
         });
     }
 
+    /**
+     *
+     * @param position
+     */
     public void deletePoster(int position) {
         if (0 <= position && position < posters.size()) {
             posters.remove(position);
@@ -607,6 +890,9 @@ public class Event {
         });
     }
 
+    /**
+     *
+     */
     public void generateQRCode(){
         try {
             String data = "cmput301gamblers://gamble/" + eventID;
@@ -616,6 +902,10 @@ public class Event {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Bitmap getQRCodeBitmap() {
         if (QRCodeBitmap == null){
             generateQRCode();
@@ -623,6 +913,10 @@ public class Event {
         return QRCodeBitmap;
     }
 
+    /**
+     *
+     * @param QRCodeBitmap
+     */
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
     }

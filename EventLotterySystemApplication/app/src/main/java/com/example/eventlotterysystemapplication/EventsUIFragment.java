@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.firebase.installations.FirebaseInstallations;
 
 /**
  * A simple {@link Fragment} subclass.

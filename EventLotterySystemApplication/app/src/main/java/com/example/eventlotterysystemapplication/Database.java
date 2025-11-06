@@ -372,11 +372,11 @@ public class Database {
                     if (!doc.getString("organizerID").equals(user.getUserID())) {
                         DocumentReference eventRef = doc.getReference();
                         CollectionReference regRef = eventRef.collection("Registration");
-                        double waitListCapacity = doc.getDouble("maxWaitingListCapacity");
+                        int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
                         // Checks if wait list is not full
                         Task<QuerySnapshot> regTask = regRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
-                            if (count < waitListCapacity) {
+                            if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
                                 Event event = parseEvent(doc);
                                 availableEvents.add(event);
                             }

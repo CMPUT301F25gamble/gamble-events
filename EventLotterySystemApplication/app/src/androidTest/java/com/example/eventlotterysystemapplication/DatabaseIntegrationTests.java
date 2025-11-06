@@ -159,9 +159,10 @@ public class DatabaseIntegrationTests {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
-                50,
                 20
         );
+
+        event1.setMaxWaitingListCapacity(50);
 
         Event event2 = new Event(
                 "Skiing",
@@ -174,9 +175,10 @@ public class DatabaseIntegrationTests {
                 "2025-11-15T23:59",
                 "2025-11-30T23:59",
                 "2025-12-05T23:59",
-                30,
                 10
         );
+
+        event2.setMaxWaitingListCapacity(30);
 
         // Adds both events
         CountDownLatch eventLatch1 = new CountDownLatch(1);

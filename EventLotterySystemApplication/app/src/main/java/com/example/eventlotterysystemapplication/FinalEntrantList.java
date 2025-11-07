@@ -11,6 +11,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentFinalEntrantListBinding;
 
+/**
+ * Displays a listview of all final entrants that have accepted an invitation to join the event
+ * Will fetch a list of final entrants from the database to be displayed in the listview
+ */
+
 public class FinalEntrantList extends Fragment {
     private FragmentFinalEntrantListBinding binding;
 

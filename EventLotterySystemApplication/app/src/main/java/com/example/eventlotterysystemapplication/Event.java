@@ -19,6 +19,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Event class for storing event information, contains methods to retrieve event information and
+ * update event information
+ */
+
 public class Event {
     private String eventID;
     private String name;

@@ -27,6 +27,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Allows the user to create and event or edit an event that they have created
+ * Prompts user to input all necessary information for creating an event, then adds event
+ * to the database
+ */
+
 public class CreateOrEditEventFragment extends Fragment {
     private static final String TAG = "CreateOrEditEvent"; // For debugging
     Database database;

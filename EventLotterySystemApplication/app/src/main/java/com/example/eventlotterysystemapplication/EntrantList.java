@@ -2,6 +2,11 @@ package com.example.eventlotterysystemapplication;
 
 import java.util.ArrayList;
 
+/**
+ * EntrantList class to contain the entrants list for an event
+ * To be implemented
+ */
+
 public class EntrantList {
     private ArrayList<User> waiting;
     private ArrayList<User> chosen;

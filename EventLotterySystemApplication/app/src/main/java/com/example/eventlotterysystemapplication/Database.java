@@ -26,6 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Methods to provide access to the database
+ */
+
 public class Database {
     CollectionReference userRef;
     CollectionReference eventRef;

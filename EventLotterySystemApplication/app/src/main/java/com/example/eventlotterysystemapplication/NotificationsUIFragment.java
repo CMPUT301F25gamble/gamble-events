@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link NotificationsUIFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Displays a the user's notifications from all sources according to the user's notification
+ * preferences
+ * Fetches the user's notifications from the database and displays in a listview
  */
 public class NotificationsUIFragment extends Fragment {
 

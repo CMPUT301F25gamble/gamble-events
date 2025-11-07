@@ -3,7 +3,7 @@
 
     <item android:title="Information"
         android:icon="@drawable/info_icon"
-        android:id="@+id/replaceWithEventDetailFragment">
+        android:id="@+id/my_event_detail_screen">
     </item>
 
     <item android:title="Entrants"

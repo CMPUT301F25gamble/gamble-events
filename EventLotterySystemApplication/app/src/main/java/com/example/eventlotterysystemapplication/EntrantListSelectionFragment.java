@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEntrantListSelectionBinding;
-import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 
 public class EntrantListSelectionFragment extends Fragment {
 

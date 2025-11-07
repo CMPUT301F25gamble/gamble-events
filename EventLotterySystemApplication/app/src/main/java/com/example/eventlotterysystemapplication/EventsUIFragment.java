@@ -128,6 +128,8 @@ public class EventsUIFragment extends Fragment {
                 binding.loadingEventUi.setVisibility(View.GONE);
                 binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
                 eventNames.clear();
+                docIds.clear();
+
                 for (DocumentSnapshot doc : qs.getDocuments()) {
                     String eventName = doc.getString("name");
 

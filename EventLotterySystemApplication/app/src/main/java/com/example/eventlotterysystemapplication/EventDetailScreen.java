@@ -50,6 +50,7 @@ public class EventDetailScreen extends Fragment {
         }
         if (eventId == null || eventId.isEmpty()) {
             Toast.makeText(requireContext(), "Missing eventId", Toast.LENGTH_LONG).show();
+            return;
         }
 
         // Show loading and hide content until it is fetched

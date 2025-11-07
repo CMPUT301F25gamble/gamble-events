@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_allEntrantsListFragment"
             app:destination="@id/allEntrantsListFragment" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_chosenEntrantList"
+            app:destination="@id/chosenEntrantList" />
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -50,6 +53,15 @@
         tools:layout="@layout/fragment_all_entrants_list" >
         <action
             android:id="@+id/action_allEntrantsListFragment_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chosenEntrantList"
+        android:name="com.example.eventlotterysystemapplication.ChosenEntrantList"
+        android:label="fragment_chosen_entrant_list"
+        tools:layout="@layout/fragment_chosen_entrant_list" >
+        <action
+            android:id="@+id/action_chosenEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
 

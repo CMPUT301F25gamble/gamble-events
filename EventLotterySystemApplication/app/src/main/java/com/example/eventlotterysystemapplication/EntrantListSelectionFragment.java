@@ -48,5 +48,11 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_allEntrantsListFragment);
         });
+
+        // View all chosen entrants Button to access list of all entrants
+        binding.allChosenEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EntrantListSelectionFragment.this)
+                    .navigate(R.id.action_entrantListSelectionFragment_to_chosenEntrantList);
+        });
     }
 }

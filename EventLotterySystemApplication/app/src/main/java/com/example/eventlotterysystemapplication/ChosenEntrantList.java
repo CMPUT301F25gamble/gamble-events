@@ -9,15 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.databinding.FragmentAllEntrantsListBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
 
-public class AllEntrantsListFragment extends Fragment {
-    private FragmentAllEntrantsListBinding binding;
+public class ChosenEntrantList extends Fragment {
+    private FragmentChosenEntrantListBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentAllEntrantsListBinding.inflate(inflater, container, false);
+        binding = FragmentChosenEntrantListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -26,9 +26,9 @@ public class AllEntrantsListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Back Button to return to Event Lists page
-        binding.allEntrantListBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(AllEntrantsListFragment.this)
-                    .navigate(R.id.action_allEntrantsListFragment_to_entrantListSelectionFragment);
+        binding.chosenEntrantListBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(ChosenEntrantList.this)
+                    .navigate(R.id.action_chosenEntrantList_to_entrantListSelectionFragment);
         });
     }
 }

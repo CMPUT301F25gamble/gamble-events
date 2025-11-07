@@ -51,6 +51,8 @@ public class Event {
 
     private Bitmap QRCodeBitmap;
 
+    private ArrayList<Bitmap> posters;
+
     /*
     Include code to have some attributes that points to an event poster, I wouldn't know how to
     declare attributes of that type yet
@@ -91,6 +93,7 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = -1; // Default as no limit
+        this.posters = posters;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -523,8 +526,45 @@ public class Event {
         }
     }
 
-    public void generateQRCode(String data){
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+    }
+
+    @Exclude
+    public void addPoster(Bitmap poster){
+        posters.add(poster);
+    }
+
+    public void deletePoster(Bitmap poster){
+        posters.remove(poster);
+    }
+
+    public void deletePoster(int position) {
+        if (0 <= position && position < posters.size()) {
+            posters.remove(position);
+        } else {
+            Log.e("Poster Removal", "Index out of bounds");
+        }
+    }
+
+    public Bitmap getQRCodeBitmap() {
+        if (QRCodeBitmap == null){
+            generateQRCode();
+        }
+        return QRCodeBitmap;
+    }
+
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
+    }
+
+    public void generateQRCode(){
         try {
+            String data = "cmput301gamblers://gamble/" + eventID;
             QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
         } catch (WriterException e){
             e.printStackTrace();

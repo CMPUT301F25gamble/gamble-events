@@ -1,6 +1,5 @@
 package com.example.eventlotterysystemapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -16,16 +15,11 @@ import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBi
 
 public class EditEventActivity extends AppCompatActivity {
 
-    private ActivityEditEventBinding binding;
-
-    private Event event;
-    private User user;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityEditEventBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
+        ActivityEditEventBinding binding = ActivityEditEventBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.editEventNavHostFragment, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -41,7 +35,6 @@ public class EditEventActivity extends AppCompatActivity {
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupWithNavController(binding.editEventNavMenu, navController);
-
+        NavigationUI.setupWithNavController(binding.editEventBottomNavMenu, navController);
     }
 }

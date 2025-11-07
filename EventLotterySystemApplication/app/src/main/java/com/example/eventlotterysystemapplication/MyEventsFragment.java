@@ -27,11 +27,13 @@ public class MyEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button editMyEvent = binding.editMyEvent;
+        Button editMyEventButton = binding.editMyEvent;
 
-        // temp edit my button for testing
-        Intent intent = new Intent(getActivity(), EditEventActivity.class);
-        startActivity(intent);
+        editMyEventButton.setOnClickListener(v -> {
+            Intent nextActivityIntent = new Intent(getActivity(), EditEventActivity.class);
+            startActivity(nextActivityIntent);
+            requireActivity().finish();
+        });
 
         // Back button navigates to events page
         binding.myEventsBackButton.setOnClickListener(v -> {

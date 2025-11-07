@@ -3,13 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/edit_event_nav_graph"
-    app:startDestination="@id/eventDetailScreen">
-
+    app:startDestination="@id/replaceWithEventDetailFragment">
     <fragment
-        android:id="@+id/eventDetailScreen"
-        android:name="com.example.eventlotterysystemapplication.EventDetailScreen"
-        android:label="fragment_event_detail_screen"
-        tools:layout="@layout/fragment_event_detail_screen" />
+        android:id="@+id/replaceWithEventDetailFragment"
+        android:name="com.example.eventlotterysystemapplication.ReplaceWithEventDetailFragment"
+        android:label="fragment_replace_with_event_detail"
+        tools:layout="@layout/fragment_replace_with_event_detail" />
     <fragment
         android:id="@+id/entrantListSelectionFragment"
         android:name="com.example.eventlotterysystemapplication.EntrantListSelectionFragment"

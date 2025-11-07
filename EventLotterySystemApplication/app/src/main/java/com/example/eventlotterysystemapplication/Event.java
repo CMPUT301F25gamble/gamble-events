@@ -49,8 +49,10 @@ public class Event {
     private static DateTimeFormatter formatter;
 
 
+    @Exclude
     private Bitmap QRCodeBitmap;
 
+    @Exclude
     private ArrayList<Bitmap> posters;
 
     /*
@@ -526,10 +528,12 @@ public class Event {
         }
     }
 
+    @Exclude
     public ArrayList<Bitmap> getPosters() {
         return posters;
     }
 
+    @Exclude
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
     }
@@ -539,10 +543,12 @@ public class Event {
         posters.add(poster);
     }
 
+    @Exclude
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
     }
 
+    @Exclude
     public void deletePoster(int position) {
         if (0 <= position && position < posters.size()) {
             posters.remove(position);
@@ -551,6 +557,7 @@ public class Event {
         }
     }
 
+    @Exclude
     public Bitmap getQRCodeBitmap() {
         if (QRCodeBitmap == null){
             generateQRCode();
@@ -558,10 +565,12 @@ public class Event {
         return QRCodeBitmap;
     }
 
+    @Exclude
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
     }
 
+    @Exclude
     public void generateQRCode(){
         try {
             String data = "cmput301gamblers://gamble/" + eventID;
@@ -571,6 +580,7 @@ public class Event {
         }
     }
 
+    @Exclude
     public ImageView QRCodeImageView(){
         ImageView QRCodeImageView = null;
         QRCodeImageView.setImageBitmap(QRCodeBitmap);

@@ -108,7 +108,7 @@ public class Database {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
         TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
 
-            deviceIDQuery.get().addOnCompleteListener(task -> {
+        deviceIDQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
                 List<User> users = querySnapshot.toObjects(User.class);
@@ -122,7 +122,7 @@ public class Database {
             }
         });
 
-            tcs.getTask().addOnCompleteListener(listener);
+        tcs.getTask().addOnCompleteListener(listener);
     }
 
     /**

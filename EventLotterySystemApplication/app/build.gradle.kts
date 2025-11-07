@@ -67,4 +67,7 @@ dependencies {
 
     //Zxing Library
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //javadoc
+    implementation(files("C:/Users/gaura/AppData/Local/Android/Sdk/platforms/android-36/android.jar"))
 }

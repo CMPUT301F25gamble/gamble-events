@@ -39,7 +39,6 @@ public class LotterySelector {
     /**
      * Draw a replacement user from the waiting list
      * if one of the users on the accepted list dropped out
-     * @Precondition: Dropped out user is no longer on waiting list or accepted list
      * @param event Event containing waiting list and accepted list of users
      * @return A user to add to accepted list that was originally on waiting list
      * @throws IllegalStateException When the accepted list is identical to the waiting list

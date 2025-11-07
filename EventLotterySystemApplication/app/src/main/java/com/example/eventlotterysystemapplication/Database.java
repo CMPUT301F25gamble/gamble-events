@@ -87,7 +87,6 @@ public class Database {
      * Given some input deviceID, returns the User object that is associated with that deviceID
      * @param deviceID The deviceID of the user
      * @param listener An OnCompleteListener for callback
-     * @return A user object containing the corresponding data from the database
      */
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);

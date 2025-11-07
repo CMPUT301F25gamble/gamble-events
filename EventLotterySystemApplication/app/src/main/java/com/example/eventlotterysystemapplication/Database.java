@@ -78,31 +78,24 @@ public class Database {
      * @param listener An OnCompleteListener used to retrieve the User
      */
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
-        queryDeviceID(deviceID, task -> {
-            TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
-            if (task.isSuccessful()) {
+        Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
+        TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
 
-                boolean isUnique = task.getResult();
-                if (isUnique) {
-                    Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
-                    deviceIDQuery.get().addOnCompleteListener(queryTask -> {
-                        if (queryTask.isSuccessful()) {
-                            QuerySnapshot querySnapshot = queryTask.getResult();
-                            DocumentSnapshot userDoc = querySnapshot.getDocuments().get(0);
-                            User user = userDoc.toObject(User.class);
-                            tcs.setResult(user);
-                        } else {
-                            tcs.setException(task.getException());
-                        }
-                    });
+        deviceIDQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                QuerySnapshot querySnapshot = task.getResult();
+                List<User> users = querySnapshot.toObjects(User.class);
+                if (users.size() == 1) {
+                    tcs.setResult(users.get(0));
                 } else {
                     tcs.setException(new IllegalStateException("More than one user with same device"));
                 }
             } else {
                 tcs.setException(task.getException());
-                tcs.getTask().addOnCompleteListener(listener);
             }
         });
+
+        tcs.getTask().addOnCompleteListener(listener);
     }
 
     /**

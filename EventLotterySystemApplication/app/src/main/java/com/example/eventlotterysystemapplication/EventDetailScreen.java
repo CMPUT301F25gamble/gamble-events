@@ -23,6 +23,8 @@ public class EventDetailScreen extends Fragment {
     private FragmentEventDetailScreenBinding binding;
     private String eventId;
 
+    private Boolean isOwnedEvent;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

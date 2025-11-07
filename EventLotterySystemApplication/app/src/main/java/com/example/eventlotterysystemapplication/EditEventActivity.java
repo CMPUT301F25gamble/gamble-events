@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -11,19 +12,22 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
-import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBinding;
 
-public class ContentActivity extends AppCompatActivity {
+public class EditEventActivity extends AppCompatActivity {
+
+    private ActivityEditEventBinding binding;
+
+    private Event event;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityEditEventBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
-        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
-                (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.editEventNavHostFragment, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -31,13 +35,13 @@ public class ContentActivity extends AppCompatActivity {
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(binding.contentNavHostFragment.getId());
+                .findFragmentById(binding.editEventNavHostFragment.getId());
 
         assert navHostFragment != null;
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
+        NavigationUI.setupWithNavController(binding.editEventNavMenu, navController);
 
     }
 }

@@ -109,9 +109,11 @@ public class User{
     public boolean equals(Object o) {
         if (!(o instanceof User)) {
             return false;
+        } else if (this == o) {
+            return true;
         } else {
             User user2 = (User) o;
-            return Objects.equals(this.userID, user2.userID);
+            return Objects.equals(this.userID, user2.userID) && Objects.equals(this.deviceID, user2.deviceID);
         }
     }
 

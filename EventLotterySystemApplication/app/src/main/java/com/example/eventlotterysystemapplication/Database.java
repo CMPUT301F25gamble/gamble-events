@@ -407,7 +407,7 @@ public class Database {
                                 List<Task<Void>> regTasks = new ArrayList<>();
 
                                 updateEventRegistration(event, eventDocRef, task1 -> {
-                                    if (task1.isSuccessful()){
+                                    if (task1.isSuccessful()) {
                                         Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
                                     } else {
                                         Log.e("Database", "Failed to update registration: " + task.getException());
@@ -415,7 +415,7 @@ public class Database {
                                     }
                                 });
                             });
-
+                        });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
                         listener.onComplete(task);
@@ -452,7 +452,7 @@ public class Database {
             }
 
             Tasks.whenAllComplete(deleteTasks).addOnCompleteListener(done -> {
-                listener.onComplete(null);
+                listener.onComplete(Tasks.forResult(null));
             });
         });
     }
@@ -584,7 +584,7 @@ public class Database {
         }
 
         Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-            listener.onComplete(null);
+            listener.onComplete(Tasks.forResult(null));
         });
     }
 
@@ -657,7 +657,7 @@ public class Database {
                         return;
                 }
             }
-            listener.onComplete(null);
+            listener.onComplete(Tasks.forResult(null));
         });
     }
 

@@ -11,7 +11,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
 
-public class ChosenEntrantList extends Fragment {
+public class ChosenEntrantListFragment extends Fragment {
     private FragmentChosenEntrantListBinding binding;
 
     @Override
@@ -27,7 +27,7 @@ public class ChosenEntrantList extends Fragment {
 
         // Back Button to return to Event Lists page
         binding.chosenEntrantListBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(ChosenEntrantList.this)
+            NavHostFragment.findNavController(ChosenEntrantListFragment.this)
                     .navigate(R.id.action_chosenEntrantList_to_entrantListSelectionFragment);
         });
     }

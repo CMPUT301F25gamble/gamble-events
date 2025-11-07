@@ -60,5 +60,11 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_pendingEntrantList);
         });
+
+        // View all cancelled entrants Button to access list of all entrants
+        binding.allCancelledEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EntrantListSelectionFragment.this)
+                    .navigate(R.id.action_entrantListSelectionFragment_to_cancelledEntrantListFragment);
+        });
     }
 }

@@ -9,16 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.databinding.FragmentAllEntrantsListBinding;
-import com.example.eventlotterysystemapplication.databinding.FragmentPendingEntrantListBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentCancelledEntrantListBinding;
 
-public class PendingEntrantList extends Fragment {
-    private FragmentPendingEntrantListBinding binding;
+public class CancelledEntrantListFragment extends Fragment {
+    private FragmentCancelledEntrantListBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentPendingEntrantListBinding.inflate(inflater, container, false);
+        binding = FragmentCancelledEntrantListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -27,9 +26,9 @@ public class PendingEntrantList extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Back Button to return to Event Lists page
-        binding.pendingEntrantListBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(PendingEntrantList.this)
-                    .navigate(R.id.action_pendingEntrantList_to_entrantListSelectionFragment);
+        binding.cancelledEntrantListBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(CancelledEntrantListFragment.this)
+                    .navigate(R.id.action_cancelledEntrantListFragment_to_entrantListSelectionFragment);
         });
     }
 }

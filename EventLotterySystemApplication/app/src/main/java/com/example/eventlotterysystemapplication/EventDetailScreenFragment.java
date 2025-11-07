@@ -119,7 +119,7 @@ public class EventDetailScreenFragment extends Fragment {
 
         // Debugging
         if (tags.isEmpty()) {
-            Toast.makeText(requireContext(), "No tags found", Toast.LENGTH_SHORT).show();
+            Log.d("EventDetailScreen", "No tags found");
             return;
         } else {
             Log.d("EventDetailScreen", "Tags loaded: " + tags.toString());

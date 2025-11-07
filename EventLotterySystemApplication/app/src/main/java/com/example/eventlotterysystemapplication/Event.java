@@ -562,6 +562,7 @@ public class Event {
         this.QRCodeBitmap = QRCodeBitmap;
     }
 
+    @Exclude
     public void generateQRCode(){
         try {
             String data = "cmput301gamblers://gamble/" + eventID;

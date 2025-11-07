@@ -20,6 +20,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * EventDetailScreenFragment
+ * This fragment displays the details for a selected event
+ * Gets the eventId from arguments and fetches the event from the database
+ * Displays fetched data including the name, description, tags, and an uploaded image
+ * Gets the current activity, if it is ContentActivity then treats the user like an entrant and
+ * allows the user to join the waitlist for the event
+ * If the current activity is EditEventActivity then treats the user like the organiser and displays
+ * options for editing the event
+ * Currently does not display options for editing the event
+ */
 
 public class EventDetailScreenFragment extends Fragment {
 

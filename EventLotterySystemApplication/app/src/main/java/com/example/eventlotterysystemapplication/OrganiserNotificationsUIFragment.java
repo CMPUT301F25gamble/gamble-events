@@ -16,6 +16,8 @@ import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserNo
  * OrganiserNotificationUIFragment
  * Displays the options for sending notifications to either Waitlist Entrants, Chose Entrants,
  * or Cancelled Entrants.
+ * Navigates to OrganiserSendNotificationUIFragment when a button is clicked and sends the entrant
+ * type selection as an argument
  */
 
 public class OrganiserNotificationsUIFragment extends Fragment {

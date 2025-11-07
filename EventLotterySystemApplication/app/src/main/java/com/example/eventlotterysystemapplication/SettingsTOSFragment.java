@@ -14,10 +14,12 @@ import com.example.eventlotterysystemapplication.databinding.FragmentSettingsNot
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsTosBinding;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsTOSFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * SettingsTOSFragment
+ * Fragment for displaying the terms of service and how the lottery system works
+ * Repeat of what is initially showed in LotteryGuidelinesFragment so that the user can view
+ * lottery information at all times
  */
+
 public class SettingsTOSFragment extends Fragment {
 
     private FragmentSettingsTosBinding binding;

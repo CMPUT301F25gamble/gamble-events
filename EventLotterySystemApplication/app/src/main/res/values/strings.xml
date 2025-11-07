@@ -2,15 +2,15 @@
     <string name="app_name">EventLotterySystemApplication</string>
     <string name="username">[USERNAME]\'s Profile</string>
     <string name="back_button">Back</string>
-    <string name="name_header_text"><u>Name:</u></string>
+    <string name="name_prompt_text">Name:</string>
     <string name="placeholder_text">PlaceholderText</string>
     <string name="edit_button_text">Edit</string>
-    <string name="email_header_text"><u>Email:</u></string>
-    <string name="phone_header_text"><u>Phone Number:</u></string>
+    <string name="email_prompt_text">Email:</string>
+    <string name="phone_prompt_text">Phone Number:</string>
     <string name="show_profile_history_button_text">Show Profile History</string>
     <string name="delete_account_button_text">Delete Account</string>
-    <string name="register_new_account"><u>Register New Account</u></string>
-    <string name="deviceIdentityInfo">Users will be identified by their device, NOT by username and password</string>
+    <string name="register_account_header_text"><u>Register New Account</u></string>
+    <string name="device_identity_info">Users will be identified by their device, NOT by username and password</string>
     <string name="events_screen_text"><u>Events</u></string>
     <string name="events_screen_filter_button">Filter</string>
     <string name="add_event_button">Add Event</string>
@@ -23,8 +23,62 @@
 1. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n2. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n3. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 </string>
     <string name="important">*</string>
-    <string name="cancel">CANCEL</string>
-    <string name="confirm">CONFIRM</string>
+    <string name="cancel_text">CANCEL</string>
+    <string name="confirm_text">CONFIRM</string>
     <string name="event_detail_image_text">An image of the event</string>
     <string name="event_tags_text">Tags</string>
+    <string name="bottom_menu_profile_text">Profile</string>
+    <string name="bottom_menu_event_text">Event</string>
+    <string name="bottom_menu_notifications_text">Notifications</string>
+    <string name="bottom_menu_settings_text">Settings</string>
+    <string name="register_button_text">Register</string>
+    <string name="profile_history_button_text">Show Profile History</string>
+    <string name="delete_profile_button_text">Delete Account</string>
+    <string name="entrant_lists_text">Entrant Lists</string>
+    <string name="view_all_entrants_text">View All Entrants</string>
+    <string name="all_chosen_entrants_text">All Chosen Entrants</string>
+    <string name="all_pending_entrants_text">All Pending Entrants</string>
+    <string name="all_cancelled_entrants_text">All Cancelled Entrants</string>
+    <string name="final_list_of_entrants_text">Final List of Entrants</string>
+    <string name="event_details_title_text">Event Details</string>
+    <string name="join_waitlist_text">Join Waitlist</string>
+    <string name="print_list_text">Print List</string>
+    <string name="notify_selectees_button">Notify selectees to sign up</string>
+    <string name="create_or_edit_event_text">Create/Edit Event</string>
+    <string name="event_description_text">Event Description</string>
+    <string name="tags_separated_by_commas_text">Tags (separated by commas)</string>
+    <string name="location_text">Location</string>
+    <string name="event_date_and_time_text">Event Date and Time</string>
+    <string name="date_time_format_text">MM/DD/YY HH:MM</string>
+    <string name="registration_deadline_text">Registration Deadline</string>
+    <string name="invitation_acceptance_deadline_text">Invitation Acceptance Deadline</string>
+    <string name="upload_event_poster_photo_text">Upload Event Poster Photo</string>
+    <string name="upload_text">Upload</string>
+    <string name="limit_waitlist_text">Limit Waitlist</string>
+    <string name="enter_max_number_text">Enter max #</string>
+    <string name="number_of_selected_entrants_text">Number of Selected Entrants</string>
+    <string name="set_event_settings_text">Set Event Settings</string>
+    <string name="enable_geolocation_text">Enable Geolocation</string>
+    <string name="generate_qr_code_text">Generate QR Code</string>
+    <string name="notify_selected_entrant_text">Notify entrants who won lottery to sign up</string>
+    <string name="notify_selected_entrant_success_text">Notify selected entrants of successful enrollment upon sign up</string>
+    <string name="notify_entrant_of_successful_waitlist_enrollment_text">Notify entrant of successful waitlist enrollment</string>
+    <string name="notify_entrant_if_they_have_cancelled_text">Notify entrant if they have cancelled</string>
+    <string name="done_creating_editing_event_text">Done Creating/Editing Event</string>
+    <string name="refresh_notifications">Refresh Notifications</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="lottery">Lottery</string>
+    <string name="admin">Admin</string>
+    <string name="organizers">Organizers</string>
+    <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
+    <string name="profile_history_button">Profile History</string>
+    <string name="update_profile_button">Update Profile</string>
+    <string name="lottery_selection_guidelines_actual_text">
+    1. Upon joining the waitlist for an event, all entrants have an equal chance to be selected once registration closes.\n
+    If a selected entrant declines or does not respond before the invitation deadline, another entrant may be chosen.\n\n
+    2. You will receive a notification if you were selected or not.\n\n
+    3. Draws are random and are not influenced by organizers or administrators.\n\n
+    4. Your information will only be used for in-app event registration and communication purposes.\n\n
+    5. By pressing the CONFIRM button you are agreeing to these guidelines and understand that selection is random and not guaranteed.
+</string>
 </resources>

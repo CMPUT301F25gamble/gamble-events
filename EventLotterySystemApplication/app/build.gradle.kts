@@ -32,13 +32,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
     // Firebase dependencies
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore") // firestore service
-    implementation("com.google.firebase:firebase-auth") // auth service
+    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.installations) // auth service
 
     //Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.20.0")

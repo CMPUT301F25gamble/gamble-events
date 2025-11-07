@@ -534,6 +534,14 @@ public class Event {
         this.posters = posters;
     }
 
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+    }
+
     @Exclude
     public void addPoster(Bitmap poster){
         posters.add(poster);
@@ -562,6 +570,7 @@ public class Event {
         this.QRCodeBitmap = QRCodeBitmap;
     }
 
+    @Exclude
     public void generateQRCode(){
         try {
             String data = "cmput301gamblers://gamble/" + eventID;

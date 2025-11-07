@@ -9,16 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.databinding.FragmentRegisterScreenBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentCreateOrEditEventBinding;
 
-public class RegisterScreenFragment extends Fragment {
-
-    private FragmentRegisterScreenBinding binding;
+public class CreateOrEditEventFragment extends Fragment {
+    private FragmentCreateOrEditEventBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentRegisterScreenBinding.inflate(inflater, container, false);
+        binding = FragmentCreateOrEditEventBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -26,10 +25,11 @@ public class RegisterScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // make the register button navigate to first time input
-        binding.registerButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(RegisterScreenFragment.this)
-                    .navigate(R.id.action_registerScreenFragment_to_firstTimeUserInfoFragment2);
+        // Create Event
+        // Back Button to return to Events page
+        binding.createOrEditEventBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
         });
     }
 }

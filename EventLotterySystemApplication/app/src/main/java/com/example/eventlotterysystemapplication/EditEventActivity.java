@@ -41,12 +41,14 @@ public class EditEventActivity extends AppCompatActivity {
 
         // Get the eventId from the intent
         String eventId = getIntent().getStringExtra("eventId");
+        boolean isOwnedEvent = getIntent().getBooleanExtra("isOwnedEvent", false);
 
-        Log.d("EditEventActivity", "Received eventId: " + eventId);
+        Log.d("EditEventActivity", "eventId=" + eventId + ", isOwnedEvent=" + isOwnedEvent);
 
         // Create a Bundle to pass the eventId to the EditEventFragment
         Bundle startArgs = new Bundle();
         startArgs.putString("eventId", eventId);
+        startArgs.putBoolean("isOwnedEvent", isOwnedEvent);
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()

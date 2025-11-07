@@ -17,94 +17,187 @@ public class User{
     private String userID;
     private boolean isAdmin;
 
+    /**
+     * A blank constructor, useful for when we want to create our user object by manually parsing it
+     * from Firebase
+     */
     public User() {
         // Empty constructor used by Firebase to deserialize documents into User object
     }
 
-    public User(String email, String phoneNumber, String name, String deviceID) {
+    /**
+     * A constructor for the User object that contains the attributes that can be set as we create
+     * the user object
+     * @param name The name of the user
+     * @param email The email of the user
+     * @param phoneNumber The phone number of the user
+     * @param deviceID The deviceID of the user
+     */
+    public User(String name, String email, String phoneNumber , String deviceID) {
+        this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.name = name;
         this.deviceID = deviceID;
         isAdmin = false;
     }
 
+    /**
+     * Gets the userID of the current user object
+     * @return The userID string set by the database
+     */
     public String getUserID() {
         return userID;
     }
 
+    /**
+     * Sets the userID of the current user object
+     * @param userID The userID string set by the database
+     */
     public void setUserID(String userID) {
         this.userID = userID;
     }
 
+    /**
+     * Gets the user's name
+     * @return The user's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the user's name
+     * @param name The user's name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets the user's email
+     * @return The user's email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets the user's email
+     * @param email The user's email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Gets the user's phone number
+     * @return The user's phone number
+     */
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    /**
+     * Sets the user's phone number
+     * @param phoneNumber The user's phone number
+     */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
+    /**
+     * Gets the deviceID of the user
+     * @return A string of the deviceID
+     */
     public String getDeviceID() {
         return deviceID;
     }
 
+    /**
+     * Sets the deviceID of the user
+     * @param deviceID A string of the deviceID
+     */
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
     }
 
+    /**
+     * Returns the admin status of the user
+     * @return A boolean that represents whether or not the user is an admin
+     */
     public boolean isAdmin() {
         return isAdmin;
     }
 
+    /**
+     * Sets the admin status of the user
+     * @param admin A boolean that represents whether or not the user is an admin
+     */
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 
+    /**
+     * Adds the user to the waiting list of the event, given that they are already not in that list
+     * @param event The event whose waiting list you want to join
+     */
     public void joinEventWaitingList(Event event){
         event.joinWaitingList(this);
     }
 
+    /**
+     * Removes the user from the waiting list of the event, given that they are in that list
+     * @param event The event whose waiting list you want to leave
+     */
     public void leaveEventWaitingList(Event event){
         event.leaveWaitingList(this);
     }
 
+    /**
+     * Adds the user to the chosen list of the event, given that they are already not in that list
+     * @param event The event whose chosen list you want to join
+     */
     public void joinEventChosenList(Event event) {
         event.joinChosenList(this);
     }
 
+    /**
+     * Removes the user from the chosen list of the event, given that they are in that list
+     * @param event The event whose chosen list you want to leave
+     */
     public void leaveEventChosenList(Event event) {
         event.leaveChosenList(this);
     }
 
+    /**
+     * Adds the user to the cancelled list of the event, given that they are already not in that list
+     * @param event The event whose cancelled list you want to join
+     */
     public void joinEventCancelledList(Event event) {
         event.joinCancelledList(this);
     }
 
+    /**
+     * Adds the user to the finalized list of the event, given that they are already not in that list
+     * @param event The event whose finalized list you want to join
+     */
     public void joinEventFinalizedList(Event event) {
         event.joinFinalizedList(this);
     }
 
+    /**
+     * Removes the user from the finalized list of the event, given that they are in that list
+     * @param event The event whose finalized list you want to leave
+     */
     public void leaveEventFinalizedList(Event event) {
         event.leaveFinalizedList(this);
     }
 
+    /**
+     * Check if a user object is equivalent to another user object
+     * @param o An object that we are trying to test if this object is equal to
+     * @return True if the two objects are equal, false otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof User)) {

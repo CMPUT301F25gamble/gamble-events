@@ -193,7 +193,57 @@ public class Event {
     }
 
     /**
-     *
+     * This constructor is solely used for testing and should not be used by the rest of the program
+     * at all
+     * @param name
+     * @param description
+     * @param place
+     * @param eventTags
+     * @param organizerID
+     * @param eventStartTime
+     * @param eventEndTime
+     * @param registrationStartTime
+     * @param registrationEndTime
+     * @param invitationAcceptanceDeadline
+     * @param maxWaitingListCapacity
+     * @param maxFinalListCapacity
+     * @param mock
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
+                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
+                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
+
+        this.name = name;
+        this.description = description;
+        this.place = place;
+        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+        this.organizerID = organizerID;
+
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
+        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
+        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
+        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
+        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
+
+        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
+        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+
+        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+        this.place = place;
+
+        this.entrantList = new EntrantList();
+        this.maxFinalListCapacity = maxFinalListCapacity;
+        this.maxWaitingListCapacity = maxWaitingListCapacity;
+
+    }
+
+    /**
+     * Parses the timestamp objects and saves them into the LocalDateTime objects
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseTimestamps() {
@@ -646,6 +696,15 @@ public class Event {
         this.eventTags.remove(tag);
     }
 
+    @Exclude
+    public void deleteEventTag(int position){
+        if (0 <= position && position < this.eventTags.size()){
+            this.eventTags.remove(position);
+        } else {
+            Log.e("Event", "Index out of bound, cannot delete tag");
+        }
+    }
+
     /**
      * A getter for the user object that represents the user who is organizing the event
      * @return The user object of the organizer
@@ -732,16 +791,19 @@ public class Event {
         switch (list) {
             case 0:
                 this.entrantList.addToWaiting(user);
-                Log.d("Event", "Waiting list size now: " + this.entrantList.getWaiting().size());
+//                Log.d("Event", "Waiting list size now: " + entrantList.getWaiting().size());
                 break;
             case 1:
                 this.entrantList.addToChosen(user);
+//                Log.d("Event", "Chosen list size now: " + entrantList.getChosen().size());
                 break;
             case 2:
                 this.entrantList.addToCancelled(user);
+//                Log.d("Event", "Cancelled list size now: " + entrantList.getCancelled().size());
                 break;
             case 3:
                 this.entrantList.addToFinalized(user);
+//                Log.d("Event", "Finalized list size now: " + entrantList.getFinalized().size());
                 break;
             default:
                 throw new IllegalArgumentException("List number out of range");
@@ -772,7 +834,7 @@ public class Event {
                 this.entrantList.removeFromCancelled(user);
                 break;
             case 3:
-                this.entrantList.removeFromCancelled(user);
+                this.entrantList.removeFromFinalized(user);
                 break;
             default:
                 throw new IllegalArgumentException("List number out of range");

@@ -343,7 +343,9 @@
             android:paddingStart="14dp"
             android:paddingEnd="14dp"
             android:drawableEnd="@drawable/edit_icon"
-            android:layout_marginBottom="14dp" />
+            android:layout_marginBottom="14dp"
+            android:inputType="number"
+            />
 
 
         <!-- Number of Selected Entrants -->
@@ -369,7 +371,8 @@
                 android:text="@string/number_of_selected_entrants_text"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                />
         </LinearLayout>
 
         <EditText
@@ -381,7 +384,9 @@
             android:paddingEnd="14dp"
             android:hint="@string/enter_max_number_text"
             android:drawableEnd="@drawable/edit_icon"
-            android:layout_marginBottom="14dp" />
+            android:layout_marginBottom="14dp"
+            android:inputType="number"
+            />
 
         <TextView
             android:id="@+id/createOrEditEventSetNotifsText"
@@ -436,6 +441,7 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/createOrEditEventDoneButton"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/done_creating_editing_event_text"

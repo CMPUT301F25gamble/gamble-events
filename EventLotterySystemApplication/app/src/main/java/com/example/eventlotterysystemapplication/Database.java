@@ -310,31 +310,31 @@ public class Database {
                 for (QueryDocumentSnapshot doc : task.getResult()) {
                     if (!doc.getString("organizerID").equals(user.getUserID())) {
                         DocumentReference eventRef = doc.getReference();
-                        CollectionReference regRef = eventRef.collection("Registration");
+                        CollectionReference regDocRef = eventRef.collection("Registration");
                         int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
-                       
+
                         // Checks if wait list is not full
                         Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
-                              int count = regCount.size();
-                              if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
-                                Event event = parseEvent(doc, task1 -> {
-                                    if (task1.isSuccessful()){
-                                        // TODO
-                                    } else {
-                                        // TODO
-                                    }
-                                });
-                                availableEvents.add(event);
+                                if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
+                                    Event event = parseEvent(doc, task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            // TODO
+                                        } else {
+                                            // TODO
+                                        }
+                                    });
+                                    availableEvents.add(event);
+                                }
                             }
                         });
                         subTasks.add(regTask);
                     }
+                    Tasks.whenAllComplete(subTasks).addOnCompleteListener(done -> {
+                        listener.onComplete(Tasks.forResult(availableEvents));
+                    });
                 }
-                Tasks.whenAllComplete(subTasks).addOnCompleteListener(done -> {
-                    listener.onComplete(Tasks.forResult(availableEvents));
-                });
             } else {
                 Log.e("Database", "Fetch failed");
             }
@@ -418,10 +418,6 @@ public class Database {
         eventRef.whereEqualTo("organizerID", userID).get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
-                Event event = parseEvent(eventDoc, task -> {
-                  if (task.isSuccessful()){
-                  }
-                });
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
                 Event event = parseEvent(eventDoc, parseEventTask -> {

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical"
+    tools:context=".OrganiserNotificationsUIFragment">
+
+
+    <TextView
+        android:id="@+id/organiser_notification_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/organiser_notification_header_text"
+        android:textColor="@color/black"
+        android:textSize="24dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/waitlist_entrants_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_beige"
+        android:text="@string/waitlist_entrants_text"
+        android:textColor="@color/app_grey"
+        android:layout_marginTop="4dp"/>
+
+    <Button
+        android:id="@+id/chosen_entrants_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_beige"
+        android:text="@string/chosen_entrants_text"
+        android:textColor="@color/app_grey"
+        android:layout_marginTop="4dp"/>
+
+    <Button
+        android:id="@+id/cancelled_entrants_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_beige"
+        android:text="@string/cancelled_entrants_text"
+        android:textColor="@color/app_grey"
+        android:layout_marginTop="4dp"/>
+
+
+</LinearLayout>

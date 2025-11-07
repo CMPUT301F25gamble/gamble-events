@@ -20,6 +20,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import com.google.firebase.installations.FirebaseInstallations;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.

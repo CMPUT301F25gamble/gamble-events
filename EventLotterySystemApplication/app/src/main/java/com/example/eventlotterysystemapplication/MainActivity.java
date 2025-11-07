@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.firebase.firestore.AggregateQuery;
@@ -47,12 +46,11 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Firebase Device ID: " + deviceId);
                     // String test = "deviceID67"; // replace deviceId with test to test going to content activity
 
-                    // Check if device in database (ie. User is registered)
-                    database.queryDeviceID(deviceId, queryTask -> {
-                        if (queryTask.isSuccessful()) {
-                            Boolean exists = queryTask.getResult();
+                    // Check to see if device ID is in database
+                    database.queryDeviceID(deviceId, task -> {
+                        if (task.isSuccessful()) {
+                            Boolean exists = task.getResult();
                             if (exists != null && exists) {
-                                // Get user info based off of device ID (mainly to check if registration was completely done)
                                 Log.d(TAG, "Device registered. Going to content activity.");
                                 goToContentActivity();
                             } else {
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                                 goToRegisterActivity();
                             }
                         } else {
-                            Log.e(TAG, "Error querying deviceID", queryTask.getException());
+                            Log.e(TAG, "Error querying deviceID", task.getException());
                             goToRegisterActivity();
                         }
                     });

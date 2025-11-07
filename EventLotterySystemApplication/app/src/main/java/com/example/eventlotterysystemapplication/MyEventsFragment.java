@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,12 @@ public class MyEventsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Button editMyEvent = binding.editMyEvent;
+
+        // temp edit my button for testing
+        Intent intent = new Intent(getActivity(), EditEventActivity.class);
+        startActivity(intent);
 
         // Back button navigates to events page
         binding.myEventsBackButton.setOnClickListener(v -> {

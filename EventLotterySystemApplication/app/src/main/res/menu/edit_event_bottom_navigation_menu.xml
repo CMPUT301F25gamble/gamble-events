@@ -3,7 +3,7 @@
 
     <item android:title="Information"
         android:icon="@drawable/info_icon"
-        android:id="@+id/eventDetailScreen">
+        android:id="@+id/replaceWithEventDetailFragment">
     </item>
 
     <item android:title="Entrants"
@@ -12,8 +12,9 @@
 
     </item>
 
-    <item android:title="Notification"
+    <item android:title="Notifications"
         android:icon="@drawable/send_notification_icon"
         android:id="@+id/organiserNotificationsUIFragment">
     </item>
+
 </menu>

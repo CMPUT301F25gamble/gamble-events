@@ -21,6 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Fragment for first time user registration
+ * Has options to cancel and return back to {@link RegisterScreenFragment}
+ * or to confirm information after filling in the required information fields and proceed to
+ * {@link LotteryGuidelinesFragment}
+ * Adds the user to the database along with corresponding information
+ */
+
 public class FirstTimeUserInfoFragment extends Fragment {
     private static final String TAG = "FirstTimeUserInfo"; // For debugging
 

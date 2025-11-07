@@ -11,6 +11,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentAllEntrantsListBinding;
 
+/**
+ * Fragment for displaying a ListView of all entrants for the selected event
+ * Will fetch a list of all entrants from the database and display them in a ListView
+ * Navigated to from {@link EntrantListSelectionFragment}
+ */
+
 public class AllEntrantsListFragment extends Fragment {
     private FragmentAllEntrantsListBinding binding;
 

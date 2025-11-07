@@ -14,6 +14,10 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 
+/**
+ * Activity that displays the main
+ */
+
 public class ContentActivity extends AppCompatActivity {
 
     @Override

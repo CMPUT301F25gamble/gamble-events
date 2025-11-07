@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * EventTagsAdapter is used by {@link EventDetailScreenFragment} to fetch strings to display in
+ * the {@link HorizontalRVActivity}
+ */
+
 public class EventTagsAdapter extends RecyclerView.Adapter<EventTagsAdapter.TagViewHolder> {
 
     private final List<String> tags;

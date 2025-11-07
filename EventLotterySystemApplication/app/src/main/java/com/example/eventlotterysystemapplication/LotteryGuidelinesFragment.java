@@ -16,6 +16,13 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentLotteryGuidelinesBinding;
 import com.google.firebase.installations.FirebaseInstallations;
 
+/**
+ * Displays the lottery guidelines and important information with how the lottery works for first
+ * time user registration
+ * Allows the user to cancel to go back to {@link FirstTimeUserInfoFragment}
+ * Allows the user to confirm to go to {@link ContentActivity}
+ */
+
 public class LotteryGuidelinesFragment extends Fragment {
     private Database database;
     private FragmentLotteryGuidelinesBinding binding;

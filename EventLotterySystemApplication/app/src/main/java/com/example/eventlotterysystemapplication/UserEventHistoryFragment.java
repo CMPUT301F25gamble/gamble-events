@@ -13,6 +13,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentUserEventHistoryBinding;
 import com.google.firebase.installations.FirebaseInstallations;
 
+/**
+ * Displays the user's past events and information relating to their acceptance or rejection
+ * Fetches events from the database and displays them in a list view
+ */
 
 public class UserEventHistoryFragment extends Fragment {
 

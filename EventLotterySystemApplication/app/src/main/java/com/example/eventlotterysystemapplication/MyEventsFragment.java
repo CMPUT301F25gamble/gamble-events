@@ -22,6 +22,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Displays the user's current events that they are organising
+ * Fetches a list of events filtered by a matching organiser id to the user's id and displays
+ * in a listview
+ */
+
 public class MyEventsFragment extends Fragment {
     private FragmentMyEventsBinding binding;
     private ArrayAdapter<String> myEventNamesAdapter;

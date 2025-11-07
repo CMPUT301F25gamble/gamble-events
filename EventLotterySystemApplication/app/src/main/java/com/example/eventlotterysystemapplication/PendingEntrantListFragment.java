@@ -11,6 +11,13 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentPendingEntrantListBinding;
 
+/**
+ * PendingEntrantListFragment
+ * Fragment that displays a ListView of all pending entrants that have yet to accept an
+ * invitation to join the event
+ * Navigated to from {@link EntrantListSelectionFragment}
+ */
+
 public class PendingEntrantListFragment extends Fragment {
     private FragmentPendingEntrantListBinding binding;
 

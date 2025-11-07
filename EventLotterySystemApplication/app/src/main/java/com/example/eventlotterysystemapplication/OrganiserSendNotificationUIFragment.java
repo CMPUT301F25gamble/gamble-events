@@ -17,6 +17,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserNotificationUiBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
 
+/**
+ * OrganiserSendNotificationUIFragment
+ * Allows the user who is an organiser to send a message/notification to all entrants of the
+ * selected category based on previous input in {@link OrganiserNotificationsUIFragment}
+ * EditTextview requires text to be inputted, otherwise error message will appear
+ * 'Send Notification' button will add the notification to the database and send the notification
+ * to appropriate entrants
+ */
+
 public class OrganiserSendNotificationUIFragment extends Fragment {
 
     private FragmentOrganiserSendNotificationUiBinding binding;

@@ -14,6 +14,16 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBinding;
 
+/**
+ * EditEventActivity
+ * This activity provides options related to event editing, sending notifications to entrants, and
+ * viewing the list of entrants
+ * Contains a NavHostFragment to display fragments related to this activity and a sets up a
+ * BottomNavigationView to quickly swap between EventDetailScreenFragment,
+ * EntrantListSelectionFragment, and OrganiserNotificationsUIFragment
+ * Retrieves the eventId from the intent and puts it in a bundle to be used by related fragments
+ */
+
 public class EditEventActivity extends AppCompatActivity {
 
 

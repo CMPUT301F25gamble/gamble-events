@@ -13,6 +13,12 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.firebase.installations.FirebaseInstallations;
 
+/**
+ * First activity upon app launch
+ * Retrieves device Id and determines if user should go to {@link RegisterActivity} or
+ * {@link ContentActivity} depending on existence of deviceId in the database
+ */
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     Database database = new Database();

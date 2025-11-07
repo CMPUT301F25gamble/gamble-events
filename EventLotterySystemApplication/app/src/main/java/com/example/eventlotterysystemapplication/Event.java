@@ -127,7 +127,7 @@ public class Event {
             if (task.isSuccessful()) {
                 this.organizer = task.getResult();
             } else {
-                Log.e("Database", "Cannot get user info");
+                Log.e("Event", "Cannot get user info");
             }
         });
     }
@@ -186,7 +186,7 @@ public class Event {
             if (task.isSuccessful()) {
                 this.organizer = task.getResult();
             } else {
-                Log.e("Database", "Cannot get user info");
+                Log.e("Event", "Cannot get user info");
             }
         });
 
@@ -653,7 +653,7 @@ public class Event {
         switch (list) {
             case 0:
                 this.entrantList.addToWaiting(user);
-                Log.d("Database", "Waiting list size now: " + this.entrantList.getWaiting().size());
+                Log.d("Event", "Waiting list size now: " + this.entrantList.getWaiting().size());
                 break;
             case 1:
                 this.entrantList.addToChosen(user);
@@ -670,10 +670,16 @@ public class Event {
     }
 
     /**
-     *
-     * @param user
-     * @param list
-     * @throws IllegalArgumentException
+     * Deletes a user from one of the entrant lists, based on which list is specified in the list
+     * argument.
+     * @param user The user to be deleted from one of the entrant lists
+     * @param list An integer specifying which list you want to set to be equal to the input
+     *             ArrayList, where:
+     *             0: waiting list
+     *             1: chosen list
+     *             2: cancelled list
+     *             3: finalized list
+     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
      */
     public void removeFromEntrantList(User user, int list) throws IllegalArgumentException{
         switch (list) {
@@ -695,74 +701,78 @@ public class Event {
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows a user to join the waiting list for the event, given that they are not already a part
+     * of this or some other entrant list for this event
+     * @param user The user who wants to join the waiting list for the event
      */
-    public void joinWaitingList(User user) throws IllegalArgumentException{
+    public void joinWaitingList(User user){
         if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
             if (!entrantList.getWaiting().contains(user)){
                 addToEntrantList(user, 0);
                 Database db = new Database();
                 db.updateEvent(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("Database", "User successfully joins waiting list");
+                        Log.d("Event", "User successfully joins waiting list");
                     }
                 });
             } else {
-                throw new IllegalArgumentException("User is already in the waiting list");
+                Log.e("Event", "User is already in the waiting list");
             }
         } else {
-            throw new IllegalArgumentException("User has already been selected from the waiting list");
+            Log.e("Event","User has already been selected from the waiting list");
         }
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allow a user to leave the waiting list for the event, given that they are already in the
+     * waiting list for the event
+     * @param user The user to be removed from the event waiting list
      */
-    public void leaveWaitingList(User user) throws IllegalArgumentException{
+    public void leaveWaitingList(User user){
         if (entrantList.getWaiting().contains(user)){
             removeFromEntrantList(user, 0);
             Database db = new Database();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
-                    Log.d("Database", "User successfully leaves waiting list");
+                    Log.d("Event", "User successfully leaves waiting list");
                 }
             });
         } else {
-            throw new IllegalArgumentException("User is not in the waiting list");
+            Log.e("Event", "User is not in the waiting list");
         }
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows the user to join the chosen list, given that they already are in the waiting list, and
+     * are not in the cancelled and finalized lists
+     * @param user The user that is chosen to accept the invitation
      */
     public void joinChosenList(User user) throws IllegalArgumentException{
-        if (!(entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
-            if (!entrantList.getChosen().contains(user)){
-                addToEntrantList(user, 1);
-                Database db = new Database();
-                db.updateEvent(this, task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Database", "User successfully joins chosen list");
-                    }
-                });
+        if (entrantList.getWaiting().contains(user)) {
+            if (!(entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))) {
+                if (!entrantList.getChosen().contains(user)) {
+                    removeFromEntrantList(user, 0);
+                    addToEntrantList(user, 1);
+                    Database db = new Database();
+                    db.updateEvent(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Event", "User successfully joins chosen list");
+                        }
+                    });
+                } else {
+                    Log.e("Event", "User is already in the chosen list");
+                }
             } else {
-                throw new IllegalArgumentException("User is already in the chosen list");
+                Log.e("Event", "User has already been confirmed/rejected");
             }
         } else {
-            throw new IllegalArgumentException("User has already been confirmed/rejected");
+            Log.e("Event", "User is not in the waiting list");
         }
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows a user to leave the chosen list, given that they are already in the chosen list
+     * @param user The user who wants to leave the chosen list
      */
     public void leaveChosenList(User user) throws IllegalArgumentException{
         if (entrantList.getChosen().contains(user)){
@@ -774,7 +784,7 @@ public class Event {
                 }
             });
         } else {
-            throw new IllegalArgumentException("User is not in the chosen list");
+            Log.e("Event", "User is not in the chosen list");
         }
     }
 

@@ -30,10 +30,10 @@ import java.util.Map;
  * An instance of this class represents a connection to the firebase firestore database
  */
 public class Database {
-    CollectionReference userRef;
-    CollectionReference eventRef;
-    CollectionReference notificationRef;
-    FirebaseAuth firebaseAuth;
+    private CollectionReference userRef;
+    private CollectionReference eventRef;
+    private CollectionReference notificationRef;
+    private FirebaseAuth firebaseAuth;
 
     /**
      * Initializes the database object, without being given any database or authorization

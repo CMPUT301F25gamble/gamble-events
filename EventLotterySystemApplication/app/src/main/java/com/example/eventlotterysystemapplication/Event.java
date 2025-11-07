@@ -120,7 +120,7 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = -1; // Default as no limit
+        this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.posters = posters;
 
         Database db = new Database();
@@ -147,7 +147,7 @@ public class Event {
      * @param registrationEndTime The time when the registration for the event closes
      * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
      *                                     assuming that you were selected by the lottery
-     * @param maxWaitingListCapacity The maximum capacity of the waiting list
+     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
      */
@@ -180,7 +180,7 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
 
         Database db = new Database();
         db.getUser(organizerID, task -> {
@@ -194,26 +194,28 @@ public class Event {
     }
 
     /**
-     * This constructor is solely used for testing and should not be used by the rest of the program
-     * at all
-     * @param name
-     * @param description
-     * @param place
-     * @param eventTags
-     * @param organizerID
-     * @param eventStartTime
-     * @param eventEndTime
-     * @param registrationStartTime
-     * @param registrationEndTime
-     * @param invitationAcceptanceDeadline
-     * @param maxWaitingListCapacity
-     * @param maxFinalListCapacity
-     * @param mock
+     * This constructor can also allow for the instantiation of the event object from the program,
+     * but the main purpose here is to help with mock testing
+     * @param name The event's name
+     * @param description The event's description
+     * @param place The event's location
+     * @param eventTags The event's tags
+     * @param organizerID The ID of the user who organizes the event
+     *@param eventStartTime The start time of the event
+     * @param eventEndTime The ending time of the event
+     * @param registrationStartTime The time when the registration for the event opens
+     * @param registrationEndTime The time when the registration for the event closes
+     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
+     *                                     assuming that you were selected by the lottery
+     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
+     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
+     *                             the lottery system
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
+        // Used for mock test
 
         this.name = name;
         this.description = description;
@@ -239,9 +241,10 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.maxWaitingListCapacity = -1; // Default as no limit
 
     }
+
 
     /**
      * Parses the timestamp objects and saves them into the LocalDateTime objects
@@ -542,6 +545,7 @@ public class Event {
      * Gets the event's end time string
      * @return The event's end time
      */
+    @Exclude
     public String getEventEndTimeString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return this.eventEndTime.format(formatter);
@@ -554,6 +558,7 @@ public class Event {
      * Sets the event's end time string
      * @param dateString The event's end time
      */
+    @Exclude
     public void setEventEndTimeString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.eventStartTime = LocalDateTime.parse(dateString, formatter);
@@ -1010,6 +1015,7 @@ public class Event {
      * A getter for the posters list
      * @return The list of posters, which are bitmap objects in the program
      */
+    @Exclude
     public ArrayList<Bitmap> getPosters() {
         return posters;
     }
@@ -1018,6 +1024,7 @@ public class Event {
      * A setter for the posters list
      * @param posters The list of posters, which are bitmap objects in the program
      */
+    @Exclude
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
 
@@ -1097,6 +1104,7 @@ public class Event {
      * before returning
      * @return A bitmap object of the QR code image
      */
+    @Exclude
     public Bitmap getQRCodeBitmap() {
         if (QRCodeBitmap == null){
             generateQRCode();
@@ -1108,6 +1116,7 @@ public class Event {
      * Sets the QR code bitmap to a specific bitmap
      * @param QRCodeBitmap The bitmap to set the QR code to
      */
+    @Exclude
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
     }

@@ -20,7 +20,8 @@ public class LotterySelectorUnitTest {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
-                10
+                10,
+                5
     );
 
     User billyBob = new User(

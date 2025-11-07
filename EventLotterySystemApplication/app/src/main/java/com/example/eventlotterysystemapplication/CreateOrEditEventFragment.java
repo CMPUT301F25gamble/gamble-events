@@ -159,9 +159,6 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set timestamps
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Timestamp eventStartTimeTS = Timestamp.now();
-                                    event.setEventStartTimeTS(eventStartTimeTS);
-
                                     Timestamp eventDateTimeTS = new Timestamp(eventDateTime.atZone(ZoneId.systemDefault()).toInstant());
                                     event.setEventEndTimeTS(eventDateTimeTS);
 

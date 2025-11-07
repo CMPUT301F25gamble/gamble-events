@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -40,6 +41,10 @@ public class EventsUIFragment extends Fragment {
 
     // Parallel list to keep Firestore document IDs (to then pass onto event details screen)
     private final ArrayList<String> docIds = new ArrayList<>();
+
+    // For the owned vs not owned event (used to all events on events UI)
+    private final ArrayList<Boolean> ownedFlags = new ArrayList<>();
+
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -121,6 +126,10 @@ public class EventsUIFragment extends Fragment {
 
         // Fetch all Event docs and display their "name" field in the listView
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
         db.collection("Event")
             .get()
             .addOnSuccessListener(qs -> {
@@ -129,9 +138,12 @@ public class EventsUIFragment extends Fragment {
                 binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
                 eventNames.clear();
                 docIds.clear();
+                ownedFlags.clear();
 
                 for (DocumentSnapshot doc : qs.getDocuments()) {
                     String eventName = doc.getString("name");
+                    String organizerId = doc.getString("organizerID");
+                    boolean owned = (uid != null && organizerId != null && organizerId.equals(uid));
 
                     // Fallback on the doc ID if event name is missing
                     if (eventName == null) {
@@ -143,6 +155,9 @@ public class EventsUIFragment extends Fragment {
 
                     // Add docId in parallel list
                     docIds.add(doc.getId());
+
+                    // Add owned flag in parallel list
+                    ownedFlags.add(owned);
                 }
                 // Notify the adapter that the data set has changed
                 eventNamesAdapter.notifyDataSetChanged();
@@ -153,14 +168,13 @@ public class EventsUIFragment extends Fragment {
                 Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
             });
 
-        // Handle the on click event for each list item
+        // Switched from NavHostFragment to a bundle to pass data between fragments
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
-            String eventId = docIds.get(position); // docIds parallel list you built
-//            Bundle eventArgs = new Bundle();
-//            eventArgs.putString("eventId", eventId);
-
+            Bundle args = new Bundle();
+            args.putString("eventId", docIds.get(position));
+            args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
             NavHostFragment.findNavController(this)
-                    .navigate(EventsUIFragmentDirections.actionEventsUiFragmentToEventDetailScreen(eventId));
+                    .navigate(R.id.event_detail_screen, args);
         });
     }
 }

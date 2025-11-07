@@ -41,10 +41,10 @@
             app:destination="@id/user_event_history_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/settings_ui_fragment"
-        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
-        android:label="fragment_settings_ui"
-        tools:layout="@layout/fragment_settings_ui" />
+        android:id="@+id/settings_notifications_fragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsNotificationsFragment"
+        android:label="fragment_settings_notification_fragment"
+        tools:layout="@layout/fragment_settings_notifications" />
     <fragment
         android:id="@+id/firstTimeUserInfoFragment2"
         android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
@@ -103,5 +103,22 @@
         <action
             android:id="@+id/action_event_detail_screen_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsTOSFragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsTOSFragment"
+        android:label="fragment_settings_tos"
+        tools:layout="@layout/fragment_settings_tos" />
+    <fragment
+        android:id="@+id/settings_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
+        android:label="SettingsUIFragment"
+        tools:layout="@layout/fragment_settings_ui">
+        <action
+            android:id="@+id/action_settingsUIFragment_to_settings_notifications_fragment"
+            app:destination="@id/settings_notifications_fragment" />
+        <action
+            android:id="@+id/action_settingsUIFragment_to_settingsTOSFragment"
+            app:destination="@id/settingsTOSFragment" />
     </fragment>
 </navigation>

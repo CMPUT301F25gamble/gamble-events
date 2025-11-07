@@ -68,6 +68,8 @@ public class MyEventsFragment extends Fragment {
         }
         String uid = user.getUid();
 
+        Log.d("MyEventsFragment", "User ID: " + uid);
+
         // Firestore: Only events where organizerID == uid
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Event")

@@ -526,10 +526,12 @@ public class Event {
         }
     }
 
+    @Exclude
     public ArrayList<Bitmap> getPosters() {
         return posters;
     }
 
+    @Exclude
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
     }
@@ -551,6 +553,7 @@ public class Event {
         }
     }
 
+    @Exclude
     public Bitmap getQRCodeBitmap() {
         if (QRCodeBitmap == null){
             generateQRCode();
@@ -558,6 +561,7 @@ public class Event {
         return QRCodeBitmap;
     }
 
+    @Exclude
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
     }

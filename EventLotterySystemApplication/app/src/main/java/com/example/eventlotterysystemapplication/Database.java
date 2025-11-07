@@ -474,54 +474,67 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        eventDocRef.set(event, SetOptions.merge())
+        eventDocRef.set(event)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
                         CollectionReference registration = eventDocRef.collection("Registration");
-                        List<Task<Void>> regTasks = new ArrayList<>();
 
-                        // Add waiting users
-                        for (User user : event.getEntrantList().getWaiting()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "waiting");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
+                        // Delete all existing registrations first before re-adding the users in entrant lists
+                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
 
-                        // Add chosen users
-                        for (User user : event.getEntrantList().getChosen()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "chosen");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        // Add cancelled users
-                        for (User user : event.getEntrantList().getCancelled()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "cancelled");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        // Add finalized users
-                        for (User user : event.getEntrantList().getFinalized()) {
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("status", "finalized");
-                            data.put("organizerID", event.getOrganizerID());
-                            regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
-                        }
-
-                        Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-                            TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-                            if (done.isSuccessful()) {
-                                tcs.setResult(null); // everything completed successfully
-                            } else {
-                                tcs.setException(done.getException());
+                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                deleteRegTasks.add(doc.getReference().delete());
                             }
-                            listener.onComplete(tcs.getTask());
+
+                            // Once all previous registrations are deleted we can re-add the users
+                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
+                                List<Task<Void>> regTasks = new ArrayList<>();
+
+                                // Add waiting users
+                                for (User user : event.getEntrantList().getWaiting()) {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("status", "waiting");
+                                    data.put("organizerID", event.getOrganizerID());
+                                    regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
+                                }
+
+                                // Add chosen users
+                                for (User user : event.getEntrantList().getChosen()) {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("status", "chosen");
+                                    data.put("organizerID", event.getOrganizerID());
+                                    regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
+                                }
+
+                                // Add cancelled users
+                                for (User user : event.getEntrantList().getCancelled()) {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("status", "cancelled");
+                                    data.put("organizerID", event.getOrganizerID());
+                                    regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
+                                }
+
+                                // Add finalized users
+                                for (User user : event.getEntrantList().getFinalized()) {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("status", "finalized");
+                                    data.put("organizerID", event.getOrganizerID());
+                                    regTasks.add(registration.document(user.getUserID()).set(data, SetOptions.merge()));
+                                }
+
+                                Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
+                                    TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
+                                    if (done.isSuccessful()) {
+                                        tcs.setResult(null); // everything completed successfully
+                                    } else {
+                                        tcs.setException(done.getException());
+                                    }
+                                    listener.onComplete(tcs.getTask());
+                                });
+                            });
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());

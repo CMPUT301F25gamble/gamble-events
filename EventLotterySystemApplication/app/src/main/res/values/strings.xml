@@ -42,6 +42,7 @@
     <string name="final_list_of_entrants_text">Final List of Entrants</string>
     <string name="event_details_title_text">Event Details</string>
     <string name="join_waitlist_text">Join Waitlist</string>
+    <string name="leave_waitlist_text">Leave Waitlist</string>
     <string name="print_list_text">Print List</string>
     <string name="notify_selectees_button">Notify selectees to sign up</string>
     <string name="create_or_edit_event_text">Create/Edit Event</string>

@@ -1,11 +1,16 @@
 package com.example.eventlotterysystemapplication;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 public class UserUnitTest {
     private User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID");
+
+    @Test
+    public void addition_isCorrect() {
+        assertEquals(4, 2 + 2);
+    }
 
     @Test
     public void testUpdateAllUserInfo() {

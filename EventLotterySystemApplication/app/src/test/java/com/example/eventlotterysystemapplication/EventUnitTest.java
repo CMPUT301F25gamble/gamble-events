@@ -1,8 +1,60 @@
 package com.example.eventlotterysystemapplication;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
 public class EventUnitTest {
+
+    private Database database;
+
+    @Mock
+    private CollectionReference userRef;
+
+    @Mock
+    private CollectionReference eventRef;
+
+    @Mock
+    private CollectionReference notificationRef;
+
+    @Mock
+    private DocumentReference docRef;
+
+    @Mock
+    private FirebaseFirestore mockDb;
+
+    @Mock
+    private FirebaseAuth mockAuth;
+    @Mock
+    private FirebaseUser mockAuthUser;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+
+        when(mockDb.collection("User")).thenReturn(userRef);
+        when(mockDb.collection("Event")).thenReturn(eventRef);
+        when(mockDb.collection("Notification")).thenReturn(notificationRef);
+
+        database = new Database(mockDb, mockAuth);
+    }
     public Event mockEvent1(){
         Event event = new Event(
                 "Twice concert watch party",
@@ -32,13 +84,38 @@ public class EventUnitTest {
     }
 
     @Test
-    public void testParseTimestamps(){
+    public void addition_isCorrect() {
+        assertEquals(4, 2 + 2);
+    }
 
+    @Test
+    public void testParseTimestamps(){
+        final Task<Void> mockDocDeleteTask = mock(Task.class);
+        final Task<Void> mockAuthDeleteTask = mock(Task.class);
+        final Task<QuerySnapshot> mockEventGetTask = mock(Task.class);
+        final Task<DocumentSnapshot> mockRegGetTask = mock(Task.class);
+        final Task<Void> mockRegDeleteTask = mock(Task.class);
+
+        when(mockEvent1()).thenReturn();
+
+        event.setEventStartTime(null);
+        event.setEventEndTime(null);
+        event.setRegistrationStartTime(null);
+        event.setRegistrationEndTime(null);
+        event.setInvitationAcceptanceDeadline(null);
+
+        event.parseTimestamps();
+
+        assertNotNull(event.getEventStartTime());
+        assertNotNull(event.getEventEndTime());
+        assertNotNull(event.getRegistrationStartTime());
+        assertNotNull(event.getRegistrationEndTime());
+        assertNotNull(event.getInvitationAcceptanceDeadline());
     }
 
     @Test
     public void testGetEventID(){
-
+        Event event = mockEvent1();
     }
 
     @Test

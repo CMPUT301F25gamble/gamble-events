@@ -199,6 +199,10 @@ public class Event {
     public void parseTimestamps() {
         if (eventStartTimeTS != null)
             eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (eventEndTimeTS != null)
+            eventEndTime = eventEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationStartTimeTS != null)
+            registrationStartTime = registrationStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (registrationEndTimeTS != null)
             registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (invitationAcceptanceDeadlineTS != null)
@@ -470,6 +474,81 @@ public class Event {
      * @return
      */
     @Exclude
+    public LocalDateTime getEventEndTime() {
+        return eventEndTime;
+    }
+
+    /**
+     *
+     * @param eventEndTime
+     */
+    @Exclude
+    public void setEventEndTime(LocalDateTime eventEndTime) {
+        this.eventEndTime = eventEndTime;
+    }
+
+    public String getEventEndTimeString(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return this.eventEndTime.format(formatter);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void setEventEndTimeString(String dateString){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.eventStartTime = LocalDateTime.parse(dateString, formatter);
+        }
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    @Exclude
+    public LocalDateTime getRegistrationStartTime(){
+        return registrationStartTime;
+    }
+
+    /**
+     *
+     * @param registrationStartTime
+     */
+    @Exclude
+    public void setRegistrationStartTime(LocalDateTime registrationStartTime) {
+        this.registrationStartTime = registrationStartTime;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Exclude
+    public String getRegistrationStartTimeString(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return this.registrationStartTime.format(formatter);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    /**
+     *
+     * @param dateString
+     */
+    @Exclude
+    public void setRegistrationStartTimeString(String dateString){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.registrationStartTime = LocalDateTime.parse(dateString, formatter);
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Exclude
     public LocalDateTime getRegistrationEndTime() {
         return registrationEndTime;
     }
@@ -488,7 +567,7 @@ public class Event {
      * @return
      */
     @Exclude
-    public String getSignupDeadlineString(){
+    public String getRegistrationEndTimeString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return this.registrationEndTime.format(formatter);
         } else {
@@ -501,7 +580,7 @@ public class Event {
      * @param dateString
      */
     @Exclude
-    public void setSignupDeadlineString(String dateString){
+    public void setRegistrationEndTimeString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.registrationEndTime = LocalDateTime.parse(dateString, formatter);
         }

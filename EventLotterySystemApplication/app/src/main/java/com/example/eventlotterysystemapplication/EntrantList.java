@@ -3,7 +3,7 @@ package com.example.eventlotterysystemapplication;
 import java.util.ArrayList;
 
 /**
- *
+ * An instance of this class represents the waiting lists for a single event
  */
 public class EntrantList {
     private ArrayList<User> waiting;
@@ -12,7 +12,12 @@ public class EntrantList {
     private ArrayList<User> finalized;
 
     /**
-     *
+     * The general constructor for this class does not require any arguments, all attributes are
+     * initialized to be empty ArrayLists, where the waiting list represents people who have signed
+     * up in the waiting list but haven't been selected yet, chosen represents people who have been
+     * selected by the lottery system but haven't accepted or declined yet, cancelled are the people
+     * who declined their invitation to participate, and finalized are the people who have accepted
+     * their invitation to participate
      */
     public EntrantList(){
         waiting = new ArrayList<>();
@@ -22,128 +27,128 @@ public class EntrantList {
     }
 
     /**
-     *
-     * @return
+     * A getter for the waiting list
+     * @return The waiting list
      */
     public ArrayList<User> getWaiting() {
         return waiting;
     }
 
     /**
-     *
-     * @return
+     * A getter for the chosen list
+     * @return The chosen list
      */
     public ArrayList<User> getChosen() {
         return chosen;
     }
 
     /**
-     *
-     * @return
+     * A getter for the cancelled list
+     * @return The cancelled list
      */
     public ArrayList<User> getCancelled() {
         return cancelled;
     }
 
     /**
-     *
-     * @return
+     * A getter for the finalized list
+     * @return The finalized list
      */
     public ArrayList<User> getFinalized() {
         return finalized;
     }
 
     /**
-     *
-     * @param waiting
+     * A setter for the waiting list
+     * @param waiting The waiting list
      */
     public void setWaiting(ArrayList<User> waiting) {
         this.waiting = waiting;
     }
 
     /**
-     *
-     * @param chosen
+     * A setter for the chosen list
+     * @param chosen The chosen list
      */
     public void setChosen(ArrayList<User> chosen) {
         this.chosen = chosen;
     }
 
     /**
-     *
-     * @param cancelled
+     * A setter for the cancelled list
+     * @param cancelled The cancelled list
      */
     public void setCancelled(ArrayList<User> cancelled) {
         this.cancelled = cancelled;
     }
 
     /**
-     *
-     * @param finalized
+     * A setter for the finalized list
+     * @param finalized The finalized list
      */
     public void setFinalized(ArrayList<User> finalized) {
         this.finalized = finalized;
     }
 
     /**
-     *
-     * @param user
+     * Adds a user to the waiting list
+     * @param user The user to be added
      */
     public void addToWaiting(User user){
         this.waiting.add(user);
     }
 
     /**
-     *
-     * @param user
+     * Adds a user to the chosen list
+     * @param user The user to be added
      */
     public void addToChosen(User user){
         this.chosen.add(user);
     }
 
     /**
-     *
-     * @param user
+     * Adds a user to the cancelled list
+     * @param user The user to be added
      */
     public void addToCancelled(User user){
         this.cancelled.add(user);
     }
 
     /**
-     *
-     * @param user
+     * Adds a user to the finalized list
+     * @param user The user to be added
      */
     public void addToFinalized(User user){
         this.finalized.add(user);
     }
 
     /**
-     *
-     * @param user
+     * Removes a user to the waiting list
+     * @param user The user to be removed
      */
     public void removeFromWaiting(User user){
         this.waiting.remove(user);
     }
 
     /**
-     *
-     * @param user
+     * Removes a user to the chosen list
+     * @param user The user to be removed
      */
     public void removeFromChosen(User user){
         this.chosen.remove(user);
     }
 
     /**
-     *
-     * @param user
+     * Removes a user to the cancelled list
+     * @param user The user to be removed
      */
     public void removeFromCancelled(User user){
         this.cancelled.remove(user);
     }
 
     /**
-     *
-     * @param user
+     * Removes a user to the finalized list
+     * @param user The user to be removed
      */
     public void removeFromFinalized(User user){
         this.finalized.remove(user);

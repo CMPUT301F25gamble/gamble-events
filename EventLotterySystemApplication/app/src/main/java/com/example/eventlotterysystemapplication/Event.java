@@ -292,64 +292,64 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's description
+     * @return The event's description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     *
-     * @param description
+     * Sets the event's description
+     * @param description The event's description
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's place
+     * @return The event's place
      */
     public String getPlace() {
         return place;
     }
 
     /**
-     *
-     * @param place
+     * Sets the event's place
+     * @param place The event's place
      */
     public void setPlace(String place) {
         this.place = place;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's tags
+     * @return The event's tags
      */
     public ArrayList<String> getEventTags() {
         return eventTags;
     }
 
     /**
-     *
-     * @param eventTags
+     * Sets the event's tags
+     * @param eventTags The event's tags
      */
     public void setEventTags(ArrayList<String> eventTags) {
         this.eventTags = eventTags;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's organizerID
+     * @return The event's organizerID
      */
     public String getOrganizerID(){
         return organizerID;
     }
 
     /**
-     *
-     * @param organizerID
+     * Sets the event's organizerID
+     * @param organizerID The event's organizerID
      */
     public void setOrganizerID(String organizerID){
         this.organizerID = organizerID;
@@ -446,40 +446,40 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's max waiting list capacity
+     * @return The event's max waiting list capacity
      */
     public int getMaxWaitingListCapacity() {
         return maxWaitingListCapacity;
     }
 
     /**
-     *
-     * @param maxWaitingListCapacity
+     * Sets the event's max waiting list capacity
+     * @param maxWaitingListCapacity The event's max waiting list capacity
      */
     public void setMaxWaitingListCapacity(int maxWaitingListCapacity) {
         this.maxWaitingListCapacity = maxWaitingListCapacity;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's max final list capacity
+     * @return The event's max final list capacity
      */
     public int getMaxFinalListCapacity() {
         return maxFinalListCapacity;
     }
 
     /**
-     *
-     * @param maxFinalListCapacity
+     * Sets the event's max final list capacity
+     * @param maxFinalListCapacity The event's max final list capacity
      */
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
         this.maxFinalListCapacity = maxFinalListCapacity;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's start time
+     * @return The event's start time
      */
     @Exclude
     public LocalDateTime getEventStartTime() {
@@ -487,8 +487,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param eventStartTime
+     * Sets the event's start time
+     * @param eventStartTime The event's start time
      */
     @Exclude
     public void setEventStartTime(LocalDateTime eventStartTime) {
@@ -496,8 +496,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's start time string
+     * @return The event's start time
      */
     @Exclude
     public String getEventStartTimeString(){
@@ -509,8 +509,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param dateString
+     * Sets the event's start time string
+     * @param dateString The event's start time
      */
     @Exclude
     public void setEventStartTimeString(String dateString){
@@ -520,8 +520,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's end time
+     * @return The event's end time
      */
     @Exclude
     public LocalDateTime getEventEndTime() {
@@ -529,14 +529,18 @@ public class Event {
     }
 
     /**
-     *
-     * @param eventEndTime
+     * Sets the event's end time
+     * @param eventEndTime The event's end time
      */
     @Exclude
     public void setEventEndTime(LocalDateTime eventEndTime) {
         this.eventEndTime = eventEndTime;
     }
 
+    /**
+     * Gets the event's end time string
+     * @return The event's end time
+     */
     public String getEventEndTimeString(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return this.eventEndTime.format(formatter);
@@ -545,6 +549,10 @@ public class Event {
         }
     }
 
+    /**
+     * Sets the event's end time string
+     * @param dateString The event's end time
+     */
     public void setEventEndTimeString(String dateString){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             this.eventStartTime = LocalDateTime.parse(dateString, formatter);
@@ -553,8 +561,8 @@ public class Event {
 
 
     /**
-     *
-     * @return
+     * Gets the event's registration start time
+     * @return The registration start time
      */
     @Exclude
     public LocalDateTime getRegistrationStartTime(){
@@ -562,8 +570,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param registrationStartTime
+     * Sets the event's registration start time
+     * @param registrationStartTime The registration start time
      */
     @Exclude
     public void setRegistrationStartTime(LocalDateTime registrationStartTime) {
@@ -571,8 +579,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's registration start time string
+     * @return The registration start time
      */
     @Exclude
     public String getRegistrationStartTimeString(){
@@ -584,8 +592,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param dateString
+     * Sets the event's registration start time string
+     * @param dateString The registration start time
      */
     @Exclude
     public void setRegistrationStartTimeString(String dateString){
@@ -595,8 +603,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's registration end time
+     * @return The registration end time
      */
     @Exclude
     public LocalDateTime getRegistrationEndTime() {
@@ -604,8 +612,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param registrationEndTime
+     * Sets the event's registration end time
+     * @param registrationEndTime The registration end time
      */
     @Exclude
     public void setRegistrationEndTime(LocalDateTime registrationEndTime) {
@@ -613,8 +621,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's registration end time string
+     * @return The registration end time
      */
     @Exclude
     public String getRegistrationEndTimeString(){
@@ -626,8 +634,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param dateString
+     * Sets the event's registration end time string
+     * @param dateString The registration end time
      */
     @Exclude
     public void setRegistrationEndTimeString(String dateString){
@@ -637,8 +645,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's invitation acceptance deadline
+     * @return The invitation acceptance deadline
      */
     @Exclude
     public LocalDateTime getInvitationAcceptanceDeadline() {
@@ -646,8 +654,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param invitationAcceptanceDeadline
+     * Sets the event's invitation acceptance deadline
+     * @param invitationAcceptanceDeadline The invitation acceptance deadline
      */
     @Exclude
     public void setInvitationAcceptanceDeadline(LocalDateTime invitationAcceptanceDeadline) {
@@ -655,8 +663,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's invitation acceptance deadline string
+     * @return The invitation acceptance deadline
      */
     @Exclude
     public String getInvitationAcceptanceDeadlineString(){
@@ -668,8 +676,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param dateString
+     * Sets the event's invitation acceptance deadline string
+     * @param dateString The invitation acceptance deadline
      */
     @Exclude
     public void setInvitationAcceptanceDeadlineString(String dateString){
@@ -724,8 +732,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * A getter for the entrant list
+     * @return The entrant list object
      */
     @Exclude
     public EntrantList getEntrantList() {
@@ -733,8 +741,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param entrantList
+     * A setter for the entrant list
+     * @param entrantList The entrant list object
      */
     @Exclude
     public void setEntrantList(EntrantList entrantList) {
@@ -998,16 +1006,16 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * A getter for the posters list
+     * @return The list of posters, which are bitmap objects in the program
      */
     public ArrayList<Bitmap> getPosters() {
         return posters;
     }
 
     /**
-     *
-     * @param posters
+     * A setter for the posters list
+     * @param posters The list of posters, which are bitmap objects in the program
      */
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;

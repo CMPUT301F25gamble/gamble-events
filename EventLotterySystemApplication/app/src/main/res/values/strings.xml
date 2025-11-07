@@ -87,6 +87,5 @@
     <string name="cancelled_entrants_text">Cancelled Entrants</string>
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings_text"><u>Settings</u></string>
 </resources>

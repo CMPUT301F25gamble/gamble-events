@@ -51,6 +51,7 @@ public class CreateOrEditEventFragment extends Fragment {
                     .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
         });
 
+
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
             // Get values from EditTexts

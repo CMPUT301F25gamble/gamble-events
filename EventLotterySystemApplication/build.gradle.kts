@@ -5,3 +5,13 @@ plugins {
     // Add the dependency for the Google services Gradle plugin
     id("com.google.gms.google-services") version "4.4.4" apply false
 }
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        val nav_version = "2.9.6"
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+    }
+}

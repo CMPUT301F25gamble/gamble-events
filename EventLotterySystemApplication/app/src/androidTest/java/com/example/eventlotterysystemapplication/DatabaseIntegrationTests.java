@@ -283,7 +283,7 @@ public class DatabaseIntegrationTests {
         });
         latch.await(5, TimeUnit.SECONDS);
     }
-    
+
     @After
     public void tearDown() throws InterruptedException {
         // Deletes any users and events created during tests

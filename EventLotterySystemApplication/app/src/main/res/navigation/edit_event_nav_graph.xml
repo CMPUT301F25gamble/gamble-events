@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit_event_nav_graph"
+    app:startDestination="@id/eventDetailScreen">
+
+    <fragment
+        android:id="@+id/eventDetailScreen"
+        android:name="com.example.eventlotterysystemapplication.EventDetailScreen"
+        android:label="fragment_event_detail_screen"
+        tools:layout="@layout/fragment_event_detail_screen" />
+    <fragment
+        android:id="@+id/entrantListSelectionFragment"
+        android:name="com.example.eventlotterysystemapplication.EntrantListSelectionFragment"
+        android:label="fragment_entrant_list_selection"
+        tools:layout="@layout/fragment_entrant_list_selection" />
+    <fragment
+        android:id="@+id/organiserNotificationsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragment"
+        android:label="fragment_organiser_notification_ui"
+        tools:layout="@layout/fragment_organiser_notification_ui" />
+</navigation>

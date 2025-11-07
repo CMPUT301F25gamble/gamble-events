@@ -355,28 +355,6 @@ public class DatabaseIntegrationTests {
         latch.await(5, TimeUnit.SECONDS);
     }
 
-//    @Test
-//    public void testManualUpdate() throws InterruptedException {
-//        // Creates events for the user
-//        Event event1 = new Event(
-//                "Twice concert watch party",
-//                "We love Twice",
-//                "Online",
-//                new String[]{"Twice", "concert"},
-//                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
-//                "2025-11-15T14:00",
-//                "2025-11-15T16:00",
-//                "2025-11-01T23:59",
-//                "2025-11-10T23:59",
-//                "2025-11-12T23:59",
-//                50,
-//                20
-//        );
-//
-//        // Adds both events
-//        database.addEvent(event1, task -> eventLatch1.countDown());
-//        eventLatch1.await(20, TimeUnit.SECONDS);
-//    }
 
     @Test
     public void testViewAvailableEvents() throws InterruptedException{
@@ -405,42 +383,6 @@ public class DatabaseIntegrationTests {
     public void testAddEvent(){
 
     }
-
-//    @Test
-//    public void updateEventEntrant() throws InterruptedException {
-//
-//        database.getEvent("dmc35tBWVUsLX6foqBDt", task -> {
-//            if (task.isSuccessful()) {
-//                Event event = task.getResult();
-//
-//                database.getUser("YVBXN1tq2eZuEVP0K7Lfodv39Mh1", userTask -> {
-//                    if (userTask.isSuccessful()) {
-//                        User user = userTask.getResult();
-//                        user.setUserID("YVBXN1tq2eZuEVP0K7Lfodv39Mh1");
-//
-//                        event.addToEntrantList(user, 0)
-//                                .addOnCompleteListener(task2 -> {
-//                                    if (task2.isSuccessful()) {
-//                                        Log.d("Test", "User added successfully");
-//                                    } else {
-//                                        Log.e("Test", "Error adding user", task2.getException());
-//                                    }
-//                                    latch.countDown();
-//                                });
-//                    } else {
-//                        Log.e("Test", "Failed to get user", userTask.getException());
-//                        latch.countDown();
-//                    }
-//                });
-//            } else {
-//                Log.e("Test", "Failed to get event", task.getException());
-//                latch.countDown();
-//            }
-//        });
-//
-//        latch.await(20, TimeUnit.SECONDS);
-//    }
-
 
     @After
     public void tearDown() throws InterruptedException {

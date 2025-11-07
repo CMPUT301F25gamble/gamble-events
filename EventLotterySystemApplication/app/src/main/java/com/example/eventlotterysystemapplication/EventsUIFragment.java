@@ -20,6 +20,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import com.google.firebase.installations.FirebaseInstallations;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -125,6 +128,8 @@ public class EventsUIFragment extends Fragment {
                 binding.loadingEventUi.setVisibility(View.GONE);
                 binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
                 eventNames.clear();
+                docIds.clear();
+
                 for (DocumentSnapshot doc : qs.getDocuments()) {
                     String eventName = doc.getString("name");
 
@@ -151,10 +156,11 @@ public class EventsUIFragment extends Fragment {
         // Handle the on click event for each list item
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
             String eventId = docIds.get(position); // docIds parallel list you built
-            Bundle eventArgs = new Bundle();
-            eventArgs.putString("eventId", eventId);
+//            Bundle eventArgs = new Bundle();
+//            eventArgs.putString("eventId", eventId);
+
             NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, eventArgs);
+                    .navigate(EventsUIFragmentDirections.actionEventsUiFragmentToEventDetailScreen(eventId));
         });
     }
 }

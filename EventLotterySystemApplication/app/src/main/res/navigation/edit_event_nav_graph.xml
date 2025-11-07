@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_chosenEntrantList"
             app:destination="@id/chosenEntrantList" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_pendingEntrantList"
+            app:destination="@id/pendingEntrantList" />
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -62,6 +65,15 @@
         tools:layout="@layout/fragment_chosen_entrant_list" >
         <action
             android:id="@+id/action_chosenEntrantList_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pendingEntrantList"
+        android:name="com.example.eventlotterysystemapplication.PendingEntrantList"
+        android:label="fragment_pending_entrant_list"
+        tools:layout="@layout/fragment_pending_entrant_list" >
+        <action
+            android:id="@+id/action_pendingEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
 

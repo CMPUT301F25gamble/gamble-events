@@ -5,7 +5,6 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
@@ -53,8 +52,10 @@ public class Event {
     private static DateTimeFormatter formatter;
 
 
+    @Exclude
     private Bitmap QRCodeBitmap;
 
+    @Exclude
     private ArrayList<Bitmap> posters;
 
     /*
@@ -72,7 +73,7 @@ public class Event {
      * document from Firebase and set specific fields to the values extracted from Firebase
      */
     public Event() {
-
+        // Empty constructor used by Firebase to deserialize documents into Event object
     }
 
     /**
@@ -119,7 +120,7 @@ public class Event {
 
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = maxWaitingListCapacity;
+        this.maxWaitingListCapacity = -1; // Default as no limit
         this.posters = posters;
 
         Database db = new Database();

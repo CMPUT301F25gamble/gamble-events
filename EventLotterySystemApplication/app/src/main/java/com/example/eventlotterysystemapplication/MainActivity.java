@@ -11,24 +11,84 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.fragment.NavHostFragment;
+
+import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.installations.FirebaseInstallations;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity"; // For debugging
+    Database database = new Database();
 
+    /**
+     * Checks if user is registered via device
+     * Takes user to event screen if registered, otherwise, to registration screen
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        String action = intent.getAction();
-        assert action != null;
-        if (data != null){
-            String eventID = data.getLastPathSegment();
-            setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        // Turn off the decor fitting system windows, which allows us to handle insets)
+        EdgeToEdge.enable(this);
+        setContentView(binding.getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-            // TODO First check that the deviceID and user are registered in the database, and only
-            //  then do we open up events page with eventID
-        } else {
-            setContentView(R.layout.activity_main);
-        }
+        // Get device's unique ID
+        FirebaseInstallations.getInstance().getId()
+                .addOnSuccessListener(deviceId -> {
+                    Log.d(TAG, "Firebase Device ID: " + deviceId);
+                    // String test = "deviceID67"; // replace deviceId with test to test going to content activity
+
+                    // Check if device in database (ie. User is registered)
+                    database.queryDeviceID(deviceId, queryTask -> {
+                        if (queryTask.isSuccessful()) {
+                            Boolean exists = queryTask.getResult();
+                            if (exists != null && exists) {
+                                // Get user info based off of device ID (mainly to check if registration was completely done)
+                                Log.d(TAG, "Device registered. Going to content activity.");
+                                goToContentActivity();
+                            } else {
+                                Log.d(TAG, "Device not registered. Going to registration activity.");
+                                goToRegisterActivity();
+                            }
+                        } else {
+                            Log.e(TAG, "Error querying deviceID", queryTask.getException());
+                            goToRegisterActivity();
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to get device ID", e);
+                    goToRegisterActivity();
+                });
     }
+
+    /**
+     * DeviceID found, send user to content activity
+     */
+    private void goToContentActivity() {
+        // Create intent
+        Intent goToContentIntent = new Intent(this, ContentActivity.class);
+        startActivity(goToContentIntent);
+    }
+
+    /**
+     * If deviceID not found, send user to register activity
+     * Used as fallback
+     */
+    private void goToRegisterActivity() {
+        // Create Intent
+        Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
+        startActivity(goToRegisterIntent);
+        finish();
+    }
+
 }

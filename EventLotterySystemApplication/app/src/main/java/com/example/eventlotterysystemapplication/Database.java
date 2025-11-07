@@ -58,6 +58,7 @@ public class Database {
      * Given some input deviceID, this function checks to see if the deviceID exists in the database
      * in the User collection
      * @param deviceID The device ID to query for in the database
+     * @param listener An OnCompleteListener used to retrieve the boolean
      */
     public void queryDeviceID(String deviceID, OnCompleteListener<Boolean> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
@@ -149,6 +150,8 @@ public class Database {
      * Logs an error if the database cannot add the user
      */
     public void addUser(User user, OnCompleteListener<Void> listener) {
+        Log.d("Database", "addUser called from: ", new Exception());
+
         // Sign user in anonymously
         firebaseAuth.signInAnonymously().addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
@@ -176,7 +179,7 @@ public class Database {
     /**
      * Given a user, update or create their record in the database
      * @param user The user profile
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the modify operation finishes
      */
     public void modifyUser(User user, OnCompleteListener<Void> listener) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -199,7 +202,7 @@ public class Database {
     /**
      * Given a user, delete their record from the database
      * @param user The user profile
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteUser(User user, OnCompleteListener<Void> listener) {
@@ -260,10 +263,9 @@ public class Database {
 
 
     /**
-     * Given some eventID, this method finds the event and returns that event object from the
-     * database
+     * Given some eventID, this method finds the event and returns that event object from the database
      * @param eventID The eventID of the event you are trying to retrieve
-     * @param listener An OnCompleteListener used for callback
+     * @param listener An OnCompleteListener used to retrieve the Event
      * @throws IllegalStateException This exception is thrown if no event exists with that eventID,
      * if the registration collection retrieval fails, or if the user status is not properly defined
      */
@@ -290,8 +292,8 @@ public class Database {
 
     /**
      * Retrieves all events that the user can join
-     * @param user The user who wants to check for available events
-     * @param listener An OnCompleteListener for callback
+     * @param user The user profile
+     * @param listener An OnCompleteListener used to retrieve a list of Events
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
@@ -308,12 +310,15 @@ public class Database {
                 for (QueryDocumentSnapshot doc : task.getResult()) {
                     if (!doc.getString("organizerID").equals(user.getUserID())) {
                         DocumentReference eventRef = doc.getReference();
-                        CollectionReference regDocRef = eventRef.collection("Registration");
-                        double waitListCapacity = doc.getDouble("maxWaitingListCapacity");
+                        CollectionReference regRef = eventRef.collection("Registration");
+                        int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
+                       
                         // Checks if wait list is not full
                         Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
+                              int count = regCount.size();
+                              if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
                                 Event event = parseEvent(doc, task1 -> {
                                     if (task1.isSuccessful()){
                                         // TODO
@@ -339,7 +344,7 @@ public class Database {
     /**
      * Given some event object, we add its data to the database
      * @param event The event that we want to add to the database
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the add operation finishes
      */
     public void addEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document();
@@ -368,9 +373,9 @@ public class Database {
 
 
     /**
-     * Given some event, we update its data in the database
+     * Given some event, update its data in the database
      * @param event The event that we want to update in the database
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
      */
     public void updateEvent(Event event, OnCompleteListener<Void> listener){
         if (event.getEventID() == null) {
@@ -405,7 +410,7 @@ public class Database {
     /**
      * Given a user, delete all the events that the user organizes
      * @param user The user profile
-     * @param listener An OnCompleteListener for callback
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void deleteOrganizedEvents(User user, OnCompleteListener<Void> listener) {
@@ -413,6 +418,10 @@ public class Database {
         eventRef.whereEqualTo("organizerID", userID).get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
+                Event event = parseEvent(eventDoc, task -> {
+                  if (task.isSuccessful()){
+                  }
+                });
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
                 Event event = parseEvent(eventDoc, parseEventTask -> {
@@ -437,15 +446,14 @@ public class Database {
     }
 
     /**
-     * First deletes all of the user documents in its registration subcollection, if it has one.
-     * Then, it delete the event too.
-     * @param event The event to be deleted
-     * @param listener An OnCompleteListener for callback
+     * Given an event, delete it from the Event collection
+     * @param event The event
+     * @param listener An OnCompleteListener that will be called when the delete operation finishes
      */
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        CollectionReference regDocRef = eventDocRef.collection("Registration");
-        regDocRef.get().addOnSuccessListener(querySnapshot -> {
+        CollectionReference regRef = eventDocRef.collection("Registration");
+        regRef.get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
             for (DocumentSnapshot regDoc: querySnapshot.getDocuments()) {
                 deleteTasks.add(regDoc.getReference().delete()
@@ -493,9 +501,12 @@ public class Database {
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
         event.parseTimestamps();
 
-        event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
-        event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
-
+        if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
+            event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
+        }
+        if (doc.getLong("maxFinalListCapacity").intValue() > 0) {
+            event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
+        }
         if (event.getEntrantList() == null) {
             event.setEntrantList(new EntrantList());
             Log.d("ParseEvent", "entrantList initialized");

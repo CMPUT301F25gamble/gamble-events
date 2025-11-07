@@ -22,7 +22,7 @@ public class User{
      * from Firebase
      */
     public User() {
-
+        // Empty constructor used by Firebase to deserialize documents into User object
     }
 
     /**
@@ -202,18 +202,20 @@ public class User{
     public boolean equals(Object o) {
         if (!(o instanceof User)) {
             return false;
+        } else if (this == o) {
+            return true;
         } else {
             User user2 = (User) o;
-            return Objects.equals(this.userID, user2.userID);
+            return Objects.equals(this.userID, user2.userID) && Objects.equals(this.deviceID, user2.deviceID);
         }
     }
 
     /**
      * Modify one or more user profile info
      * @param user The user profile
-     * @param name The user name
-     * @param email The user email
-     * @param phoneNumber The user phone number
+     * @param name The user name, or {@code null} if it doesn't need to be updated
+     * @param email The user email, or {@code null} if it doesn't need to be updated
+     * @param phoneNumber The user phone number, or {@code null} if it doesn't need to be updated
      */
     public void updateUserInfo(User user, String name, String email, String phoneNumber) {
         if (name != null && !name.isEmpty()) {
@@ -227,11 +229,11 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-        Database db = new Database();
-        db.modifyUser(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot modify user");
-            }
-        });
+       Database db = new Database();
+       db.modifyUser(this, task -> {
+           if (!task.isSuccessful()) {
+               Log.e("Database", "Cannot modify user");
+           }
+       });
     }
 }

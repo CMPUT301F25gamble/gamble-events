@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLotterySystemApplication">
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ContentActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -26,6 +32,7 @@
                 <data android:scheme="cmput301gamblers" android:host="gamble" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/register_nav_graph"
+    app:startDestination="@id/register_screen_fragment">
+
+    <fragment
+        android:id="@+id/register_screen_fragment"
+        android:name="com.example.eventlotterysystemapplication.RegisterScreenFragment"
+        android:label="fragment_register_screen"
+        tools:layout="@layout/fragment_register_screen">
+        <action
+            android:id="@+id/action_registerScreenFragment_to_firstTimeUserInfoFragment2"
+            app:destination="@id/first_time_user_info_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/first_time_user_info_fragment"
+        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:label="fragment_first_time_input"
+        tools:layout="@layout/fragment_first_time_input" >
+        <action
+            android:id="@+id/action_first_time_user_info_fragment_to_register_screen_fragment"
+            app:destination="@id/register_screen_fragment" />
+        <action
+            android:id="@+id/action_first_time_user_info_fragment_to_lotteryGuidelinesFragment"
+            app:destination="@id/lottery_guidelines_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lottery_guidelines_fragment"
+        android:name="com.example.eventlotterysystemapplication.LotteryGuidelinesFragment"
+        android:label="lottery_guidelines_fragment"
+        tools:layout="@layout/fragment_lottery_guidelines">
+        <action
+            android:id="@+id/action_lotteryGuidelinesFragment_to_first_time_user_info_fragment"
+            app:destination="@id/first_time_user_info_fragment" />
+    </fragment>
+</navigation>

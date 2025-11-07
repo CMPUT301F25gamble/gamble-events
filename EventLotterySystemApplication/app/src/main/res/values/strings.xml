@@ -49,7 +49,7 @@
     <string name="tags_separated_by_commas_text">Tags (separated by commas)</string>
     <string name="location_text">Location</string>
     <string name="event_date_and_time_text">Event Date and Time</string>
-    <string name="date_time_format_text">MM/DD/YY HH:MM</string>
+    <string name="date_time_format_text">yyyy-MM-dd HH:mm</string>
     <string name="registration_deadline_text">Registration Deadline</string>
     <string name="invitation_acceptance_deadline_text">Invitation Acceptance Deadline</string>
     <string name="upload_event_poster_photo_text">Upload Event Poster Photo</string>
@@ -87,6 +87,5 @@
     <string name="cancelled_entrants_text">Cancelled Entrants</string>
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings_text"><u>Settings</u></string>
 </resources>

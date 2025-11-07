@@ -45,12 +45,18 @@ public class LotteryGuidelinesFragment extends Fragment {
             if (user != null) {
                 database.addUser(user, task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(requireContext(), "Registration complete!", Toast.LENGTH_SHORT).show();
+                        database.modifyUser(user, updateTask -> {
+                            if (updateTask.isSuccessful()) {
+                                Toast.makeText(requireContext(), "Registration complete!", Toast.LENGTH_SHORT).show();
 
-                        // go to next activity
-                        Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
-                        startActivity(nextActivityIntent);
-                        requireActivity().finish();
+                                // go to next activity
+                                Intent nextActivityIntent = new Intent(getActivity(), ContentActivity.class);
+                                startActivity(nextActivityIntent);
+                                requireActivity().finish();
+                            } else {
+                                Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                     } else {
                         Toast.makeText(requireContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
                     }

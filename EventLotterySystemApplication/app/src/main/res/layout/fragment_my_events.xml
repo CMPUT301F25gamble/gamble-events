@@ -6,6 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".MyEventsFragment">
 
+    <ProgressBar
+        android:id="@+id/loading_my_events"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_my_events"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            myEventsText,
+            myEventsListView"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
     <ImageButton
         android:id="@+id/myEventsBackButton"
         android:layout_width="wrap_content"
@@ -45,14 +64,6 @@
         app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/myEventsText" />
-
-    <Button
-        android:id="@+id/edit_my_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Temp edit my event button"
-        app:layout_constraintTop_toBottomOf="@+id/myEventsListView"
-        tools:layout_editor_absoluteX="160dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

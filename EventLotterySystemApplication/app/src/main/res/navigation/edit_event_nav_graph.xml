@@ -3,20 +3,107 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/edit_event_nav_graph"
-    app:startDestination="@id/replaceWithEventDetailFragment">
-    <fragment
-        android:id="@+id/replaceWithEventDetailFragment"
-        android:name="com.example.eventlotterysystemapplication.ReplaceWithEventDetailFragment"
-        android:label="fragment_replace_with_event_detail"
-        tools:layout="@layout/fragment_replace_with_event_detail" />
+    app:startDestination="@id/my_event_detail_screen">
     <fragment
         android:id="@+id/entrantListSelectionFragment"
         android:name="com.example.eventlotterysystemapplication.EntrantListSelectionFragment"
         android:label="fragment_entrant_list_selection"
-        tools:layout="@layout/fragment_entrant_list_selection" />
+        tools:layout="@layout/fragment_entrant_list_selection" >
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_allEntrantsListFragment"
+            app:destination="@id/allEntrantsListFragment" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_chosenEntrantList"
+            app:destination="@id/chosenEntrantList" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_pendingEntrantList"
+            app:destination="@id/pendingEntrantList" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_cancelledEntrantListFragment"
+            app:destination="@id/cancelledEntrantListFragment" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_finalEntrantList"
+            app:destination="@id/finalEntrantList" />
+    </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
         android:name="com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragment"
         android:label="fragment_organiser_notification_ui"
-        tools:layout="@layout/fragment_organiser_notification_ui" />
+        tools:layout="@layout/fragment_organiser_notification_ui" >
+        <action
+            android:id="@+id/action_organiserNotificationsUIFragment_to_organiserSendNotificationUIFragment"
+            app:destination="@id/organiserSendNotificationUIFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/organiserSendNotificationUIFragment"
+        android:name="com.example.eventlotterysystemapplication.OrganiserSendNotificationUIFragment"
+        android:label="fragment_organiser_send_notification_ui"
+        tools:layout="@layout/fragment_organiser_send_notification_ui" >
+        <argument
+            android:name="notificationType"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment"
+            app:destination="@id/organiserNotificationsUIFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/my_event_detail_screen"
+        android:name="com.example.eventlotterysystemapplication.EventDetailScreenFragment"
+        android:label="fragment_event_detail_screen"
+        tools:layout="@layout/fragment_event_detail_screen">
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="error"/>
+        <argument
+            android:name="isOwnedEvent"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+    </fragment>
+    <fragment
+        android:id="@+id/allEntrantsListFragment"
+        android:name="com.example.eventlotterysystemapplication.AllEntrantsListFragment"
+        android:label="fragment_all_entrants_list"
+        tools:layout="@layout/fragment_all_entrants_list" >
+        <action
+            android:id="@+id/action_allEntrantsListFragment_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chosenEntrantList"
+        android:name="com.example.eventlotterysystemapplication.ChosenEntrantListFragment"
+        android:label="fragment_chosen_entrant_list"
+        tools:layout="@layout/fragment_chosen_entrant_list" >
+        <action
+            android:id="@+id/action_chosenEntrantList_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pendingEntrantList"
+        android:name="com.example.eventlotterysystemapplication.PendingEntrantListFragment"
+        android:label="fragment_pending_entrant_list"
+        tools:layout="@layout/fragment_pending_entrant_list" >
+        <action
+            android:id="@+id/action_pendingEntrantList_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cancelledEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.CancelledEntrantListFragment"
+        android:label="fragment_cancelled_entrant_list"
+        tools:layout="@layout/fragment_cancelled_entrant_list" >
+        <action
+            android:id="@+id/action_cancelledEntrantListFragment_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finalEntrantList"
+        android:name="com.example.eventlotterysystemapplication.FinalEntrantList"
+        android:label="fragment_final_entrant_list"
+        tools:layout="@layout/fragment_final_entrant_list" >
+        <action
+            android:id="@+id/action_finalEntrantList_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+
 </navigation>

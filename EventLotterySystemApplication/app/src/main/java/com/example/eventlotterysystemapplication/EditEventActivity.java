@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +16,6 @@ import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBi
 
 public class EditEventActivity extends AppCompatActivity {
 
-    public String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,12 @@ public class EditEventActivity extends AppCompatActivity {
         // Get the eventId from the intent
         String eventId = getIntent().getStringExtra("eventId");
 
+        Log.d("EditEventActivity", "Received eventId: " + eventId);
+
+        // Create a Bundle to pass the eventId to the EditEventFragment
+        Bundle startArgs = new Bundle();
+        startArgs.putString("eventId", eventId);
+
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.editEventNavHostFragment.getId());
@@ -40,7 +46,7 @@ public class EditEventActivity extends AppCompatActivity {
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
-//        navController.setGraph(R.navigation.edit_event_nav_graph, startArgs);
+        navController.setGraph(R.navigation.edit_event_nav_graph, startArgs);
 
         NavigationUI.setupWithNavController(binding.editEventBottomNavMenu, navController);
     }

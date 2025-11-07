@@ -48,14 +48,6 @@ public class MyEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button editMyEventButton = binding.editMyEvent;
-
-        editMyEventButton.setOnClickListener(v -> {
-            Intent nextActivityIntent = new Intent(getActivity(), EditEventActivity.class);
-            startActivity(nextActivityIntent);
-            requireActivity().finish();
-        });
-
         // Back button navigates to events page
         binding.myEventsBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(MyEventsFragment.this)
@@ -120,6 +112,7 @@ public class MyEventsFragment extends Fragment {
             // Launch RegisterActivity as a fresh task and clear the old one
             Intent intent = new Intent(requireContext(), EditEventActivity.class);
             intent.putExtra("eventId", eventId);
+            intent.putExtra("isOwnedEvent", true);
             //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
 //            NavHostFragment.findNavController(MyEventsFragment.this)

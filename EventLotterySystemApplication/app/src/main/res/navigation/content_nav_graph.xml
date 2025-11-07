@@ -94,7 +94,7 @@
     </fragment>
     <fragment
         android:id="@+id/event_detail_screen"
-        android:name="com.example.eventlotterysystemapplication.EventDetailScreen"
+        android:name="com.example.eventlotterysystemapplication.EventDetailScreenFragment"
         android:label="event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen">
         <argument

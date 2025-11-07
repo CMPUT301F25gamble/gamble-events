@@ -17,8 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/edit_event_bottom_nav_menu"
-        app:navGraph="@navigation/edit_event_nav_graph">
+        app:layout_constraintBottom_toTopOf="@id/edit_event_bottom_nav_menu">
 
     </androidx.fragment.app.FragmentContainerView>
 

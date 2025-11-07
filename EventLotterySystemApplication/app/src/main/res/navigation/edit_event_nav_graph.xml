@@ -8,7 +8,11 @@
         android:id="@+id/entrantListSelectionFragment"
         android:name="com.example.eventlotterysystemapplication.EntrantListSelectionFragment"
         android:label="fragment_entrant_list_selection"
-        tools:layout="@layout/fragment_entrant_list_selection" />
+        tools:layout="@layout/fragment_entrant_list_selection" >
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_allEntrantsListFragment"
+            app:destination="@id/allEntrantsListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
         android:name="com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragment"
@@ -38,6 +42,15 @@
         <argument
             android:name="eventId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/allEntrantsListFragment"
+        android:name="com.example.eventlotterysystemapplication.AllEntrantsListFragment"
+        android:label="fragment_all_entrants_list"
+        tools:layout="@layout/fragment_all_entrants_list" >
+        <action
+            android:id="@+id/action_allEntrantsListFragment_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
     </fragment>
 
 </navigation>

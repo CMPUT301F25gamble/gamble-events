@@ -4,6 +4,7 @@ import com.google.firebase.firestore.Exclude;
 
 import java.util.Objects;
 import android.provider.Settings;
+import android.util.Log;
 
 /**
  * An instance of this class represents a single user
@@ -16,6 +17,10 @@ public class User{
     private String userID;
     private boolean isAdmin;
 
+    public User() {
+        // Empty constructor used by Firebase to deserialize documents into User object
+    }
+
     public User(String email, String phoneNumber, String name, String deviceID) {
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -24,15 +29,20 @@ public class User{
         isAdmin = false;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-
-        Database db = new Database();
-        db.modifyUser(this);
     }
 
     public String getEmail() {
@@ -41,9 +51,6 @@ public class User{
 
     public void setEmail(String email) {
         this.email = email;
-
-        Database db = new Database();
-        db.modifyUser(this);
     }
 
     public String getPhoneNumber() {
@@ -52,9 +59,6 @@ public class User{
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-
-        Database db = new Database();
-        db.modifyUser(this);
     }
 
     public String getDeviceID() {
@@ -71,19 +75,6 @@ public class User{
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
-
-        Database db = new Database();
-        db.modifyUser(this);
-    }
-
-    @Exclude
-    public String getUserID() {
-        return userID;
-    }
-
-    @Exclude
-    public void setUserID(String userID) {
-        this.userID = userID;
     }
 
     public void joinEventWaitingList(Event event){
@@ -92,6 +83,26 @@ public class User{
 
     public void leaveEventWaitingList(Event event){
         event.leaveWaitingList(this);
+    }
+
+    public void joinEventChosenList(Event event) {
+        event.joinChosenList(this);
+    }
+
+    public void leaveEventChosenList(Event event) {
+        event.leaveChosenList(this);
+    }
+
+    public void joinEventCancelledList(Event event) {
+        event.joinCancelledList(this);
+    }
+
+    public void joinEventFinalizedList(Event event) {
+        event.joinFinalizedList(this);
+    }
+
+    public void leaveEventFinalizedList(Event event) {
+        event.leaveFinalizedList(this);
     }
 
     @Override
@@ -107,9 +118,9 @@ public class User{
     /**
      * Modify one or more user profile info
      * @param user The user profile
-     * @param name The user name
-     * @param email The user email
-     * @param phoneNumber The user phone number
+     * @param name The user name, or {@code null} if it doesn't need to be updated
+     * @param email The user email, or {@code null} if it doesn't need to be updated
+     * @param phoneNumber The user phone number, or {@code null} if it doesn't need to be updated
      */
     public void updateUserInfo(User user, String name, String email, String phoneNumber) {
         if (name != null && !name.isEmpty()) {
@@ -123,7 +134,11 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-        Database database = new Database();
-        database.modifyUser(user);
+        Database db = new Database();
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 }

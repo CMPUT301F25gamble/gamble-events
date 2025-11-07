@@ -20,10 +20,8 @@
         android:id="@+id/content_group_my_events"
         android:visibility="gone"
         app:constraint_referenced_ids="
-            myEventsBackButton,
             myEventsText,
-            myEventsListView,
-            edit_my_event"
+            myEventsListView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 

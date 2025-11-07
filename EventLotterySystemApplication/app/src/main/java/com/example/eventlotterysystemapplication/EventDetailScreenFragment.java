@@ -9,11 +9,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -41,9 +43,9 @@ public class EventDetailScreenFragment extends Fragment {
         super.onCreate(savedInstanceState);
         EventDetailScreenFragmentArgs args = EventDetailScreenFragmentArgs.fromBundle(getArguments());
         eventId = args.getEventId();
+        isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
 
-        Log.d("EventDetailScreen", "Event ID: " + eventId);
-
+        Log.d("EventDetailScreen", "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
     }
 
 
@@ -77,21 +79,41 @@ public class EventDetailScreenFragment extends Fragment {
 
         // Fetch this event and bind
         FirebaseFirestore.getInstance()
-                .collection("Event")
-                .document(eventId)
-                .get()
-                .addOnSuccessListener(doc -> {
-                    bindEvent(doc);
-                    // Hide loading and show content
-                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                    binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-                })
-                .addOnFailureListener(e -> {
-                    // Hide loading and show error
-                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), "Failed to load event",
-                            Toast.LENGTH_LONG).show();
-                });
+            .collection("Event")
+            .document(eventId)
+            .get()
+            .addOnSuccessListener(doc -> {
+                bindEvent(doc);
+
+                // Fetch organizerID from Firestore
+                String organizerId = doc.getString("organizerID");
+                String currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
+                        ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                        : null;
+
+                // TESTING, KEEP COMMENTED OUT
+                // Toast.makeText(requireContext(), "Organizer ID: " + organizerId, Toast.LENGTH_LONG).show();
+                // Toast.makeText(requireContext(), "Current UID: " + currentUid, Toast.LENGTH_LONG).show();
+
+                // Check ownership
+                boolean isOwnedEvent = (organizerId != null && organizerId.equals(currentUid));
+
+                if (isOwnedEvent) {
+                    binding.navigationBarButton.setText("Edit Event");
+                    binding.navigationBarButton.setBackgroundTintList(
+                            ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
+                    );
+                }
+                // Hide loading and show content
+                binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+            })
+            .addOnFailureListener(e -> {
+                // Hide loading and show error
+                binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load event",
+                        Toast.LENGTH_LONG).show();
+            });
     }
 
     private void bindEvent(DocumentSnapshot doc) {
@@ -132,6 +154,5 @@ public class EventDetailScreenFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         binding.tagsHorizontalRv.setLayoutManager(layoutManager);
-
     }
 }

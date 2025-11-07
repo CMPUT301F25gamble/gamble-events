@@ -21,7 +21,12 @@
             app:destination="@id/my_events_fragment" />
         <action
             android:id="@+id/action_events_ui_fragment_to_event_detail_screen"
-            app:destination="@id/event_detail_screen" />
+            app:destination="@id/event_detail_screen">
+            <argument
+                android:name="isOwnedEvent"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+        </action>
     </fragment>
     <fragment
         android:id="@+id/notifications_ui_fragment"

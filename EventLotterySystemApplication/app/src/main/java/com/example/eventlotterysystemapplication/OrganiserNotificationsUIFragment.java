@@ -12,6 +12,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserNotificationUiBinding;
 
+/**
+ * OrganiserNotificationUIFragment
+ * Displays the options for sending notifications to either Waitlist Entrants, Chose Entrants,
+ * or Cancelled Entrants.
+ */
+
 public class OrganiserNotificationsUIFragment extends Fragment {
 
     private FragmentOrganiserNotificationUiBinding binding;

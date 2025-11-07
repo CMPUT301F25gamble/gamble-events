@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_cancelledEntrantListFragment"
             app:destination="@id/cancelledEntrantListFragment" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_finalEntrantList"
+            app:destination="@id/finalEntrantList" />
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -86,6 +89,15 @@
         tools:layout="@layout/fragment_cancelled_entrant_list" >
         <action
             android:id="@+id/action_cancelledEntrantListFragment_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finalEntrantList"
+        android:name="com.example.eventlotterysystemapplication.FinalEntrantList"
+        android:label="fragment_final_entrant_list"
+        tools:layout="@layout/fragment_final_entrant_list" >
+        <action
+            android:id="@+id/action_finalEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
 

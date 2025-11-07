@@ -789,63 +789,70 @@ public class Event {
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows a user to join the cancelled list, unlike other joins, this one has almost no
+     * conditions, as a user can enter the cancelled list from any entrant list, or even from just
+     * not being in the registration at all
+     * @param user The user that is to be put into the cancelled list
      */
-    public void joinCancelledList(User user) throws IllegalArgumentException{
+    public void joinCancelledList(User user){
         if (!entrantList.getCancelled().contains(user)){
+            removeFromEntrantList(user, 0);
+            removeFromEntrantList(user, 1);
+            removeFromEntrantList(user, 3);
             addToEntrantList(user, 2);
             Database db = new Database();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
-                    Log.d("Database", "User successfully joins cancelled list");
+                    Log.d("Event", "User successfully joins cancelled list");
                 }
             });
         } else {
-            throw new IllegalArgumentException("User is already in the cancelled list");
+            Log.e("Event", "User is already in the cancelled list");
         }
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows the user to join the finalized entrant list, given that they are already chosen by the
+     * lottery and are in the chosen list
+     * @param user The user
      */
-    public void joinFinalizedList(User user) throws IllegalArgumentException{
+    public void joinFinalizedList(User user){
         if(entrantList.getChosen().contains(user)) {
-            if (!entrantList.getFinalized().contains(user)){
-                addToEntrantList(user, 3);
-                Database db = new Database();
-                db.updateEvent(this, task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Database", "User successfully joins finalized list");
-                    }
-                });
+            if (!entrantList.getWaiting().contains(user) && !entrantList.getCancelled().contains(user)) {
+                if (!entrantList.getFinalized().contains(user)) {
+                    addToEntrantList(user, 3);
+                    Database db = new Database();
+                    db.updateEvent(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Database", "User successfully joins finalized list");
+                        }
+                    });
+                } else {
+                    Log.e("Event", "User is already in the finalized list");
+                }
             } else {
-                throw new IllegalArgumentException("User is already in the finalized list");
+                Log.e("Event", "User cannot join the finalized list for the event");
             }
         } else {
-            throw new IllegalArgumentException("User has not been chosen");
+            Log.e("Event", "User has not been chosen");
         }
     }
 
     /**
-     *
-     * @param user
-     * @throws IllegalArgumentException
+     * Allows the user to leave the finalized list, given that they are already in the list
+     * @param user The user who wants to leave the finalized list
      */
-    public void leaveFinalizedList(User user) throws IllegalArgumentException{
+    public void leaveFinalizedList(User user){
         if (entrantList.getFinalized().contains(user)){
             removeFromEntrantList(user, 3);
             Database db = new Database();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
-                    Log.d("Database", "User successfully leaves finalized list");
+                    Log.d("Event", "User successfully leaves finalized list");
                 }
             });
         } else {
-            throw new IllegalArgumentException("User is not in the finalized list");
+            Log.e("Event", "User is not in the finalized list");
         }
     }
 
@@ -873,8 +880,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param poster
+     * Adds a new poster to the posters list
+     * @param poster The bitmap of the new poster to be added to the event list
      */
     public void addPoster(Bitmap poster){
         posters.add(poster);
@@ -888,8 +895,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param poster
+     * Deletes a poster from the posters list
+     * @param poster The bitmap of the poster to be removed
      */
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
@@ -903,14 +910,14 @@ public class Event {
     }
 
     /**
-     *
-     * @param position
+     * Deletes a poster based on its position in the posters ArrayList
+     * @param position The zero indexed position of the poster to be removed
      */
     public void deletePoster(int position) {
         if (0 <= position && position < posters.size()) {
             posters.remove(position);
         } else {
-            Log.e("Poster Removal", "Index out of bounds");
+            Log.e("Event", "Index out of bounds");
         }
 
         Database db = new Database();
@@ -922,7 +929,9 @@ public class Event {
     }
 
     /**
-     *
+     * Using the eventID, and the hardcoded scheme and activity/host, we can create a QR code that,
+     * when scanned by a phone with this app installed, will open up the app with the event
+     * description page
      */
     public void generateQRCode(){
         try {
@@ -934,8 +943,9 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
+     * before returning
+     * @return A bitmap object of the QR code image
      */
     public Bitmap getQRCodeBitmap() {
         if (QRCodeBitmap == null){
@@ -945,8 +955,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param QRCodeBitmap
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
      */
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;

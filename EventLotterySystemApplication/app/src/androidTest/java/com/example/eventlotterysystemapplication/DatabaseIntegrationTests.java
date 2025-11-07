@@ -301,62 +301,6 @@ public class DatabaseIntegrationTests {
     }
 
     @Test
-    public void testUpdateUser() throws InterruptedException{
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID4");
-
-        CountDownLatch addUserLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addUserLatch.countDown());
-        addUserLatch.await(10, TimeUnit.SECONDS);
-
-        DocumentReference userDocRef = userRef.document(user.getUserID());
-        createdUserIds.add(user.getUserID());
-
-        CountDownLatch updateUserLatch = new CountDownLatch(1);
-        user.updateUserInfo(user, "Roberto", null, null);
-        updateUserLatch.countDown();
-        updateUserLatch.await(10, TimeUnit.SECONDS);
-
-        CountDownLatch latch = new CountDownLatch(1);
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Checks values in the Firebase document
-                assertEquals("Roberto", documentSnapshot.getString("name"));
-                assertEquals("deviceID4", documentSnapshot.getString("deviceID"));
-                assertEquals("wizard@wizard.com", documentSnapshot.getString("email"));
-                assertEquals("676767", documentSnapshot.getString("phoneNumber"));
-                // Checks values in the user object
-                assertEquals("Roberto", user.getName());
-                assertEquals("deviceID4", user.getDeviceID());
-                assertEquals("wizard@wizard.com", user.getEmail());
-                assertEquals("676767", user.getPhoneNumber());
-            }
-            latch.countDown();
-        });
-        latch.await(5, TimeUnit.SECONDS);
-    }
-
-    @Test
-    public void testViewAvailableEvents() throws InterruptedException{
-        User user = new User("wizard@wizard.com", "676767", "Wizard", "deviceID5");
-
-        CountDownLatch addUserLatch = new CountDownLatch(1);
-        database.addUser(user, task -> addUserLatch.countDown());
-        addUserLatch.await(10, TimeUnit.SECONDS);
-        createdUserIds.add(user.getUserID());
-
-        CountDownLatch latch = new CountDownLatch(1);
-        database.viewAvailableEvents(user, task ->{
-            if (task.isSuccessful()) {
-                List<Event> events = task.getResult();
-                assertEquals(1, events.size()); // watch party only
-            }
-            latch.countDown();
-        });
-        latch.await(5, TimeUnit.SECONDS);
-    }
-
-
-    @Test
     public void testViewAvailableEvents() throws InterruptedException{
         User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5");
 

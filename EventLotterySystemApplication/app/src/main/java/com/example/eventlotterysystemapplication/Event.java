@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- *
+ * An instance of this object represents a single instance of an event
  */
 public class Event {
     private String eventID;
@@ -68,26 +68,30 @@ public class Event {
 
 
     /**
-     *
+     * An empty constructor for the Event class, is used because it makes it easier to parse a
+     * document from Firebase and set specific fields to the values extracted from Firebase
      */
     public Event() {
 
     }
 
     /**
-     *
-     * @param name
-     * @param description
-     * @param place
-     * @param eventTags
-     * @param organizerID
-     * @param eventStartTime
-     * @param eventEndTime
-     * @param registrationStartTime
-     * @param registrationEndTime
-     * @param invitationAcceptanceDeadline
-     * @param maxWaitingListCapacity
-     * @param maxFinalListCapacity
+     * A constructor whose main purpose is to allow for the instantiation of the event object from
+     * the program itself
+     * @param name The event's name
+     * @param description The event's description
+     * @param place The event's location
+     * @param eventTags The event's tags
+     * @param organizerID The ID of the user who organizes the event
+     * @param eventStartTime The start time of the event
+     * @param eventEndTime The ending time of the event
+     * @param registrationStartTime The time when the registration for the event opens
+     * @param registrationEndTime The time when the registration for the event closes
+     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
+     *                                     assuming that you were selected by the lottery
+     * @param maxWaitingListCapacity The maximum capacity of the waiting list
+     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
+     *                             the lottery system
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
@@ -129,19 +133,22 @@ public class Event {
     }
 
     /**
-     *
-     * @param name
-     * @param description
-     * @param place
-     * @param eventTags
-     * @param organizerID
-     * @param eventStartTime
-     * @param eventEndTime
-     * @param registrationStartTime
-     * @param registrationEndTime
-     * @param invitationAcceptanceDeadline
-     * @param maxWaitingListCapacity
-     * @param maxFinalListCapacity
+     * This constructor can also allow for the instantiation of the event object from the program,
+     * but the main purpose here is to help with testing
+     * @param name The event's name
+     * @param description The event's description
+     * @param place The event's location
+     * @param eventTags The event's tags
+     * @param organizerID The ID of the user who organizes the event
+     *@param eventStartTime The start time of the event
+     * @param eventEndTime The ending time of the event
+     * @param registrationStartTime The time when the registration for the event opens
+     * @param registrationEndTime The time when the registration for the event closes
+     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
+     *                                     assuming that you were selected by the lottery
+     * @param maxWaitingListCapacity The maximum capacity of the waiting list
+     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
+     *                             the lottery system
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
@@ -199,32 +206,32 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event's eventID
+     * @return The eventID of the event
      */
     public String getEventID() {
         return eventID;
     }
 
     /**
-     *
-     * @param eventID
+     * Sets the event's eventID
+     * @param eventID The eventID of the event
      */
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
 
     /**
-     *
-     * @return
+     * Gets the event's name
+     * @return The name of the event
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
-     * @param name
+     * Sets the event's eventID
+     * @param name The name of the event
      */
     public void setName(String name) {
         this.name = name;
@@ -295,8 +302,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event start time, in the Firebase Timestamp format
+     * @return The start time of the event
      */
     @PropertyName("eventStartTime")
     public Timestamp getEventStartTimeTS() {
@@ -304,8 +311,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param eventStartTimeTS
+     * Sets the event start time, in the Firebase Timestamp format
+     * @param eventStartTimeTS The start time of the event
      */
     @PropertyName("eventStartTime")
     public void setEventStartTimeTS(Timestamp eventStartTimeTS) {
@@ -313,8 +320,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the event end time, in the Firebase Timestamp format
+     * @return The end time of the event
      */
     @PropertyName("eventEndTime")
     public Timestamp getEventEndTimeTS() {
@@ -322,8 +329,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param eventEndTimeTS
+     * Sets the event end time, in the Firebase Timestamp format
+     * @param eventEndTimeTS The end time of the event
      */
     @PropertyName("eventEndTime")
     public void setEventEndTimeTS(Timestamp eventEndTimeTS) {
@@ -331,8 +338,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the registration start time, in the Firebase Timestamp format
+     * @return The start time of registration
      */
     @PropertyName("registrationStartTime")
     public Timestamp getRegistrationStartTimeTS() {
@@ -340,8 +347,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param registrationStartTimeTS
+     * Sets the registration start time, in the Firebase Timestamp format
+     * @param registrationStartTimeTS The start time of registration
      */
     @PropertyName("registrationStartTime")
     public void setRegistrationStartTimeTS(Timestamp registrationStartTimeTS) {
@@ -349,8 +356,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the registration end time, in the Firebase Timestamp format
+     * @return The end time of registration
      */
     @PropertyName("registrationEndTime")
     public Timestamp getRegistrationEndTimeTS() {
@@ -358,8 +365,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param registrationEndTimeTS
+     * Sets the registration end time, in the Firebase Timestamp format
+     * @param registrationEndTimeTS The end time of registration
      */
     @PropertyName("registrationEndTime")
     public void setRegistrationEndTimeTS(Timestamp registrationEndTimeTS) {
@@ -367,8 +374,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * Gets the invitation acceptance deadline, in the Firebase Timestamp format
+     * @return The deadline for accepting the invitation
      */
     @PropertyName("invitationAcceptanceDeadline")
     public Timestamp getInvitationAcceptanceDeadlineTS() {
@@ -376,8 +383,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param invitationAcceptanceDeadlineTS
+     * Sets the invitation acceptance deadline, in the Firebase Timestamp format
+     * @param invitationAcceptanceDeadlineTS The deadline for accepting the invitation
      */
     @PropertyName("invitationAcceptanceDeadline")
     public void setInvitationAcceptanceDeadlineTS(Timestamp invitationAcceptanceDeadlineTS) {
@@ -543,8 +550,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param tag
+     * Adds a new tag to the list of event tags
+     * @param tag The tag to be added
      */
     @Exclude
     public void addEventTag(String tag){
@@ -552,8 +559,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param tag
+     * Remove a tag from the list of event tags
+     * @param tag The tag to be removed
      */
     @Exclude
     public void deleteEventTag(String tag){
@@ -561,8 +568,8 @@ public class Event {
     }
 
     /**
-     *
-     * @return
+     * A getter for the user object that represents the user who is organizing the event
+     * @return The user object of the organizer
      */
     @Exclude
     public User getOrganizer() {
@@ -570,8 +577,8 @@ public class Event {
     }
 
     /**
-     *
-     * @param organizer
+     * A setter for the user object that represents the user who is organizing the event
+     * @param organizer The user object of the organizer
      */
     @Exclude
     public void setOrganizer(User organizer) {
@@ -597,10 +604,18 @@ public class Event {
     }
 
     /**
-     *
-     * @param entrantListValues
-     * @param list
-     * @throws IllegalArgumentException
+     * Sets a single entrant list, based on the ArrayList that is passed into it and the integer
+     * parameter specifying which list to set. 0 means to set waiting list to the input ArrayList, 1
+     * means to set the chosen list, 2 means to set the cancelled list, 3 means to set the finalized
+     * list
+     * @param entrantListValues The ArrayList of users to set one of the entrant lists to
+     * @param list An integer specifying which list you want to set to be equal to the input
+     *             ArrayList, where:
+     *             0: waiting list
+     *             1: chosen list
+     *             2: cancelled list
+     *             3: finalized list
+     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
      */
     @Exclude
     public void setEntrantListValues(ArrayList<User> entrantListValues, int list) throws IllegalArgumentException{
@@ -623,10 +638,16 @@ public class Event {
     }
 
     /**
-     *
-     * @param user
-     * @param list
-     * @throws IllegalArgumentException
+     * Adds a user to one of the entrant lists, based on which list is specified in the list
+     * argument.
+     * @param user The user to be added to one of the entrant lists
+     * @param list An integer specifying which list you want to set to be equal to the input
+     *             ArrayList, where:
+     *             0: waiting list
+     *             1: chosen list
+     *             2: cancelled list
+     *             3: finalized list
+     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
      */
     public void addToEntrantList(User user, int list) throws IllegalArgumentException {
         switch (list) {

@@ -156,10 +156,11 @@ public class EventsUIFragment extends Fragment {
         // Handle the on click event for each list item
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
             String eventId = docIds.get(position); // docIds parallel list you built
-            Bundle eventArgs = new Bundle();
-            eventArgs.putString("eventId", eventId);
+//            Bundle eventArgs = new Bundle();
+//            eventArgs.putString("eventId", eventId);
+
             NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, eventArgs);
+                    .navigate(EventsUIFragmentDirections.actionEventsUiFragmentToEventDetailScreen(eventId));
         });
     }
 }

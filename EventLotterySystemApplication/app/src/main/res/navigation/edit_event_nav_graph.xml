@@ -37,7 +37,8 @@
         tools:layout="@layout/fragment_event_detail_screen">
         <argument
             android:name="eventId"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="error" />
     </fragment>
 
 </navigation>

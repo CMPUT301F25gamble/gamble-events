@@ -15,6 +15,8 @@ import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBi
 
 public class EditEventActivity extends AppCompatActivity {
 
+    public String eventId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +29,9 @@ public class EditEventActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Get the eventId from the intent
+        String eventId = getIntent().getStringExtra("eventId");
+
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.editEventNavHostFragment.getId());
@@ -35,6 +40,8 @@ public class EditEventActivity extends AppCompatActivity {
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
+//        navController.setGraph(R.navigation.edit_event_nav_graph, startArgs);
+
         NavigationUI.setupWithNavController(binding.editEventBottomNavMenu, navController);
     }
 }

@@ -1,5 +1,8 @@
 package com.example.eventlotterysystemapplication;
 
+import static android.content.Intent.getIntent;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class EventDetailScreen extends Fragment {
@@ -25,7 +29,14 @@ public class EventDetailScreen extends Fragment {
     private FragmentEventDetailScreenBinding binding;
     private String eventId;
 
-    private Boolean isOwnedEvent;
+    private boolean isOwnedEvent = false;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -38,43 +49,78 @@ public class EventDetailScreen extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Back button navigates to Events UI fragment
-        binding.eventDetailScreenBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(EventDetailScreen.this)
-                    .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
-        });
+        if (Objects.requireNonNull(getActivity()).getIntent().hasExtra("eventId")) {
+            eventId = getActivity().getIntent().getStringExtra("eventId");
+            isOwnedEvent = true;
 
-        // get the docId passed from the list screen
-        if (getArguments() != null) {
-            eventId = getArguments().getString("eventId");
-        }
-        if (eventId == null || eventId.isEmpty()) {
-            Toast.makeText(requireContext(), "Missing eventId", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Show loading and hide content until it is fetched
-        binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
-        binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
-
-        // Fetch this event and bind
-        FirebaseFirestore.getInstance()
-            .collection("Event")
-            .document(eventId)
-            .get()
-            .addOnSuccessListener(doc -> {
-                bindEvent(doc);
-                // Hide loading and show content
-                binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-            })
-            .addOnFailureListener(e -> {
-                // Hide loading and show error
-                binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                Toast.makeText(requireContext(), "Failed to load event",
-                        Toast.LENGTH_LONG).show();
+            // Back button to go back to previous activity
+            binding.eventDetailScreenBackButton.setOnClickListener(v -> {
+                getActivity().finish();
             });
 
+            binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
+            binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+
+            FirebaseFirestore.getInstance()
+                    .collection("Event")
+                    .document(eventId)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        bindEvent(doc);
+                        // Hide loading and show content
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    })
+                    .addOnFailureListener(e -> {
+                        // Hide loading and show error
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load event",
+                                Toast.LENGTH_LONG).show();
+                    });
+        }
+
+        if (!isOwnedEvent) {
+
+            EventDetailScreenArgs args = EventDetailScreenArgs.fromBundle(getArguments());
+            eventId = args.getEventId();
+
+            // Back button navigates to Events UI fragment
+            binding.eventDetailScreenBackButton.setOnClickListener(v -> {
+                NavHostFragment.findNavController(EventDetailScreen.this)
+                        .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
+            });
+
+            // get the docId passed from the list screen
+            if (getArguments() != null) {
+                eventId = getArguments().getString("eventId");
+            }
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "Missing eventId", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // Show loading and hide content until it is fetched
+            binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
+            binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+
+            // Fetch this event and bind
+            FirebaseFirestore.getInstance()
+                    .collection("Event")
+                    .document(eventId)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        bindEvent(doc);
+                        // Hide loading and show content
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    })
+                    .addOnFailureListener(e -> {
+                        // Hide loading and show error
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load event",
+                                Toast.LENGTH_LONG).show();
+                    });
+        }
     }
 
     private void bindEvent(DocumentSnapshot doc) {
@@ -97,7 +143,8 @@ public class EventDetailScreen extends Fragment {
         // Fetch tags in DB
         // Get tags
         List<String> tags = (List<String>) doc.get("eventTags");
-        if (tags == null) tags = new ArrayList<>(); // prevent NullPointerException if there are no tags by making an empty arraylist
+        if (tags == null)
+            tags = new ArrayList<>(); // prevent NullPointerException if there are no tags by making an empty arraylist
 
         // Debugging
         if (tags.isEmpty()) {

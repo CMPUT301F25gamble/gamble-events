@@ -20,8 +20,8 @@ public class OrganiserNotificationsUIFragment extends Fragment {
         // Required empty constructor
     }
 
-    public static NotificationsUIFragment newInstance() {
-        NotificationsUIFragment fragment = new NotificationsUIFragment();
+    public static OrganiserNotificationsUIFragment newInstance() {
+        OrganiserNotificationsUIFragment fragment = new OrganiserNotificationsUIFragment();
         Bundle args = new Bundle();
         return fragment;
     }
@@ -35,37 +35,38 @@ public class OrganiserNotificationsUIFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications_ui, container, false);
+        binding = FragmentOrganiserNotificationUiBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        // Get buttons
-//        Button waitlistEntrantsButton = binding.waitlistEntrantsButton;
-//        Button chosenEntrantsButton = binding.chosenEntrantsButton;
-//        Button cancelledEntrantsButton = binding.cancelledEntrantsButton;
+        // Get buttons
+        Button waitlistEntrantsButton = binding.waitlistEntrantsButton;
+        Button chosenEntrantsButton = binding.chosenEntrantsButton;
+        Button cancelledEntrantsButton = binding.cancelledEntrantsButton;
 
 
-//        // Set click listeners for buttons
-//        waitlistEntrantsButton.setOnClickListener(v -> {
-//            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
-//                    .navigate(OrganiserNotificationsUIFragmentDirections
-//                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("waitlist"));
-//        });
-//
-//        chosenEntrantsButton.setOnClickListener(v -> {
-//            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
-//                    .navigate(OrganiserNotificationsUIFragmentDirections
-//                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
-//        });
-//
-//        cancelledEntrantsButton.setOnClickListener(v -> {
-//            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
-//                    .navigate(OrganiserNotificationsUIFragmentDirections
-//                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
-//        });
+        // Set click listeners for buttons
+        waitlistEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
+                    .navigate(OrganiserNotificationsUIFragmentDirections
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("waitlist"));
+        });
+
+        chosenEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
+                    .navigate(OrganiserNotificationsUIFragmentDirections
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
+        });
+
+        cancelledEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
+                    .navigate(OrganiserNotificationsUIFragmentDirections
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
+        });
 
     }
 }

@@ -18,5 +18,21 @@
         android:id="@+id/organiserNotificationsUIFragment"
         android:name="com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragment"
         android:label="fragment_organiser_notification_ui"
-        tools:layout="@layout/fragment_organiser_notification_ui" />
+        tools:layout="@layout/fragment_organiser_notification_ui" >
+        <action
+            android:id="@+id/action_organiserNotificationsUIFragment_to_organiserSendNotificationUIFragment"
+            app:destination="@id/organiserSendNotificationUIFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/organiserSendNotificationUIFragment"
+        android:name="com.example.eventlotterysystemapplication.OrganiserSendNotificationUIFragment"
+        android:label="fragment_organiser_send_notification_ui"
+        tools:layout="@layout/fragment_organiser_send_notification_ui" >
+        <argument
+            android:name="notificationType"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment"
+            app:destination="@id/organiserNotificationsUIFragment" />
+    </fragment>
 </navigation>

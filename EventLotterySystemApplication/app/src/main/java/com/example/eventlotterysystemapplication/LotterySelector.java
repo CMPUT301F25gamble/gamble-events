@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Lottery selector that contains methods for selecting from the waiting list and drawing
+ * replacement users
+ */
+
 public class LotterySelector {
 
     /**

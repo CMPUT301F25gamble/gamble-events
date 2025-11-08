@@ -14,6 +14,16 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBinding;
 
+/**
+ * EditEventActivity
+ * This activity provides options related to event editing, sending notifications to entrants, and
+ * viewing the list of entrants
+ * Contains a NavHostFragment to display fragments related to this activity and a sets up a
+ * BottomNavigationView to quickly swap between EventDetailScreenFragment,
+ * EntrantListSelectionFragment, and OrganiserNotificationsUIFragment
+ * Retrieves the eventId from the intent and puts it in a bundle to be used by related fragments
+ */
+
 public class EditEventActivity extends AppCompatActivity {
 
 
@@ -31,12 +41,14 @@ public class EditEventActivity extends AppCompatActivity {
 
         // Get the eventId from the intent
         String eventId = getIntent().getStringExtra("eventId");
+        boolean isOwnedEvent = getIntent().getBooleanExtra("isOwnedEvent", false);
 
-        Log.d("EditEventActivity", "Received eventId: " + eventId);
+        Log.d("EditEventActivity", "eventId=" + eventId + ", isOwnedEvent=" + isOwnedEvent);
 
         // Create a Bundle to pass the eventId to the EditEventFragment
         Bundle startArgs = new Bundle();
         startArgs.putString("eventId", eventId);
+        startArgs.putBoolean("isOwnedEvent", isOwnedEvent);
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()

@@ -22,6 +22,17 @@ import com.google.firebase.installations.FirebaseInstallations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * EventDetailScreenFragment
+ * This fragment displays the details for a selected event
+ * Gets the eventId from arguments and fetches the event from the database
+ * Displays fetched data including the name, description, tags, and an uploaded image
+ * Gets the current activity, if it is ContentActivity then treats the user like an entrant and
+ * allows the user to join the waitlist for the event
+ * If the current activity is EditEventActivity then treats the user like the organiser and displays
+ * options for editing the event
+ * Currently does not display options for editing the event
+ */
 
 public class EventDetailScreenFragment extends Fragment {
 
@@ -44,9 +55,9 @@ public class EventDetailScreenFragment extends Fragment {
         super.onCreate(savedInstanceState);
         EventDetailScreenFragmentArgs args = EventDetailScreenFragmentArgs.fromBundle(getArguments());
         eventId = args.getEventId();
+        isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
 
-        Log.d("EventDetailScreen", "Event ID: " + eventId);
-
+        Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
     }
 
 
@@ -88,14 +99,14 @@ public class EventDetailScreenFragment extends Fragment {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
                     Event event = task.getResult();
+                    Log.d(TAG, "Event retrieved is: " + event);
                     bindEvent(event);
 
                     // Hide loading and show content
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
 
-
-                    // Update the "looks" of the button based on if the user is in the event or not
+                    // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
                     getUserFromDeviceID(deviceID, taskUser -> {
                         if (taskUser.isSuccessful()) {
                             User user = taskUser.getResult();
@@ -112,6 +123,7 @@ public class EventDetailScreenFragment extends Fragment {
                     });
                 } else {
                     // Failed to load event; hide loading and show error
+                    Log.e(TAG, "Failed to load event, " + task.getResult());
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to load event",
                             Toast.LENGTH_LONG).show();
@@ -163,6 +175,14 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        if (isOwnedEvent) {
+            binding.navigationBarButton.setText("Edit Event");
+            binding.navigationBarButton.setBackgroundTintList(
+                    ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
+            );
+            return;
+        }
+
         if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist
             binding.navigationBarButton.setText(R.string.leave_waitlist_text);
@@ -189,6 +209,7 @@ public class EventDetailScreenFragment extends Fragment {
         Database db = new Database();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
+            Log.d(TAG, "Fetching event from DB...");
             db.getEvent(eventId, callback);
         }
     }
@@ -226,6 +247,5 @@ public class EventDetailScreenFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         binding.tagsHorizontalRv.setLayoutManager(layoutManager);
-
     }
 }

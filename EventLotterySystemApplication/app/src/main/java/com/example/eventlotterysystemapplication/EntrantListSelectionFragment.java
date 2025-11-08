@@ -12,6 +12,16 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentEntrantListSelectionBinding;
 
+/**
+ * EntrantListSelectionFragment
+ * Displays the categories of entrants and allows the user to navigate to the respective fragment
+ * for viewing the chosen list of entrants
+ * User can choose to see all entrants, chosen entrants, pending entrants, cancelled entrants, and
+ * finalised list of entrants, with buttons linking to {@link AllEntrantsListFragment},
+ * {@link ChosenEntrantListFragment}, {@link PendingEntrantListFragment},
+ * {@link CancelledEntrantListFragment}, and {@link FinalEntrantList}
+ */
+
 public class EntrantListSelectionFragment extends Fragment {
 
     private FragmentEntrantListSelectionBinding binding;

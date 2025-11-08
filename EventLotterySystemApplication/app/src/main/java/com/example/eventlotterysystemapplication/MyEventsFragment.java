@@ -22,6 +22,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Displays the user's current events that they are organising
+ * Fetches a list of events filtered by a matching organiser id to the user's id and displays
+ * in a listview
+ */
+
 public class MyEventsFragment extends Fragment {
     private FragmentMyEventsBinding binding;
     private ArrayAdapter<String> myEventNamesAdapter;
@@ -108,19 +114,11 @@ public class MyEventsFragment extends Fragment {
         // Handle the on click event for each list item
         binding.myEventsListView.setOnItemClickListener((parent, v, position, id) -> {
             String eventId = myEventDocIds.get(position); // docIds parallel list we built
-            //Toast.makeText(requireContext(), "Launching with ID: " + eventId, Toast.LENGTH_SHORT).show();
-//            Bundle eventArgs = new Bundle();
-//            eventArgs.putString("eventId", eventId);
             // Launch RegisterActivity as a fresh task and clear the old one
             Intent intent = new Intent(requireContext(), EditEventActivity.class);
             intent.putExtra("eventId", eventId);
             intent.putExtra("isOwnedEvent", true);
-            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-//            NavHostFragment.findNavController(MyEventsFragment.this)
-//                    .navigate(R.id.edit_event_nav_graph, eventArgs);
-
-
         });
     }
 }

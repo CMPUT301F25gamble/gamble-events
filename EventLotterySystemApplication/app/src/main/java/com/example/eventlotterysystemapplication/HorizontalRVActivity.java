@@ -15,6 +15,11 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+/**
+ * HorizontalRVActivity is used by {@link EventDetailScreenFragment} to get tags to
+ * display in a horizontal list view
+  */
+
 public class HorizontalRVActivity extends AppCompatActivity {
     RecyclerView rv;
     ArrayList<String> dataSource;

@@ -11,6 +11,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentCancelledEntrantListBinding;
 
+/**
+ * Displays a listview of all cancelled entrants for the selected event
+ * Will fetch all cancelled entrants from the database to display in the listview
+ * Navigated to from {@link EntrantListSelectionFragment}
+ */
+
 public class CancelledEntrantListFragment extends Fragment {
     private FragmentCancelledEntrantListBinding binding;
 

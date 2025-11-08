@@ -11,6 +11,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.FragmentRegisterScreenBinding;
 
+/**
+ * Displays the first time app logo and register button and a button to navigate to
+ * {@link FirstTimeUserInfoFragment}
+ */
+
 public class RegisterScreenFragment extends Fragment {
 
     private FragmentRegisterScreenBinding binding;

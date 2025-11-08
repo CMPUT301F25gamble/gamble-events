@@ -12,6 +12,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityRegisterBinding;
 
+/**
+ * Register activity for the app where a first time user can input their informatiion and register
+ * their account based on device identification
+ */
+
 public class RegisterActivity extends AppCompatActivity {
 
     @Override

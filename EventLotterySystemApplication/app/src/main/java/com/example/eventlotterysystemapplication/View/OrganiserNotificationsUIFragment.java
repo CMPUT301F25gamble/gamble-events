@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragmentDirections;
+import com.example.eventlotterysystemapplication.View.OrganiserNotificationsUIFragmentDirections;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserNotificationUiBinding;
 
 /**

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
-import com.example.eventlotterysystemapplication.EventDetailScreenFragmentArgs;
+import com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;

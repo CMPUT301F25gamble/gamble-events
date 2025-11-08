@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.OrganiserSendNotificationUIFragmentArgs;
+import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
 

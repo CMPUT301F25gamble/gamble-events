@@ -3,6 +3,10 @@ package com.example.eventlotterysystemapplication;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
+import com.example.eventlotterysystemapplication.Model.User;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

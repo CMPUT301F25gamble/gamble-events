@@ -10,7 +10,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.firebase.installations.FirebaseInstallations;
 

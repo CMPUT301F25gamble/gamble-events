@@ -1,10 +1,13 @@
-package com.example.eventlotterysystemapplication.Model;
+package com.example.eventlotterysystemapplication.Controller;
 
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.eventlotterysystemapplication.Model.EntrantList;
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;

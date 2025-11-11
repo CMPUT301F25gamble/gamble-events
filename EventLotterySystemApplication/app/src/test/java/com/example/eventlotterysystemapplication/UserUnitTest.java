@@ -2,6 +2,8 @@ package com.example.eventlotterysystemapplication;
 
 import static org.junit.Assert.*;
 
+import com.example.eventlotterysystemapplication.Model.User;
+
 import org.junit.Test;
 
 public class UserUnitTest {

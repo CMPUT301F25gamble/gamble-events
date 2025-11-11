@@ -9,5 +9,6 @@
     <color name="grey">#676767</color>
     <color name="important_field">#CF0000</color>
     <color name="blue">#0000FF</color>
+    <color name="app_grey">#676767</color>
 
 </resources>

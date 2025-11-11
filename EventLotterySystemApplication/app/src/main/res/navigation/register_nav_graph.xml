@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/register_screen_fragment"
-        android:name="com.example.eventlotterysystemapplication.RegisterScreenFragment"
+        android:name="com.example.eventlotterysystemapplication.View.RegisterScreenFragment"
         android:label="fragment_register_screen"
         tools:layout="@layout/fragment_register_screen">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/first_time_user_info_fragment"
-        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:name="com.example.eventlotterysystemapplication.View.FirstTimeUserInfoFragment"
         android:label="fragment_first_time_input"
         tools:layout="@layout/fragment_first_time_input" >
         <action
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/lottery_guidelines_fragment"
-        android:name="com.example.eventlotterysystemapplication.LotteryGuidelinesFragment"
+        android:name="com.example.eventlotterysystemapplication.View.LotteryGuidelinesFragment"
         android:label="lottery_guidelines_fragment"
         tools:layout="@layout/fragment_lottery_guidelines">
         <action

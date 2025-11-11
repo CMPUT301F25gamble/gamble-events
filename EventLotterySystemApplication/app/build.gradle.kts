@@ -43,7 +43,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore") // firestore service
     implementation("com.google.firebase:firebase-auth")
-    implementation(libs.firebase.installations) // auth service
+    implementation(libs.firebase.installations)
+    implementation(libs.firebase.messaging) // auth service
 
     //Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.20.0")
@@ -66,4 +67,7 @@ dependencies {
 
     //Zxing Library
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //Firebase messaging
+    implementation("com.google.firebase:firebase-messaging:25.0.1")
 }

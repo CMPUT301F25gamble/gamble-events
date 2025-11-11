@@ -214,6 +214,10 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Renders the event details of the page using an event object
+     * @param event details to fill the page with
+     */
     private void bindEvent(Event event) {
         // Event name & description
         String eventName = event.getName();

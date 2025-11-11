@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".LotteryFirebaseMessagingService"
+            android:name=".Model.LotteryFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

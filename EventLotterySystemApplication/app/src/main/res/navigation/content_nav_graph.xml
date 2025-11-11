@@ -6,10 +6,11 @@
     app:startDestination="@id/events_ui_fragment">
 
     <include app:graph="@navigation/register_nav_graph" />
+    <include app:graph="@navigation/edit_event_nav_graph" />
 
     <fragment
         android:id="@+id/events_ui_fragment"
-        android:name="com.example.eventlotterysystemapplication.EventsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
         android:label="fragment_events_ui"
         tools:layout="@layout/fragment_events_ui" >
         <action
@@ -20,16 +21,21 @@
             app:destination="@id/my_events_fragment" />
         <action
             android:id="@+id/action_events_ui_fragment_to_event_detail_screen"
-            app:destination="@id/event_detail_screen" />
+            app:destination="@id/event_detail_screen">
+            <argument
+                android:name="isOwnedEvent"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+        </action>
     </fragment>
     <fragment
         android:id="@+id/notifications_ui_fragment"
-        android:name="com.example.eventlotterysystemapplication.NotificationsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.NotificationsUIFragment"
         android:label="fragment_notifications_ui"
         tools:layout="@layout/fragment_notifications_ui" />
     <fragment
         android:id="@+id/profile_ui_fragment"
-        android:name="com.example.eventlotterysystemapplication.ProfileUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ProfileUIFragment"
         android:label="fragment_profile_ui"
         tools:layout="@layout/fragment_profile_ui" >
         <action
@@ -40,18 +46,18 @@
             app:destination="@id/user_event_history_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/settings_ui_fragment"
-        android:name="com.example.eventlotterysystemapplication.SettingsUIFragment"
-        android:label="fragment_settings_ui"
-        tools:layout="@layout/fragment_settings_ui" />
+        android:id="@+id/settings_notifications_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.SettingsNotificationsFragment"
+        android:label="fragment_settings_notification_fragment"
+        tools:layout="@layout/fragment_settings_notifications" />
     <fragment
         android:id="@+id/firstTimeUserInfoFragment2"
-        android:name="com.example.eventlotterysystemapplication.FirstTimeUserInfoFragment"
+        android:name="com.example.eventlotterysystemapplication.View.FirstTimeUserInfoFragment"
         android:label="fragment_first_time_input"
         tools:layout="@layout/fragment_first_time_input" />
     <fragment
         android:id="@+id/create_or_edit_event_fragment"
-        android:name="com.example.eventlotterysystemapplication.CreateOrEditEventFragment"
+        android:name="com.example.eventlotterysystemapplication.View.CreateOrEditEventFragment"
         android:label="create_or_edit_event_fragment"
         tools:layout="@layout/fragment_create_or_edit_event" >
         <action
@@ -60,16 +66,19 @@
     </fragment>
     <fragment
         android:id="@+id/my_events_fragment"
-        android:name="com.example.eventlotterysystemapplication.MyEventsFragment"
+        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
         android:label="my_events_fragment"
         tools:layout="@layout/fragment_my_events" >
         <action
             android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
+            app:destination="@id/my_event_detail_screen" />
     </fragment>
     <fragment
         android:id="@+id/delete_profile_fragment"
-        android:name="com.example.eventlotterysystemapplication.DeleteProfileFragment"
+        android:name="com.example.eventlotterysystemapplication.View.DeleteProfileFragment"
         android:label="fragment_delete_profile"
         tools:layout="@layout/fragment_delete_profile" >
         <action
@@ -81,7 +90,7 @@
     </fragment>
     <fragment
         android:id="@+id/user_event_history_fragment"
-        android:name="com.example.eventlotterysystemapplication.UserEventHistoryFragment"
+        android:name="com.example.eventlotterysystemapplication.View.UserEventHistoryFragment"
         android:label="fragment_user_event_history"
         tools:layout="@layout/fragment_user_event_history" >
         <action
@@ -90,11 +99,31 @@
     </fragment>
     <fragment
         android:id="@+id/event_detail_screen"
-        android:name="com.example.eventlotterysystemapplication.EventDetailScreen"
+        android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
         android:label="event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen">
+        <argument
+            android:name="eventId"
+            app:argType="string"/>
         <action
             android:id="@+id/action_event_detail_screen_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsTOSFragment"
+        android:name="com.example.eventlotterysystemapplication.View.SettingsTOSFragment"
+        android:label="fragment_settings_tos"
+        tools:layout="@layout/fragment_settings_tos" />
+    <fragment
+        android:id="@+id/settings_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.SettingsUIFragment"
+        android:label="SettingsUIFragment"
+        tools:layout="@layout/fragment_settings_ui">
+        <action
+            android:id="@+id/action_settingsUIFragment_to_settings_notifications_fragment"
+            app:destination="@id/settings_notifications_fragment" />
+        <action
+            android:id="@+id/action_settingsUIFragment_to_settingsTOSFragment"
+            app:destination="@id/settingsTOSFragment" />
     </fragment>
 </navigation>

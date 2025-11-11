@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,27 +12,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLotterySystemApplication">
         <activity
-            android:name=".RegisterActivity"
+            android:name=".View.SettingsTOSFragment"
             android:exported="false" />
         <activity
-            android:name=".ContentActivity"
+            android:name=".Controller.EditEventActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Controller.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Controller.ContentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Controller.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:label="QRCodeSchemeAndHost">
-                <!--Here are all the intent filters needed for the QRCode-->
+
+                <!-- Here are all the intent filters needed for the QRCode -->
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="cmput301gamblers" android:host="gamble" />
+
+                <data
+                    android:host="gamble"
+                    android:scheme="cmput301gamblers" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

@@ -3,6 +3,10 @@ package com.example.eventlotterysystemapplication;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
+import com.example.eventlotterysystemapplication.Model.User;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +24,8 @@ public class LotterySelectorUnitTest {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
-                10
+                10,
+                5
     );
 
     User billyBob = new User(

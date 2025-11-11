@@ -81,4 +81,11 @@
     4. Your information will only be used for in-app event registration and communication purposes.\n\n
     5. By pressing the CONFIRM button you are agreeing to these guidelines and understand that selection is random and not guaranteed.
 </string>
+    <string name="organiser_notification_header_text">Entrant Notifications</string>
+    <string name="waitlist_entrants_text">Waitlist Entrants</string>
+    <string name="chosen_entrants_text">Chosen Entrants</string>
+    <string name="cancelled_entrants_text">Cancelled Entrants</string>
+    <string name="notification_message_header_text">Notification Message:</string>
+    <string name="send_notification_button_text">Send Notification</string>
+    <string name="settings_text"><u>Settings</u></string>
 </resources>

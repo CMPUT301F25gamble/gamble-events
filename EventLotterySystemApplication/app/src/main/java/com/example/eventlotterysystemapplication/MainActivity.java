@@ -1,17 +1,22 @@
 package com.example.eventlotterysystemapplication;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
@@ -62,6 +67,22 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to get device ID", e);
                     goToRegisterActivity();
                 });
+
+        // get device registration token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>(){
+                    @Override
+                    public void onComplete(@NonNull Task<String> task){
+                        if (task.isSuccessful()){
+
+                            // get the new FCM token
+                            String token = task.getResult();
+
+                            Log.d("Token", token);
+                        }
+                    }
+                });
+
     }
 
     /**

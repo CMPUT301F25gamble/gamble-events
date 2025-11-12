@@ -196,8 +196,8 @@ public class EventDetailScreenFragment extends Fragment {
 
     /**
      * Wrapper function for calling getUserFromDeviceID on the database
-     * @param deviceID
-     * @param callback
+     * @param deviceID the user's device ID
+     * @param callback a callback function that runs when the query is done running
      */
     private void getUserFromDeviceID(String deviceID, OnCompleteListener<User> callback) {
         Database db = new Database();

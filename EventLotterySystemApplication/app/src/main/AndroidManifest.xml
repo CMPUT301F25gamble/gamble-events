@@ -12,19 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLotterySystemApplication">
         <activity
-            android:name=".SettingsTOSFragment"
+            android:name=".View.SettingsTOSFragment"
             android:exported="false" />
         <activity
-            android:name=".EditEventActivity"
+            android:name=".Controller.EditEventActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".Controller.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".ContentActivity"
+            android:name=".Controller.ContentActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Controller.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

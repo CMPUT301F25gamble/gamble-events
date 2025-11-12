@@ -85,7 +85,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class Event" class="title">Class Event</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">com.example.eventlotterysystemapplication.Event</div>
+<div class="inheritance">com.example.eventlotterysystemapplication.Model.Event</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -182,7 +182,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Adds a new poster to the posters list</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addToEntrantList(com.example.eventlotterysystemapplication.User,int)" class="member-name-link">addToEntrantList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addToEntrantList(com.example.eventlotterysystemapplication.Model.User,int)" class="member-name-link">addToEntrantList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
  int&nbsp;list)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a user to one of the entrant lists, based on which list is specified in the list
@@ -350,42 +350,42 @@ loadScripts(document, 'script');</script>
 <div class="block">Gets the registration start time, in the Firebase Timestamp format</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinCancelledList(com.example.eventlotterysystemapplication.User)" class="member-name-link">joinCancelledList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinCancelledList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">joinCancelledList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows a user to join the cancelled list, unlike other joins, this one has almost no
  conditions, as a user can enter the cancelled list from any entrant list, or even from just
  not being in the registration at all</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinChosenList(com.example.eventlotterysystemapplication.User)" class="member-name-link">joinChosenList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinChosenList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">joinChosenList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows the user to join the chosen list, given that they already are in the waiting list, and
  are not in the cancelled and finalized lists</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinFinalizedList(com.example.eventlotterysystemapplication.User)" class="member-name-link">joinFinalizedList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinFinalizedList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">joinFinalizedList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows the user to join the finalized entrant list, given that they are already chosen by the
  lottery and are in the chosen list</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinWaitingList(com.example.eventlotterysystemapplication.User)" class="member-name-link">joinWaitingList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#joinWaitingList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">joinWaitingList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows a user to join the waiting list for the event, given that they are not already a part
  of this or some other entrant list for this event</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveChosenList(com.example.eventlotterysystemapplication.User)" class="member-name-link">leaveChosenList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveChosenList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">leaveChosenList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows a user to leave the chosen list, given that they are already in the chosen list</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveFinalizedList(com.example.eventlotterysystemapplication.User)" class="member-name-link">leaveFinalizedList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveFinalizedList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">leaveFinalizedList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allows the user to leave the finalized list, given that they are already in the list</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveWaitingList(com.example.eventlotterysystemapplication.User)" class="member-name-link">leaveWaitingList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#leaveWaitingList(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">leaveWaitingList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Allow a user to leave the waiting list for the event, given that they are already in the
  waiting list for the event</div>
@@ -396,7 +396,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Parses the timestamp objects and saves them into the LocalDateTime objects</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeFromEntrantList(com.example.eventlotterysystemapplication.User,int)" class="member-name-link">removeFromEntrantList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeFromEntrantList(com.example.eventlotterysystemapplication.Model.User,int)" class="member-name-link">removeFromEntrantList</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
  int&nbsp;list)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Deletes a user from one of the entrant lists, based on which list is specified in the list
@@ -408,7 +408,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Sets the event's description</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEntrantList(com.example.eventlotterysystemapplication.EntrantList)" class="member-name-link">setEntrantList</a><wbr>(<a href="EntrantList.html" title="class in com.example.eventlotterysystemapplication">EntrantList</a>&nbsp;entrantList)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEntrantList(com.example.eventlotterysystemapplication.Model.EntrantList)" class="member-name-link">setEntrantList</a><wbr>(<a href="EntrantList.html" title="class in com.example.eventlotterysystemapplication">EntrantList</a>&nbsp;entrantList)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">A setter for the entrant list</div>
 </div>
@@ -490,7 +490,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Sets the event's eventID</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOrganizer(com.example.eventlotterysystemapplication.User)" class="member-name-link">setOrganizer</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;organizer)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOrganizer(com.example.eventlotterysystemapplication.Model.User)" class="member-name-link">setOrganizer</a><wbr>(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;organizer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">A setter for the user object that represents the user who is organizing the event</div>
 </div>
@@ -1243,7 +1243,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="setOrganizer(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="setOrganizer(com.example.eventlotterysystemapplication.Model.User)">
 <h3>setOrganizer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOrganizer</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;organizer)</span></div>
 <div class="block">A setter for the user object that represents the user who is organizing the event</div>
@@ -1265,7 +1265,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="setEntrantList(com.example.eventlotterysystemapplication.EntrantList)">
+<section class="detail" id="setEntrantList(com.example.eventlotterysystemapplication.Model.EntrantList)">
 <h3>setEntrantList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setEntrantList</span><wbr><span class="parameters">(<a href="EntrantList.html" title="class in com.example.eventlotterysystemapplication">EntrantList</a>&nbsp;entrantList)</span></div>
 <div class="block">A setter for the entrant list</div>
@@ -1300,7 +1300,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="addToEntrantList(com.example.eventlotterysystemapplication.User,int)">
+<section class="detail" id="addToEntrantList(com.example.eventlotterysystemapplication.Model.User,int)">
 <h3>addToEntrantList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addToEntrantList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
  int&nbsp;list)</span>
@@ -1322,7 +1322,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="removeFromEntrantList(com.example.eventlotterysystemapplication.User,int)">
+<section class="detail" id="removeFromEntrantList(com.example.eventlotterysystemapplication.Model.User,int)">
 <h3>removeFromEntrantList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">removeFromEntrantList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user,
  int&nbsp;list)</span>
@@ -1344,7 +1344,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="joinWaitingList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="joinWaitingList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>joinWaitingList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">joinWaitingList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span></div>
 <div class="block">Allows a user to join the waiting list for the event, given that they are not already a part
@@ -1356,7 +1356,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="leaveWaitingList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="leaveWaitingList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>leaveWaitingList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">leaveWaitingList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span></div>
 <div class="block">Allow a user to leave the waiting list for the event, given that they are already in the
@@ -1368,7 +1368,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="joinChosenList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="joinChosenList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>joinChosenList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">joinChosenList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></span></div>
@@ -1383,7 +1383,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="leaveChosenList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="leaveChosenList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>leaveChosenList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">leaveChosenList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></span></div>
@@ -1397,7 +1397,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="joinCancelledList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="joinCancelledList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>joinCancelledList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">joinCancelledList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span></div>
 <div class="block">Allows a user to join the cancelled list, unlike other joins, this one has almost no
@@ -1410,7 +1410,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="joinFinalizedList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="joinFinalizedList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>joinFinalizedList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">joinFinalizedList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span></div>
 <div class="block">Allows the user to join the finalized entrant list, given that they are already chosen by the
@@ -1422,7 +1422,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="leaveFinalizedList(com.example.eventlotterysystemapplication.User)">
+<section class="detail" id="leaveFinalizedList(com.example.eventlotterysystemapplication.Model.User)">
 <h3>leaveFinalizedList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">leaveFinalizedList</span><wbr><span class="parameters">(<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&nbsp;user)</span></div>
 <div class="block">Allows the user to leave the finalized list, given that they are already in the list</div>

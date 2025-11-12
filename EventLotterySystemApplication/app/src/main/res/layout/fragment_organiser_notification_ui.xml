@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    tools:context=".OrganiserNotificationsUIFragment">
+    tools:context=".View.OrganiserNotificationsUIFragment">
 
     <TextView
         android:id="@+id/organiser_notification_header"

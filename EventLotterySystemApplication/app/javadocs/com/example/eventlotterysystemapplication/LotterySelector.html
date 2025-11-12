@@ -85,7 +85,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class LotterySelector" class="title">Class LotterySelector</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">com.example.eventlotterysystemapplication.LotterySelector</div>
+<div class="inheritance">com.example.eventlotterysystemapplication.Model.LotterySelector</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -121,12 +121,12 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#drawAcceptedUsers(com.example.eventlotterysystemapplication.Event)" class="member-name-link">drawAcceptedUsers</a><wbr>(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#drawAcceptedUsers(com.example.eventlotterysystemapplication.Model.Event)" class="member-name-link">drawAcceptedUsers</a><wbr>(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draws N users from the waiting list where N is min(waitingListLength, maxFinalizedListCapacity)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#drawReplacementUser(com.example.eventlotterysystemapplication.Event)" class="member-name-link">drawReplacementUser</a><wbr>(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#drawReplacementUser(com.example.eventlotterysystemapplication.Model.Event)" class="member-name-link">drawReplacementUser</a><wbr>(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Draw a replacement user from the waiting list
  if one of the users on the accepted list dropped out</div>
@@ -163,7 +163,7 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="drawAcceptedUsers(com.example.eventlotterysystemapplication.Event)">
+<section class="detail" id="drawAcceptedUsers(com.example.eventlotterysystemapplication.Model.Event)">
 <h3>drawAcceptedUsers</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a>&gt;</span>&nbsp;<span class="element-name">drawAcceptedUsers</span><wbr><span class="parameters">(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</span></div>
 <div class="block">Draws N users from the waiting list where N is min(waitingListLength, maxFinalizedListCapacity)</div>
@@ -176,7 +176,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="drawReplacementUser(com.example.eventlotterysystemapplication.Event)">
+<section class="detail" id="drawReplacementUser(com.example.eventlotterysystemapplication.Model.Event)">
 <h3>drawReplacementUser</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="User.html" title="class in com.example.eventlotterysystemapplication">User</a></span>&nbsp;<span class="element-name">drawReplacementUser</span><wbr><span class="parameters">(<a href="Event.html" title="class in com.example.eventlotterysystemapplication">Event</a>&nbsp;event)</span></div>
 <div class="block">Draw a replacement user from the waiting list

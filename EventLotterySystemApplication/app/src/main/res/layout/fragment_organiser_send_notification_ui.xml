@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    tools:context=".OrganiserSendNotificationUIFragment">
+    tools:context=".View.OrganiserSendNotificationUIFragment">
 
     <ImageButton
         android:id="@+id/send_notification_back_button"

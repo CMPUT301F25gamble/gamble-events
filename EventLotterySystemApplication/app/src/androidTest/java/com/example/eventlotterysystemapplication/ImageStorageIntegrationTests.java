@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +26,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @RunWith(AndroidJUnit4.class)
@@ -30,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 public class ImageStorageIntegrationTests {
 
     private ImageStorage imgStore;
+    private final List<String> createdImgs = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -76,6 +82,7 @@ public class ImageStorageIntegrationTests {
             assertTrue(uri.toString().contains(eventId));
         }));
 
+        createdImgs.add(eventId + ".jpg");
         Log.d("ImgStoreTests", imgUri.toString());
         assertTrue(imgUri.toString().contains(eventId));
     }
@@ -85,5 +92,14 @@ public class ImageStorageIntegrationTests {
         assertThrows(IllegalArgumentException.class, () -> {
             imgStore.uploadEventPoster("123", new File("test.txt"), task -> {});
         });
+    }
+
+    @After
+    public void teardown() throws ExecutionException, InterruptedException {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
+        for (String imgName : createdImgs) {
+            Log.d("adasd", imgName);
+            Tasks.await(storageReference.child(imgName).delete());
+        }
     }
 }

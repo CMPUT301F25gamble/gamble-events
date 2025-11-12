@@ -15,7 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.eventlotterysystemapplication.Controller.Database;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
 import com.example.eventlotterysystemapplication.R;

@@ -52,19 +52,34 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         // TODO Do the intent that is triggered when the notification is tapped
         // Intent that triggers when the notification is tapped
         Intent intent = new Intent(this, Notification.class);
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelName)
-                .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
-                .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
-                .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
-                .setContentIntent(pendingIntent) // Pending intent triggered when tapped
-                .setAutoCancel(true) // Dismiss notification when tapped
-                .setPriority(NotificationCompat.PRIORITY_HIGH); // Notification priority for better visibility
+        NotificationCompat.Builder builder;
+
+        if (channelName.equals("lotteryNotification")) {
+            builder = new NotificationCompat.Builder(this, channelName)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
+                    .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
+                    .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
+                    .setContentIntent(pendingIntent) // Pending intent triggered when tapped
+                    .setAutoCancel(true) // Dismiss notification when tapped
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .addAction(0, "Accept", pendingIntent)
+                    .addAction(1, "Decline", pendingIntent);
+        } else {
+            builder = new NotificationCompat.Builder(this, channelName)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
+                    .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
+                    .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
+                    .setContentIntent(pendingIntent) // Pending intent triggered when tapped
+                    .setAutoCancel(true) // Dismiss notification when tapped
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);
+        }
 
         // Display the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);

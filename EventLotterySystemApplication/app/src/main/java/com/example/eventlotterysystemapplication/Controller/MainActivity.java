@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");
+        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
+        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
+        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
 
     }
 

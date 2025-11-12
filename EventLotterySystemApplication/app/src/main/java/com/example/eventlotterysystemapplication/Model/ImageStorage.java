@@ -1,4 +1,4 @@
-package com.example.eventlotterysystemapplication;
+package com.example.eventlotterysystemapplication.Model;
 
 
 import android.net.Uri;
@@ -33,6 +33,10 @@ public class ImageStorage {
         posterImagesRef = storageRef.child("poster_images");
     }
 
+
+    /**
+     * @return ImageStorage singleton
+     */
     public static ImageStorage getInstance() {
         if (imgStore == null) {
             imgStore = new ImageStorage();
@@ -42,11 +46,11 @@ public class ImageStorage {
     }
 
     /**
-     * Uploads an event poster image (.png, .jpg, .jpeg) into Firebase Storage
+     * Uploads or replaces an event poster image (.png, .jpg, .jpeg) into Firebase Storage
      * @param eventId The event ID (e.g. a png file will be stored as {eventId}.png)
      * @param eventPosterFile The local image file of the file
      * @param imageUrlListener An OnCompleteListener that obtains the download url link of the image (to be stored in Event object)
-     * @return An asynchronous task of Uri (this is ONLY used for testing purposes as the listeners did not work;
+     * @return An asynchronous task of Uri (this is ONLY used for testing purposes as the listeners did not work);
      * please use the listeners when using this function on the main Android thread
      */
     public Task<Uri> uploadEventPoster(

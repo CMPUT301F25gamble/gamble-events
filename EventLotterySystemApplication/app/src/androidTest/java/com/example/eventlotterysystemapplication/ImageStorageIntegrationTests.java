@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.ImageStorage;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,6 +50,7 @@ public class ImageStorageIntegrationTests {
         // Create a temp image file from an online url
         File testImage = null;
         try {
+            // Obtain a temporary image from somewhere online
             URL url = new URL("https://i.imgur.com/b6pVsrn.jpeg");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.connect();
@@ -98,7 +100,7 @@ public class ImageStorageIntegrationTests {
     public void teardown() throws ExecutionException, InterruptedException {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
         for (String imgName : createdImgs) {
-            Log.d("adasd", imgName);
+            Log.d("ImgStoreTestsTeardown", imgName);
             Tasks.await(storageReference.child(imgName).delete());
         }
     }

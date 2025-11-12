@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Controller.Database;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

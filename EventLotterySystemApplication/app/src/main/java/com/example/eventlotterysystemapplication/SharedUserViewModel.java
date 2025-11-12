@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.eventlotterysystemapplication.Model.User;
+
 // For first time user info fragment to share user info to lottery selection guidelines so committing to database is delayed
 public class SharedUserViewModel extends ViewModel {
     private final MutableLiveData<User> user = new MutableLiveData<>();

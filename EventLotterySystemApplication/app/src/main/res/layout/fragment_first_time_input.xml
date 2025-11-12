@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:padding="40dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    tools:context=".FirstTimeUserInfoFragment">
+    tools:context=".View.FirstTimeUserInfoFragment">
 
     <!-- Title (Register New Account) -->
     <TextView

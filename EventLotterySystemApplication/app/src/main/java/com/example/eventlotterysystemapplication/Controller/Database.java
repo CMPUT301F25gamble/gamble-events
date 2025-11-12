@@ -1,10 +1,13 @@
-package com.example.eventlotterysystemapplication.Model;
+package com.example.eventlotterysystemapplication.Controller;
 
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.eventlotterysystemapplication.Model.EntrantList;
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -413,18 +416,34 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        eventDocRef.set(event, SetOptions.merge())
+        eventDocRef.set(event)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
-                        updateEventRegistration(event, eventDocRef, task1 -> {
-                            if (task1.isSuccessful()){
-                                Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-                            } else {
-                                Log.e("Database", "Failed to update registration: " + task.getException());
-                                listener.onComplete(task);
+                        CollectionReference registration = eventDocRef.collection("Registration");
+
+                        // Delete all existing registrations first before re-adding the users in entrant lists
+                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
+
+                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                deleteRegTasks.add(doc.getReference().delete());
                             }
+
+                            // Once all previous registrations are deleted we can re-add the users
+                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
+                                List<Task<Void>> regTasks = new ArrayList<>();
+
+                                updateEventRegistration(event, eventDocRef, task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+                                    } else {
+                                        Log.e("Database", "Failed to update registration: " + task.getException());
+                                        listener.onComplete(task);
+                                    }
+                                });
+                            });
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
@@ -462,7 +481,7 @@ public class Database {
             }
 
             Tasks.whenAllComplete(deleteTasks).addOnCompleteListener(done -> {
-                listener.onComplete(null);
+                listener.onComplete(Tasks.forResult(null));
             });
         });
     }
@@ -534,7 +553,7 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task == null){ // TODO: handle success case better
+                if (task.isSuccessful()){
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
@@ -594,7 +613,7 @@ public class Database {
         }
 
         Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
-            listener.onComplete(null);
+            listener.onComplete(Tasks.forResult(null));
         });
     }
 
@@ -667,7 +686,7 @@ public class Database {
                         return;
                 }
             }
-            listener.onComplete(null);
+            listener.onComplete(Tasks.forResult(null));
         });
     }
 

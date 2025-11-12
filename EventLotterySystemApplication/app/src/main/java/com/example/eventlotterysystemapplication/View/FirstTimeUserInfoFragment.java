@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.Model.SharedUserViewModel;
+import com.example.eventlotterysystemapplication.SharedUserViewModel;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
 import com.google.firebase.installations.FirebaseInstallations;

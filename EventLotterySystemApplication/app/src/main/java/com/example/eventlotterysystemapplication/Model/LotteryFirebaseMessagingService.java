@@ -20,50 +20,36 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
-    private final String channelId = "i.apps.notifications"; // Unique channel ID for notifications
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // ...
 
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d("LotteryFirebaseMessagingService", remoteMessage.getFrom());
 
         // Check if message contains a data payload.
-        if (!remoteMessage.getData().isEmpty()) {
-            Log.d("LotteryFirebaseMessagingService", remoteMessage.getData().get("eventID"));
-            String eventID = remoteMessage.getData().get("eventID");
-        }
+        if (remoteMessage.getData().containsKey("channelName")) {
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+            String channelName = remoteMessage.getData().get("channelName");
+            Log.d("LotteryFirebaseMessagingService", channelName);
 
-        sendNotification();
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String description = "Test notification";
-
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    description,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            notificationChannel.enableLights(true); // Turn on notification light
-            notificationChannel.setLightColor(Color.GREEN);
-            notificationChannel.enableVibration(true); // Allow vibration for notifications
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(notificationChannel);
+            if (remoteMessage.getData().containsKey("eventID")) {
+                String eventID = remoteMessage.getData().get("eventID");
+                Log.d("LotteryFirebaseMessagingService", eventID);
             }
+
+            sendNotification(channelName, remoteMessage);
+
+
+        } else {
+            Log.e("LotteryFirebaseMessagingService", "Does not have a channel");
         }
     }
 
     @SuppressLint("MissingPermission")
-    private void sendNotification() {
+    private void sendNotification(String channelName, RemoteMessage remoteMessage) {
+
+        // TODO Do the intent that is triggered when the notification is tapped
         // Intent that triggers when the notification is tapped
         Intent intent = new Intent(this, Notification.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -72,10 +58,10 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         );
 
         // Build the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelName)
                 .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
-                .setContentTitle("Hello") // Title displayed in the notification
-                .setContentText("Welcome to GeeksforGeeks!!") // Text displayed in the notification
+                .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
+                .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
                 .setContentIntent(pendingIntent) // Pending intent triggered when tapped
                 .setAutoCancel(true) // Dismiss notification when tapped
                 .setPriority(NotificationCompat.PRIORITY_HIGH); // Notification priority for better visibility

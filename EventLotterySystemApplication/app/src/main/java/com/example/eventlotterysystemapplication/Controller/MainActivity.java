@@ -1,7 +1,11 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -89,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");
+
     }
 
     /**
@@ -109,6 +115,24 @@ public class MainActivity extends AppCompatActivity {
         Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
         startActivity(goToRegisterIntent);
         finish();
+    }
+
+    private void createNotificationChannel(String channelName, String description) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channelName,
+                    description,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            notificationChannel.enableVibration(true); // Allow vibration for notifications
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
     }
 
 }

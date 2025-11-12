@@ -12,6 +12,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsTosBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
 
+/**
+ * SettingsUIFragment
+ * Menu to display buttons to navigate to sub-menus for notification settings and important
+ * information
+ * Non-admin users will have two buttons labelled as such that navigate to the fragments
+ * Admin users will have the previous buttons and an addition button that swaps to admin view
+ */
+
 public class SettingsUIFragment extends Fragment {
 
     private FragmentSettingsUiBinding binding;

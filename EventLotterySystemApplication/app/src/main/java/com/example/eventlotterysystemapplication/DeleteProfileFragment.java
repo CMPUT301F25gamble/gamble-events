@@ -18,6 +18,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.installations.FirebaseInstallations;
 
+/**
+ * Allows user to permanently remove their account from the database
+ * Provides a textual warning to the user that deletion is permanent
+ */
+
 public class DeleteProfileFragment extends Fragment {
     private static final String TAG = "DeleteProfileFragment"; // For debugging
     private Database database;

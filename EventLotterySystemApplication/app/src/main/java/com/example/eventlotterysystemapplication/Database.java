@@ -216,7 +216,7 @@ public class Database {
         String userId = authUser.getUid();
 
         deleteOrganizedEvents(user, task -> {
-            if (task.isSuccessful()){
+            if (task == null){ // TODO: handle success case better
                 Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
             } else {
                 Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
@@ -224,7 +224,7 @@ public class Database {
             }
         });
 
-        // TODO fix the function, it is currently broken
+        // TODO: look at this function again
         eventRef.get().addOnSuccessListener(allEventsSnapshot -> {
 
             List<Task<Void>> regDeleteTasks = new ArrayList<>();
@@ -508,7 +508,7 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){
+                if (task == null){ // TODO: handle success case better
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition

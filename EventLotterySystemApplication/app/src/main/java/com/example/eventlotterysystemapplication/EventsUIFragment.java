@@ -26,10 +26,14 @@ import com.google.firebase.installations.FirebaseInstallations;
 import java.util.ArrayList;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link EventsUIFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Displays a listview of all available events that the user can join, as well as an option to go to
+ * {@link MyEventsFragment} to view the user's created events and to create a new event in
+ * {@link CreateOrEditEventFragment}
+ * Fetches an array of events from the database then displays them textually in a listview
+ * Allows the user to click on any event in the list to open up a detailed view of the event in
+ * {@link EventDetailScreenFragment}
  */
+
 public class EventsUIFragment extends Fragment {
     /* Don't change the char 'i' in the name, Android Studio never generated
     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it

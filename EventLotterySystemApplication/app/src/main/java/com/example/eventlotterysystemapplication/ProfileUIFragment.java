@@ -18,9 +18,11 @@ import com.example.eventlotterysystemapplication.databinding.FragmentProfileUiBi
 import com.google.firebase.installations.FirebaseInstallations;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileUIFragment} factory method to
- * create an instance of this fragment.
+ * Displays the user's information and allows edits
+ * Fetches the user's name, email, and phone number if it exists and displays it
+ * Allows the user to view history by navigating to {@link UserEventHistoryFragment}, to confirm
+ * updates to their information with the update profile button, and to delete their profile
+ * by navigating to {@link DeleteProfileFragment}
  */
 public class ProfileUIFragment extends Fragment {
     private FragmentProfileUiBinding binding;

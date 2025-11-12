@@ -13,10 +13,14 @@ import android.widget.ImageButton;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsNotificationsBinding;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsNotificationsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * SettingsNotificationFragment
+ * Fragment for displaying notification related settings
+ * Allows the user to opt in or out of some notifications from the app, namely Lottery
+ * notifications, admin notifications, and organiser notifications
+ * This fragment will then update the user's preferences in the database
+ * Currently this fragment does not update the user's preferences regardless of the user's input
  */
+
 public class SettingsNotificationsFragment extends Fragment {
 
     private FragmentSettingsNotificationsBinding binding;

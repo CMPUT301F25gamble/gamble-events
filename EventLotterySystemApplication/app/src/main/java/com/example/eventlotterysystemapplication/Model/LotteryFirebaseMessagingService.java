@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.View.EventDetailScreenFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -51,7 +52,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
         // TODO Do the intent that is triggered when the notification is tapped
         // Intent that triggers when the notification is tapped
-        Intent intent = new Intent(this, Notification.class);
+        Intent intent = new Intent(this, EventDetailScreenFragment.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(

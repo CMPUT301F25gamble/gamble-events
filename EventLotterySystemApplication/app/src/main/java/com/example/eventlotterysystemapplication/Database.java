@@ -283,15 +283,10 @@ public class Database {
                 return;
             }
 
-            while (!flag) {
-                Event event = parseEvent(eventTask.getResult(), listener);
-                if (event != null) {
-                    event.setEventID(eventID);
-                }
+            Event event = parseEvent(eventTask.getResult(), listener);
+            if (event != null) {
+                event.setEventID(eventID);
             }
-
-            //Log.d("Database 1", String.valueOf(event.getEntrantList().getWaiting()));
-
         });
     }
 
@@ -515,18 +510,13 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                Log.d("ParseEvent", "parseEventRegistration complete");
                 if (task.isSuccessful()) { // TODO: handle success case better
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
                 }
             });
-            Log.d("Database 2", "Entrant list size 555: " + event.getEntrantList().getWaiting().size());
-
-
         }
-
         return event;
     }
 
@@ -608,8 +598,6 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 0);
-                                Log.d("Database 3", "parse: " + entrantDoc.getId());
-                                Log.d("Database 4", "parse: " + event.getEntrantList().getWaiting().size());
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -649,10 +637,8 @@ public class Database {
                         listener.onComplete(Tasks.forException(
                                 new IllegalStateException("Invalid status")
                         ));
-                        //return;
                 }
             }
-            flag = true;
             listener.onComplete(Tasks.forResult(null));
         });
     }

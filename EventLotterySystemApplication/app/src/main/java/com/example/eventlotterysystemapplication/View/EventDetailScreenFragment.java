@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -108,10 +109,6 @@ public class EventDetailScreenFragment extends Fragment {
                     Log.d(TAG, "Event retrieved is: " + event);
                     bindEvent(event);
 
-                    // Hide loading and show content
-                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                    binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-
                     // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
                     getUserFromDeviceID(deviceID, taskUser -> {
                         if (taskUser.isSuccessful()) {
@@ -126,6 +123,9 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.makeText(requireContext(), "Failed to fetch user from device ID",
                                     Toast.LENGTH_LONG).show();
                         }
+                        // Hide loading and show content
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     });
                 } else {
                     // Failed to load event; hide loading and show error
@@ -241,6 +241,16 @@ public class EventDetailScreenFragment extends Fragment {
         List<String> tags = event.getEventTags();
         if (tags == null)
             tags = new ArrayList<>(); // prevent NullPointerException if there are no tags by making an empty arraylist
+
+        // Update image of the event if a download url exists
+        String eventPosterUrl = event.getEventPosterUrl();
+        Log.d(TAG, "Poster image url: " + eventPosterUrl);
+        if (eventPosterUrl != null && !eventPosterUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(eventPosterUrl)
+                    .placeholder(R.drawable.image_template)
+                    .into(binding.eventImage);
+        }
 
         // Debugging
         if (tags.isEmpty()) {

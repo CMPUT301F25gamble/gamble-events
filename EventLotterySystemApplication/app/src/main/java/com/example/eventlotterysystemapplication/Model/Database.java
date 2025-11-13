@@ -281,10 +281,14 @@ public class Database {
                 return;
             }
 
-            Event event = parseEvent(eventTask.getResult(), listener);
-            if (event != null) {
-                event.setEventID(eventID);
-            }
+            parseEvent(eventTask.getResult(), task -> {
+                if (task.isSuccessful()){
+                    listener.onComplete(task);
+                    Log.d("Test Database 4", "Success");
+                } else {
+                    Log.e("Database", "Failed to parse event");
+                }
+            });
 
         });
     }
@@ -318,14 +322,13 @@ public class Database {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
                                 if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
-                                    Event event = parseEvent(doc, task1 -> {
+                                    parseEvent(doc, task1 -> {
                                         if (task1.isSuccessful()) {
-                                            // TODO
+                                            availableEvents.add(task1.getResult());
                                         } else {
                                             // TODO
                                         }
                                     });
-                                    availableEvents.add(event);
                                 }
                             }
                         });
@@ -436,7 +439,7 @@ public class Database {
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
-                Event event = parseEvent(eventDoc, parseEventTask -> {
+                parseEvent(eventDoc, parseEventTask -> {
                     if (parseEventTask.isSuccessful()){
                         deleteEvent(parseEventTask.getResult(), deleteEventTask -> {
                             if (deleteEventTask.isSuccessful()) {
@@ -491,7 +494,7 @@ public class Database {
      * @return An event object, where the correct fields are extracted from the document
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
+    public void parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
 
         event.setEventID(doc.getId());
@@ -524,8 +527,8 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){ // TODO: handle success case better
-                    listener.onComplete(Tasks.forResult(event));
+                if (task.isSuccessful()){
+                    listener.onComplete(task);
                 } else {
                     // TODO Failure condition
                 }
@@ -533,8 +536,6 @@ public class Database {
 
 
         }
-
-        return event;
     }
 
     /**
@@ -596,10 +597,12 @@ public class Database {
      *            subcollection
      * @param listener An OnCompleteListener for callback
      */
-    public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Void> listener){
+    public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Event> listener){
         CollectionReference registration = doc.getReference().collection("Registration");
+        List<Task<Event>> parseEventRegistrationTasks = new ArrayList<>();
 
         registration.get().addOnCompleteListener(regTask -> {
+
             if (!regTask.isSuccessful()) {
                 listener.onComplete(Tasks.forException(
                         new IllegalStateException("Failed to retrieve registration")
@@ -608,6 +611,8 @@ public class Database {
             }
 
             for (DocumentSnapshot entrantDoc : regTask.getResult()) {
+                TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+
                 String status = entrantDoc.getString("status");
                 switch (status) {
                     case "waiting":
@@ -615,16 +620,25 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 0);
+
+                                tcs.setResult(event);
+
+                                Log.d("Test Database 1", "Success");
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
                         });
                         break;
+
                     case "chosen":
                         getUser(entrantDoc.getId(), task -> {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 1);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -635,6 +649,9 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 2);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -645,18 +662,26 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 3);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
                         });
                         break;
-                    default:
-                        listener.onComplete(Tasks.forException(
-                                new IllegalStateException("Invalid status")
-                        ));
                 }
+
+                Log.d("Test Database 2", "Success");
+                parseEventRegistrationTasks.add(tcs.getTask());
+
             }
-            listener.onComplete(Tasks.forResult(null));
+
+            Log.d("Test Database 3", "Success");
+
+            Tasks.whenAllComplete(parseEventRegistrationTasks).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(event));
+            });
         });
     }
 

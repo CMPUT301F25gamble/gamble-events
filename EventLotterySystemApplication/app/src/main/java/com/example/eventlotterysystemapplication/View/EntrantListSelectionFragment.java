@@ -1,4 +1,4 @@
-package com.example.eventlotterysystemapplication;
+package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

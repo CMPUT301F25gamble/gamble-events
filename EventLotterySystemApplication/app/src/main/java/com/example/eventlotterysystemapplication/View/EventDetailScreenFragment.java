@@ -216,7 +216,13 @@ public class EventDetailScreenFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
             Log.d(TAG, "Fetching event from DB...");
-            db.getEvent(eventId, callback);
+            db.getEvent(eventId, task ->  {
+                if (task.isSuccessful()) {
+                    callback.onComplete(task);
+                } else {
+                    Log.e(TAG, "Error fetching event from database");
+                }
+            });
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -11,6 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
 
 /**
@@ -19,11 +21,13 @@ import com.example.eventlotterysystemapplication.databinding.ActivityContentBind
 
 public class ContentActivity extends AppCompatActivity {
 
+    ActivityContentBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
+        binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {
@@ -32,6 +36,16 @@ public class ContentActivity extends AppCompatActivity {
             return insets;
         });
 
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.contentNavHostFragment.getId());
@@ -40,7 +54,15 @@ public class ContentActivity extends AppCompatActivity {
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
 
+        Bundle startArgs = new Bundle();
+        if (intent != null && intent.hasExtra("eventId")) {
+            startArgs.putString("eventId", intent.getStringExtra("eventId"));
+            navController.getGraph().setStartDestination(R.id.event_detail_screen);
+        }
+
+        navController.setGraph(R.navigation.content_nav_graph, startArgs);
+
+        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }
 }

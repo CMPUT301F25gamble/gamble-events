@@ -6,7 +6,7 @@
     app:startDestination="@id/my_event_detail_screen">
     <fragment
         android:id="@+id/entrantListSelectionFragment"
-        android:name="com.example.eventlotterysystemapplication.EntrantListSelectionFragment"
+        android:name="com.example.eventlotterysystemapplication.View.EntrantListSelectionFragment"
         android:label="fragment_entrant_list_selection"
         tools:layout="@layout/fragment_entrant_list_selection" >
         <action
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
-        android:name="com.example.eventlotterysystemapplication.OrganiserNotificationsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.OrganiserNotificationsUIFragment"
         android:label="fragment_organiser_notification_ui"
         tools:layout="@layout/fragment_organiser_notification_ui" >
         <action
@@ -36,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/organiserSendNotificationUIFragment"
-        android:name="com.example.eventlotterysystemapplication.OrganiserSendNotificationUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragment"
         android:label="fragment_organiser_send_notification_ui"
         tools:layout="@layout/fragment_organiser_send_notification_ui" >
         <argument
@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/my_event_detail_screen"
-        android:name="com.example.eventlotterysystemapplication.EventDetailScreenFragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
         android:label="fragment_event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen">
         <argument
@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/allEntrantsListFragment"
-        android:name="com.example.eventlotterysystemapplication.AllEntrantsListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AllEntrantsListFragment"
         android:label="fragment_all_entrants_list"
         tools:layout="@layout/fragment_all_entrants_list" >
         <action
@@ -71,7 +71,7 @@
     </fragment>
     <fragment
         android:id="@+id/chosenEntrantList"
-        android:name="com.example.eventlotterysystemapplication.ChosenEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ChosenEntrantListFragment"
         android:label="fragment_chosen_entrant_list"
         tools:layout="@layout/fragment_chosen_entrant_list" >
         <action
@@ -80,7 +80,7 @@
     </fragment>
     <fragment
         android:id="@+id/pendingEntrantList"
-        android:name="com.example.eventlotterysystemapplication.PendingEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.PendingEntrantListFragment"
         android:label="fragment_pending_entrant_list"
         tools:layout="@layout/fragment_pending_entrant_list" >
         <action
@@ -89,7 +89,7 @@
     </fragment>
     <fragment
         android:id="@+id/cancelledEntrantListFragment"
-        android:name="com.example.eventlotterysystemapplication.CancelledEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.CancelledEntrantListFragment"
         android:label="fragment_cancelled_entrant_list"
         tools:layout="@layout/fragment_cancelled_entrant_list" >
         <action
@@ -98,7 +98,7 @@
     </fragment>
     <fragment
         android:id="@+id/finalEntrantList"
-        android:name="com.example.eventlotterysystemapplication.FinalEntrantList"
+        android:name="com.example.eventlotterysystemapplication.Model.FinalEntrantList"
         android:label="fragment_final_entrant_list"
         tools:layout="@layout/fragment_final_entrant_list" >
         <action

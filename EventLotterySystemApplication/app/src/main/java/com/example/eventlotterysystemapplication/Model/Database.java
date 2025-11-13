@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.Model;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -88,33 +89,6 @@ public class Database {
      * @param deviceID The deviceID of the user
      * @param listener An OnCompleteListener for callback
      */
-//    public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
-//        queryDeviceID(deviceID, task -> {
-//            TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
-//            if (task.isSuccessful()) {
-//
-//                boolean isUnique = task.getResult();
-//                if (isUnique) {
-//                    Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
-//                    deviceIDQuery.get().addOnCompleteListener(queryTask -> {
-//                        if (queryTask.isSuccessful()) {
-//                            QuerySnapshot querySnapshot = queryTask.getResult();
-//                            DocumentSnapshot userDoc = querySnapshot.getDocuments().get(0);
-//                            User user = userDoc.toObject(User.class);
-//                            tcs.setResult(user);
-//                        } else {
-//                            tcs.setException(task.getException());
-//                        }
-//                    });
-//                } else {
-//                    tcs.setException(new IllegalStateException("More than one user with same device"));
-//                }
-//            } else {
-//                tcs.setException(task.getException());
-//                tcs.getTask().addOnCompleteListener(listener);
-//            }
-//        });
-//    }
     public void getUserFromDeviceID(String deviceID, OnCompleteListener<User> listener) {
         Query deviceIDQuery = userRef.whereEqualTo("deviceID", deviceID);
         TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
@@ -413,34 +387,43 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
-        eventDocRef.set(event)
+        eventDocRef.set(event, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
-                        CollectionReference registration = eventDocRef.collection("Registration");
+//                        CollectionReference registration = eventDocRef.collection("Registration");
+//
+//                        // Delete all existing registrations first before re-adding the users in entrant lists
+//                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
+//                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
+//
+//                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+//                                deleteRegTasks.add(doc.getReference().delete());
+//                            }
+//
+//                            // Once all previous registrations are deleted we can re-add the users
+//                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
+//                                List<Task<Void>> regTasks = new ArrayList<>();
+//
+//                                updateEventRegistration(event, eventDocRef, task1 -> {
+//                                    if (task1.isSuccessful()) {
+//                                        Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+//                                    } else {
+//                                        Log.e("Database", "Failed to update registration: " + task.getException());
+//                                        listener.onComplete(task);
+//                                    }
+//                                });
+//                            });
+//                        });
 
-                        // Delete all existing registrations first before re-adding the users in entrant lists
-                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
-
-                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                                deleteRegTasks.add(doc.getReference().delete());
+                        updateEventRegistration(event, eventDocRef, task1 -> {
+                            if (task1.isSuccessful()){
+                                Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+                            } else {
+                                Log.e("Database", "Failed to update registration: " + task.getException());
+                                listener.onComplete(task);
                             }
-
-                            // Once all previous registrations are deleted we can re-add the users
-                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
-                                List<Task<Void>> regTasks = new ArrayList<>();
-
-                                updateEventRegistration(event, eventDocRef, task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-                                    } else {
-                                        Log.e("Database", "Failed to update registration: " + task.getException());
-                                        listener.onComplete(task);
-                                    }
-                                });
-                            });
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
@@ -517,7 +500,7 @@ public class Database {
      * @return An event object, where the correct fields are extracted from the document
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event parseEvent(DocumentSnapshot doc, OnCompleteListener<Event> listener) {
+    public Event parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
 
         event.setEventID(doc.getId());
@@ -550,7 +533,7 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()){ // TODO: handle success case better
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
@@ -680,7 +663,7 @@ public class Database {
                         listener.onComplete(Tasks.forException(
                                 new IllegalStateException("Invalid status")
                         ));
-                        return;
+//                        return;
                 }
             }
             listener.onComplete(Tasks.forResult(null));

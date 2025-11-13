@@ -5,8 +5,6 @@ import java.util.Objects;
 
 import android.util.Log;
 
-import com.example.eventlotterysystemapplication.Controller.Database;
-
 /**
  * An instance of this class represents a single user
  */

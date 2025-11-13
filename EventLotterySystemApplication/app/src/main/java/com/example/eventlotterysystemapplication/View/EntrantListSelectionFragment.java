@@ -1,16 +1,21 @@
-package com.example.eventlotterysystemapplication.View;
+package com.example.eventlotterysystemapplication;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.FinalEntrantList;
-import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.View.AllEntrantsListFragment;
+import com.example.eventlotterysystemapplication.View.CancelledEntrantListFragment;
+import com.example.eventlotterysystemapplication.View.ChosenEntrantListFragment;
+import com.example.eventlotterysystemapplication.View.PendingEntrantListFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentEntrantListSelectionBinding;
 
 /**
@@ -26,7 +31,7 @@ import com.example.eventlotterysystemapplication.databinding.FragmentEntrantList
 public class EntrantListSelectionFragment extends Fragment {
 
     private FragmentEntrantListSelectionBinding binding;
-
+    private String eventId;
     public EntrantListSelectionFragment() {
         // required empty constructor
     }
@@ -40,6 +45,8 @@ public class EntrantListSelectionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs args = com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs.fromBundle(getArguments());
+        eventId = args.getEventId();
     }
 
     @Override
@@ -54,10 +61,15 @@ public class EntrantListSelectionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Get the eventID from the intent
+        String eventId = requireActivity().getIntent().getStringExtra("eventId");
+
         // View all entrants Button to access list of all entrants
         binding.viewAllEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-                    .navigate(R.id.action_entrantListSelectionFragment_to_allEntrantsListFragment);
+                    .navigate(R.id.action_entrantListSelectionFragment_to_allEntrantsListFragment, bundle);
         });
 
         // View all chosen entrants Button to access list of all entrants
@@ -83,5 +95,12 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList);
         });
+
+
+        //Bundle args = getArguments();
+        //if (args != null) {
+         //   eventId = args.getString("eventId");
+        //}
+        Toast.makeText(getContext(), "Event ID: " + eventId, Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,14 +15,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
-import com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.installations.FirebaseInstallations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,7 @@ public class EventDetailScreenFragment extends Fragment {
     private FragmentEventDetailScreenBinding binding;
     private String eventId;
     private boolean isOwnedEvent = false;
+    private final String TAG = "EventDetailScreen";
 
     public EventDetailScreenFragment() {
         // Required empty public constructor
@@ -60,7 +63,7 @@ public class EventDetailScreenFragment extends Fragment {
         eventId = args.getEventId();
         isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
 
-        Log.d("EventDetailScreen", "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
+        Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
     }
 
 
@@ -92,54 +95,139 @@ public class EventDetailScreenFragment extends Fragment {
         binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
         binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
 
-        // Fetch this event and bind
-        FirebaseFirestore.getInstance()
-            .collection("Event")
-            .document(eventId)
-            .get()
-            .addOnSuccessListener(doc -> {
-                bindEvent(doc);
+        // Obtain deviceID
+        FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceID -> {
+            Log.d(TAG, "Device ID obtained is: " + deviceID);
+            assert deviceID != null;
 
-                // Fetch organizerID from Firestore
-                String organizerId = doc.getString("organizerID");
-                String currentUid = FirebaseAuth.getInstance().getCurrentUser() != null
-                        ? FirebaseAuth.getInstance().getCurrentUser().getUid()
-                        : null;
+            // Fetch this event and bind
+            getEvent(task -> {
+                if (task.isSuccessful()) {
+                    // Grab event and bind it
+                    Event event = task.getResult();
+                    Log.d(TAG, "Event retrieved is: " + event);
+                    bindEvent(event);
 
-                // TESTING, KEEP COMMENTED OUT
-                // Toast.makeText(requireContext(), "Organizer ID: " + organizerId, Toast.LENGTH_LONG).show();
-                // Toast.makeText(requireContext(), "Current UID: " + currentUid, Toast.LENGTH_LONG).show();
+                    // Hide loading and show content
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
 
-                // Check ownership
-                boolean isOwnedEvent = (organizerId != null && organizerId.equals(currentUid));
+                    // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
+                    getUserFromDeviceID(deviceID, taskUser -> {
+                        if (taskUser.isSuccessful()) {
+                            User user = taskUser.getResult();
+                            Log.d(TAG, "Grabbed user is: " + user);
+                            Log.d(TAG, "Initial Waiting list: " + event.getEntrantList().getWaiting());
 
-                if (isOwnedEvent) {
-                    binding.navigationBarButton.setText("Edit Event");
-                    binding.navigationBarButton.setBackgroundTintList(
-                            ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
-                    );
+                            changeWaitlistBtn(event.getEntrantList().getWaiting().contains(user));
+                        } else {
+                            // Failed to load user; hide loading and show error
+                            binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                            Toast.makeText(requireContext(), "Failed to fetch user from device ID",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } else {
+                    // Failed to load event; hide loading and show error
+                    Log.e(TAG, "Failed to load event, " + task.getResult());
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Failed to load event",
+                            Toast.LENGTH_LONG).show();
                 }
-                // Hide loading and show content
-                binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-            })
-            .addOnFailureListener(e -> {
-                // Hide loading and show error
-                binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                Toast.makeText(requireContext(), "Failed to load event",
-                        Toast.LENGTH_LONG).show();
             });
+
+
+            // Add joining/leaving waitlist functionality to button
+            binding.navigationBarButton.setOnClickListener(v -> {
+               getEvent(taskEvent -> {
+                   if (taskEvent.isSuccessful()) {
+                       Event event = taskEvent.getResult();
+                       getUserFromDeviceID(deviceID, taskUser -> {
+                           if (taskUser.isSuccessful()) {
+                               // Grab user and check if already in waiting list
+                               User user = taskUser.getResult();
+                               if (!event.getEntrantList().getWaiting().contains(user)) {
+                                   // User is not in waiting list, so join the waitlist
+                                   event.joinWaitingList(user);
+                                   changeWaitlistBtn(true);
+                               } else {
+                                   // User is in waiting list, so leave the waitlist
+                                   event.leaveWaitingList(user);
+                                   changeWaitlistBtn(false);
+                               }
+                               Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList().getWaiting());
+                           } else {
+                               // Failed to obtain user; hide loading and show error
+                               binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                               Toast.makeText(requireContext(), "Failed to obtain user from device ID",
+                                       Toast.LENGTH_LONG).show();
+                           }
+                       });
+
+                   } else {
+                       // Failed to load event; hide loading and show error
+                       binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                       Toast.makeText(requireContext(), "Failed to load event",
+                               Toast.LENGTH_LONG).show();
+                   }
+               });
+            });
+
+        });
     }
 
-    private void bindEvent(DocumentSnapshot doc) {
-        if (!doc.exists()) {
-            Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_LONG).show();
+    /**
+     * Updates the waitlist button colors and text based on if the user is in the waitlist
+     * @param userInWaitlist Boolean whether user is in waitlist of event or not
+     */
+    private void changeWaitlistBtn(boolean userInWaitlist) {
+        if (isOwnedEvent) {
+            binding.navigationBarButton.setText("Edit Event");
+            binding.navigationBarButton.setBackgroundTintList(
+                    ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
+            );
             return;
         }
 
-        // event name & description
-        String eventName = doc.getString("name");
-        String eventDesc = doc.getString("description");
+        if (userInWaitlist) {
+            // User is in waiting list already so change button to leave waitlist
+            binding.navigationBarButton.setText(R.string.leave_waitlist_text);
+            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));
+        } else {
+            // User is not in waiting list
+            binding.navigationBarButton.setText(R.string.join_waitlist_text);
+            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green));
+        }
+    }
+
+    /**
+     * Wrapper function for calling getUserFromDeviceID on the database
+     * @param deviceID the user's device ID
+     * @param callback a callback function that runs when the query is done running
+     */
+    private void getUserFromDeviceID(String deviceID, OnCompleteListener<User> callback) {
+        Database db = new Database();
+
+        db.getUserFromDeviceID(deviceID, callback);
+    }
+
+    private void getEvent(OnCompleteListener<Event> callback) {
+        Database db = new Database();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
+            Log.d(TAG, "Fetching event from DB...");
+            db.getEvent(eventId, callback);
+        }
+    }
+
+    /**
+     * Renders the event details of the page using an event object
+     * @param event details to fill the page with
+     */
+    private void bindEvent(Event event) {
+        // Event name & description
+        String eventName = event.getName();
+        String eventDesc = event.getDescription();
         // Error Checking for null name or desc. (Don't think we need, may remove later)
         if (eventName == null || eventDesc == null) {
             Toast.makeText(requireContext(), "Missing name or description", Toast.LENGTH_LONG).show();
@@ -148,9 +236,9 @@ public class EventDetailScreenFragment extends Fragment {
         binding.eventNameText.setText(eventName);
         binding.eventDetailsDescText.setText(eventDesc);
 
-        // Fetch tags in DB
+        // Fetch tags from event
         // Get tags
-        List<String> tags = (List<String>) doc.get("eventTags");
+        List<String> tags = event.getEventTags();
         if (tags == null)
             tags = new ArrayList<>(); // prevent NullPointerException if there are no tags by making an empty arraylist
 

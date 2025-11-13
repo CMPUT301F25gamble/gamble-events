@@ -44,7 +44,10 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore") // firestore service
     implementation("com.google.firebase:firebase-auth")
-    implementation(libs.firebase.installations)
+    implementation("com.google.firebase:firebase-storage") // storage bucket service
+    implementation("com.firebaseui:firebase-ui-storage:9.1.1") // FirebaseUI for image loading
+    implementation("com.github.bumptech.glide:glide:5.0.5") // Glide for image loading
+    implementation(libs.firebase.installations) // auth service
     implementation(libs.firebase.messaging) // auth service
 
     //Mockito dependencies

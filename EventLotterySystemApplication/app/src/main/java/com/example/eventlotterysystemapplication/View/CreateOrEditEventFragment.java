@@ -52,6 +52,7 @@ public class CreateOrEditEventFragment extends Fragment {
     private final int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
     // Initialize registerForActivityResult before the fragment is created
+    // Launcher that takes an image from the user
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             o -> {
@@ -253,6 +254,11 @@ public class CreateOrEditEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Converts the user inputted string into a LocalDateTime object
+     * @param dateTimeStr The user inputted datetime string
+     * @return A LocalDateTime object
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public LocalDateTime DateTimeFormatter(String dateTimeStr) {
         DateTimeFormatter formatter = null;
@@ -268,12 +274,12 @@ public class CreateOrEditEventFragment extends Fragment {
     }
 
     /**
-     * User uploads the event poster image using intents
+     * Event listener helper that uploads the event poster image using intents
      */
     private void userUploadEventPoster() {
         Intent intent = new Intent(Intent.ACTION_PICK);
 
-        // Let user open an image file
+        // Let Android OS allow user to pick an image file to upload
         intent.setType("image/*");
         pickImageLauncher.launch(intent);
     }
@@ -343,7 +349,7 @@ public class CreateOrEditEventFragment extends Fragment {
 
             OutputStream outputStream = new FileOutputStream(tempFile);
 
-            // Copy the data from the Uri to the temp file
+            // Copy the data from the file pointed to by the Uri to the temp file
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {

@@ -1,5 +1,8 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,19 +11,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.ImageStorage;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentCreateOrEditEventBinding;
 import com.google.firebase.Timestamp;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +48,34 @@ public class CreateOrEditEventFragment extends Fragment {
     private static final String TAG = "CreateOrEditEvent"; // For debugging
     Database database;
     private FragmentCreateOrEditEventBinding binding;
+    private File posterFile;
+    private final int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+    // Initialize registerForActivityResult before the fragment is created
+    private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            o -> {
+                if (o.getResultCode() == Activity.RESULT_OK && o.getData() != null && o.getData().getData() != null) {
+                    Uri posterUri = o.getData().getData();
+                    posterFile = getFileFromUri(posterUri);
+
+                    if (posterFile == null) {
+                        Log.e(TAG, "Image could not be converted to file");
+                        Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (posterFile.length() > MAX_FILE_SIZE) {
+                        Toast.makeText(getContext(), "Event Poster Image is Too Large (> 5 MB)", Toast.LENGTH_SHORT).show();
+                        posterFile = null;
+                        return;
+                    }
+
+                    Log.d(TAG, "poster file size: " + (float) (posterFile.length()) / 1024.0 / 1024.0 + "MB");
+                    Toast.makeText(getContext(), "Event Poster Image Successfully Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -57,6 +96,8 @@ public class CreateOrEditEventFragment extends Fragment {
                     .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
         });
 
+        // Upload Poster Button Listener
+        binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
@@ -69,7 +110,6 @@ public class CreateOrEditEventFragment extends Fragment {
             String eventDateTimeStr = binding.createOrEditEventEventDateAndTimeEditText.getText().toString().trim();
             String regDeadlineStr = binding.createOrEditEventRegistrationDeadlineEditText.getText().toString().trim();
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
-            // TODO: Event Poster
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
             // TODO: Handle notifs set
@@ -185,13 +225,22 @@ public class CreateOrEditEventFragment extends Fragment {
                                 User currentUser = task.getResult();
                                 event.setOrganizerID(currentUser.getUserID());
 
+                                // Set entrant list
+                                event.setEntrantList(new EntrantList());
+
                                 // add event
                                 database.addEvent(event, addEventTask -> {
                                     if (addEventTask.isSuccessful()) {
-                                        Log.d(TAG, "Added event!");
-                                        // Return to events page
-                                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                        // Upload event poster to storage bucket
+                                        if (posterFile != null) {
+                                            Log.d(TAG, "Adding poster image to event...");
+                                            uploadEventPosterToStorage(event);
+                                        } else {
+                                            // Return to events page if no poster was uploaded
+                                            Log.d(TAG, "No poster after adding event, going straight to event page...");
+                                            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                        }
                                     } else {
                                         Log.d(TAG, "Failed to add event");
                                     }
@@ -216,5 +265,100 @@ public class CreateOrEditEventFragment extends Fragment {
             return null;
         }
         return eventDateTime;
+    }
+
+    /**
+     * User uploads the event poster image using intents
+     */
+    private void userUploadEventPoster() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+
+        // Let user open an image file
+        intent.setType("image/*");
+        pickImageLauncher.launch(intent);
+    }
+
+    /**
+     * Uploads the event poster image file to the storage bucket
+     * @param event Event object needed for eventId and setting downloadUrl
+     */
+    private void uploadEventPosterToStorage(Event event) {
+        if (posterFile == null) {
+            Toast.makeText(getContext(), "Failed to convert URI to image file for upload", Toast.LENGTH_SHORT).show();
+            // Return to events page anyways as event is created
+            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+            return;
+        }
+
+        String eventID = event.getEventID();
+        ImageStorage imageStorage = ImageStorage.getInstance();
+        imageStorage.uploadEventPoster(
+                eventID,
+                posterFile,
+                imageTask -> {
+                    if (imageTask.isSuccessful()) {
+                        Uri downloadUrl = imageTask.getResult();
+                        String posterDownloadUrl = downloadUrl.toString();
+                        event.setEventPosterUrl(posterDownloadUrl);
+
+                        database.updateEvent(event, task -> {
+                            if (task.isSuccessful()) {
+                                // Return to events page
+                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
+                        // Return to events page anyways as event is created
+                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Creates a file from the given uri
+     * @param uri The file uri
+     * @return File that was linked at uri
+     */
+    private File getFileFromUri(Uri uri) {
+        if (getContext() == null) {
+            Log.e(TAG, "getFileFromUri: no context");
+            return null;
+        }
+
+        try {
+            // Create temp image file for poster
+            File tempFile = File.createTempFile("temp_image", ".jpg");
+
+            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                Log.e(TAG, "getFileFromUri: no input stream");
+                return null;
+            }
+
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            // Copy the data from the Uri to the temp file
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+
+            return tempFile;
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
     }
 }

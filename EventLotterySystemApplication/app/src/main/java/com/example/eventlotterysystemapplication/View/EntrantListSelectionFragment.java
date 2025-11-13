@@ -91,12 +91,5 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList);
         });
-
-
-        //Bundle args = getArguments();
-        //if (args != null) {
-         //   eventId = args.getString("eventId");
-        //}
-        Toast.makeText(getContext(), "Event ID: " + eventId, Toast.LENGTH_SHORT).show();
     }
 }

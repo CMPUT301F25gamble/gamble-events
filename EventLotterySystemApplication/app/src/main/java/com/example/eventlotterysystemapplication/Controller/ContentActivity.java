@@ -12,6 +12,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
 
 /**

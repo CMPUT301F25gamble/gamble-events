@@ -11,6 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Model.FinalEntrantList;
+import com.example.eventlotterysystemapplication.View.AllEntrantsListFragment;
+import com.example.eventlotterysystemapplication.View.CancelledEntrantListFragment;
+import com.example.eventlotterysystemapplication.View.ChosenEntrantListFragment;
+import com.example.eventlotterysystemapplication.View.PendingEntrantListFragment;
 import com.example.eventlotterysystemapplication.databinding.FragmentEntrantListSelectionBinding;
 
 /**
@@ -40,7 +45,7 @@ public class EntrantListSelectionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.example.eventlotterysystemapplication.EventDetailScreenFragmentArgs args = com.example.eventlotterysystemapplication.EventDetailScreenFragmentArgs.fromBundle(getArguments());
+        com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs args = com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs.fromBundle(getArguments());
         eventId = args.getEventId();
     }
 

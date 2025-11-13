@@ -35,6 +35,7 @@ public class ImageStorage {
 
 
     /**
+     * Returns the ImageStorage singleton and initializes it if it does not exist
      * @return ImageStorage singleton
      */
     public static ImageStorage getInstance() {

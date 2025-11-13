@@ -1,6 +1,8 @@
 package com.example.eventlotterysystemapplication;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,34 +42,48 @@ public class AllEntrantsListFragment extends Fragment {
 
         database = new Database();
 
+        // Safely read arguments
+        Bundle args = getArguments();
+
+        if (args == null || !args.containsKey("eventID")) {
+            // No event ID -> we can't do anything, so show a message and go back
+            Toast.makeText(requireContext(), "Error: missing event ID", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigateUp();
+            return;
+        }
+
+        String eventId = args.getString("eventID");
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(requireContext(), "Error: invalid event ID", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigateUp();
+            return;
+        }
+
         // Back Button to return to Event Lists page
         binding.allEntrantListBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(AllEntrantsListFragment.this)
                     .navigate(R.id.action_allEntrantsListFragment_to_entrantListSelectionFragment);
         });
 
-        String eventId = getArguments().getString("eventID");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("Event").document(eventId);
-
         // Display the loading screen while the data is being fetched
         binding.loadingAllEntrantsList.setVisibility(View.VISIBLE);
         binding.contentGroupAllEntrantsList.setVisibility(View.GONE);
 
-        // Fetch event document from Firestore
-        docRef.get().addOnSuccessListener(documentSnapshot -> {
-            Event event = documentSnapshot.toObject(Event.class);
+        // call parseEventRegistration
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            database.getEvent(eventId, task -> {
 
-            // Error checking
-            if (event == null) {
-                // Raise error with toast
-                Toast.makeText(getContext(), "Error retrieving event data", Toast.LENGTH_SHORT).show();
-                binding.loadingAllEntrantsList.setVisibility(View.GONE);
-                return;
-            }
+                // Error check if task is not successful
+                if (!task.isSuccessful()) {
+                    binding.loadingAllEntrantsList.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-            // call parseEventRegistration
-            database.parseEventRegistration(event, documentSnapshot, task -> {
+                // Fetch the event from the task
+                Event event = task.getResult();
+                //Toast.makeText(getContext(), "Event: " + event.getName(), Toast.LENGTH_SHORT).show();
+
                 // Populate the ListView with all entrants
                 loadAllEntrantsIntoList(event);
 
@@ -75,7 +91,7 @@ public class AllEntrantsListFragment extends Fragment {
                 binding.loadingAllEntrantsList.setVisibility(View.GONE);
                 binding.contentGroupAllEntrantsList.setVisibility(View.VISIBLE);
             });
-        });
+        }
     }
 
     // Private method to help with loading the data into the ListView
@@ -83,7 +99,11 @@ public class AllEntrantsListFragment extends Fragment {
         // List for all entrants
         ArrayList<String> data = new ArrayList<>();
 
+        //Toast.makeText(getContext(), "entrant list: " + event.getEntrantList().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Waiting: " + event.getEntrantList().getWaiting().size() , Toast.LENGTH_SHORT).show();
+
         for (User u : event.getEntrantList().getWaiting()) {
+            Toast.makeText(requireContext(), "Waiting: " + u.getName(), Toast.LENGTH_SHORT).show();
             data.add(u.getName() + " (waiting)");
         }
         for (User u : event.getEntrantList().getChosen()) {
@@ -104,8 +124,5 @@ public class AllEntrantsListFragment extends Fragment {
 
         // Set the adapter for the ListView
         binding.allListOfEntrantsListView.setAdapter(adapter);
-
-        binding.contentGroupAllEntrantsList.setVisibility(View.VISIBLE);
-        binding.loadingAllEntrantsList.setVisibility(View.GONE);
     }
 }

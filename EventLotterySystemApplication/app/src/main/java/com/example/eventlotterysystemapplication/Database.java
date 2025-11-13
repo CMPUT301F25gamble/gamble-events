@@ -35,6 +35,8 @@ public class Database {
     private CollectionReference notificationRef;
     private FirebaseAuth firebaseAuth;
 
+    public static boolean flag = false;
+
     /**
      * Initializes the database object, without being given any database or authorization
      */
@@ -281,10 +283,14 @@ public class Database {
                 return;
             }
 
-            Event event = parseEvent(eventTask.getResult(), listener);
-            if (event != null) {
-                event.setEventID(eventID);
+            while (!flag) {
+                Event event = parseEvent(eventTask.getResult(), listener);
+                if (event != null) {
+                    event.setEventID(eventID);
+                }
             }
+
+            //Log.d("Database 1", String.valueOf(event.getEntrantList().getWaiting()));
 
         });
     }
@@ -503,17 +509,20 @@ public class Database {
         if (doc.getLong("maxFinalListCapacity").intValue() > 0) {
             event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
         }
+
         if (event.getEntrantList() == null) {
             event.setEntrantList(new EntrantList());
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task == null){ // TODO: handle success case better
+                Log.d("ParseEvent", "parseEventRegistration complete");
+                if (task.isSuccessful()) { // TODO: handle success case better
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
                 }
             });
+            Log.d("Database 2", "Entrant list size 555: " + event.getEntrantList().getWaiting().size());
 
 
         }
@@ -599,6 +608,8 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 0);
+                                Log.d("Database 3", "parse: " + entrantDoc.getId());
+                                Log.d("Database 4", "parse: " + event.getEntrantList().getWaiting().size());
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -638,10 +649,11 @@ public class Database {
                         listener.onComplete(Tasks.forException(
                                 new IllegalStateException("Invalid status")
                         ));
-                        return;
+                        //return;
                 }
             }
-            listener.onComplete(null);
+            flag = true;
+            listener.onComplete(Tasks.forResult(null));
         });
     }
 

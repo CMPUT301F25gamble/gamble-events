@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.EntrantListSelectionFragment;
+import com.example.eventlotterysystemapplication.View.EntrantListSelectionFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;

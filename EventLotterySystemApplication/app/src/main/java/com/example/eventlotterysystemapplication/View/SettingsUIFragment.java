@@ -9,8 +9,12 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * SettingsUIFragment
@@ -23,6 +27,8 @@ import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiB
 public class SettingsUIFragment extends Fragment {
 
     private FragmentSettingsUiBinding binding;
+
+    Database database = new Database();
 
     public SettingsUIFragment () {
         // Required empty public constructor
@@ -52,6 +58,8 @@ public class SettingsUIFragment extends Fragment {
         // Get buttons
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
+        Button adminViewButton = binding.adminViewButton;
+        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
 
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
@@ -66,5 +74,15 @@ public class SettingsUIFragment extends Fragment {
                     .navigate(R.id.action_settingsUIFragment_to_settingsTOSFragment);
         });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        adminViewButton.setOnClickListener(v -> {
+            // Small bug fix for bottom nav being buggy
+            BottomNavigationView bottomNav =
+                    requireActivity().findViewById(R.id.bottomNavMenu);
+
+            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
+        });
     }
 }

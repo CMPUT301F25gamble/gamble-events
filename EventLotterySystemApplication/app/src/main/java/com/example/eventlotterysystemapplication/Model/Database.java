@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.Model;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -474,7 +475,7 @@ public class Database {
      * @return An event object, where the correct fields are extracted from the document
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event parseEvent(DocumentSnapshot doc, OnCompleteListener<Event> listener) {
+    public Event parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
 
         event.setEventID(doc.getId());
@@ -507,7 +508,7 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task == null){ // TODO: handle success case better
+                if (task.isSuccessful()){ // TODO: handle success case better
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
@@ -637,7 +638,6 @@ public class Database {
                         listener.onComplete(Tasks.forException(
                                 new IllegalStateException("Invalid status")
                         ));
-                        return;
                 }
             }
             listener.onComplete(null);

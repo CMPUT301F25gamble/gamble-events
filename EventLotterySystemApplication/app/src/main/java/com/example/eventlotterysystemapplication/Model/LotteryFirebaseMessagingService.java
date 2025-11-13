@@ -52,7 +52,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
         // TODO Do the intent that is triggered when the notification is tapped
         // Intent that triggers when the notification is tapped
-        Intent intent = new Intent(this, EventDetailScreenFragment.class);
+        Intent intent = new Intent(this, Notification.class);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(

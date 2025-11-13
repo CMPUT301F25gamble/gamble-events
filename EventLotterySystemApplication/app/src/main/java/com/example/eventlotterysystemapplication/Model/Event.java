@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.eventlotterysystemapplication.Controller.Database;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;

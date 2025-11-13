@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.Controller.Database;
+import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Controller.RegisterActivity;
 import com.example.eventlotterysystemapplication.Model.User;

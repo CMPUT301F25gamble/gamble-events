@@ -32,13 +32,9 @@ public class PendingEntrantListFragment extends Fragment {
     private Database database;
 
     // List for pending entrants
-    public ArrayList<CharSequence> data = new ArrayList<>();
+    private ArrayList<CharSequence> data = new ArrayList<>();
     // Adapter for listview
-    public ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-            requireContext(),
-            android.R.layout.simple_list_item_1,
-            data
-    );
+    private ArrayAdapter<CharSequence> adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -52,6 +48,15 @@ public class PendingEntrantListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         database = new Database();
+
+        // Initialize the adapter with the data
+        adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                data
+        );
+        // Set the adapter for the ListView
+        binding.pendingListOfEntrantsListView.setAdapter(adapter);
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -113,8 +118,5 @@ public class PendingEntrantListFragment extends Fragment {
         }
         // Notify the adapter
         adapter.notifyDataSetChanged();
-
-        // Set the adapter for the ListView
-        binding.pendingListOfEntrantsListView.setAdapter(adapter);
     }
 }

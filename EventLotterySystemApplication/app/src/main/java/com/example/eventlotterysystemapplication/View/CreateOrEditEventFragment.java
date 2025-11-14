@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -50,6 +51,7 @@ public class CreateOrEditEventFragment extends Fragment {
     private FragmentCreateOrEditEventBinding binding;
     private File posterFile;
     private final int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    private String eventId = null;
 
     // Initialize registerForActivityResult before the fragment is created
     // Launcher that takes an image from the user
@@ -79,6 +81,16 @@ public class CreateOrEditEventFragment extends Fragment {
     );
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Get eventId if the organizer is editing the event
+        if (getArguments() != null) {
+            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventId();
+        }
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCreateOrEditEventBinding.inflate(inflater, container, false);
@@ -90,11 +102,20 @@ public class CreateOrEditEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         database = new Database();
 
+        // Change title/button text depending on if the user is editing the event or creating one
+        if (eventId != null) {
+            binding.createOrEditEventTitle.setText(R.string.edit_event_title_text);
+            binding.createOrEditEventDoneButton.setText(R.string.done_editing_event_text);
+        } else {
+            binding.createOrEditEventTitle.setText(R.string.create_event_title_text);
+            binding.createOrEditEventDoneButton.setText(R.string.done_creating_event_text);
+        }
+
         // Create Event
         // Back Button to return to Events page
         binding.createOrEditEventBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                    .navigateUp();
         });
 
         // Upload Poster Button Listener

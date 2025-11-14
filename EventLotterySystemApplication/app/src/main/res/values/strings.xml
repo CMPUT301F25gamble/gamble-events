@@ -89,4 +89,8 @@
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
+    <string name="edit_event_title_text">Edit Event</string>
+    <string name="create_event_title_text">Create Event</string>
+    <string name="done_creating_event_text">Done Creating Event</string>
+    <string name="done_editing_event_text">Done Editing Event</string>
 </resources>

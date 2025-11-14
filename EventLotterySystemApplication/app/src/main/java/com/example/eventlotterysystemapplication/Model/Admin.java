@@ -76,7 +76,7 @@ public class Admin extends User{
     }
 
     public void removeImage() {
-
+        // TODO: wait for implentation for removeImage
     }
 
     public void browseEvents() {

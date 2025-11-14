@@ -281,11 +281,45 @@ public class Database {
                 return;
             }
 
-            Event event = parseEvent(eventTask.getResult(), listener);
-            if (event != null) {
-                event.setEventID(eventID);
-            }
+            parseEvent(eventTask.getResult(), task -> {
+                if (task.isSuccessful()) {
+                    Event event = task.getResult();
+                    if (event != null) {
+                        event.setEventID(eventID);
+                    }
+                    listener.onComplete(Tasks.forResult(event));
+                }
+            });
+        });
+    }
 
+    /**
+     * Retrieves all events in the event collection
+     * @param listener An OnCompleteListener used to retrieve a list o
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getAllEvents(OnCompleteListener<List<Event>> listener) {
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> events = new ArrayList<>();
+                List<Task<Event>> parseTasks = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+                    parseTasks.add(tcs.getTask());
+                    parseEvent(doc, task1 -> {
+                        if (task1.isSuccessful()) {
+                            Event event = task1.getResult();
+                            events.add(event);
+                        }
+                        tcs.setResult(task1.getResult());
+                    });
+                }
+                Tasks.whenAllComplete(parseTasks).addOnCompleteListener(done -> {
+                    listener.onComplete(Tasks.forResult(events));
+                });
+            } else {
+                Log.e("Database", "Fetch failed");
+            }
         });
     }
 
@@ -318,14 +352,13 @@ public class Database {
                             int count = regCount.size();
                             if (count < waitListCapacity) {
                                 if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
-                                    Event event = parseEvent(doc, task1 -> {
+                                    parseEvent(doc, task1 -> {
                                         if (task1.isSuccessful()) {
                                             // TODO
                                         } else {
                                             // TODO
                                         }
                                     });
-                                    availableEvents.add(event);
                                 }
                             }
                         });
@@ -445,7 +478,7 @@ public class Database {
             for (DocumentSnapshot eventDoc : querySnapshot.getDocuments()) {
                 TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
-                Event event = parseEvent(eventDoc, parseEventTask -> {
+                parseEvent(eventDoc, parseEventTask -> {
                     if (parseEventTask.isSuccessful()){
                         deleteEvent(parseEventTask.getResult(), deleteEventTask -> {
                             if (deleteEventTask.isSuccessful()) {
@@ -500,7 +533,7 @@ public class Database {
      * @return An event object, where the correct fields are extracted from the document
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
+    public void parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
         Event event = new Event();
 
         event.setEventID(doc.getId());
@@ -543,7 +576,7 @@ public class Database {
 
         }
 
-        return event;
+//        return event;
     }
 
     /**

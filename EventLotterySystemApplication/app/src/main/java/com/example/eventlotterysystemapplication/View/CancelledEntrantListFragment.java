@@ -96,7 +96,7 @@ public class CancelledEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadCancelledEntrantsIntoList(Event event) {
-        // List for all entrants
+        // List for cancelled entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(

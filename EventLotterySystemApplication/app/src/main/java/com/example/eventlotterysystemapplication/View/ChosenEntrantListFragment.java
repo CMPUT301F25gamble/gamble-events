@@ -97,7 +97,7 @@ public class ChosenEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadChosenEntrantsIntoList(Event event) {
-        // List for all entrants
+        // List for chosen entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(

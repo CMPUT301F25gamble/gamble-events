@@ -97,7 +97,7 @@ public class PendingEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadPendingEntrantsIntoList(Event event) {
-        // List for all entrants
+        // List for pending entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(

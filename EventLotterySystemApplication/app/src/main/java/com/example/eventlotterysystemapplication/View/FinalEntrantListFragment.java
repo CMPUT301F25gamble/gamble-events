@@ -95,7 +95,7 @@ public class FinalEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadFinalEntrantsIntoList(Event event) {
-        // List for all entrants
+        // List for final entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(

@@ -116,80 +116,108 @@ public class AllEntrantsListFragment extends Fragment {
                 data
         );
 
-        //Toast.makeText(getContext(), "entrant list: " + event.getEntrantList().toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(requireContext(), "Waiting: " + event.getEntrantList().getWaiting().size() , Toast.LENGTH_SHORT).show();
-
         for (User u : event.getEntrantList().getWaiting()) {
-            String line = String.format("%-60s %10s", u.getName(), "(waiting)");
+            String status = "(WAITING)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
             SpannableString span = new SpannableString(line);
 
-            // Fetch the target string
-            String target = "(waiting)";
+            // Fetch the target string for waiting
+            String target = "(WAITING)";
             int start = line.indexOf(target);
             int end = start + target.length();
-
             // Set Waiting to bold
             span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             // Set Color to Orange
             span.setSpan(new ForegroundColorSpan(Color.parseColor("#FF9800")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
             // Add the span to the list and notify the adapter
             data.add(span);
             adapter.notifyDataSetChanged();
         }
+
         for (User u : event.getEntrantList().getChosen()) {
-            String line = String.format("%-60s %10s", u.getName(), "(chosen)");
+            String status = "(CHOSEN)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
             SpannableString span = new SpannableString(line);
 
-            // Fetch the target string
-            String target = "(chosen)";
+            // Fetch the target string for chosen
+            String target = "(CHOSEN)";
             int start = line.indexOf(target);
             int end = start + target.length();
-
             // Set Waiting to bold
             span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            // Set Color to Green
+            // Set Color to Orange
             span.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
             // Add the span to the list and notify the adapter
             data.add(span);
             adapter.notifyDataSetChanged();
         }
+
         for (User u : event.getEntrantList().getCancelled()) {
-            String line = String.format("%-60s %10s", u.getName(), "(cancelled)");
+            String status = "(CANCELLED)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
             SpannableString span = new SpannableString(line);
 
-            // Fetch the target string
-            String target = "(cancelled)";
+            // Fetch the target string for cancelled
+            String target = "(CANCELLED)";
             int start = line.indexOf(target);
             int end = start + target.length();
-
             // Set Waiting to bold
             span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            // Set Color to Red
+            // Set Color to Orange
             span.setSpan(new ForegroundColorSpan(Color.parseColor("#F44336")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
             // Add the span to the list and notify the adapter
             data.add(span);
             adapter.notifyDataSetChanged();
         }
+
         for (User u : event.getEntrantList().getFinalized()) {
-            String line = String.format("%-60s %10s", u.getName(), "(finalized)");
+            String status = "(FINALIZED)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
             SpannableString span = new SpannableString(line);
 
-            // Fetch the target string
-            String target = "(finalized)";
+            // Fetch the target string for finalized
+            String target = "(FINALIZED)";
             int start = line.indexOf(target);
             int end = start + target.length();
-
             // Set Waiting to bold
             span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            // Set Color to Black (maybe I'll change to GREY)
+            // Set Color to Orange
             span.setSpan(new ForegroundColorSpan(Color.parseColor("#4A4A4A")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             // Add the span to the list and notify the adapter
             data.add(span);

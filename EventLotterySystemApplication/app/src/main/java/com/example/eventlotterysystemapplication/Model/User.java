@@ -272,8 +272,11 @@ public class User{
         }
         event.joinCancelledList(this);
         // TODO: check if user needs to be removed from chosen list
+
+        // Draws a new entrant and send them a notification
         LotterySelector lottery = new LotterySelector();
         User newEntrant = lottery.drawReplacementUser(event);
-        // TODO: send notification to that new entrant
+        LotteryFirebaseMessagingService messagingService = new LotteryFirebaseMessagingService();
+        // TODO: send notification
     }
 }

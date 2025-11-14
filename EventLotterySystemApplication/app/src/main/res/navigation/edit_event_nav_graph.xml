@@ -98,7 +98,7 @@
     </fragment>
     <fragment
         android:id="@+id/finalEntrantList"
-        android:name="com.example.eventlotterysystemapplication.Model.FinalEntrantList"
+        android:name="com.example.eventlotterysystemapplication.View.FinalEntrantListFragment"
         android:label="fragment_final_entrant_list"
         tools:layout="@layout/fragment_final_entrant_list" >
         <action

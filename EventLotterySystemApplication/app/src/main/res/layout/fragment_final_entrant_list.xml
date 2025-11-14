@@ -4,7 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Model.FinalEntrantList">
+    tools:context=".View.FinalEntrantListFragment">
+
+    <ProgressBar
+        android:id="@+id/loading_final_entrants_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_final_entrants_list"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            finalEntrantListBackButton,
+            finalListOfEntrantsText,
+            finalListOfEntrantsListView,
+            printListButton"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
 
     <ImageButton
         android:id="@+id/finalEntrantListBackButton"

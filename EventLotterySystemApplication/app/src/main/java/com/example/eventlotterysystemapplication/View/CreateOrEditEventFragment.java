@@ -66,15 +66,17 @@ public class CreateOrEditEventFragment extends Fragment {
             String eventDesc = binding.createOrEditEventEventDescEditText.getText().toString().trim();
             String tagsStr = binding.createOrEditEventTagsEditText.getText().toString().trim();
             String eventLocation = binding.createOrEditEventLocationEditText.getText().toString().trim();
-            String eventDateTimeStr = binding.createOrEditEventEventDateAndTimeEditText.getText().toString().trim();
-            String regDeadlineStr = binding.createOrEditEventRegistrationDeadlineEditText.getText().toString().trim();
+            String eventStartTimeStr = binding.createOrEditEventEventStartDateAndTimeEditText.getText().toString().trim();
+            String eventEndTimeStr = binding.createOrEditEventEventEndDateAndTimeEditText.getText().toString().trim();
+            String regStartTimeStr = binding.createOrEditEventRegistrationStartEditText.getText().toString().trim();
+            String regEndTimeStr = binding.createOrEditEventRegistrationEndEditText.getText().toString().trim();
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
             // TODO: Event Poster
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
             // TODO: Handle notifs set
 
-           // TODO: Check that mandatory fields are filled
+           // Check that mandatory fields are filled
             if (eventName.isEmpty()) {
                 binding.createOrEditEventEventNameEditText.setError("Event Name is required");
                 return;
@@ -87,12 +89,20 @@ public class CreateOrEditEventFragment extends Fragment {
                 binding.createOrEditEventLocationEditText.setError("Location is required");
                 return;
             }
-            if (eventDateTimeStr.isEmpty()) {
-                binding.createOrEditEventEventDateAndTimeEditText.setError("Event Date and Time is required");
+            if (eventStartTimeStr.isEmpty()) {
+                binding.createOrEditEventEventStartDateAndTimeEditText.setError("Event Start Date and Time is required");
                 return;
             }
-            if (regDeadlineStr.isEmpty()) {
-                binding.createOrEditEventRegistrationDeadlineEditText.setError("Registration Deadline is required");
+            if (eventEndTimeStr.isEmpty()) {
+                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time is required");
+                return;
+            }
+            if (regStartTimeStr.isEmpty()) {
+                binding.createOrEditEventRegistrationStartEditText.setError("Registration Start Date and Time is required");
+                return;
+            }
+            if (regEndTimeStr.isEmpty()) {
+                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time is required");
                 return;
             }
             if (invitationAcceptanceDeadlineStr.isEmpty()) {
@@ -105,21 +115,27 @@ public class CreateOrEditEventFragment extends Fragment {
             }
 
             // Parse dateTime types
-            LocalDateTime eventDateTime;
-            LocalDateTime regDeadline;
+            LocalDateTime eventStartTime;
+            LocalDateTime eventEndTime;
+            LocalDateTime regStartTime;
+            LocalDateTime regEndTime;
             LocalDateTime invitationAcceptanceDeadline;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                eventDateTime = DateTimeFormatter(eventDateTimeStr);
-                regDeadline = DateTimeFormatter(regDeadlineStr);
+                eventStartTime = DateTimeFormatter(eventStartTimeStr);
+                eventEndTime = DateTimeFormatter(eventEndTimeStr);
+                regStartTime = DateTimeFormatter(regStartTimeStr);
+                regEndTime = DateTimeFormatter(regEndTimeStr);
                 invitationAcceptanceDeadline = DateTimeFormatter(invitationAcceptanceDeadlineStr);
             } else {
                 invitationAcceptanceDeadline = null;
-                regDeadline = null;
-                eventDateTime = null;
+                eventStartTime = null;
+                eventEndTime = null;
+                regStartTime = null;
+                regEndTime = null;
             }
 
             // Check if any field failed parsing
-            if (eventDateTime == null || regDeadline == null || invitationAcceptanceDeadline == null) {
+            if (eventStartTime == null || eventEndTime == null || regStartTime == null || regEndTime == null || invitationAcceptanceDeadline == null) {
                 return; // stop here, let user fix inputs
             }
 
@@ -165,11 +181,17 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set timestamps
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Timestamp eventDateTimeTS = new Timestamp(eventDateTime.atZone(ZoneId.systemDefault()).toInstant());
-                                    event.setEventEndTimeTS(eventDateTimeTS);
+                                    Timestamp eventStartTimeTS = new Timestamp(eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setEventStartTimeTS(eventStartTimeTS);
 
-                                    Timestamp regDeadlineTS = new Timestamp(regDeadline.atZone(ZoneId.systemDefault()).toInstant());
-                                    event.setRegistrationEndTimeTS(regDeadlineTS);
+                                    Timestamp eventEndTimeTS = new Timestamp(eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setEventEndTimeTS(eventEndTimeTS);
+
+                                    Timestamp regStartTimeTS = new Timestamp(regStartTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setRegistrationStartTimeTS(regStartTimeTS);
+
+                                    Timestamp regEndTimeTS = new Timestamp(regEndTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setRegistrationEndTimeTS(regEndTimeTS);
 
                                     Timestamp invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
                                     event.setInvitationAcceptanceDeadlineTS(invitationAcceptanceDeadlineTS);

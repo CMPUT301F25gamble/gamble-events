@@ -251,8 +251,9 @@ public class User{
         if (entrantList.getCancelled().contains(this)) {
             throw new IllegalStateException("User has cancelled joining this event.");
         }
+
+        // Assumes user will also be in chosen list
         event.joinFinalizedList(this);
-        // TODO: check if user needs to be removed from chosen list
     }
 
     /**
@@ -271,12 +272,10 @@ public class User{
             throw new IllegalStateException("User has cancelled joining this event.");
         }
         event.joinCancelledList(this);
-        // TODO: check if user needs to be removed from chosen list
 
         // Draws a new entrant and send them a notification
         LotterySelector lottery = new LotterySelector();
         User newEntrant = lottery.drawReplacementUser(event);
-        LotteryFirebaseMessagingService messagingService = new LotteryFirebaseMessagingService();
         // TODO: send notification
     }
 }

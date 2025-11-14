@@ -237,7 +237,7 @@ public class Database {
         String userId = authUser.getUid();
 
         deleteOrganizedEvents(user, task -> {
-            if (task == null){ // TODO: handle success case better
+            if (task.isSuccessful()){
                 Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
             } else {
                 Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
@@ -376,9 +376,10 @@ public class Database {
                                 if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
                                     parseEvent(doc, task1 -> {
                                         if (task1.isSuccessful()) {
-                                            // TODO
+                                            Event event = task1.getResult();
+                                            availableEvents.add(event);
                                         } else {
-                                            // TODO
+                                            Log.e("Database", "Unable to parse event " + task1.getException());
                                         }
                                     });
                                 }
@@ -592,7 +593,7 @@ public class Database {
                 if (task.isSuccessful()){
                     listener.onComplete(Tasks.forResult(event));
                 } else {
-                    // TODO Failure condition
+                    Log.e("Database", "Unable to parse event registration" + task.getException());
                 }
             });
 

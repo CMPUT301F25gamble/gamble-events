@@ -31,6 +31,15 @@ public class PendingEntrantListFragment extends Fragment {
     private FragmentPendingEntrantListBinding binding;
     private Database database;
 
+    // List for pending entrants
+    public ArrayList<CharSequence> data = new ArrayList<>();
+    // Adapter for listview
+    public ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
+            requireContext(),
+            android.R.layout.simple_list_item_1,
+            data
+    );
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,15 +106,7 @@ public class PendingEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadPendingEntrantsIntoList(Event event) {
-        // List for pending entrants
-        ArrayList<CharSequence> data = new ArrayList<>();
-        // Adapter for listview
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                data
-        );
-
+        // Loop through all pending entrants
         for (User u : event.getEntrantList().getCancelled()) {
             String name = u.getName();
             data.add(name);

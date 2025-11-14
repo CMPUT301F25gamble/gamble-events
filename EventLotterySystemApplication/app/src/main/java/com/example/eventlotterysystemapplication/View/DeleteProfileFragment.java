@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,22 +67,24 @@ public class DeleteProfileFragment extends Fragment {
                                 User userToDelete = task.getResult();
 
                                 // Delete the user using database method
-                                database.deleteUser(userToDelete, deleteTask -> {
-                                    if (deleteTask.isSuccessful()) {
-                                        Toast.makeText(requireContext(), "Deletion successful!", Toast.LENGTH_SHORT).show();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    database.deleteUser(userToDelete, deleteTask -> {
+                                        if (deleteTask.isSuccessful()) {
+                                            Toast.makeText(requireContext(), "Deletion successful!", Toast.LENGTH_SHORT).show();
 
-                                        // Launch RegisterActivity as a fresh task and clear the old one
-                                        Intent intent = new Intent(requireContext(), RegisterActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
+                                            // Launch RegisterActivity as a fresh task and clear the old one
+                                            Intent intent = new Intent(requireContext(), RegisterActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
 
-                                        // End the current Activity explicitly (extra safety so we don't garbage collect)
-                                        requireActivity().finish();
-                                    } else {
-                                        Toast.makeText(requireContext(), "Failed to delete account.", Toast.LENGTH_SHORT).show();
-                                        Log.e(TAG, "Failed to delete user", deleteTask.getException());
-                                    }
-                                });
+                                            // End the current Activity explicitly (extra safety so we don't garbage collect)
+                                            requireActivity().finish();
+                                        } else {
+                                            Toast.makeText(requireContext(), "Failed to delete account.", Toast.LENGTH_SHORT).show();
+                                            Log.e(TAG, "Failed to delete user", deleteTask.getException());
+                                        }
+                                    });
+                                }
                             } else {
                                 Log.e("DeleteUser", "Failed to get user by deviceID: ", task.getException());
                             }

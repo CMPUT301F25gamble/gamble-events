@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLotterySystemApplication">
         <activity
-            android:name=".View.SettingsTOSFragment"
-            android:exported="false" />
-        <activity
             android:name=".Controller.EditEventActivity"
             android:exported="false" />
         <activity

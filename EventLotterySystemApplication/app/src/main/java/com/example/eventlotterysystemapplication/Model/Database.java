@@ -519,6 +519,10 @@ public class Database {
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
         event.parseTimestamps();
 
+        if (doc.get("eventPosterUrl") != null) {
+            event.setEventPosterUrl(doc.getString("eventPosterUrl"));
+        }
+
         if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
             event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
         }

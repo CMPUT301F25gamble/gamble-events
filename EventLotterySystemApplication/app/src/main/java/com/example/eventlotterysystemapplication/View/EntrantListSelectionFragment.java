@@ -59,37 +59,47 @@ public class EntrantListSelectionFragment extends Fragment {
 
         // Get the eventID from the intent
         String eventId = requireActivity().getIntent().getStringExtra("eventId");
+        Bundle bundle = new Bundle();
+        bundle.putString("eventID", eventId);
 
         // View all entrants Button to access list of all entrants
         binding.viewAllEntrantsButton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("eventID", eventId);
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_allEntrantsListFragment, bundle);
         });
 
         // View all chosen entrants Button to access list of all entrants
         binding.allChosenEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle2 = new Bundle();
+            bundle2.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-                    .navigate(R.id.action_entrantListSelectionFragment_to_chosenEntrantList);
+                    .navigate(R.id.action_entrantListSelectionFragment_to_chosenEntrantList, bundle);
         });
 
         // View all pending entrants Button to access list of all entrants
         binding.allPendingEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle3 = new Bundle();
+            bundle3.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-                    .navigate(R.id.action_entrantListSelectionFragment_to_pendingEntrantList);
+                    .navigate(R.id.action_entrantListSelectionFragment_to_pendingEntrantList, bundle);
         });
 
         // View all cancelled entrants Button to access list of all entrants
         binding.allCancelledEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle4 = new Bundle();
+            bundle4.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-                    .navigate(R.id.action_entrantListSelectionFragment_to_cancelledEntrantListFragment);
+                    .navigate(R.id.action_entrantListSelectionFragment_to_cancelledEntrantListFragment, bundle);
         });
 
         // View final entrants Button to access list of all entrants
         binding.finalListOfEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle5 = new Bundle();
+            bundle5.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-                    .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList);
+                    .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList, bundle);
         });
     }
 }

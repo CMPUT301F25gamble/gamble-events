@@ -74,7 +74,7 @@ public class AllEntrantsListFragment extends Fragment {
         // Back Button to return to Event Lists page
         binding.allEntrantListBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(AllEntrantsListFragment.this)
-                    .navigate(R.id.action_allEntrantsListFragment_to_entrantListSelectionFragment);
+                    .navigateUp();
         });
 
         // Display the loading screen while the data is being fetched
@@ -116,6 +116,7 @@ public class AllEntrantsListFragment extends Fragment {
                 data
         );
 
+        // Loop "waiting" users
         for (User u : event.getEntrantList().getWaiting()) {
             String status = "(WAITING)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
@@ -138,11 +139,11 @@ public class AllEntrantsListFragment extends Fragment {
 //            // Set Status to bold
 //            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            // Add the span to the list and notify the adapter
+            // Add the span to the list
             data.add(span);
-            adapter.notifyDataSetChanged();
         }
 
+        // Loop "chosen" users
         for (User u : event.getEntrantList().getChosen()) {
             String status = "(CHOSEN)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
@@ -165,11 +166,11 @@ public class AllEntrantsListFragment extends Fragment {
 //            // Set Status to bold
 //            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            // Add the span to the list and notify the adapter
+            // Add the span to the list
             data.add(span);
-            adapter.notifyDataSetChanged();
         }
 
+        // Loop "cancelled" users
         for (User u : event.getEntrantList().getCancelled()) {
             String status = "(CANCELLED)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
@@ -192,11 +193,11 @@ public class AllEntrantsListFragment extends Fragment {
 //            // Set Status to bold
 //            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            // Add the span to the list and notify the adapter
+            // Add the span to the list
             data.add(span);
-            adapter.notifyDataSetChanged();
         }
 
+        // Loop "finalized" users
         for (User u : event.getEntrantList().getFinalized()) {
             String status = "(FINALIZED)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
@@ -219,10 +220,12 @@ public class AllEntrantsListFragment extends Fragment {
 //            // Set Status to bold
 //            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            // Add the span to the list and notify the adapter
+            // Add the span to the list
             data.add(span);
-            adapter.notifyDataSetChanged();
         }
+
+        // Notify the adapter of all changes
+        adapter.notifyDataSetChanged();
 
         // Set the adapter for the ListView
         binding.allListOfEntrantsListView.setAdapter(adapter);

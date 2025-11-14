@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -8,7 +9,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -21,11 +21,13 @@ import com.example.eventlotterysystemapplication.databinding.ActivityContentBind
 
 public class ContentActivity extends AppCompatActivity {
 
+    ActivityContentBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
+        binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {
@@ -34,6 +36,16 @@ public class ContentActivity extends AppCompatActivity {
             return insets;
         });
 
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.contentNavHostFragment.getId());
@@ -43,29 +55,14 @@ public class ContentActivity extends AppCompatActivity {
         // Get NavController
         NavController navController = navHostFragment.getNavController();
 
-        // Start navigation on second tab (events page) and display it
-        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
-        navController.navigate(R.id.events_ui_fragment);
+        Bundle startArgs = new Bundle();
+        if (intent != null && intent.hasExtra("eventId")) {
+            startArgs.putString("eventId", intent.getStringExtra("eventId"));
+            navController.getGraph().setStartDestination(R.id.event_detail_screen);
+        }
 
-        /*
-         * Nav logic for BottomNavigationView
-         * -> Fixes the issue withe the back stack on the bottom menu
-         */
-        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
-            int destinationId = item.getItemId();
+        navController.setGraph(R.navigation.content_nav_graph, startArgs);
 
-            NavOptions navOptions = new NavOptions.Builder()
-                // Main fix here
-                .setPopUpTo(destinationId, true)
-                .build();
-
-            // Second arg is null because there is no start args
-            navController.navigate(destinationId, null, navOptions);
-            return true;
-        });
-
-
+        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }
 }
-
-

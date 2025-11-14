@@ -56,10 +56,8 @@
         android:id="@+id/send_notification_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_beige"
         android:text="@string/send_notification_button_text"
+        android:backgroundTint="@color/app_beige"
         android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notification_message_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

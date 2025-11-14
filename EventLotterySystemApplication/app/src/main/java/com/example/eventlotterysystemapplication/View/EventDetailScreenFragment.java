@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -116,6 +119,7 @@ public class EventDetailScreenFragment extends Fragment {
                             Log.d(TAG, "Grabbed user is: " + user);
                             Log.d(TAG, "Initial Waiting list: " + event.getEntrantList().getWaiting());
 
+                            showGenerateQRCodeButton();
                             changeWaitlistBtn(event.getEntrantList().getWaiting().contains(user));
                         } else {
                             // Failed to load user; hide loading and show error
@@ -136,6 +140,16 @@ public class EventDetailScreenFragment extends Fragment {
                 }
             });
 
+            // Generate QR Code when the GenerateQRCode Button is pressed
+            binding.generateQRCodeButton.setOnClickListener(v -> {
+                getEvent(taskEvent -> {
+                    Event event = taskEvent.getResult();
+                    Bitmap qrBitmap = event.getQRCodeBitmap();
+                    showQRCodeDialog(qrBitmap);
+                    Toast.makeText(requireContext(), "QR Code Generated!",
+                            Toast.LENGTH_LONG).show();
+                });
+            });
 
             // Add joining/leaving waitlist functionality to button
             binding.navigationBarButton.setOnClickListener(v -> {
@@ -176,18 +190,50 @@ public class EventDetailScreenFragment extends Fragment {
         });
     }
 
+
+    /**
+     * Shows Generate QR Code button in event details screen if current user is the organizer of the event
+     */
+    private void showGenerateQRCodeButton() {
+        if (isOwnedEvent) {
+            binding.generateQRCodeButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.generateQRCodeButton.setVisibility(View.GONE); // make generate QR Code button gone if not owner of the event
+        }
+    }
+
+    /**
+     * Shows generated QR Code in a pop up
+     * @param qrBitmap Bitmap to pass to ImageView to display
+     */
+    private void showQRCodeDialog(Bitmap qrBitmap) {
+        Dialog dialog = new Dialog(requireContext());
+
+        // CreateImageView
+        ImageView qrImageView = new ImageView(requireContext());
+        qrImageView.setImageBitmap(qrBitmap);
+        qrImageView.setPadding(32, 32, 32, 32); // padding
+
+        dialog.setContentView(qrImageView); // Set the ImageView as the dialog content
+        dialog.setCancelable(true); // Allow tapping outside to dismiss
+        dialog.show();
+    }
+
     /**
      * Updates the waitlist button colors and text based on if the user is in the waitlist
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
         if (isOwnedEvent) {
+
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
                     ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
             );
             return;
         }
+
 
         if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist

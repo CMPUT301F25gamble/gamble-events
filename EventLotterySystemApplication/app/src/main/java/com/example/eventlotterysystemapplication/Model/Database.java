@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An instance of this class represents a connection to the firebase firestore database
@@ -392,9 +393,12 @@ public class Database {
                         updateEventRegistration(event, eventDocRef, task1 -> {
                             if (task1.isSuccessful()){
                                 Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                                listener.onComplete(task);
                             } else {
                                 Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(task);
+                                listener.onComplete(Tasks.forException(
+                                        Objects.requireNonNull(task.getException())
+                                ));
                             }
                         });
                     } else {
@@ -425,38 +429,32 @@ public class Database {
                     if (task.isSuccessful()) {
                         Log.d("Database", "Event updated successfully with Event ID: " + event.getEventID());
 
-//                        CollectionReference registration = eventDocRef.collection("Registration");
-//
-//                        // Delete all existing registrations first before re-adding the users in entrant lists
-//                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
-//                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
-//
-//                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-//                                deleteRegTasks.add(doc.getReference().delete());
-//                            }
-//
-//                            // Once all previous registrations are deleted we can re-add the users
-//                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
-//                                List<Task<Void>> regTasks = new ArrayList<>();
-//
-//                                updateEventRegistration(event, eventDocRef, task1 -> {
-//                                    if (task1.isSuccessful()) {
-//                                        Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-//                                    } else {
-//                                        Log.e("Database", "Failed to update registration: " + task.getException());
-//                                        listener.onComplete(task);
-//                                    }
-//                                });
-//                            });
-//                        });
+                        CollectionReference registration = eventDocRef.collection("Registration");
 
-                        updateEventRegistration(event, eventDocRef, task1 -> {
-                            if (task1.isSuccessful()){
-                                Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-                            } else {
-                                Log.e("Database", "Failed to update registration: " + task.getException());
-                                listener.onComplete(task);
+                        // Delete all existing registrations first before re-adding the users in entrant lists
+                        registration.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                            List<Task<Void>> deleteRegTasks = new ArrayList<>();
+
+                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                deleteRegTasks.add(doc.getReference().delete());
                             }
+
+                            // Once all previous registrations are deleted we can re-add the users
+                            Tasks.whenAllComplete(deleteRegTasks).addOnSuccessListener(tasks -> {
+                                List<Task<Void>> regTasks = new ArrayList<>();
+
+                                updateEventRegistration(event, eventDocRef, task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+                                        listener.onComplete(task);
+                                    } else {
+                                        Log.e("Database", "Failed to update registration: " + task.getException());
+                                        listener.onComplete(Tasks.forException(
+                                                Objects.requireNonNull(task.getException())
+                                        ));
+                                    }
+                                });
+                            });
                         });
                     } else {
                         Log.e("Database", "Failed to add event: " + task.getException());
@@ -555,6 +553,10 @@ public class Database {
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
         event.parseTimestamps();
 
+        if (doc.get("eventPosterUrl") != null) {
+            event.setEventPosterUrl(doc.getString("eventPosterUrl"));
+        }
+
         if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
             event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
         }
@@ -566,7 +568,7 @@ public class Database {
             Log.d("ParseEvent", "entrantList initialized");
 
             parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){ // TODO: handle success case better
+                if (task.isSuccessful()){
                     listener.onComplete(Tasks.forResult(event));
                 } else {
                     // TODO Failure condition
@@ -696,7 +698,7 @@ public class Database {
                         listener.onComplete(Tasks.forException(
                                 new IllegalStateException("Invalid status")
                         ));
-//                        return;
+                        return;
                 }
             }
             listener.onComplete(Tasks.forResult(null));

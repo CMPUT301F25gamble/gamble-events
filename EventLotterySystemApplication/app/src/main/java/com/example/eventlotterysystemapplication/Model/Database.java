@@ -143,6 +143,26 @@ public class Database {
         tcs.getTask().addOnCompleteListener(listener);
     }
 
+    /**
+     * Retrieves all users in the user collection
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void getAllUsers(OnCompleteListener<List<User>> listener) {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<User> users = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    User user = doc.toObject(User.class);
+                    users.add(user);
+                }
+                listener.onComplete(Tasks.forResult(users));
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
+        });
+    }
+
 
     /**
      * Given a user, add it to the database
@@ -320,6 +340,7 @@ public class Database {
                 });
             } else {
                 Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
             }
         });
     }
@@ -578,7 +599,6 @@ public class Database {
 
         }
 
-//        return event;
     }
 
     /**

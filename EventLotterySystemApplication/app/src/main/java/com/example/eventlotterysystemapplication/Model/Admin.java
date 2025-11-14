@@ -5,6 +5,11 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Tasks;
+
+import java.util.List;
+
 /**
  * An instance of this class represents an admin
  */
@@ -24,7 +29,7 @@ public class Admin extends User{
     }
 
     /**
-     * Remove an event
+     * Removes an event
      * @param admin The admin
      * @param event The event to be removed
      */
@@ -40,7 +45,7 @@ public class Admin extends User{
     }
 
     /**
-     * Remove a user profile
+     * Removes a user profile
      * @param admin The admin
      * @param user  The user to be removed
      */
@@ -57,7 +62,7 @@ public class Admin extends User{
     }
 
     /**
-     * Remove an organizer's profile and all their organized events due to violation of app policy
+     * Removes an organizer's profile and all their organized events due to violation of app policy
      * @param admin The admin
      * @param organizer The organizer to be removed
      */
@@ -79,12 +84,35 @@ public class Admin extends User{
         // TODO: wait for implentation for removeImage
     }
 
-    public void browseEvents() {
-
+    /**
+     * Browses a list of events
+     * @param listener An OnCompleteListener used to retrieve a list of events
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void browseEvents(OnCompleteListener<List<Event>> listener) {
+        db.getAllEvents(task -> {
+            if (task.isSuccessful()) {
+                List<Event> events = task.getResult();
+                listener.onComplete(Tasks.forResult(events));
+            } else {
+                Log.e("Admin", "Cannot browse events");
+            }
+        });
     }
 
-    public void browseProfiles() {
-
+    /**
+     * Browses a list of user profiles
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void browseProfiles(OnCompleteListener<List<User>> listener) {
+        db.getAllUsers(task -> {
+            if (task.isSuccessful()) {
+                List<User> users = task.getResult();
+                listener.onComplete(Tasks.forResult(users));
+            } else {
+                Log.e("Admin", "Cannot browse profiles");
+            }
+        });
     }
 
     public void browseImages() {

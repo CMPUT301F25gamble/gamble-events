@@ -173,14 +173,14 @@
             android:drawableEnd="@drawable/edit_icon"
             android:layout_marginBottom="14dp" />
 
-        <!-- Event Date and Time -->
+        <!-- Event Start Date and Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/createOrEditEventEventDateAndTimeAsterisk"
+                android:id="@+id/createOrEditEventEventStartDateAndTimeAsterisk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
@@ -190,17 +190,17 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/createOrEditEventEventDateAndTimeText"
+                android:id="@+id/createOrEditEventEventStartDateAndTimeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/event_date_and_time_text"
+                android:text="Event Start Date and Time"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <EditText
-            android:id="@+id/createOrEditEventEventDateAndTimeEditText"
+            android:id="@+id/createOrEditEventEventStartDateAndTimeEditText"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:autofillHints="datetime"
@@ -212,14 +212,14 @@
             android:drawableEnd="@drawable/ic_calendar"
             android:layout_marginBottom="14dp" />
 
-        <!-- Registration Deadline -->
+        <!-- Event End Date and Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/createOrEditEventRegistrationDeadlineAsterisk"
+                android:id="@+id/createOrEditEventEventEndDateAndTimeAsterisk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
@@ -229,17 +229,95 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/createOrEditEventRegistrationDeadlineText"
+                android:id="@+id/createOrEditEventEventEndDateAndTimeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/registration_deadline_text"
+                android:text="Event End Date and Time"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <EditText
-            android:id="@+id/createOrEditEventRegistrationDeadlineEditText"
+            android:id="@+id/createOrEditEventEventEndDateAndTimeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="datetime"
+            android:inputType="datetime"
+            android:hint="@string/date_time_format_text"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Registration Start Date and Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationStartAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationStartText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration Start Date and Time"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventRegistrationStartEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:autofillHints="datetime"
+            android:inputType="datetime"
+            android:hint="@string/date_time_format_text"
+            android:background="@drawable/rounded_list_item"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:drawableEnd="@drawable/ic_calendar"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Registration End Date and Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationEndAsterisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/important"
+                android:textColor="@color/important_field"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationEndText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration End Date and Time"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/createOrEditEventRegistrationEndEditText"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:autofillHints="datetime"

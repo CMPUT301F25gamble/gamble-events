@@ -670,14 +670,13 @@ public class Database {
                             }
                         });
                         break;
-                }
 
-                Log.d("Test Database 2", "Success");
+                    default:
+                        Log.e("Database", "Registration parsed illegal status");
+                }
                 parseEventRegistrationTasks.add(tcs.getTask());
 
             }
-
-            Log.d("Test Database 3", "Success");
 
             Tasks.whenAllComplete(parseEventRegistrationTasks).addOnCompleteListener(done -> {
                 listener.onComplete(Tasks.forResult(event));

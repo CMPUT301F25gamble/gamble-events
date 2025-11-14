@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
+import static androidx.core.content.ContextCompat.getColor;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -52,6 +55,7 @@ public class CreateOrEditEventFragment extends Fragment {
     private File posterFile;
     private final int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
     private String eventId = null;
+    private Event fetchedEvent = null;
 
     // Initialize registerForActivityResult before the fragment is created
     // Launcher that takes an image from the user
@@ -106,6 +110,11 @@ public class CreateOrEditEventFragment extends Fragment {
         if (eventId != null) {
             binding.createOrEditEventTitle.setText(R.string.edit_event_title_text);
             binding.createOrEditEventDoneButton.setText(R.string.done_editing_event_text);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Fetch event from db and pre-fill the input fields with the event details
+                fetchEvent();
+            }
         } else {
             binding.createOrEditEventTitle.setText(R.string.create_event_title_text);
             binding.createOrEditEventDoneButton.setText(R.string.done_creating_event_text);
@@ -261,7 +270,13 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set event int values
                                 if (limitWaitlistValue > 0){
-                                    event.setMaxWaitingListCapacity(limitWaitlistValue);
+                                    // If editing event then can only set the max waitlist capacity to be larger than what it originally was
+                                    // Otherwise if creating an event then max waitlist capacity just has to be a value larger than 0
+                                    if (fetchedEvent == null || limitWaitlistValue > fetchedEvent.getMaxWaitingListCapacity()) {
+                                        event.setMaxWaitingListCapacity(limitWaitlistValue);
+                                    } else {
+                                        event.setMaxWaitingListCapacity(fetchedEvent.getMaxWaitingListCapacity());
+                                    }
                                 }
                                 event.setMaxFinalListCapacity(numOfSelectedEntrantsValue);
 
@@ -271,6 +286,30 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set entrant list
                                 event.setEntrantList(new EntrantList());
+
+                                // update event if editing the event
+                                if (fetchedEvent != null) {
+                                    event.setEventID(fetchedEvent.getEventID());
+                                    event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
+
+                                    database.updateEvent(event, updateEventTask ->{
+                                        if (updateEventTask.isSuccessful()) {
+                                            // Upload event poster to storage bucket
+                                            if (posterFile != null) {
+                                                Log.d(TAG, "Adding poster image to event...");
+                                                uploadEventPosterToStorage(event);
+                                            } else {
+                                                // Return to events page if no poster was uploaded
+                                                Log.d(TAG, "No poster after adding event, going straight to event page...");
+                                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                            }
+                                        } else {
+                                            Log.d(TAG, "Failed to add event");
+                                        }
+                                    });
+                                    return;
+                                }
 
                                 // add event
                                 database.addEvent(event, addEventTask -> {
@@ -314,6 +353,96 @@ public class CreateOrEditEventFragment extends Fragment {
             return null;
         }
         return eventDateTime;
+    }
+
+    /**
+     * Fetches an event from the database and stores it in fetchedEvent. This function should only
+     * be used when user is editing the event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void fetchEvent() {
+        if (eventId == null) return;
+
+        database.getEvent(eventId, task -> {
+            if (task.isSuccessful()) {
+                fetchedEvent = task.getResult();
+                updateFields(fetchedEvent);
+            } else {
+                Toast.makeText(getContext(), "Failed to prepopulate fields for editing event", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to fetch event for editing", task.getException());
+            }
+        });
+    }
+
+    /**
+     * Updates the input edit text fields with an event. This function should only be used when user
+     * is editing the event. Additionally it sets event end time and registration start time to be
+     * an empty string if it is null for backwards compatibility since we didn't make those edit
+     * texts fields prior to November 14, 2025 1:00pm
+     * @param event Fetched event to populate fields with
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void updateFields(Event event) {
+        // Set text fields
+        binding.createOrEditEventEventNameEditText.setText(event.getName());
+        binding.createOrEditEventEventDescEditText.setText(event.getDescription());
+        // Set tags to be a comma separated string
+        if (event.getEventTags() != null && !event.getEventTags().isEmpty()) {
+            String tagsStr = String.join(",", event.getEventTags());
+            binding.createOrEditEventTagsEditText.setText(tagsStr);
+        }
+        binding.createOrEditEventLocationEditText.setText(event.getPlace());
+
+        // Set dates
+        binding.createOrEditEventEventStartDateAndTimeEditText.setText(
+                event.getEventStartTime() == null ? "" : event.getEventStartTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getEventStartTime(), binding.createOrEditEventEventStartDateAndTimeEditText);
+
+        binding.createOrEditEventEventEndDateAndTimeEditText.setText(
+                event.getEventEndTime() == null ? "" : event.getEventEndTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getEventEndTime(), binding.createOrEditEventEventEndDateAndTimeEditText);
+
+        binding.createOrEditEventRegistrationStartEditText.setText(
+                event.getRegistrationStartTime() == null ? "" : event.getRegistrationStartTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getRegistrationStartTime(), binding.createOrEditEventRegistrationStartEditText);
+
+        binding.createOrEditEventRegistrationEndEditText.setText(
+                event.getRegistrationEndTime() == null ? "" : event.getRegistrationEndTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getRegistrationEndTime(), binding.createOrEditEventRegistrationEndEditText);
+
+        binding.createOrEditEventInvitationEditText.setText(
+                event.getInvitationAcceptanceDeadline() == null ? "" : event.getInvitationAcceptanceDeadline().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getInvitationAcceptanceDeadline(), binding.createOrEditEventInvitationEditText);
+
+        // Set waitlists
+        if (event.getMaxWaitingListCapacity() > 0) {
+            binding.createOrEditLimitWaitlistEditText.setText(String.valueOf(event.getMaxWaitingListCapacity()));
+        }
+        binding.createOrEditEventSelectedEntrantsNumEditText.setText(String.valueOf(event.getMaxFinalListCapacity()));
+    }
+
+    /**
+     * Disables a datetime edit text field if current datetime (today) is past the given date time.
+     * This function should only be used when the user is editing an event and not creating one.
+     * @param dateTime The edit text's given datetime (e.g. registration end datetime)
+     * @param editText The edit text to be disabled
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void disableDateFieldIfPastDate(LocalDateTime dateTime, EditText editText) {
+        // Disable editing a registration event's date field (e.g. registration start date)
+        // if it is past that datetime
+        if (dateTime == null) return;
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (currentTime.isAfter(dateTime)) {
+            editText.setBackgroundColor(getColor(requireContext(), R.color.grey));
+            editText.setEnabled(false);
+        }
     }
 
     /**

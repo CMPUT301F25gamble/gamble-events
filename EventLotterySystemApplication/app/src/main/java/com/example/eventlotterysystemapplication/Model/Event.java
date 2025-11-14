@@ -33,7 +33,7 @@ public class Event {
     private EntrantList entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
-
+    private String eventPosterUrl;
 
 
     // Firestore timestamp format
@@ -1120,5 +1120,21 @@ public class Event {
     @Exclude
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
+    }
+
+    /**
+     * Sets the event poster download url (to be stored on Firebase Storage) of the event
+     * @param eventPosterUrl the download url of the event poster image
+     */
+    public void setEventPosterUrl(String eventPosterUrl) {
+        this.eventPosterUrl = eventPosterUrl;
+    }
+
+    /**
+     * Returns the event poster download url
+     * @return Download url of the event poster
+     */
+    public String getEventPosterUrl() {
+        return eventPosterUrl;
     }
 }

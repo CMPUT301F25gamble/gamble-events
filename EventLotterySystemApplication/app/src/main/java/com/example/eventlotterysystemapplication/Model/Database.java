@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An instance of this class represents a connection to the firebase firestore database
@@ -358,9 +359,12 @@ public class Database {
                         updateEventRegistration(event, eventDocRef, task1 -> {
                             if (task1.isSuccessful()){
                                 Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                                listener.onComplete(task);
                             } else {
                                 Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(task);
+                                listener.onComplete(Tasks.forException(
+                                        Objects.requireNonNull(task.getException())
+                                ));
                             }
                         });
                     } else {
@@ -408,9 +412,12 @@ public class Database {
                                 updateEventRegistration(event, eventDocRef, task1 -> {
                                     if (task1.isSuccessful()) {
                                         Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+                                        listener.onComplete(task);
                                     } else {
                                         Log.e("Database", "Failed to update registration: " + task.getException());
-                                        listener.onComplete(task);
+                                        listener.onComplete(Tasks.forException(
+                                                Objects.requireNonNull(task.getException())
+                                        ));
                                     }
                                 });
                             });

@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                             if (exists != null && exists) {
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
-                                    // TODO
                                     goToContentActivityWithEvent(eventID);
                                 } else {
                                     Log.d(TAG, "Device registered. Going to content activity.");

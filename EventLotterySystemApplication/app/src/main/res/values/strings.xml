@@ -87,4 +87,6 @@
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
+    <string name="location">Location:</string>
+    <string name="decline_invite">DECLINE Invite</string>
 </resources>

@@ -1,26 +1,41 @@
 package com.example.eventlotterysystemapplication.View;
 
+import static androidx.core.content.ContextCompat.getColor;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.ImageStorage;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentCreateOrEditEventBinding;
 import com.google.firebase.Timestamp;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +52,47 @@ public class CreateOrEditEventFragment extends Fragment {
     private static final String TAG = "CreateOrEditEvent"; // For debugging
     Database database;
     private FragmentCreateOrEditEventBinding binding;
+    private File posterFile;
+    private final int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    private String eventId = null;
+    private Event fetchedEvent = null;
+
+    // Initialize registerForActivityResult before the fragment is created
+    // Launcher that takes an image from the user
+    private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            o -> {
+                if (o.getResultCode() == Activity.RESULT_OK && o.getData() != null && o.getData().getData() != null) {
+                    Uri posterUri = o.getData().getData();
+                    posterFile = getFileFromUri(posterUri);
+
+                    if (posterFile == null) {
+                        Log.e(TAG, "Image could not be converted to file");
+                        Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (posterFile.length() > MAX_FILE_SIZE) {
+                        Toast.makeText(getContext(), "Event Poster Image is Too Large (> 5 MB)", Toast.LENGTH_SHORT).show();
+                        posterFile = null;
+                        return;
+                    }
+
+                    Log.d(TAG, "poster file size: " + (float) (posterFile.length()) / 1024.0 / 1024.0 + "MB");
+                    Toast.makeText(getContext(), "Event Poster Image Successfully Uploaded", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Get eventId if the organizer is editing the event
+        if (getArguments() != null) {
+            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventId();
+        }
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,6 +106,20 @@ public class CreateOrEditEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         database = new Database();
 
+        // Change title/button text depending on if the user is editing the event or creating one
+        if (eventId != null) {
+            binding.createOrEditEventTitle.setText(R.string.edit_event_title_text);
+            binding.createOrEditEventDoneButton.setText(R.string.done_editing_event_text);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Fetch event from db and pre-fill the input fields with the event details
+                fetchEvent();
+            }
+        } else {
+            binding.createOrEditEventTitle.setText(R.string.create_event_title_text);
+            binding.createOrEditEventDoneButton.setText(R.string.done_creating_event_text);
+        }
+
         // Create Event
         // Back Button to return to Events page
         binding.createOrEditEventBackButton.setOnClickListener(v -> {
@@ -57,6 +127,8 @@ public class CreateOrEditEventFragment extends Fragment {
                     .navigateUp();
         });
 
+        // Upload Poster Button Listener
+        binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
@@ -66,15 +138,16 @@ public class CreateOrEditEventFragment extends Fragment {
             String eventDesc = binding.createOrEditEventEventDescEditText.getText().toString().trim();
             String tagsStr = binding.createOrEditEventTagsEditText.getText().toString().trim();
             String eventLocation = binding.createOrEditEventLocationEditText.getText().toString().trim();
-            String eventDateTimeStr = binding.createOrEditEventEventDateAndTimeEditText.getText().toString().trim();
-            String regDeadlineStr = binding.createOrEditEventRegistrationDeadlineEditText.getText().toString().trim();
+            String eventStartTimeStr = binding.createOrEditEventEventStartDateAndTimeEditText.getText().toString().trim();
+            String eventEndTimeStr = binding.createOrEditEventEventEndDateAndTimeEditText.getText().toString().trim();
+            String regStartTimeStr = binding.createOrEditEventRegistrationStartEditText.getText().toString().trim();
+            String regEndTimeStr = binding.createOrEditEventRegistrationEndEditText.getText().toString().trim();
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
-            // TODO: Event Poster
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
-            // TODO: Handle notifs set
+            // TODO: Handle notifs
 
-           // TODO: Check that mandatory fields are filled
+           // Check that mandatory fields are filled
             if (eventName.isEmpty()) {
                 binding.createOrEditEventEventNameEditText.setError("Event Name is required");
                 return;
@@ -87,12 +160,20 @@ public class CreateOrEditEventFragment extends Fragment {
                 binding.createOrEditEventLocationEditText.setError("Location is required");
                 return;
             }
-            if (eventDateTimeStr.isEmpty()) {
-                binding.createOrEditEventEventDateAndTimeEditText.setError("Event Date and Time is required");
+            if (eventStartTimeStr.isEmpty()) {
+                binding.createOrEditEventEventStartDateAndTimeEditText.setError("Event Start Date and Time is required");
                 return;
             }
-            if (regDeadlineStr.isEmpty()) {
-                binding.createOrEditEventRegistrationDeadlineEditText.setError("Registration Deadline is required");
+            if (eventEndTimeStr.isEmpty()) {
+                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time is required");
+                return;
+            }
+            if (regStartTimeStr.isEmpty()) {
+                binding.createOrEditEventRegistrationStartEditText.setError("Registration Start Date and Time is required");
+                return;
+            }
+            if (regEndTimeStr.isEmpty()) {
+                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time is required");
                 return;
             }
             if (invitationAcceptanceDeadlineStr.isEmpty()) {
@@ -105,21 +186,27 @@ public class CreateOrEditEventFragment extends Fragment {
             }
 
             // Parse dateTime types
-            LocalDateTime eventDateTime;
-            LocalDateTime regDeadline;
+            LocalDateTime eventStartTime;
+            LocalDateTime eventEndTime;
+            LocalDateTime regStartTime;
+            LocalDateTime regEndTime;
             LocalDateTime invitationAcceptanceDeadline;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                eventDateTime = DateTimeFormatter(eventDateTimeStr);
-                regDeadline = DateTimeFormatter(regDeadlineStr);
+                eventStartTime = DateTimeFormatter(eventStartTimeStr);
+                eventEndTime = DateTimeFormatter(eventEndTimeStr);
+                regStartTime = DateTimeFormatter(regStartTimeStr);
+                regEndTime = DateTimeFormatter(regEndTimeStr);
                 invitationAcceptanceDeadline = DateTimeFormatter(invitationAcceptanceDeadlineStr);
             } else {
                 invitationAcceptanceDeadline = null;
-                regDeadline = null;
-                eventDateTime = null;
+                eventStartTime = null;
+                eventEndTime = null;
+                regStartTime = null;
+                regEndTime = null;
             }
 
             // Check if any field failed parsing
-            if (eventDateTime == null || regDeadline == null || invitationAcceptanceDeadline == null) {
+            if (eventStartTime == null || eventEndTime == null || regStartTime == null || regEndTime == null || invitationAcceptanceDeadline == null) {
                 return; // stop here, let user fix inputs
             }
 
@@ -165,11 +252,17 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set timestamps
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Timestamp eventDateTimeTS = new Timestamp(eventDateTime.atZone(ZoneId.systemDefault()).toInstant());
-                                    event.setEventEndTimeTS(eventDateTimeTS);
+                                    Timestamp eventStartTimeTS = new Timestamp(eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setEventStartTimeTS(eventStartTimeTS);
 
-                                    Timestamp regDeadlineTS = new Timestamp(regDeadline.atZone(ZoneId.systemDefault()).toInstant());
-                                    event.setRegistrationEndTimeTS(regDeadlineTS);
+                                    Timestamp eventEndTimeTS = new Timestamp(eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setEventEndTimeTS(eventEndTimeTS);
+
+                                    Timestamp regStartTimeTS = new Timestamp(regStartTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setRegistrationStartTimeTS(regStartTimeTS);
+
+                                    Timestamp regEndTimeTS = new Timestamp(regEndTime.atZone(ZoneId.systemDefault()).toInstant());
+                                    event.setRegistrationEndTimeTS(regEndTimeTS);
 
                                     Timestamp invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
                                     event.setInvitationAcceptanceDeadlineTS(invitationAcceptanceDeadlineTS);
@@ -177,7 +270,13 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                 // Set event int values
                                 if (limitWaitlistValue > 0){
-                                    event.setMaxWaitingListCapacity(limitWaitlistValue);
+                                    // If editing event then can only set the max waitlist capacity to be larger than what it originally was
+                                    // Otherwise if creating an event then max waitlist capacity just has to be a value larger than 0
+                                    if (fetchedEvent == null || limitWaitlistValue > fetchedEvent.getMaxWaitingListCapacity()) {
+                                        event.setMaxWaitingListCapacity(limitWaitlistValue);
+                                    } else {
+                                        event.setMaxWaitingListCapacity(fetchedEvent.getMaxWaitingListCapacity());
+                                    }
                                 }
                                 event.setMaxFinalListCapacity(numOfSelectedEntrantsValue);
 
@@ -185,13 +284,46 @@ public class CreateOrEditEventFragment extends Fragment {
                                 User currentUser = task.getResult();
                                 event.setOrganizerID(currentUser.getUserID());
 
+                                // Set entrant list
+                                event.setEntrantList(new EntrantList());
+
+                                // update event if editing the event
+                                if (fetchedEvent != null) {
+                                    event.setEventID(fetchedEvent.getEventID());
+                                    event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
+
+                                    database.updateEvent(event, updateEventTask ->{
+                                        if (updateEventTask.isSuccessful()) {
+                                            // Upload event poster to storage bucket
+                                            if (posterFile != null) {
+                                                Log.d(TAG, "Adding poster image to event...");
+                                                uploadEventPosterToStorage(event);
+                                            } else {
+                                                // Return to events page if no poster was uploaded
+                                                Log.d(TAG, "No poster after adding event, going straight to event page...");
+                                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                            }
+                                        } else {
+                                            Log.d(TAG, "Failed to add event");
+                                        }
+                                    });
+                                    return;
+                                }
+
                                 // add event
                                 database.addEvent(event, addEventTask -> {
                                     if (addEventTask.isSuccessful()) {
-                                        Log.d(TAG, "Added event!");
-                                        // Return to events page
-                                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                        // Upload event poster to storage bucket
+                                        if (posterFile != null) {
+                                            Log.d(TAG, "Adding poster image to event...");
+                                            uploadEventPosterToStorage(event);
+                                        } else {
+                                            // Return to events page if no poster was uploaded
+                                            Log.d(TAG, "No poster after adding event, going straight to event page...");
+                                            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                        }
                                     } else {
                                         Log.d(TAG, "Failed to add event");
                                     }
@@ -204,6 +336,11 @@ public class CreateOrEditEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Converts the user inputted string into a LocalDateTime object
+     * @param dateTimeStr The user inputted datetime string
+     * @return A LocalDateTime object
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public LocalDateTime DateTimeFormatter(String dateTimeStr) {
         DateTimeFormatter formatter = null;
@@ -216,5 +353,190 @@ public class CreateOrEditEventFragment extends Fragment {
             return null;
         }
         return eventDateTime;
+    }
+
+    /**
+     * Fetches an event from the database and stores it in fetchedEvent. This function should only
+     * be used when user is editing the event
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void fetchEvent() {
+        if (eventId == null) return;
+
+        database.getEvent(eventId, task -> {
+            if (task.isSuccessful()) {
+                fetchedEvent = task.getResult();
+                updateFields(fetchedEvent);
+            } else {
+                Toast.makeText(getContext(), "Failed to prepopulate fields for editing event", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to fetch event for editing", task.getException());
+            }
+        });
+    }
+
+    /**
+     * Updates the input edit text fields with an event. This function should only be used when user
+     * is editing the event. Additionally it sets event end time and registration start time to be
+     * an empty string if it is null for backwards compatibility since we didn't make those edit
+     * texts fields prior to November 14, 2025 1:00pm
+     * @param event Fetched event to populate fields with
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void updateFields(Event event) {
+        // Set text fields
+        binding.createOrEditEventEventNameEditText.setText(event.getName());
+        binding.createOrEditEventEventDescEditText.setText(event.getDescription());
+        // Set tags to be a comma separated string
+        if (event.getEventTags() != null && !event.getEventTags().isEmpty()) {
+            String tagsStr = String.join(",", event.getEventTags());
+            binding.createOrEditEventTagsEditText.setText(tagsStr);
+        }
+        binding.createOrEditEventLocationEditText.setText(event.getPlace());
+
+        // Set dates
+        binding.createOrEditEventEventStartDateAndTimeEditText.setText(
+                event.getEventStartTime() == null ? "" : event.getEventStartTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getEventStartTime(), binding.createOrEditEventEventStartDateAndTimeEditText);
+
+        binding.createOrEditEventEventEndDateAndTimeEditText.setText(
+                event.getEventEndTime() == null ? "" : event.getEventEndTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getEventEndTime(), binding.createOrEditEventEventEndDateAndTimeEditText);
+
+        binding.createOrEditEventRegistrationStartEditText.setText(
+                event.getRegistrationStartTime() == null ? "" : event.getRegistrationStartTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getRegistrationStartTime(), binding.createOrEditEventRegistrationStartEditText);
+
+        binding.createOrEditEventRegistrationEndEditText.setText(
+                event.getRegistrationEndTime() == null ? "" : event.getRegistrationEndTime().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getRegistrationEndTime(), binding.createOrEditEventRegistrationEndEditText);
+
+        binding.createOrEditEventInvitationEditText.setText(
+                event.getInvitationAcceptanceDeadline() == null ? "" : event.getInvitationAcceptanceDeadline().toString().replace("T", " ")
+        );
+        disableDateFieldIfPastDate(event.getInvitationAcceptanceDeadline(), binding.createOrEditEventInvitationEditText);
+
+        // Set waitlists
+        if (event.getMaxWaitingListCapacity() > 0) {
+            binding.createOrEditLimitWaitlistEditText.setText(String.valueOf(event.getMaxWaitingListCapacity()));
+        }
+        binding.createOrEditEventSelectedEntrantsNumEditText.setText(String.valueOf(event.getMaxFinalListCapacity()));
+    }
+
+    /**
+     * Disables a datetime edit text field if current datetime (today) is past the given date time.
+     * This function should only be used when the user is editing an event and not creating one.
+     * @param dateTime The edit text's given datetime (e.g. registration end datetime)
+     * @param editText The edit text to be disabled
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void disableDateFieldIfPastDate(LocalDateTime dateTime, EditText editText) {
+        // Disable editing a registration event's date field (e.g. registration start date)
+        // if it is past that datetime
+        if (dateTime == null) return;
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (currentTime.isAfter(dateTime)) {
+            editText.setBackgroundColor(getColor(requireContext(), R.color.grey));
+            editText.setEnabled(false);
+        }
+    }
+
+    /**
+     * Event listener helper that uploads the event poster image using intents
+     */
+    private void userUploadEventPoster() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+
+        // Let Android OS allow user to pick an image file to upload
+        intent.setType("image/*");
+        pickImageLauncher.launch(intent);
+    }
+
+    /**
+     * Uploads the event poster image file to the storage bucket
+     * @param event Event object needed for eventId and setting downloadUrl
+     */
+    private void uploadEventPosterToStorage(Event event) {
+        if (posterFile == null) {
+            Toast.makeText(getContext(), "Failed to convert URI to image file for upload", Toast.LENGTH_SHORT).show();
+            // Return to events page anyways as event is created
+            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+            return;
+        }
+
+        String eventID = event.getEventID();
+        ImageStorage imageStorage = ImageStorage.getInstance();
+        imageStorage.uploadEventPoster(
+                eventID,
+                posterFile,
+                imageTask -> {
+                    if (imageTask.isSuccessful()) {
+                        Uri downloadUrl = imageTask.getResult();
+                        String posterDownloadUrl = downloadUrl.toString();
+                        event.setEventPosterUrl(posterDownloadUrl);
+
+                        database.updateEvent(event, task -> {
+                            if (task.isSuccessful()) {
+                                // Return to events page
+                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
+                        // Return to events page anyways as event is created
+                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Creates a file from the given uri
+     * @param uri The file uri
+     * @return File that was linked at uri
+     */
+    private File getFileFromUri(Uri uri) {
+        if (getContext() == null) {
+            Log.e(TAG, "getFileFromUri: no context");
+            return null;
+        }
+
+        try {
+            // Create temp image file for poster
+            File tempFile = File.createTempFile("temp_image", ".jpg");
+
+            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                Log.e(TAG, "getFileFromUri: no input stream");
+                return null;
+            }
+
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            // Copy the data from the file pointed to by the Uri to the temp file
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+
+            return tempFile;
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
     }
 }

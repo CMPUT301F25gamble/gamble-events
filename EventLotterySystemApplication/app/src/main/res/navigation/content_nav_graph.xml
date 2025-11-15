@@ -67,6 +67,10 @@
         <action
             android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/my_events_fragment"
@@ -112,6 +116,9 @@
         <action
             android:id="@+id/action_event_detail_screen_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_event_detail_screen_to_create_or_edit_event_fragment"
+            app:destination="@id/create_or_edit_event_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsTOSFragment"

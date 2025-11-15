@@ -1,7 +1,14 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +74,7 @@ public class AllEntrantsListFragment extends Fragment {
         // Back Button to return to Event Lists page
         binding.allEntrantListBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(AllEntrantsListFragment.this)
-                    .navigate(R.id.action_allEntrantsListFragment_to_entrantListSelectionFragment);
+                    .navigateUp();
         });
 
         // Display the loading screen while the data is being fetched
@@ -87,7 +94,6 @@ public class AllEntrantsListFragment extends Fragment {
 
                 // Fetch the event from the task
                 Event event = task.getResult();
-                //Toast.makeText(getContext(), "Event: " + event.getName(), Toast.LENGTH_SHORT).show();
 
                 // Populate the ListView with all entrants
                 loadAllEntrantsIntoList(event);
@@ -102,30 +108,124 @@ public class AllEntrantsListFragment extends Fragment {
     // Private method to help with loading the data into the ListView
     private void loadAllEntrantsIntoList(Event event) {
         // List for all entrants
-        ArrayList<String> data = new ArrayList<>();
-
-        //Toast.makeText(getContext(), "entrant list: " + event.getEntrantList().toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(requireContext(), "Waiting: " + event.getEntrantList().getWaiting().size() , Toast.LENGTH_SHORT).show();
-
-        for (User u : event.getEntrantList().getWaiting()) {
-            Toast.makeText(requireContext(), "Waiting: " + u.getName(), Toast.LENGTH_SHORT).show();
-            data.add(u.getName() + " (waiting)");
-        }
-        for (User u : event.getEntrantList().getChosen()) {
-            data.add(u.getName() + " (chosen)");
-        }
-        for (User u : event.getEntrantList().getCancelled()) {
-            data.add(u.getName() + " (cancelled)");
-        }
-        for (User u : event.getEntrantList().getFinalized()) {
-            data.add(u.getName() + " (finalized)");
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-            requireContext(),
-            android.R.layout.simple_list_item_1,
-            data
+        ArrayList<CharSequence> data = new ArrayList<>();
+        // Adapter for listview
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                data
         );
+
+        // Loop "waiting" users
+        for (User u : event.getEntrantList().getWaiting()) {
+            String status = "(WAITING)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
+            // Create a SpannableString from the line
+            SpannableString span = new SpannableString(line);
+
+            // Fetch the target string for waiting
+            String target = "(WAITING)";
+            int start = line.indexOf(target);
+            int end = start + target.length();
+            // Set Waiting to bold
+            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Set Color to Orange
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#FF9800")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Add the span to the list
+            data.add(span);
+        }
+
+        // Loop "chosen" users
+        for (User u : event.getEntrantList().getChosen()) {
+            String status = "(CHOSEN)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
+            // Create a SpannableString from the line
+            SpannableString span = new SpannableString(line);
+
+            // Fetch the target string for chosen
+            String target = "(CHOSEN)";
+            int start = line.indexOf(target);
+            int end = start + target.length();
+            // Set Waiting to bold
+            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Set Color to Orange
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Add the span to the list
+            data.add(span);
+        }
+
+        // Loop "cancelled" users
+        for (User u : event.getEntrantList().getCancelled()) {
+            String status = "(CANCELLED)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
+            // Create a SpannableString from the line
+            SpannableString span = new SpannableString(line);
+
+            // Fetch the target string for cancelled
+            String target = "(CANCELLED)";
+            int start = line.indexOf(target);
+            int end = start + target.length();
+            // Set Waiting to bold
+            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Set Color to Orange
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#F44336")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Add the span to the list
+            data.add(span);
+        }
+
+        // Loop "finalized" users
+        for (User u : event.getEntrantList().getFinalized()) {
+            String status = "(FINALIZED)";
+            String line = String.format("\n%s\n%s\n", u.getName(), status);
+            // Create a SpannableString from the line
+            SpannableString span = new SpannableString(line);
+
+            // Fetch the target string for finalized
+            String target = "(FINALIZED)";
+            int start = line.indexOf(target);
+            int end = start + target.length();
+            // Set Waiting to bold
+            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Set Color to Orange
+            span.setSpan(new ForegroundColorSpan(Color.parseColor("#4A4A4A")), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Fetch the target string for status
+//            target = "Status:";
+//            start = line.indexOf(target);
+//            end = start + target.length();
+//            // Set Status to bold
+//            span.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Add the span to the list
+            data.add(span);
+        }
+
+        // Notify the adapter of all changes
+        adapter.notifyDataSetChanged();
 
         // Set the adapter for the ListView
         binding.allListOfEntrantsListView.setAdapter(adapter);

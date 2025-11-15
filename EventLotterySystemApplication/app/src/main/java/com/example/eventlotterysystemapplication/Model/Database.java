@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An instance of this class represents a connection to the firebase firestore database
@@ -142,6 +143,26 @@ public class Database {
         tcs.getTask().addOnCompleteListener(listener);
     }
 
+    /**
+     * Retrieves all users in the user collection
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void getAllUsers(OnCompleteListener<List<User>> listener) {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<User> users = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    User user = doc.toObject(User.class);
+                    users.add(user);
+                }
+                listener.onComplete(Tasks.forResult(users));
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
+        });
+    }
+
 
     /**
      * Given a user, add it to the database
@@ -216,7 +237,7 @@ public class Database {
         String userId = authUser.getUid();
 
         deleteOrganizedEvents(user, task -> {
-            if (task == null){ // TODO: handle success case better
+            if (task.isSuccessful()){
                 Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
             } else {
                 Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
@@ -282,14 +303,47 @@ public class Database {
             }
 
             parseEvent(eventTask.getResult(), task -> {
-                if (task.isSuccessful()){
-                    listener.onComplete(task);
-                    Log.d("Test Database 4", "Success");
-                } else {
-                    Log.e("Database", "Failed to parse event");
+                if (task.isSuccessful()) {
+                    Event event = task.getResult();
+                    if (event != null) {
+                        event.setEventID(eventID);
+                    }
+                    listener.onComplete(Tasks.forResult(event));
                 }
             });
+        });
+    }
 
+    /**
+     * Retrieves all events in the event collection
+     * @param listener An OnCompleteListener used to retrieve a list of events
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getAllEvents(OnCompleteListener<List<Event>> listener) {
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> events = new ArrayList<>();
+                List<Task<Event>> parseTasks = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+                    parseTasks.add(tcs.getTask());
+                    parseEvent(doc, task1 -> {
+                        if (task1.isSuccessful()) {
+                            Event event = task1.getResult();
+                            events.add(event);
+                            tcs.setResult(event);
+                        } else {
+                            tcs.setException(task1.getException());
+                        }
+                    });
+                }
+                Tasks.whenAllComplete(parseTasks).addOnCompleteListener(done -> {
+                    listener.onComplete(Tasks.forResult(events));
+                });
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
         });
     }
 
@@ -324,9 +378,10 @@ public class Database {
                                 if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
                                     parseEvent(doc, task1 -> {
                                         if (task1.isSuccessful()) {
-                                            availableEvents.add(task1.getResult());
+                                            Event event = task1.getResult();
+                                            availableEvents.add(event);
                                         } else {
-                                            // TODO
+                                            Log.e("Database", "Unable to parse event " + task1.getException());
                                         }
                                     });
                                 }
@@ -362,9 +417,12 @@ public class Database {
                         updateEventRegistration(event, eventDocRef, task1 -> {
                             if (task1.isSuccessful()){
                                 Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                                listener.onComplete(task);
                             } else {
                                 Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(task);
+                                listener.onComplete(Tasks.forException(
+                                        Objects.requireNonNull(task.getException())
+                                ));
                             }
                         });
                     } else {
@@ -412,9 +470,12 @@ public class Database {
                                 updateEventRegistration(event, eventDocRef, task1 -> {
                                     if (task1.isSuccessful()) {
                                         Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
+                                        listener.onComplete(task);
                                     } else {
                                         Log.e("Database", "Failed to update registration: " + task.getException());
-                                        listener.onComplete(task);
+                                        listener.onComplete(Tasks.forException(
+                                                Objects.requireNonNull(task.getException())
+                                        ));
                                     }
                                 });
                             });
@@ -490,8 +551,7 @@ public class Database {
      * that document and manually matches it up with the fields from the event class, giving us fine
      * control over what is added to what fields in this class
      * @param doc The document from the Event collection to be parsed
-     * @param listener An OnCompleteListener for callback
-     * @return An event object, where the correct fields are extracted from the document
+     * @param listener An OnCompleteListener for retrieving the event object
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {
@@ -516,6 +576,10 @@ public class Database {
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
         event.parseTimestamps();
 
+        if (doc.get("eventPosterUrl") != null) {
+            event.setEventPosterUrl(doc.getString("eventPosterUrl"));
+        }
+
         if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
             event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
         }
@@ -530,7 +594,7 @@ public class Database {
                 if (task.isSuccessful()){
                     listener.onComplete(task);
                 } else {
-                    // TODO Failure condition
+                    Log.e("Database", "Unable to parse event registration" + task.getException());
                 }
             });
 

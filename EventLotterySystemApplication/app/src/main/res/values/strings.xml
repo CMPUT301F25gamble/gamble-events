@@ -49,9 +49,7 @@
     <string name="event_description_text">Event Description</string>
     <string name="tags_separated_by_commas_text">Tags (separated by commas)</string>
     <string name="location_text">Location</string>
-    <string name="event_date_and_time_text">Event Date and Time</string>
     <string name="date_time_format_text">yyyy-MM-dd HH:mm</string>
-    <string name="registration_deadline_text">Registration Deadline</string>
     <string name="invitation_acceptance_deadline_text">Invitation Acceptance Deadline</string>
     <string name="upload_event_poster_photo_text">Upload Event Poster Photo</string>
     <string name="upload_text">Upload</string>
@@ -89,4 +87,12 @@
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
+    <string name="location">Location:</string>
+    <string name="decline_invite">DECLINE Invite</string>
+    <string name="pending_entrant_decline_text_1">This action will <i>DECLINE</i> the user’s invitation and <i>cannot be undone</i>.</string>
+    <string name="pending_entrant_decline_text_2">Do you wish to continue?</string>
+    <string name="edit_event_title_text">Edit Event</string>
+    <string name="create_event_title_text">Create Event</string>
+    <string name="done_creating_event_text">Done Creating Event</string>
+    <string name="done_editing_event_text">Done Editing Event</string>
 </resources>

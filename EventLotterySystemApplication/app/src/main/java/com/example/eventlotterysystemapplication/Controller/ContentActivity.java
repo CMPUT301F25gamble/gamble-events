@@ -59,8 +59,11 @@ public class ContentActivity extends AppCompatActivity {
         Bundle startArgs = new Bundle();
         if (intent != null && intent.hasExtra("eventId")) {
             startArgs.putString("eventId", intent.getStringExtra("eventId"));
-            navController.getGraph().setStartDestination(R.id.event_detail_screen);
+            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
         }
+
+        // Test
+//        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
 
         navController.setGraph(R.navigation.content_nav_graph, startArgs);
 

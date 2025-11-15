@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Model;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import android.util.Log;
@@ -233,5 +234,48 @@ public class User{
                Log.e("Database", "Cannot modify user");
            }
        });
+    }
+
+    /**
+     * Accepts the invitation when chosen for an event
+     * @param event the event for which the user accepts invitation
+     */
+    public void acceptInvitation(Event event) {
+        EntrantList entrantList = event.getEntrantList();
+        if (!entrantList.getChosen().contains(this)) {
+            throw new NoSuchElementException("User is not chosen for this event.");
+        }
+        if (entrantList.getFinalized().contains(this)) {
+            throw new IllegalStateException("User has already accepted the invitation.");
+        }
+        if (entrantList.getCancelled().contains(this)) {
+            throw new IllegalStateException("User has cancelled joining this event.");
+        }
+
+        // Assumes user will also be in chosen list
+        event.joinFinalizedList(this);
+    }
+
+    /**
+     * Declines the invitation when chosen for an event
+     * @param event the event for which the user declines invitation
+     */
+    public void declineInvitation(Event event) {
+        EntrantList entrantList = event.getEntrantList();
+        if (!entrantList.getChosen().contains(this)) {
+            throw new NoSuchElementException("User is not chosen for this event.");
+        }
+        if (entrantList.getFinalized().contains(this)) {
+            throw new IllegalStateException("User has already accepted the invitation.");
+        }
+        if (entrantList.getCancelled().contains(this)) {
+            throw new IllegalStateException("User has cancelled joining this event.");
+        }
+        event.joinCancelledList(this);
+
+        // Draws a new entrant and send them a notification
+        LotterySelector lottery = new LotterySelector();
+        User newEntrant = lottery.drawReplacementUser(event);
+        // TODO: send notification
     }
 }

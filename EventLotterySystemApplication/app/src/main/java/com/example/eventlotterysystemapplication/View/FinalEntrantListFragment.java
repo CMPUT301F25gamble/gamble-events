@@ -104,7 +104,7 @@ public class FinalEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getCancelled()) {
+        for (User u : event.getEntrantList().getFinalized()) {
             String name = u.getName();
             data.add(name);
         }

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="32dp"
-    android:paddingBottom="52dp"
+    android:paddingBottom="56dp"
     android:paddingStart="32dp"
     android:paddingEnd="32dp"
     android:background="@drawable/popup_background">

@@ -1,7 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.app.AlertDialog;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
@@ -35,6 +33,8 @@ import java.util.ArrayList;
 public class PendingEntrantListFragment extends Fragment {
     private FragmentPendingEntrantListBinding binding;
     private Database database;
+    // Global scope event var
+    private Event currentEvent;
 
     // List for pending entrants
     private ArrayList<CharSequence> data = new ArrayList<>();
@@ -106,6 +106,7 @@ public class PendingEntrantListFragment extends Fragment {
 
                 // Fetch the event from the task
                 Event event = task.getResult();
+                currentEvent = event;
 
                 // Populate the ListView with all entrants
                 loadPendingEntrantsIntoList(event);
@@ -120,7 +121,7 @@ public class PendingEntrantListFragment extends Fragment {
     // Private method to help with loading the data into the ListView
     private void loadPendingEntrantsIntoList(Event event) {
         // Loop through all pending entrants
-        for (User u : event.getEntrantList().getCancelled()) {
+        for (User u : event.getEntrantList().getWaiting()) {
             pendingEntrants.add(u);     // Add user details to the list
             String name = u.getName();
             data.add(name);             // Add ONLY user's name to the list
@@ -137,15 +138,15 @@ public class PendingEntrantListFragment extends Fragment {
 
     private void showPendingEntrantDialog(User user) {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_pending_entrant_list, null);
+        View dialogPendingEntrantView = inflater.inflate(R.layout.dialog_pending_entrant, null);
 
-        TextView nameText = dialogView.findViewById(R.id.enterName);
-        TextView emailText = dialogView.findViewById(R.id.enterEmail);
-        TextView phoneText = dialogView.findViewById(R.id.enterPhone);
+        TextView nameText = dialogPendingEntrantView.findViewById(R.id.enterName);
+        TextView emailText = dialogPendingEntrantView.findViewById(R.id.enterEmail);
+        TextView phoneText = dialogPendingEntrantView.findViewById(R.id.enterPhone);
         // TODO: implement Geolocation
-        // TextView locationText = dialogView.findViewById(R.id.enterLocation);
-        Button declineButton = dialogView.findViewById(R.id.dialogDeclineButton);
-        Button backButton = dialogView.findViewById(R.id.dialogBackButton);
+        // TextView locationText = dialogPendingEntrantView.findViewById(R.id.enterLocation);
+        Button declineButton = dialogPendingEntrantView.findViewById(R.id.dialogDeclineButton);
+        Button backButton1 = dialogPendingEntrantView.findViewById(R.id.dialogBackButton);
 
         nameText.setText(user.getName());
         emailText.setText(user.getEmail());
@@ -153,7 +154,7 @@ public class PendingEntrantListFragment extends Fragment {
         // If phone number null, don't display
         if (user.getPhoneNumber() == null) {
             phoneText.setVisibility(View.GONE);
-            dialogView.findViewById(R.id.dialogUserPhone).setVisibility(View.GONE);
+            dialogPendingEntrantView.findViewById(R.id.dialogUserPhone).setVisibility(View.GONE);
         } else {
             phoneText.setText(user.getPhoneNumber());
         }
@@ -161,30 +162,64 @@ public class PendingEntrantListFragment extends Fragment {
         // TODO: implement Geolocation
         // locationText.setText(user.getLocation());
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
+        // Setup first dialog for displaying user info
+        AlertDialog dialog1 = new AlertDialog.Builder(requireContext())
+                .setView(dialogPendingEntrantView)
                 .setCancelable(true)
                 .create();
 
         // Set the background to transparent so we can show the rounded corners
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog1.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // Return to list view
-        backButton.setOnClickListener(v -> dialog.dismiss());
+        backButton1.setOnClickListener(v -> dialog1.dismiss());
 
-        // TODO: make new dialog screen
         // Move to a new dialog
         declineButton.setOnClickListener(v -> {
-            // TODO: call method to reject an invite
+            LayoutInflater inflater2 = LayoutInflater.from(requireContext());
+            View dialogPendingEntrantDeclineView = inflater2
+                    .inflate(R.layout.dialog_pending_entrant_decline, null);
+            Button confirmButton = dialogPendingEntrantDeclineView
+                    .findViewById(R.id.dialogConfirmButton);
+            Button backButton2 = dialogPendingEntrantDeclineView
+                    .findViewById(R.id.dialogBackButton);
 
-//            Toast.makeText(requireContext(),
-//                    "Invite declined for " + user.getName(),
-//                    Toast.LENGTH_SHORT).show();
-//
-//            dialog.dismiss();
+            // Setup second dialog for declining the invitation
+            AlertDialog dialog2 = new AlertDialog.Builder(requireContext())
+                    .setView(dialogPendingEntrantDeclineView)
+                    .setCancelable(true)
+                    .create();
+
+            // Strengthen background dimness (to emphasize the dialog)
+            dialog2.getWindow().setDimAmount(.7f);
+            // Set the background to transparent so we can show the rounded corners
+            dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+            // Return to dialog pending entrant view (i.e., dialog1)
+            backButton2.setOnClickListener(view -> dialog2.dismiss());
+
+            // Remove User from pending list (i.e., send user to cancelled list)
+            confirmButton.setOnClickListener(view -> {
+                // Dismiss dialog1 first for a clean transition
+                dialog1.dismiss();
+                // Remove user from event's pending list DB
+                currentEvent.joinCancelledList(user);
+
+                // Remove user from LOCAL pending list
+                pendingEntrants.remove(user);
+                data.remove(user.getName());
+
+                // Refresh the ListView
+                adapter.notifyDataSetChanged();
+                // Dismiss the dialog
+                dialog2.dismiss();
+                Toast.makeText(requireContext(),
+                        "Invite declined for " + user.getName(),
+                        Toast.LENGTH_SHORT).show();
+            });
+            // Show the dialog
+            dialog2.show();
         });
-        dialog.show();
+        dialog1.show();
     }
-
-
 }

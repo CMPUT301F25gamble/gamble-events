@@ -6,6 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".View.ChosenEntrantListFragment">
 
+    <ProgressBar
+        android:id="@+id/loading_chosen_entrants_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_chosen_entrants_list"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            chosenEntrantListBackButton,
+            chosenListOfEntrantsText,
+            chosenListOfEntrantsListView,
+            sendNotifButton"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
     <ImageButton
         android:id="@+id/chosenEntrantListBackButton"
         android:layout_width="wrap_content"

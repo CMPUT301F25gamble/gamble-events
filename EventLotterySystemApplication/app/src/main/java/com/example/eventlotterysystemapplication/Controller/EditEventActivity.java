@@ -9,11 +9,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityEditEventBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
  * EditEventActivity
@@ -61,6 +63,20 @@ public class EditEventActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         navController.setGraph(R.navigation.edit_event_nav_graph, startArgs);
 
-        NavigationUI.setupWithNavController(binding.editEventBottomNavMenu, navController);
+        /*
+         * Nav logic for BottomNavigationView
+         * -> Fixes the issue withe the back stack on the bottom menu
+         */
+        binding.editEventBottomNavMenu.setOnItemSelectedListener(item -> {
+            int destinationId = item.getItemId();
+
+            NavOptions navOptions = new NavOptions.Builder()
+                // Main fix here
+                .setPopUpTo(destinationId, true)
+                .build();
+
+            navController.navigate(destinationId, startArgs, navOptions);
+            return true;
+        });
     }
 }

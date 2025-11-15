@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +41,18 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        String action = intent.getAction();
+        assert action != null;
+        Log.d("Action", action);
+        if (data != null){
+            String eventID = data.getLastPathSegment();
+            // TODO First check that the deviceID and user are registered in the database, and only
+            //  then do we open up events page with eventID
+        }
+
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -60,13 +74,29 @@ public class MainActivity extends AppCompatActivity {
                     database.queryDeviceID(deviceId, task -> {
                         if (task.isSuccessful()) {
                             Boolean exists = task.getResult();
-                            if (exists != null && exists) {
-                                Log.d(TAG, "Device registered. Going to content activity.");
-                                goToContentActivity();
-                            } else {
-                                Log.d(TAG, "Device not registered. Going to registration activity.");
-                                goToRegisterActivity();
-                            }
+
+                            // get device registration token
+                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()){
+
+                                            // get the new FCM token
+                                            String token = task1.getResult();
+
+                                            Log.d("Token", token);
+
+                                            if (exists != null && exists) {
+                                                Log.d(TAG, "Device registered. Going to content activity.");
+                                                goToContentActivity();
+                                            } else {
+                                                Log.d(TAG, "Device not registered. Going to registration activity.");
+                                                goToRegisterActivity();
+                                            }
+
+                                        } else {
+                                            Log.e(TAG, "Error getting device token");
+                                        }
+                                    }
+                            );
                         } else {
                             Log.e(TAG, "Error querying deviceID", task.getException());
                             goToRegisterActivity();
@@ -76,21 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Failed to get device ID", e);
                     goToRegisterActivity();
-                });
-
-        // get device registration token
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>(){
-                    @Override
-                    public void onComplete(@NonNull Task<String> task){
-                        if (task.isSuccessful()){
-
-                            // get the new FCM token
-                            String token = task.getResult();
-
-                            Log.d("Token", token);
-                        }
-                    }
                 });
 
         createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");

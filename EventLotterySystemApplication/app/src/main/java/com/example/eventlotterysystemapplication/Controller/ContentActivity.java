@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication.Controller;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;

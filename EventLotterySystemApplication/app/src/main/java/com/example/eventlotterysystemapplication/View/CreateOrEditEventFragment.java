@@ -54,7 +54,7 @@ public class CreateOrEditEventFragment extends Fragment {
         // Back Button to return to Events page
         binding.createOrEditEventBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                    .navigateUp();
         });
 
 

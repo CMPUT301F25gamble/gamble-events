@@ -27,6 +27,10 @@
                 app:argType="boolean"
                 android:defaultValue="false"/>
         </action>
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="nothing" />
     </fragment>
     <fragment
         android:id="@+id/notifications_ui_fragment"

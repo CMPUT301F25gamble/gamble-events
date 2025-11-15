@@ -234,6 +234,7 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
 
             binding.navigationBarButton.setText("Edit Event");
@@ -271,7 +272,13 @@ public class EventDetailScreenFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
             Log.d(TAG, "Fetching event from DB...");
-            db.getEvent(eventId, callback);
+            db.getEvent(eventId, task ->  {
+                if (task.isSuccessful()) {
+                    callback.onComplete(task);
+                } else {
+                    Log.e(TAG, "Error fetching event from database");
+                }
+            });
         }
     }
 

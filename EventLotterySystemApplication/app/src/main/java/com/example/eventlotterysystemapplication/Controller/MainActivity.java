@@ -1,11 +1,17 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -13,7 +19,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
  * First activity upon app launch
@@ -90,6 +99,27 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to get device ID", e);
                     goToRegisterActivity();
                 });
+
+        // get device registration token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>(){
+                    @Override
+                    public void onComplete(@NonNull Task<String> task){
+                        if (task.isSuccessful()){
+
+                            // get the new FCM token
+                            String token = task.getResult();
+
+                            Log.d("Token", token);
+                        }
+                    }
+                });
+
+        createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");
+        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
+        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
+        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
+
     }
 
     /**
@@ -110,6 +140,24 @@ public class MainActivity extends AppCompatActivity {
         Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
         startActivity(goToRegisterIntent);
         finish();
+    }
+
+    private void createNotificationChannel(String channelName, String description) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channelName,
+                    description,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+
+            notificationChannel.enableVibration(true); // Allow vibration for notifications
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
     }
 
 

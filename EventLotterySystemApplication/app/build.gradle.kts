@@ -48,6 +48,7 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:9.1.1") // FirebaseUI for image loading
     implementation("com.github.bumptech.glide:glide:5.0.5") // Glide for image loading
     implementation(libs.firebase.installations) // auth service
+    implementation(libs.firebase.messaging) // auth service
 
     //Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.20.0")
@@ -70,4 +71,7 @@ dependencies {
 
     //Zxing Library
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    //Firebase messaging
+    implementation("com.google.firebase:firebase-messaging:25.0.1")
 }

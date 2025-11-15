@@ -110,8 +110,10 @@ public class EventsUIFragment extends Fragment {
 
         // Create Event button navigates to event creation page
         binding.createEventButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("eventId", null);
             NavHostFragment.findNavController(EventsUIFragment.this)
-                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment);
+                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
         });
 
         // My Events button navigates to my events page

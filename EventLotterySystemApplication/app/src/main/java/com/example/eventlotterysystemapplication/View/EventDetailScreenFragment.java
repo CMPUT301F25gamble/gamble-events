@@ -153,6 +153,15 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Add joining/leaving waitlist functionality to button
             binding.navigationBarButton.setOnClickListener(v -> {
+                // Navigate to edit event page if the user is the organizer of the event
+                if (isOwnedEvent) {
+                    Bundle args = new Bundle();
+                    args.putString("eventId", eventId);
+                    NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                            .navigate(R.id.create_or_edit_event_fragment, args);
+                    return;
+                }
+
                getEvent(taskEvent -> {
                    if (taskEvent.isSuccessful()) {
                        Event event = taskEvent.getResult();

@@ -145,7 +145,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
-            // TODO: Handle notifs set
+            // TODO: Handle notifs
 
            // Check that mandatory fields are filled
             if (eventName.isEmpty()) {

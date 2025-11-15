@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.Controller;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -31,6 +32,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check if app was opened via QR code / deep link
+        String eventID;
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri data = intent.getData();
+        assert action != null;
+        Log.d("Action", action);
+        if (data != null) {
+            eventID = data.getLastPathSegment(); // If this is not null, go to event details
+            Log.d("QR", "Scanned QR eventID = " + eventID);
+        } else {
+            eventID = null;
+        }
+
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
         EdgeToEdge.enable(this);
@@ -52,8 +69,13 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Boolean exists = task.getResult();
                             if (exists != null && exists) {
-                                Log.d(TAG, "Device registered. Going to content activity.");
-                                goToContentActivity();
+                                if (eventID != null) {
+                                    Log.d(TAG, "Device registered. Going to event detail fragment.");
+                                    goToContentActivityWithEvent(eventID);
+                                } else {
+                                    Log.d(TAG, "Device registered. Going to content activity.");
+                                    goToContentActivity();
+                                }
                             } else {
                                 Log.d(TAG, "Device not registered. Going to registration activity.");
                                 goToRegisterActivity();
@@ -89,5 +111,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToRegisterIntent);
         finish();
     }
+
+
+    private void goToContentActivityWithEvent(String eventID) {
+        Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);
+        goToContentIntentWithEvent.putExtra("eventID", eventID); // pass the QR code event ID
+        startActivity(goToContentIntentWithEvent);
+        finish();
+    }
+
 
 }

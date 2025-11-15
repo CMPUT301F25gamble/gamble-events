@@ -10,5 +10,7 @@
     <color name="important_field">#CF0000</color>
     <color name="blue">#0000FF</color>
     <color name="app_grey">#676767</color>
+    <color name="transparent_dark_red">#780000</color>
+    <color name="dark_grey">#525252</color>
 
 </resources>

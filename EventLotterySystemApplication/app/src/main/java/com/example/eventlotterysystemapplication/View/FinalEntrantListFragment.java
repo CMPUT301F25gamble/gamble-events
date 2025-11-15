@@ -16,25 +16,23 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentFinalEntrantListBinding;
 
 import java.util.ArrayList;
 
 /**
- * Displays a listview of chosen entrants that includes pending entrants, cancelled entrants,
- * and entrants that accepted and invitation to the event
- * Will fetch a list of the above from the database to be displayed in the listview
- * Navigated to from {@link EntrantListSelectionFragment}
+ * Displays a listview of all final entrants that have accepted an invitation to join the event
+ * Will fetch a list of final entrants from the database to be displayed in the listview
  */
 
-public class ChosenEntrantListFragment extends Fragment {
-    private FragmentChosenEntrantListBinding binding;
+public class FinalEntrantListFragment extends Fragment {
+    private FragmentFinalEntrantListBinding binding;
     private Database database;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentChosenEntrantListBinding.inflate(inflater, container, false);
+        binding = FragmentFinalEntrantListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -62,14 +60,14 @@ public class ChosenEntrantListFragment extends Fragment {
         }
 
         // Back Button to return to Event Lists page
-        binding.chosenEntrantListBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(ChosenEntrantListFragment.this)
+        binding.finalEntrantListBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(FinalEntrantListFragment.this)
                     .navigateUp();
         });
 
         // Display the loading screen while the data is being fetched
-        binding.loadingChosenEntrantsList.setVisibility(View.VISIBLE);
-        binding.contentGroupChosenEntrantsList.setVisibility(View.GONE);
+        binding.loadingFinalEntrantsList.setVisibility(View.VISIBLE);
+        binding.contentGroupFinalEntrantsList.setVisibility(View.GONE);
 
         // call parseEventRegistration
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -77,7 +75,7 @@ public class ChosenEntrantListFragment extends Fragment {
 
                 // Error check if task is not successful
                 if (!task.isSuccessful()) {
-                    binding.loadingChosenEntrantsList.setVisibility(View.GONE);
+                    binding.loadingFinalEntrantsList.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -86,18 +84,18 @@ public class ChosenEntrantListFragment extends Fragment {
                 Event event = task.getResult();
 
                 // Populate the ListView with all entrants
-                loadChosenEntrantsIntoList(event);
+                loadFinalEntrantsIntoList(event);
 
                 // Hide loading and show content
-                binding.loadingChosenEntrantsList.setVisibility(View.GONE);
-                binding.contentGroupChosenEntrantsList.setVisibility(View.VISIBLE);
+                binding.loadingFinalEntrantsList.setVisibility(View.GONE);
+                binding.contentGroupFinalEntrantsList.setVisibility(View.VISIBLE);
             });
         }
     }
 
     // Private method to help with loading the data into the ListView
-    private void loadChosenEntrantsIntoList(Event event) {
-        // List for chosen entrants
+    private void loadFinalEntrantsIntoList(Event event) {
+        // List for final entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
@@ -106,7 +104,7 @@ public class ChosenEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getChosen()) {
+        for (User u : event.getEntrantList().getFinalized()) {
             String name = u.getName();
             data.add(name);
         }
@@ -114,6 +112,6 @@ public class ChosenEntrantListFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         // Set the adapter for the ListView
-        binding.chosenListOfEntrantsListView.setAdapter(adapter);
+        binding.finalListOfEntrantsListView.setAdapter(adapter);
     }
 }

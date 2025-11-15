@@ -592,7 +592,7 @@ public class Database {
 
             parseEventRegistration(event, doc, task -> {
                 if (task.isSuccessful()){
-                    listener.onComplete(Tasks.forResult(event));
+                    listener.onComplete(task);
                 } else {
                     Log.e("Database", "Unable to parse event registration" + task.getException());
                 }
@@ -600,7 +600,6 @@ public class Database {
 
 
         }
-
     }
 
     /**
@@ -662,10 +661,12 @@ public class Database {
      *            subcollection
      * @param listener An OnCompleteListener for callback
      */
-    public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Void> listener){
+    public void parseEventRegistration(Event event, DocumentSnapshot doc, OnCompleteListener<Event> listener){
         CollectionReference registration = doc.getReference().collection("Registration");
+        List<Task<Event>> parseEventRegistrationTasks = new ArrayList<>();
 
         registration.get().addOnCompleteListener(regTask -> {
+
             if (!regTask.isSuccessful()) {
                 listener.onComplete(Tasks.forException(
                         new IllegalStateException("Failed to retrieve registration")
@@ -674,6 +675,8 @@ public class Database {
             }
 
             for (DocumentSnapshot entrantDoc : regTask.getResult()) {
+                TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+
                 String status = entrantDoc.getString("status");
                 switch (status) {
                     case "waiting":
@@ -681,16 +684,25 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 0);
+
+                                tcs.setResult(event);
+
+                                Log.d("Test Database 1", "Success");
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
                         });
                         break;
+
                     case "chosen":
                         getUser(entrantDoc.getId(), task -> {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 1);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -701,6 +713,9 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 2);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
@@ -711,19 +726,26 @@ public class Database {
                             if (task.isSuccessful()) {
                                 User user = task.getResult();
                                 event.addToEntrantList(user, 3);
+
+                                tcs.setResult(event);
+
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
                             }
                         });
                         break;
-                    default:
-                        listener.onComplete(Tasks.forException(
-                                new IllegalStateException("Invalid status")
-                        ));
-                        return;
                 }
+
+                Log.d("Test Database 2", "Success");
+                parseEventRegistrationTasks.add(tcs.getTask());
+
             }
-            listener.onComplete(Tasks.forResult(null));
+
+            Log.d("Test Database 3", "Success");
+
+            Tasks.whenAllComplete(parseEventRegistrationTasks).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(event));
+            });
         });
     }
 

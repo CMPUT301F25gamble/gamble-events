@@ -331,8 +331,10 @@ public class Database {
                         if (task1.isSuccessful()) {
                             Event event = task1.getResult();
                             events.add(event);
+                            tcs.setResult(event);
+                        } else {
+                            tcs.setException(task1.getException());
                         }
-                        tcs.setResult(task1.getResult());
                     });
                 }
                 Tasks.whenAllComplete(parseTasks).addOnCompleteListener(done -> {

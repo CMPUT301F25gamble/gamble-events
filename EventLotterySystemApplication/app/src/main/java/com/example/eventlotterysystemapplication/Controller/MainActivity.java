@@ -75,28 +75,14 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Boolean exists = task.getResult();
 
-                            // get device registration token
-                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()){
+                            if (exists != null && exists) {
+                                Log.d(TAG, "Device registered. Going to content activity.");
+                                goToContentActivity();
+                            } else {
+                                Log.d(TAG, "Device not registered. Going to registration activity.");
+                                goToRegisterActivity();
+                            }
 
-                                            // get the new FCM token
-                                            String token = task1.getResult();
-
-                                            Log.d("Token", token);
-
-                                            if (exists != null && exists) {
-                                                Log.d(TAG, "Device registered. Going to content activity.");
-                                                goToContentActivity();
-                                            } else {
-                                                Log.d(TAG, "Device not registered. Going to registration activity.");
-                                                goToRegisterActivity();
-                                            }
-
-                                        } else {
-                                            Log.e(TAG, "Error getting device token");
-                                        }
-                                    }
-                            );
                         } else {
                             Log.e(TAG, "Error querying deviceID", task.getException());
                             goToRegisterActivity();

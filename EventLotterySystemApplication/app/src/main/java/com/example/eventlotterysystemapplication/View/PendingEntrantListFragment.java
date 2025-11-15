@@ -136,6 +136,14 @@ public class PendingEntrantListFragment extends Fragment {
         });
     }
 
+    /**
+     * Displays a dialog containing the selected user's information and provides the
+     * option to decline their pending event invitation. If declined, the user is
+     * moved from the event’s pending list to the cancelled list, the local ListView
+     * and the database are updated accordingly, and a confirmation toast is shown.
+     *
+     * @param user The pending entrant whose details should be displayed and acted upon.
+     */
     private void showPendingEntrantDialog(User user) {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View dialogPendingEntrantView = inflater.inflate(R.layout.dialog_pending_entrant, null);
@@ -217,9 +225,10 @@ public class PendingEntrantListFragment extends Fragment {
                         "Invite declined for " + user.getName(),
                         Toast.LENGTH_SHORT).show();
             });
-            // Show the dialog
+            // Show the dialog 2 (i.e., the user decline dialog)
             dialog2.show();
         });
+        // Show the dialog 1 (i.e., the user info dialog)
         dialog1.show();
     }
 }

@@ -484,13 +484,6 @@
             android:layout_height="wrap_content" />
 
         <CheckBox
-            android:id="@+id/checkbox_generateORCode"
-            android:text="@string/generate_qr_code_text"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
             android:id="@+id/checkbox_notifyEntrant"
             android:text="@string/notify_entrant_of_successful_waitlist_enrollment_text"
             android:textSize="16sp"

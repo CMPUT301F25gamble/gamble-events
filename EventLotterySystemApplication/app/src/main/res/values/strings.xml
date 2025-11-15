@@ -91,4 +91,8 @@
     <string name="decline_invite">DECLINE Invite</string>
     <string name="pending_entrant_decline_text_1">This action will <i>DECLINE</i> the user’s invitation and <i>cannot be undone</i>.</string>
     <string name="pending_entrant_decline_text_2">Do you wish to continue?</string>
+    <string name="edit_event_title_text">Edit Event</string>
+    <string name="create_event_title_text">Create Event</string>
+    <string name="done_creating_event_text">Done Creating Event</string>
+    <string name="done_editing_event_text">Done Editing Event</string>
 </resources>

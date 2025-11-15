@@ -139,6 +139,20 @@
     </ScrollView>
 
     <Button
+        android:id="@+id/generateQRCodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/grey"
+        android:text="@string/generate_qr_code_text"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigationBarButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <Button
         android:id="@+id/navigationBarButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

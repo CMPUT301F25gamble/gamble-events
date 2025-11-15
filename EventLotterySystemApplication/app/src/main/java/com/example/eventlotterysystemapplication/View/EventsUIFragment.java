@@ -113,8 +113,10 @@ public class EventsUIFragment extends Fragment {
 
         // Create Event button navigates to event creation page
         binding.createEventButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("eventId", null);
             NavHostFragment.findNavController(EventsUIFragment.this)
-                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment);
+                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
         });
 
         // My Events button navigates to my events page
@@ -179,5 +181,24 @@ public class EventsUIFragment extends Fragment {
             NavHostFragment.findNavController(this)
                     .navigate(R.id.event_detail_screen, args);
         });
+
+        // Auto-navigate if eventID was passed from MainActivity
+        String eventID = null;
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            eventID = getActivity().getIntent().getStringExtra("eventID");
+        }
+
+        if (eventID != null) {
+            // Find the document index to set isOwnedEvent flag
+            int index = docIds.indexOf(eventID);
+            boolean isOwnedEvent = (index != -1) ? ownedFlags.get(index) : false;
+
+            Bundle args = new Bundle();
+            args.putString("eventId", eventID);
+            args.putBoolean("isOwnedEvent", isOwnedEvent);
+
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.event_detail_screen, args);
+        }
     }
 }

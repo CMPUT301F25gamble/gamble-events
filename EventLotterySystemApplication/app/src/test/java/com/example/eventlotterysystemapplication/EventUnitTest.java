@@ -21,6 +21,10 @@ import java.util.Arrays;
 @RunWith(MockitoJUnitRunner.class)
 public class EventUnitTest {
 
+    /*
+    Note: getters and setters will not be tested because they are very simple
+     */
+
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);

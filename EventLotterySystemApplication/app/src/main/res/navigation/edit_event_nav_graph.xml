@@ -5,6 +5,19 @@
     android:id="@+id/edit_event_nav_graph"
     app:startDestination="@id/my_event_detail_screen">
     <fragment
+        android:id="@+id/create_or_edit_event_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.CreateOrEditEventFragment"
+        android:label="create_or_edit_event_fragment"
+        tools:layout="@layout/fragment_create_or_edit_event">
+        <action
+            android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
         android:id="@+id/entrantListSelectionFragment"
         android:name="com.example.eventlotterysystemapplication.View.EntrantListSelectionFragment"
         android:label="fragment_entrant_list_selection"
@@ -59,6 +72,9 @@
             android:name="isOwnedEvent"
             app:argType="boolean"
             android:defaultValue="false"/>
+        <action
+            android:id="@+id/action_my_event_detail_screen_to_create_or_edit_event_fragment"
+            app:destination="@id/create_or_edit_event_fragment" />
     </fragment>
     <fragment
         android:id="@+id/allEntrantsListFragment"
@@ -98,7 +114,7 @@
     </fragment>
     <fragment
         android:id="@+id/finalEntrantList"
-        android:name="com.example.eventlotterysystemapplication.Model.FinalEntrantList"
+        android:name="com.example.eventlotterysystemapplication.View.FinalEntrantListFragment"
         android:label="fragment_final_entrant_list"
         tools:layout="@layout/fragment_final_entrant_list" >
         <action

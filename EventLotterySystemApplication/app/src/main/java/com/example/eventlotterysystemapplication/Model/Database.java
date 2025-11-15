@@ -316,7 +316,7 @@ public class Database {
 
     /**
      * Retrieves all events in the event collection
-     * @param listener An OnCompleteListener used to retrieve a list o
+     * @param listener An OnCompleteListener used to retrieve a list of events
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getAllEvents(OnCompleteListener<List<Event>> listener) {
@@ -549,8 +549,7 @@ public class Database {
      * that document and manually matches it up with the fields from the event class, giving us fine
      * control over what is added to what fields in this class
      * @param doc The document from the Event collection to be parsed
-     * @param listener An OnCompleteListener for callback
-     * @return An event object, where the correct fields are extracted from the document
+     * @param listener An OnCompleteListener for retrieving the event object
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseEvent(@NonNull DocumentSnapshot doc, OnCompleteListener<Event> listener) {

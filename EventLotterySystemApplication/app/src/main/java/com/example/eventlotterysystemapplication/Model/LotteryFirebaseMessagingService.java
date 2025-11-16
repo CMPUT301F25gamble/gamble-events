@@ -35,6 +35,8 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
             String channelName = remoteMessage.getData().get("channelName");
             Log.d("LotteryFirebaseMessagingService", channelName);
 
+            checkNotificationChannel(channelName);
+
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");
                 Log.d("LotteryFirebaseMessagingService", eventID);
@@ -88,9 +90,39 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
         // Display the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
+        Log.d("LotteryFirebaseMessagingService", "Message Received");
         //TODO add a dynamic notificationID system
         int notificationId = 1;
         notificationManager.notify(notificationId, builder.build());
     }
+
+    private void checkNotificationChannel(String channelName) {
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
+
+            String description = "";
+
+            if (channelName.equals("lotteryNotification")){
+                description = "This notification channel is used to notify entrants for lottery selection";
+            } else if (channelName.equals("waitingListNotification")) {
+                description = "This notification channel is used to notify entrants in the waiting list";
+            } else if (channelName.equals("chosenListNotification")){
+                description = "This notification channel is used to notify entrants in the chosen list";
+            } else if (channelName.equals("cancelledListNotification")){
+                description = "This notification channel is used to notify entrants in the chosen list";
+            }
+
+            if (notificationChannel == null) {
+                NotificationChannel channel = new NotificationChannel(
+                        channelName,
+                        description,
+                        NotificationManager.IMPORTANCE_HIGH
+                );
+                notificationManager.createNotificationChannel(channel);
+                channel.enableVibration(true);
+            }
+
+        }
+
 }

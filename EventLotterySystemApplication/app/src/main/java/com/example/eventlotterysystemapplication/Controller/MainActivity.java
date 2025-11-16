@@ -43,17 +43,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        String action = intent.getAction();
-        assert action != null;
-        Log.d("Action", action);
-        if (data != null){
-            String eventID = data.getLastPathSegment();
-            // TODO First check that the deviceID and user are registered in the database, and only
-            //  then do we open up events page with eventID
-        }
-
         super.onCreate(savedInstanceState);
 
         // Check if app was opened via QR code / deep link

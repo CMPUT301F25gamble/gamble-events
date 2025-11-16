@@ -742,6 +742,7 @@ public class Event {
      * A getter for the entrant list
      * @return The entrant list object
      */
+    @Exclude
     public EntrantList getEntrantList() {
         return entrantList;
     }
@@ -750,6 +751,7 @@ public class Event {
      * A setter for the entrant list
      * @param entrantList The entrant list object
      */
+    @Exclude
     public void setEntrantList(EntrantList entrantList) {
         this.entrantList = entrantList;
     }

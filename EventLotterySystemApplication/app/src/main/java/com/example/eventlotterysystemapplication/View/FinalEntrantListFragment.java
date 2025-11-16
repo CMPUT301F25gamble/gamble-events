@@ -109,14 +109,6 @@ public class FinalEntrantListFragment extends Fragment {
                     Event event = task.getResult();
                     String eventName = event.getName();
 
-                    // For testing CSV: uncomment to create some temp users
-//                    User user1 = new User("Bob", "bob@mail.com", "780-222-2222", "device700");
-//                    User user2 = new User("John", "john@mail.com", "780-333-2222", "device701");
-//                    User user3 = new User("Joe", "joe@mail.com", "780-444-2222", "device702");
-//                    event.getEntrantList().addToFinalized(user1);
-//                    event.getEntrantList().addToFinalized(user2);
-//                    event.getEntrantList().addToFinalized(user3);
-
                     // Get a list of finalized entrants
                     ArrayList<User> finalizedEntrants = event.getEntrantList().getFinalized();
 

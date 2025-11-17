@@ -68,7 +68,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         // Build the notification
         NotificationCompat.Builder builder;
 
-        if (channelName.equals("lotteryNotification")) {
+        if (channelName.equals("lotteryWinNotification")) {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
@@ -101,10 +101,12 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
 
-            String description = "";
+            String description = "Filler";
 
-            if (channelName.equals("lotteryNotification")){
+            if (channelName.equals("lotteryWinNotification")) {
                 description = "This notification channel is used to notify entrants for lottery selection";
+            } else if (channelName.equals("lotteryLoseNotification")){
+                description = "This notification channel is used to notify entrants that they lost lottery selection";
             } else if (channelName.equals("waitingListNotification")) {
                 description = "This notification channel is used to notify entrants in the waiting list";
             } else if (channelName.equals("chosenListNotification")){

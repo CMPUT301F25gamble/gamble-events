@@ -53,7 +53,8 @@ public class EventUnitTest {
                 "Best Organizer",
                 "organizer@organizer.com",
                 "123-456-7890",
-                "fNnBwGwhaYStDGG6S3vs8sB52PU2"
+                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
+                "new token"
         );
         organizer.setUserID(organizer.getDeviceID());
         return organizer;
@@ -64,7 +65,8 @@ public class EventUnitTest {
                 "Best Entrant",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant1"
+                "testDeviceIDmockEntrant1",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -75,7 +77,8 @@ public class EventUnitTest {
                 "Best Entrant 2",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant2"
+                "testDeviceIDmockEntrant2",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -86,7 +89,8 @@ public class EventUnitTest {
                 "Best Entrant 3",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant3"
+                "testDeviceIDmockEntrant3",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -97,7 +101,8 @@ public class EventUnitTest {
                 "Best Entrant 4",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant4"
+                "testDeviceIDmockEntrant4",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -108,7 +113,8 @@ public class EventUnitTest {
                 "Best Entrant 5",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant5"
+                "testDeviceIDmockEntrant5",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;

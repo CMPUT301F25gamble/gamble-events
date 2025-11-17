@@ -68,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
             eventID = null;
         }
 
+        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
+        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
+        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
+        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
+        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
+
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
         EdgeToEdge.enable(this);
@@ -125,11 +131,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to get device ID", e);
                     goToRegisterActivity();
                 });
-
-        createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
     }
 
     /**
@@ -222,6 +223,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToContentIntentWithEvent);
         finish();
     }
-
 
 }

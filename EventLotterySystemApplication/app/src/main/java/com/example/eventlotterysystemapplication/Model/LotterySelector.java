@@ -45,6 +45,7 @@ public class LotterySelector {
     public User drawReplacementUser(Event event) {
         Set<User> waitingList = new HashSet<>(event.getEntrantList().getWaiting());
         Set<User> acceptedList = new HashSet<>(event.getEntrantList().getChosen());
+        Set<User> cancelledList = new HashSet<>(event.getEntrantList().getCancelled());
 
         if (waitingList.equals(acceptedList)) {
             throw new IllegalStateException("Cannot draw unique replacement user; accepted list and waiting list are identical");
@@ -57,7 +58,7 @@ public class LotterySelector {
         do {
             // Get a user from waiting list that isn't from accepted list
             user = waitingListArray.get(rnd.nextInt(waitingList.size()));
-        } while (acceptedList.contains(user));
+        } while (acceptedList.contains(user) && !cancelledList.contains(user));
 
         return user;
     }

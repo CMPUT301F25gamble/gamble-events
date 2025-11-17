@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Controller.NotificationSender;
 import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
@@ -34,6 +36,8 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
 
     private String notificationType;
 
+    private String eventId;
+
     public OrganiserSendNotificationUIFragment() {
         // Required empty public constructor
     }
@@ -51,6 +55,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 .fromBundle(getArguments());
 
         notificationType = args.getNotificationType();
+        eventId = args.getEventId();
+
+        Log.d("OrganiserSendNotificationUIFragment", "EventId: " + eventId);
+        Log.d("OrganiserSendNotificationUIFragment", "NotificationType: " + notificationType);
     }
 
     @Override
@@ -97,6 +105,17 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         if (messageContent.isEmpty()) {
             notificationMessage.setError("Message is required");
         }
+
+        sendNotificationButton.setOnClickListener(v -> {
+
+            Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
+
+            String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
+            String title = notificationType + " Notification";
+            String channelName = "lotteryWinNotification";
+
+            NotificationSender.sendNotification(token, title, messageContent, eventId, channelName);
+        });
 
         // Add notification to database here
     }

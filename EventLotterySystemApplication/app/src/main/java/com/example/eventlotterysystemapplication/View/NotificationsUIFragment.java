@@ -40,18 +40,4 @@ public class NotificationsUIFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_notifications_ui, container, false);
     }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-
-        database.collection("Notification").get()
-                .addOnSuccessListener(qs -> {
-                    for (DocumentSnapshot doc : qs.getDocuments()) {
-                        String title = doc.getString()
-                    }
-                })
-    }
 }

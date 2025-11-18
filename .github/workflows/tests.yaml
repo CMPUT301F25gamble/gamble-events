@@ -26,5 +26,5 @@ jobs:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Run unit and instrumentation tests
+      - name: Run unit tests
         run: ./gradlew test

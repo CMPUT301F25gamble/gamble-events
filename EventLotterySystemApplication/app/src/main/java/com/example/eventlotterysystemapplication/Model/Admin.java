@@ -23,8 +23,8 @@ public class Admin extends User{
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
      */
-    public Admin(String name, String email, String phoneNumber , String deviceID) {
-        super(name, email, phoneNumber, deviceID);
+    public Admin(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
+        super(name, email, phoneNumber, deviceID, deviceToken);
         super.setAdmin(true);
     }
 

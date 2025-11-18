@@ -13,6 +13,7 @@ public class User{
     private String email;
     private String phoneNumber;
     private String deviceID;
+    private String deviceToken;
     private String userID;
     private boolean isAdmin;
 
@@ -32,11 +33,12 @@ public class User{
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
      */
-    public User(String name, String email, String phoneNumber , String deviceID) {
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.deviceID = deviceID;
+        this.deviceToken = deviceToken;
         isAdmin = false;
     }
 
@@ -118,6 +120,14 @@ public class User{
      */
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
     /**

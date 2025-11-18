@@ -95,4 +95,7 @@
     <string name="create_event_title_text">Create Event</string>
     <string name="done_creating_event_text">Done Creating Event</string>
     <string name="done_editing_event_text">Done Editing Event</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notification_logs_text">Notification Logs</string>
 </resources>

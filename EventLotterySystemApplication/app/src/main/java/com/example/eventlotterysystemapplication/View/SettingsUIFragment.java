@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
@@ -59,7 +61,7 @@ public class SettingsUIFragment extends Fragment {
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
         Button adminViewButton = binding.adminViewButton;
-        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
+//        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
 
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
@@ -78,11 +80,14 @@ public class SettingsUIFragment extends Fragment {
 
 
         adminViewButton.setOnClickListener(v -> {
-            // Small bug fix for bottom nav being buggy
-            BottomNavigationView bottomNav =
-                    requireActivity().findViewById(R.id.bottomNavMenu);
-
-            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
+//            // Small bug fix for bottom nav being buggy
+//            BottomNavigationView bottomNav =
+//                    requireActivity().findViewById(R.id.bottomNavMenu);
+//
+//            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
+            // Navigate to admin activity
+            Intent goToAdminViewIntent = new Intent(requireContext(), AdminActivity.class);
+            startActivity(goToAdminViewIntent);
         });
     }
 }

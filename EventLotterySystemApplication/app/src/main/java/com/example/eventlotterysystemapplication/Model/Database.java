@@ -542,8 +542,36 @@ public class Database {
         }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
     }
 
-    public void addNotification(){
+    public void addNotification(Notification notification, OnCompleteListener<Void> listener){
         // TODO: implement this method
+
+        DocumentReference notificationDocRef = notificationRef.document();
+        notification.setNotificationID(notificationDocRef.getId());
+
+        notificationDocRef.set(notification).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("Database", "Notification added successfully with Event ID: " + notification.getNotificationID());
+                Log.d("Database", "Event added successfully with timestamp: " + notification.getNotificationSendTime());
+
+
+            } else {
+                Log.e("Database", "Failed to add notification: " + task.getException());
+                listener.onComplete(task);
+            }
+        });
+    }
+
+    public void addRecipient(Notification notification, User user, OnCompleteListener<Void> listener){
+        DocumentReference notificationDocRef = notificationRef.document(notification.getNotificationID());
+
+        TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
+
+        CollectionReference recipients = notificationDocRef.collection("Recipients");
+
+        recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
+                .addOnCompleteListener(task -> {
+                   listener.onComplete(task);
+                });
     }
 
     /**

@@ -27,39 +27,49 @@ import java.util.Map;
 public class EventNotificationManager {
     public static void notifyInitialLotterySelection(Event event){
 
-        String title = "Congratulations, you have won the lottery selection";
-        String body = "Congratulations, you have won the lottery selection for " + event.getName()
+        String notificationWinTitle = "Congratulations, you have won the lottery selection";
+        String notificationWinBody = "Congratulations, you have won the lottery selection for " + event.getName()
                 + ". Make sure to accept or decline the invitation by"
                 + event.getInvitationAcceptanceDeadlineString();
 
+        Notification winNotification = new Notification(event.getOrganizer(), event, notificationWinTitle, notificationWinBody, "lotteryWinNotification");
+
         for (User user : event.getEntrantList().getChosen()){
-            NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "lotteryWinNotification");
+            winNotification.sendNotification(user.getDeviceToken());
         }
 
-        title = "You lost the lottery selection";
-        body = "You have lost the lottery selection for " + event.getName() + ". You may still be " +
+        String notificationLoseTitle = "You lost the lottery selection";
+        String notificationLoseBody = "You have lost the lottery selection for " + event.getName() + ". You may still be " +
                 "given a chance to join if someone else declines their invitation";
 
+        Notification loseNotification = new Notification(event.getOrganizer(), event, notificationLoseTitle, notificationLoseBody, "lotteryLoseNotification");
+
         for (User user : event.getEntrantList().getWaiting()){
-            NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "lotteryLoseNotification");
+            loseNotification.sendNotification(user.getDeviceID());
         }
     }
 
     public static void notifyWaitingList(Event event, String title, String body){
+        Notification notification = new Notification(event.getOrganizer(), event, title, body, "waitingListNotification");
+
         for (User user : event.getEntrantList().getWaiting()){
-            NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "waitingListNotification");
+            notification.sendNotification(user.getDeviceID());
         }
     }
 
     public static void notifyChosenList(Event event, String title, String body){
+        Notification notification = new Notification(event.getOrganizer(), event, title, body,"chosenListNotification");
+
         for (User user : event.getEntrantList().getChosen()){
-            NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "chosenListNotification");
+            notification.sendNotification(user.getDeviceToken());
         }
     }
 
     public static void notifyCancelledList(Event event, String title, String body){
+        Notification notification = new Notification(event.getOrganizer(), event, title, body, "cancelledListNotification");
+
         for (User user : event.getEntrantList().getCancelled()){
-            NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "cancelledListNotification");
+            notification.sendNotification(user.getDeviceToken());
         }
     }
 }

@@ -1,17 +1,36 @@
 package com.example.eventlotterysystemapplication;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.MockitoAnnotations;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mockStatic;
+
+import android.util.Log;
 
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class LotterySelectorUnitTest {
+
+    @Mock
+    private FirebaseFirestore mockDb;
+    @Mock
+    private FirebaseAuth mockAuth;
+    private MockedStatic<FirebaseAuth> mockAuthStatic;
+    private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
+    private MockedStatic<Log> mockLogStatic;
     private final String userID = "mwahahahahah";
     private Event event = new Event(
                 "Casino Paradise Gambling 18+",
@@ -69,6 +88,16 @@ public class LotterySelectorUnitTest {
     );
 
     // Note that I am not adding user ids to each user cuz i am lazy
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        mockAuthStatic = mockStatic(FirebaseAuth.class); // Mocks FirebaseFirestore
+        mockFirestoreStatic = mockStatic(FirebaseFirestore.class); // Mocks FirebaseAuth
+        mockLogStatic = mockStatic(Log.class); // Mocks the logs
+        mockAuthStatic.when(FirebaseAuth::getInstance).thenReturn(mockAuth);
+        mockFirestoreStatic.when(FirebaseFirestore::getInstance).thenReturn(mockDb);
+    }
 
     @Test
     public void testDrawUsersOverCapacity() {
@@ -161,5 +190,12 @@ public class LotterySelectorUnitTest {
 
         LotterySelector ls = new LotterySelector();
         assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event));
+    }
+
+    @After
+    public void tearDown() {
+        mockAuthStatic.close();
+        mockFirestoreStatic.close();
+        mockLogStatic.close();
     }
 }

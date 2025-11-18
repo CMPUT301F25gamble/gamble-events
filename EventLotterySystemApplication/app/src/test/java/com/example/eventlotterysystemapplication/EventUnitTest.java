@@ -1,6 +1,8 @@
 package com.example.eventlotterysystemapplication;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -11,6 +13,7 @@ import android.util.Log;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,10 +21,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -39,30 +45,29 @@ public class EventUnitTest {
 
     @Mock
     private FirebaseFirestore mockDb;
-
     @Mock
     private FirebaseAuth mockAuth;
+    private MockedStatic<FirebaseAuth> mockAuthStatic;
+    private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
+    private MockedStatic<Log> mockLogStatic;
 
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        try {
-            mockStatic(FirebaseFirestore.class); // Mocks FirebaseFirestore
-            mockStatic(FirebaseAuth.class); // Mocks FirebaseAuth
-            mockStatic(Log.class); // Mocks the logs
-            when(FirebaseFirestore.getInstance()).thenReturn(mockDb);
-            when(FirebaseAuth.getInstance()).thenReturn(mockAuth);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mockAuthStatic = mockStatic(FirebaseAuth.class); // Mocks FirebaseFirestore
+        mockFirestoreStatic = mockStatic(FirebaseFirestore.class); // Mocks FirebaseAuth
+        mockLogStatic = mockStatic(Log.class); // Mocks the logs
+        mockAuthStatic.when(FirebaseAuth::getInstance).thenReturn(mockAuth);
+        mockFirestoreStatic.when(FirebaseFirestore::getInstance).thenReturn(mockDb);
     }
+
     public Event mockEvent1(){
         Event event = new Event(
                 "Twice concert watch party",
                 "We love Twice",
                 "Online",
                 new String[]{"Twice", "concert"},
-                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
+                "12345",
                 "2025-11-15T14:00",
                 "2025-11-15T16:00",
                 "2025-11-01T23:59",
@@ -548,6 +553,13 @@ public class EventUnitTest {
         assertEquals (0, event.getEntrantList().getChosen().size());
         assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (0, event.getEntrantList().getFinalized().size());
+    }
+
+    @After
+    public void tearDown() {
+        mockAuthStatic.close();
+        mockFirestoreStatic.close();
+        mockLogStatic.close();
     }
 
     /*

@@ -223,5 +223,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToContentIntentWithEvent);
         finish();
     }
-
 }

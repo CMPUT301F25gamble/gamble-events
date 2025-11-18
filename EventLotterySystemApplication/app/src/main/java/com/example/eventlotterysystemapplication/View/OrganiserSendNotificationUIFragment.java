@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.credentials.PrepareGetCredentialResponse;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.Model.Event;
-import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
+import com.example.eventlotterysystemapplication.Controller.NotificationSender;
 import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
@@ -36,6 +35,8 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     private OrganiserSendNotificationUIFragmentArgs args;
 
     private String notificationType;
+    private String eventId;
+    private String channelName;
 
     public OrganiserSendNotificationUIFragment() {
         // Required empty public constructor
@@ -54,6 +55,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 .fromBundle(getArguments());
 
         notificationType = args.getNotificationType();
+        eventId = args.getEventId();
+
+        Log.d("OrganiserSendNotificationUIFragment", "EventId: " + eventId);
+        Log.d("OrganiserSendNotificationUIFragment", "NotificationType: " + notificationType);
     }
 
     @Override
@@ -68,12 +73,9 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Get views
-
         TextView notificationHeader = binding.sendNotificationHeader;
-
-        EditText notificationTitle = binding.notificationTitleContent;
-
         EditText notificationMessage = binding.notificationMessageContent;
+        EditText notificationTitle = binding.notificationMessageTitle;
 
         // get buttons
         ImageButton backButton = binding.sendNotificationBackButton;
@@ -89,39 +91,39 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         switch (notificationType) {
             case "waitlist":
                 notificationHeader.setText("Waitlist Entrants Notification");
+                channelName = "waitingListNotification";
                 break;
             case "chosen":
                 notificationHeader.setText("Chosen Entrants Notification");
+                channelName = "chosenListNotification";
                 break;
             case "cancelled":
                 notificationHeader.setText("Cancelled Entrants Notification");
+                channelName = "cancelledListNotification";
                 break;
         }
 
-        // TODO Send the notification
-        String titleContent = notificationTitle.getText().toString();
-        String messageContent = notificationMessage.getText().toString();
+        sendNotificationButton.setOnClickListener(v -> {
+            // Send the notification
+            String messageTitle = notificationTitle.getText().toString();
+            if (messageTitle.isEmpty()) {
+                notificationTitle.setError("Title is required");
+            }
 
-        if (titleContent.isEmpty()){
-            notificationMessage.setError("Title is required");
-        }
+            String messageContent = notificationMessage.getText().toString();
+            if (messageContent.isEmpty()) {
+                notificationMessage.setError("Message is required");
+            }
 
-        if (messageContent.isEmpty()) {
-            notificationMessage.setError("Message is required");
-        }
+            Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
 
-        switch (notificationType) {
-            case "waitlist":
-                EventNotificationManager.notifyWaitingList(new Event(), titleContent, messageContent);
-                break;
-            case "chosen":
-                EventNotificationManager.notifyChosenList(new Event(), titleContent, messageContent);
-                break;
-            case "cancelled":
-                EventNotificationManager.notifyCancelledList(new Event(), titleContent, messageContent);
-                break;
-        }
+            // Todo: send to specific users based on criteria
+            String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
 
-        // TODO Add notification to database here
+            NotificationSender.sendNotification(token, messageTitle, messageContent, eventId, channelName);
+        });
+
+        // Add notification to database here
+        // Todo: add notifications to database
     }
 }

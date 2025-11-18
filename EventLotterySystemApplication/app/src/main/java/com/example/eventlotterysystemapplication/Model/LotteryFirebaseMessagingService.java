@@ -33,13 +33,13 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().containsKey("channelName")) {
 
             String channelName = remoteMessage.getData().get("channelName");
-            Log.d("LotteryFirebaseMessagingService", channelName);
+            Log.d("LotteryFirebaseMessagingService", "Channel Name: " + channelName);
 
             checkNotificationChannel(channelName);
 
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");
-                Log.d("LotteryFirebaseMessagingService", eventID);
+                Log.d("LotteryFirebaseMessagingService", "EventId: " +eventID);
             }
 
             sendNotification(channelName, remoteMessage);

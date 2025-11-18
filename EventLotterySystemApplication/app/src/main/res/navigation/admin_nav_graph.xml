@@ -24,5 +24,18 @@
         android:id="@+id/allProfilesFragment"
         android:name="com.example.eventlotterysystemapplication.View.AllProfilesFragment"
         android:label="fragment_all_profiles"
-        tools:layout="@layout/fragment_all_profiles" />
+        tools:layout="@layout/fragment_all_profiles" >
+        <action
+            android:id="@+id/action_allProfilesFragment_to_profileUIFragment"
+            app:destination="@id/profileUIFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" >
+        <action
+            android:id="@+id/action_profileUIFragment_to_allProfilesFragment"
+            app:destination="@id/allProfilesFragment" />
+    </fragment>
 </navigation>

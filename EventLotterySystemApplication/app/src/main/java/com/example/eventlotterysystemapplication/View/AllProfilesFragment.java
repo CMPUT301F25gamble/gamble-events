@@ -67,10 +67,11 @@ public class AllProfilesFragment extends Fragment {
             // Create a bundle to pass the selected user's ID to ADMIN SPECIFIC UI
             Bundle bundle = new Bundle();
             bundle.putString("userId", selectedUser.getUserID());
+            bundle.putBoolean("isAdminMode", true);
 
             // TODO: create a fragment + xml for the admin specific ui
-//            NavHostFragment.findNavController(this)
-//                    .navigate(R.id., bundle);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_allProfilesFragment_to_profileUIFragment, bundle);
 
         });
     }

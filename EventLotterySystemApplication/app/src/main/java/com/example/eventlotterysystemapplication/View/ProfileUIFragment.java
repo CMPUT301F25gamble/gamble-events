@@ -30,6 +30,25 @@ public class ProfileUIFragment extends Fragment {
     private FragmentProfileUiBinding binding;
     private Database database;
     private User currentUser;
+    private String userId;
+    private boolean isAdminMode;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            userId = getArguments().getString("userId");
+            isAdminMode = getArguments().getBoolean("isAdminMode");
+        } else {
+            userId = null;
+            isAdminMode = false;
+        }
+
+        Log.d("ProfileUIFragment",
+                "userId arg = " + userId + " isAdminMode = " + isAdminMode);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -38,22 +57,56 @@ public class ProfileUIFragment extends Fragment {
         binding = FragmentProfileUiBinding.inflate(inflater, container, false);
         database = new Database();
 
+        // Display the loading screen while the data is being fetched
+        binding.loadingProfileUi.setVisibility(View.VISIBLE);
+        binding.contentGroupProfileUi.setVisibility(View.GONE);
 
-        // Fetch user using Device ID
-        FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
-            database.getUserFromDeviceID(deviceId, task -> {
+        if (userId != null && isAdminMode) {
+            // Admin flow: load the selected user by ID
+            database.getUser(userId, task -> {
                 if (task.isSuccessful()) {
                     currentUser = task.getResult();
+                    if (currentUser != null) {
+                        binding.profileName.setText(currentUser.getName());
+                        binding.profileEmail.setText(currentUser.getEmail());
+                        binding.profilePhone.setText(currentUser.getPhoneNumber());
 
-                    // Prepopulate EditText values
-                    binding.profileName.setText(currentUser.getName());
-                    binding.profileEmail.setText(currentUser.getEmail());
-                    binding.profilePhone.setText(currentUser.getPhoneNumber());
+                        // Hide loading and show content
+                        binding.loadingProfileUi.setVisibility(View.GONE);
+                        binding.contentGroupProfileUi.setVisibility(View.VISIBLE);
 
-                } else {Log.e("ProfileUIFragment", "Failed to get user", task.getException());
+                        // Admin Back button
+                        binding.adminProfileBackButton.setOnClickListener(v -> {
+                            NavHostFragment.findNavController(ProfileUIFragment.this).navigateUp();
+                        });
+                    }
+                } else {
+                    Log.e("ProfileUIFragment", "Failed to get user by id", task.getException());
                 }
             });
-        });
+        } else {
+            // Normal flow: use existing device ID logic
+            FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
+                database.getUserFromDeviceID(deviceId, task -> {
+                    if (task.isSuccessful()) {
+                        currentUser = task.getResult();
+                        if (currentUser != null) {
+                            // Hide loading and show content
+                            binding.loadingProfileUi.setVisibility(View.GONE);
+                            binding.contentGroupProfileUi.setVisibility(View.VISIBLE);
+
+                            binding.adminProfileBackButton.setVisibility(View.GONE);
+                            binding.userProfileEvents.setVisibility(View.GONE);
+                            binding.profileName.setText(currentUser.getName());
+                            binding.profileEmail.setText(currentUser.getEmail());
+                            binding.profilePhone.setText(currentUser.getPhoneNumber());
+                        }
+                    } else {
+                        Log.e("ProfileUIFragment", "Failed to get user", task.getException());
+                    }
+                });
+            });
+        }
 
         // When update profile button is clicked update user's data
         binding.updateProfileButton.setOnClickListener(v -> {

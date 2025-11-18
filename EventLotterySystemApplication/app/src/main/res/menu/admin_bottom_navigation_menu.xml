@@ -3,12 +3,12 @@
 
     <item android:title="@string/browse_profiles"
         android:icon="@drawable/entrants_icon"
-        android:id="@+id/profiles_ui_fragment">
+        android:id="@+id/allProfilesFragment">
     </item>
 
     <item android:title="@string/browse_images"
         android:icon="@drawable/images_icon"
-        android:id="@+id/profiles_ui_fragment">
+        android:id="@+id/example">
     </item>
 
     <item android:title="@string/notification_logs_text"

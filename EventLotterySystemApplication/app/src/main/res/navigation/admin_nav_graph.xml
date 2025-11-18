@@ -20,4 +20,9 @@
         android:name="com.example.eventlotterysystemapplication.View.SettingsUIFragment"
         android:label="fragment_settings_ui"
         tools:layout="@layout/fragment_settings_ui" />
+    <fragment
+        android:id="@+id/allProfilesFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AllProfilesFragment"
+        android:label="fragment_all_profiles"
+        tools:layout="@layout/fragment_all_profiles" />
 </navigation>

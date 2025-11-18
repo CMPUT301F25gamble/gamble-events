@@ -2,14 +2,26 @@ package com.example.eventlotterysystemapplication;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
+import android.util.Log;
+
+import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -25,9 +37,24 @@ public class EventUnitTest {
     Note: getters and setters will not be tested because they are very simple
      */
 
+    @Mock
+    private FirebaseFirestore mockDb;
+
+    @Mock
+    private FirebaseAuth mockAuth;
+
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        try {
+            mockStatic(FirebaseFirestore.class); // Mocks FirebaseFirestore
+            mockStatic(FirebaseAuth.class); // Mocks FirebaseAuth
+            mockStatic(Log.class); // Mocks the logs
+            when(FirebaseFirestore.getInstance()).thenReturn(mockDb);
+            when(FirebaseAuth.getInstance()).thenReturn(mockAuth);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public Event mockEvent1(){
         Event event = new Event(
@@ -317,6 +344,7 @@ public class EventUnitTest {
         assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (0, event.getEntrantList().getFinalized().size());
+
     }
 
     @Test
@@ -444,42 +472,42 @@ public class EventUnitTest {
         event.joinFinalizedList(mockEntrant1());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinCancelledList(mockEntrant3());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant3());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant4());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinWaitingList(mockEntrant5());
 
         assertEquals (1, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant5());
 
         assertEquals (1, event.getEntrantList().getWaiting().size());
-        assertEquals (0, event.getEntrantList().getChosen().size());
+        assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
     }

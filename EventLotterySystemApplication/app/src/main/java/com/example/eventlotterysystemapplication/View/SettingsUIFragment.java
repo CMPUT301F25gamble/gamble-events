@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,6 +46,20 @@ public class SettingsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        database.getUser(uid, task -> {
+            if (task.isSuccessful()) {
+                User adminUser = task.getResult();
+                if (adminUser.isAdmin()) {
+                    adminViewButton.setVisibility(View.VISIBLE);
+                    // Hide loading and show content
+                    binding.loadingSettingsScreen.setVisibility(View.GONE);
+                    binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
+                }
+            } else {
+                Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -61,7 +77,7 @@ public class SettingsUIFragment extends Fragment {
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
         Button adminViewButton = binding.adminViewButton;
-//        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
+        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
 
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
@@ -77,7 +93,6 @@ public class SettingsUIFragment extends Fragment {
         });
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
 
         adminViewButton.setOnClickListener(v -> {
 //            // Small bug fix for bottom nav being buggy

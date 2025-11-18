@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +34,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     Database database = new Database();
+
+    private boolean isAdmin = false;
 
     /**
      * Checks if user is registered via device
@@ -78,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Boolean exists = task.getResult();
                             if (exists != null && exists) {
+
+                                boolean isAdmin = getIsAdmin(deviceId);
+
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
                                     goToContentActivityWithEvent(eventID);
@@ -160,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);
         goToContentIntentWithEvent.putExtra("eventID", eventID); // pass the QR code event ID
@@ -168,5 +173,19 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-
+//    private boolean getIsAdmin(String deviceId) {
+//        database.getUserFromDeviceID(deviceId, userTask -> {
+//            if (userTask.isSuccessful()) {
+//                User user = userTask.getResult();
+//                boolean isAdmin = user.isAdmin();
+//                if (isAdmin) {
+//                    Log.d("MainActivity", "User is admin");
+//
+//                } else {
+//            } else {
+//                Log.d("MainActivity", "Error getting user from device ID");
+//            }
+//        });
+//        return false;
+//    }
 }

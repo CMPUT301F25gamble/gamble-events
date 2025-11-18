@@ -7,7 +7,7 @@
     tools:context=".View.AdminNotifications">
 
     <TextView
-        android:id="@+id/notifications_header"
+        android:id="@+id/admin_notifications_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Notifications"

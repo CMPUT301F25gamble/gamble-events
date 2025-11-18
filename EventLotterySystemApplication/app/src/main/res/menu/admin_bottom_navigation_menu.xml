@@ -5,4 +5,9 @@
         android:icon="@drawable/notifications_icon"
         android:id="@+id/adminNotifications">
     </item>
+
+    <item android:title="@string/settings_text"
+        android:icon="@drawable/settings_icon"
+        android:id="@+id/settingsUIFragment">
+    </item>
 </menu>

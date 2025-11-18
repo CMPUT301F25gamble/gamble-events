@@ -82,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
                             Boolean exists = task.getResult();
                             if (exists != null && exists) {
 
-                                boolean isAdmin = getIsAdmin(deviceId);
-
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
                                     goToContentActivityWithEvent(eventID);
@@ -172,20 +170,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToContentIntentWithEvent);
         finish();
     }
-
-//    private boolean getIsAdmin(String deviceId) {
-//        database.getUserFromDeviceID(deviceId, userTask -> {
-//            if (userTask.isSuccessful()) {
-//                User user = userTask.getResult();
-//                boolean isAdmin = user.isAdmin();
-//                if (isAdmin) {
-//                    Log.d("MainActivity", "User is admin");
-//
-//                } else {
-//            } else {
-//                Log.d("MainActivity", "Error getting user from device ID");
-//            }
-//        });
-//        return false;
-//    }
 }

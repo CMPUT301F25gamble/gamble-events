@@ -95,4 +95,5 @@
     <string name="create_event_title_text">Create Event</string>
     <string name="done_creating_event_text">Done Creating Event</string>
     <string name="done_editing_event_text">Done Editing Event</string>
+    <string name="notification_title_text">Notification Title</string>
 </resources>

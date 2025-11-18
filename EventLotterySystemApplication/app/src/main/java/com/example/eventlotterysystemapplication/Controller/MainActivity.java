@@ -223,14 +223,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToContentIntentWithEvent);
         finish();
     }
-
-    public void testLotteryWinNotification() {
-        String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
-        String title = "test title";
-        String message = "test message";
-        String eventId = "2jKXO77SjVanAOxAcdBd";
-        String channelName = "lotteryWinNotification";
-
-        NotificationSender.sendNotification(token, title, message, eventId, channelName);
-    }
 }

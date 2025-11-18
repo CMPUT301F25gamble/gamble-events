@@ -35,8 +35,8 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     private OrganiserSendNotificationUIFragmentArgs args;
 
     private String notificationType;
-
     private String eventId;
+    private String channelName;
 
     public OrganiserSendNotificationUIFragment() {
         // Required empty public constructor
@@ -75,6 +75,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         // Get views
         TextView notificationHeader = binding.sendNotificationHeader;
         EditText notificationMessage = binding.notificationMessageContent;
+        EditText notificationTitle = binding.notificationMessageTitle;
 
         // get buttons
         ImageButton backButton = binding.sendNotificationBackButton;
@@ -90,33 +91,38 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         switch (notificationType) {
             case "waitlist":
                 notificationHeader.setText("Waitlist Entrants Notification");
+                channelName = "waitingListNotification";
                 break;
             case "chosen":
                 notificationHeader.setText("Chosen Entrants Notification");
+                channelName = "chosenListNotification";
                 break;
             case "cancelled":
                 notificationHeader.setText("Cancelled Entrants Notification");
+                channelName = "cancelledListNotification";
                 break;
         }
 
-        // Send the notification
-        String messageContent = notificationMessage.getText().toString();
-
-        if (messageContent.isEmpty()) {
-            notificationMessage.setError("Message is required");
-        }
-
         sendNotificationButton.setOnClickListener(v -> {
+            // Send the notification
+            String messageTitle = notificationTitle.getText().toString();
+            if (messageTitle.isEmpty()) {
+                notificationTitle.setError("Title is required");
+            }
+
+            String messageContent = notificationMessage.getText().toString();
+            if (messageContent.isEmpty()) {
+                notificationMessage.setError("Message is required");
+            }
 
             Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
 
             String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
-            String title = notificationType + " Notification";
-            String channelName = "lotteryWinNotification";
 
-            NotificationSender.sendNotification(token, title, messageContent, eventId, channelName);
+            NotificationSender.sendNotification(token, messageTitle, messageContent, eventId, channelName);
         });
 
         // Add notification to database here
+        // Todo: add notifications to database
     }
 }

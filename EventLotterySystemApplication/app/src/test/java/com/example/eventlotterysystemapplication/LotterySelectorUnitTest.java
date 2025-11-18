@@ -48,40 +48,40 @@ public class LotterySelectorUnitTest {
     );
 
     User billyBob = new User(
+            "Billy Bob <3",
             "billybob@mymail.com",
             "123-456-7890",
-            "Billy Bob <3",
             "billyBobDeviceID",
             "new token"
     );
 
     User alice = new User(
+            "Alice",
             "alice@mymail.com",
             "888-888-8888",
-            "Alice",
             "AliceDeviceID",
             "new token"
     );
 
     User santa = new User(
+            "Santa Claus",
             "nick@north-pole.ca",
             "505-050-5067",
-            "Santa Claus",
             "SAINT_NICK_DEVICE_ID",
             "new token"
     );
 
     User elf10597120397 = new User(
+            "Elf #10597120397 @ North Pole",
             "elf105971203970@north-pole.ca",
             "505-048-3130",
-            "Elf #10597120397 @ North Pole",
             "10597120397_elf_device_id",
             "new token"
     );
 
     User elf7683989 = new User(
+            "Elf #7683989 @ North Pole",
             "elf7683989@north-pole.ca",
-            "505-391-0441",
             "Elf #7683989 @ North Pole",
             "7683989_elf_device_id",
             "new token"

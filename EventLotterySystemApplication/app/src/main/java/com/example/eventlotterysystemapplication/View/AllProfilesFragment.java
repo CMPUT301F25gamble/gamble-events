@@ -1,6 +1,5 @@
 package com.example.eventlotterysystemapplication.View;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,17 +12,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
+import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAllProfilesBinding;
-import com.example.eventlotterysystemapplication.databinding.FragmentCancelledEntrantListBinding;
-import com.example.eventlotterysystemapplication.databinding.FragmentProfileUiBinding;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AllProfilesFragment extends Fragment {
     private FragmentAllProfilesBinding binding;
+    private List<User> allUsers = new ArrayList<>();
     private Database database;
 
     @Override
@@ -39,29 +38,6 @@ public class AllProfilesFragment extends Fragment {
 
         database = new Database();
 
-//        // Safely read arguments
-//        Bundle args = getArguments();
-//
-//        if (args == null || !args.containsKey("eventID")) {
-//            // No event ID -> we can't do anything, so show a message and go back
-//            Toast.makeText(requireContext(), "Error: missing event ID", Toast.LENGTH_SHORT).show();
-//            NavHostFragment.findNavController(this).navigateUp();
-//            return;
-//        }
-//
-//        String eventId = args.getString("eventID");
-//        if (eventId == null || eventId.isEmpty()) {
-//            Toast.makeText(requireContext(), "Error: invalid event ID", Toast.LENGTH_SHORT).show();
-//            NavHostFragment.findNavController(this).navigateUp();
-//            return;
-//        }
-
-        // Back Button to return to Event Lists page
-        binding.browseProfileBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(AllProfilesFragment.this)
-                    .navigateUp();
-        });
-
         // Display the loading screen while the data is being fetched
         binding.loadingAllProfiles.setVisibility(View.VISIBLE);
         binding.contentGroupAllProfiles.setVisibility(View.GONE);
@@ -76,12 +52,26 @@ public class AllProfilesFragment extends Fragment {
             }
 
             // Populate the list with all profiles
-            List<User> users = task.getResult();
-            loadProfilesIntoList(users);
+            allUsers = task.getResult();
+            loadProfilesIntoList(allUsers);
 
             // Hide loading and show content
             binding.loadingAllProfiles.setVisibility(View.GONE);
             binding.contentGroupAllProfiles.setVisibility(View.VISIBLE);
+        });
+
+        // Listener for when a profile is clicked
+        binding.allProfilesList.setOnItemClickListener((parent, v, position, id) -> {
+            User selectedUser = allUsers.get(position);
+
+            // Create a bundle to pass the selected user's ID to ADMIN SPECIFIC UI
+            Bundle bundle = new Bundle();
+            bundle.putString("userId", selectedUser.getUserID());
+
+            // TODO: create a fragment + xml for the admin specific ui
+//            NavHostFragment.findNavController(this)
+//                    .navigate(R.id., bundle);
+
         });
     }
 
@@ -96,6 +86,7 @@ public class AllProfilesFragment extends Fragment {
                 displayProfileNames
         );
 
+        // Populating the list with all profiles
         for (User u : users) {
             displayProfileNames.add(u.getName());
         }

@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import android.util.Log;
@@ -27,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class UserUnitTest {

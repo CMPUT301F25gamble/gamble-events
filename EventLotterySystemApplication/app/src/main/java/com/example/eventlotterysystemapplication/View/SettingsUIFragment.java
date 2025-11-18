@@ -5,18 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 /**
  * SettingsUIFragment
@@ -30,7 +24,7 @@ public class SettingsUIFragment extends Fragment {
 
     private FragmentSettingsUiBinding binding;
 
-    Database database = new Database();
+    //Database database = new Database();
 
     public SettingsUIFragment () {
         // Required empty public constructor
@@ -60,39 +54,39 @@ public class SettingsUIFragment extends Fragment {
         // Get buttons
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
-        Button adminViewButton = binding.adminViewButton;
+//        Button adminViewButton = binding.adminViewButton;
 
-        // Set default admin button visibility to gone
-        adminViewButton.setVisibility(View.GONE);
-
-        // Show loading and hide content until it is fetched
-        binding.loadingSettingsScreen.setVisibility(View.VISIBLE);
-        binding.contentGroupSettingsScreen.setVisibility(View.GONE);
-
-        // Fetch the User ID
-        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
-                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
-                : null;
-
-        // If no user ID, return
-        if (uid == null) {
-            return;
-        }
+//        // Set default admin button visibility to gone
+//        adminViewButton.setVisibility(View.GONE);
+//
+//        // Show loading and hide content until it is fetched
+//        binding.loadingSettingsScreen.setVisibility(View.VISIBLE);
+//        binding.contentGroupSettingsScreen.setVisibility(View.GONE);
+//
+//        // Fetch the User ID
+//        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+//                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+//                : null;
+//
+//        // If no user ID, return
+//        if (uid == null) {
+//            return;
+//        }
 
         // Fetch the user & check if admin
-        database.getUser(uid, task -> {
-            if (task.isSuccessful()) {
-                User adminUser = task.getResult();
-                if (adminUser.isAdmin()) {
-                    adminViewButton.setVisibility(View.VISIBLE);
-                    // Hide loading and show content
-                    binding.loadingSettingsScreen.setVisibility(View.GONE);
-                    binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
-                }
-            } else {
-                Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        database.getUser(uid, task -> {
+//            if (task.isSuccessful()) {
+//                User adminUser = task.getResult();
+//                if (adminUser.isAdmin()) {
+//                    adminViewButton.setVisibility(View.VISIBLE);
+//                    // Hide loading and show content
+//                    binding.loadingSettingsScreen.setVisibility(View.GONE);
+//                    binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
@@ -107,15 +101,13 @@ public class SettingsUIFragment extends Fragment {
                     .navigate(R.id.action_settingsUIFragment_to_settingsTOSFragment);
         });
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-
-        adminViewButton.setOnClickListener(v -> {
-            // Small bug fix for bottom nav being buggy
-            BottomNavigationView bottomNav =
-                    requireActivity().findViewById(R.id.bottomNavMenu);
-
-            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
-        });
+        // DO NOT INCLUDE
+//        adminViewButton.setOnClickListener(v -> {
+//            // Small bug fix for bottom nav being buggy
+//            BottomNavigationView bottomNav =
+//                    requireActivity().findViewById(R.id.bottomNavMenu);
+//
+//            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
+//        });
     }
 }

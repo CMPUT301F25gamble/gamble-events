@@ -17,7 +17,6 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -87,6 +86,10 @@ public class SettingsUIFragment extends Fragment {
                     .navigate(R.id.action_settingsUIFragment_to_settingsTOSFragment);
         });
 
+        // Show loading and hide content until it is fetched
+        binding.loadingSettingsScreen.setVisibility(View.VISIBLE);
+        binding.contentGroupSettingsScreen.setVisibility(View.GONE);
+
         // get admin status of user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String uid = user.getUid();
@@ -96,6 +99,9 @@ public class SettingsUIFragment extends Fragment {
                 User adminUser = task.getResult();
                 if (adminUser.isAdmin()) { // if admin show the button
                     adminViewButton.setVisibility(View.VISIBLE);
+                    // Hide loading and show content
+                    binding.loadingSettingsScreen.setVisibility(View.GONE);
+                    binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
                 }
             } else {
                 Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
@@ -103,13 +109,6 @@ public class SettingsUIFragment extends Fragment {
         });
 
         adminViewButton.setOnClickListener(v -> {
-//            // Small bug fix for bottom nav being buggy
-//            BottomNavigationView bottomNav =
-//                    requireActivity().findViewById(R.id.bottomNavMenu);
-//
-//            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
-            // Navigate to admin activity
-
             if (getActivity() instanceof ContentActivity) {
                 Intent goToAdminViewIntent = new Intent(requireContext(), AdminActivity.class);
                 startActivity(goToAdminViewIntent);

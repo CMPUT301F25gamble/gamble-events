@@ -117,6 +117,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
 
             Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
 
+            // Todo: send to specific users based on criteria
             String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
 
             NotificationSender.sendNotification(token, messageTitle, messageContent, eventId, channelName);

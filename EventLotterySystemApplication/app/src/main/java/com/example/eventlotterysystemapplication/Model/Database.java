@@ -592,13 +592,14 @@ public class Database {
 
             parseEventRegistration(event, doc, task -> {
                 if (task.isSuccessful()){
-                    listener.onComplete(task);
+                    listener.onComplete(Tasks.forResult(event));
                 } else {
                     Log.e("Database", "Unable to parse event registration" + task.getException());
+                    listener.onComplete(Tasks.forException(task.getException()));
                 }
             });
-
-
+        } else {
+            listener.onComplete(Tasks.forResult(event));
         }
     }
 
@@ -691,6 +692,7 @@ public class Database {
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
+                                tcs.setException(task.getException());
                             }
                         });
                         break;
@@ -705,6 +707,7 @@ public class Database {
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
+                                tcs.setException(task.getException());
                             }
                         });
                         break;
@@ -718,6 +721,7 @@ public class Database {
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
+                                tcs.setException(task.getException());
                             }
                         });
                         break;
@@ -731,17 +735,17 @@ public class Database {
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
+                                tcs.setException(task.getException());
                             }
                         });
                         break;
-                }
 
-                Log.d("Test Database 2", "Success");
+                    default:
+                        Log.e("Database", "Registration parsed illegal status");
+                }
                 parseEventRegistrationTasks.add(tcs.getTask());
 
             }
-
-            Log.d("Test Database 3", "Success");
 
             Tasks.whenAllComplete(parseEventRegistrationTasks).addOnCompleteListener(done -> {
                 listener.onComplete(Tasks.forResult(event));

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="@string/browse_profiles"
+        android:icon="@drawable/entrants_icon"
+        android:id="@+id/profiles_ui_fragment">
+    </item>
+
+    <item android:title="@string/browse_images"
+        android:icon="@drawable/images_icon"
+        android:id="@+id/profiles_ui_fragment">
+    </item>
+
     <item android:title="@string/notification_logs_text"
         android:icon="@drawable/notifications_icon"
         android:id="@+id/adminNotifications">

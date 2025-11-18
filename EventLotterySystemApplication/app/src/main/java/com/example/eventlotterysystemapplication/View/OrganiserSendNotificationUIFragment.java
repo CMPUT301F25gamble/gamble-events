@@ -11,9 +11,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.credentials.PrepareGetCredentialResponse;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
 import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
@@ -65,7 +68,11 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Get views
+
         TextView notificationHeader = binding.sendNotificationHeader;
+
+        EditText notificationTitle = binding.notificationTitleContent;
+
         EditText notificationMessage = binding.notificationMessageContent;
 
         // get buttons
@@ -91,13 +98,30 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 break;
         }
 
-        // Send the notification
+        // TODO Send the notification
+        String titleContent = notificationTitle.getText().toString();
         String messageContent = notificationMessage.getText().toString();
+
+        if (titleContent.isEmpty()){
+            notificationMessage.setError("Title is required");
+        }
 
         if (messageContent.isEmpty()) {
             notificationMessage.setError("Message is required");
         }
 
-        // Add notification to database here
+        switch (notificationType) {
+            case "waitlist":
+                EventNotificationManager.notifyWaitingList(new Event(), titleContent, messageContent);
+                break;
+            case "chosen":
+                EventNotificationManager.notifyChosenList(new Event(), titleContent, messageContent);
+                break;
+            case "cancelled":
+                EventNotificationManager.notifyCancelledList(new Event(), titleContent, messageContent);
+                break;
+        }
+
+        // TODO Add notification to database here
     }
 }

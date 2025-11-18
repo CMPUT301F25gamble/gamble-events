@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventNotificationManager {
-    public void notifyInitialLotterySelection(Event event){
+    public static void notifyInitialLotterySelection(Event event){
 
         String title = "Congratulations, you have won the lottery selection";
         String body = "Congratulations, you have won the lottery selection for " + event.getName()
@@ -45,19 +45,19 @@ public class EventNotificationManager {
         }
     }
 
-    public void notifyWaitingList(Event event, String title, String body){
+    public static void notifyWaitingList(Event event, String title, String body){
         for (User user : event.getEntrantList().getWaiting()){
             NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "waitingListNotification");
         }
     }
 
-    public void notifyChosenList(Event event, String title, String body){
+    public static void notifyChosenList(Event event, String title, String body){
         for (User user : event.getEntrantList().getChosen()){
             NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "chosenListNotification");
         }
     }
 
-    public void notifyCancelledList(Event event, String title, String body){
+    public static void notifyCancelledList(Event event, String title, String body){
         for (User user : event.getEntrantList().getCancelled()){
             NotificationSender.sendNotification(user.getDeviceToken(), title, body, event.getEventID(), "cancelledListNotification");
         }

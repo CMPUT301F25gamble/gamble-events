@@ -542,7 +542,7 @@ public class Database {
         }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
     }
 
-    public void addNotificationLog(){
+    public void addNotification(){
         // TODO: implement this method
     }
 

@@ -31,10 +31,21 @@
         app:layout_constraintTop_toBottomOf="@+id/send_notification_back_button" />
 
     <TextView
-        android:id="@+id/notification_message_header"
+        android:id="@+id/notification_title_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="@string/notification_title"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/send_notification_header" />
+
+    <TextView
+        android:id="@+id/notification_message_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
         android:text="@string/notification_message_header_text"
         android:textColor="@color/black"
         android:textSize="20dp"
@@ -42,13 +53,26 @@
         app:layout_constraintTop_toBottomOf="@+id/send_notification_header" />
 
     <EditText
+        android:id="@+id/notification_title_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/rounded_list_item"
+        android:backgroundTint="@color/app_beige"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notification_message_header" />
+
+    <EditText
         android:id="@+id/notification_message_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_beige"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/rounded_list_item"
+        android:backgroundTint="@color/app_beige"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notification_message_header" />
 
@@ -56,10 +80,12 @@
         android:id="@+id/send_notification_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/app_beige"
         android:text="@string/send_notification_button_text"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notification_message_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

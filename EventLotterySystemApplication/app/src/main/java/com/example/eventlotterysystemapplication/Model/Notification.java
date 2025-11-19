@@ -60,6 +60,14 @@ public class Notification {
         this.event = event;
     }
 
+    public String getEventID(){
+        return event.getEventID();
+    }
+
+    public void setEventID(String eventID){
+        event.setEventID(eventID);
+    }
+
     public String getTitle() {
         return title;
     }
@@ -100,7 +108,8 @@ public class Notification {
         this.notificationID = notificationID;
     }
 
-    public void sendNotification(String token){
-        NotificationSender.sendNotification(token, title, message, event.getEventID(), channelName);
+    public void sendNotification(User user){
+        NotificationSender.sendNotification(user.getDeviceToken(), title, message, event.getEventID(), channelName);
+        new Database().addNotificationRecipient(this, user, task -> {});
     }
 }

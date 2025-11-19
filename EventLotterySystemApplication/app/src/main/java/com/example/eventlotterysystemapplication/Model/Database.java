@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -542,8 +543,46 @@ public class Database {
         }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
     }
 
+    public void getNotification(String notificationID, OnCompleteListener<Notification> listener){
+        DocumentReference notificationDocRef = notificationRef.document(notificationID);
+
+        notificationDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()){
+                Notification notification = task.getResult().toObject(Notification.class);
+                notification.setNotificationID(notificationID);
+                listener.onComplete(Tasks.forResult(notification));
+            } else if (!task.getResult().exists()){
+                Log.e("Database", "Document does not exist");
+            } else {
+                Log.e("Database", "Could not execute query");
+            }
+        });
+    }
+
+    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
+        Query redrawNotificationQuery = notificationRef.where(Filter.and(
+                Filter.equalTo("eventID", eventID),
+                Filter.equalTo("channelName", "lotteryRedrawNotification")
+        ));
+
+        redrawNotificationQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
+                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
+
+                if (notifications.size() > 0){
+                    listener.onComplete(Tasks.forResult(notifications.get(0)));
+                } else {
+                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+                }
+            } else {
+                Log.e("Database", "Failed to query database");
+                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+            }
+        });
+    }
+
     public void addNotification(Notification notification, OnCompleteListener<Void> listener){
-        // TODO: implement this method
 
         DocumentReference notificationDocRef = notificationRef.document();
         notification.setNotificationID(notificationDocRef.getId());
@@ -561,17 +600,31 @@ public class Database {
         });
     }
 
-    public void addRecipient(Notification notification, User user, OnCompleteListener<Void> listener){
+    public void addNotificationRecipient(Notification notification, User user, OnCompleteListener<Void> listener){
         DocumentReference notificationDocRef = notificationRef.document(notification.getNotificationID());
 
-        TaskCompletionSource<User> tcs = new TaskCompletionSource<>();
+        notificationDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (!documentSnapshot.exists()){
+                    addNotification(notification, task1 -> {
+                        CollectionReference recipients = notificationDocRef.collection("Recipients");
 
-        CollectionReference recipients = notificationDocRef.collection("Recipients");
+                        recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
+                                .addOnCompleteListener(task2 -> {
+                                    listener.onComplete(task2);
+                                });
+                    });
+                } else {
+                    CollectionReference recipients = notificationDocRef.collection("Recipients");
 
-        recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
-                .addOnCompleteListener(task -> {
-                   listener.onComplete(task);
-                });
+                    recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
+                            .addOnCompleteListener(task1 -> {
+                                listener.onComplete(task1);
+                            });
+                }
+            }
+        });
     }
 
     /**

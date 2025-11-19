@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
         createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
+        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
         createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
         createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
         createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");

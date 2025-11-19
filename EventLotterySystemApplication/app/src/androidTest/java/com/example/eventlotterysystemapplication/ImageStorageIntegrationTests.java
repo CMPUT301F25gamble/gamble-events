@@ -43,7 +43,7 @@ public class ImageStorageIntegrationTests {
 
     // Also note that we're running these operations on the actual poster_images folder, in the future
     // we could refactor the ImageStorage class to take in a directory path for the folder we want to get/upload/delete from
-    // (e.g. "test_poster_images/")
+    // (e.g. passing in "test_poster_images/" so that its working directory is a testing directory)
 
     private ImageStorage imgStore;
     private final List<String> createdImgs = new ArrayList<>();
@@ -149,6 +149,7 @@ public class ImageStorageIntegrationTests {
     public void testDeleteEventPoster() throws ExecutionException, InterruptedException, FileNotFoundException {
         // Upload an image to Firebase first
         String eventId = "interestingEventId";
+        String imgName = eventId + ".jpg";
         File testImage = getTestImage();
 
         if (testImage == null) {
@@ -159,25 +160,27 @@ public class ImageStorageIntegrationTests {
         Uri imgUri = Tasks.await(imgStore.uploadEventPoster(eventId, testImage, task -> {
             Uri uri = task.getResult();
             downloadUrls.add(uri.toString());
-            Log.d("ImgStorageTestFetchAllPosters", "download uri is: " + uri);
-            createdImgs.add(eventId + ".jpg");
+            Log.d("ImgStorageTestDeleteEventPoster", "download uri is: " + uri);
+            createdImgs.add(imgName);
         }));
 
         Tasks.await(imgStore.deleteEventPoster(imgUri.toString(), task -> {}));
 
-        // Check that the image was deleted
-        assertThrows("No object exists at the specified reference.", StorageException.class, () -> {
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
-            Tasks.await(storageReference.child(eventId + ".jpg").delete());
-        });
         // Remove to make sure that we don't double delete during the takedown
-        createdImgs.remove(eventId + ".jpg");
+        createdImgs.remove(imgName);
+        // Check that the image was deleted (the actual exception is a StorageException, but since
+        // we are using Tasks.await it will throw an ExecutionException instead)
+        assertThrows("Object does not exist at location.", ExecutionException.class, () -> {
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
+            Tasks.await(storageReference.child(imgName).delete());
+        });
     }
 
     @Test
     public void testDeleteEventPosterByEventId() throws ExecutionException, InterruptedException, FileNotFoundException {
         // Upload an image to Firebase first
         String eventId = "intriguingEventId";
+        String imgName = eventId + ".jpg";
         File testImage = getTestImage();
 
         if (testImage == null) {
@@ -187,20 +190,21 @@ public class ImageStorageIntegrationTests {
         Tasks.await(imgStore.uploadEventPoster(eventId, testImage, task -> {
             Uri uri = task.getResult();
             downloadUrls.add(uri.toString());
-            Log.d("ImgStorageTestFetchAllPosters", "download uri is: " + uri);
-            createdImgs.add(eventId + ".jpg");
+            Log.d("ImgStorageTestDeleteEventPosterById", "download uri is: " + uri);
+            createdImgs.add(imgName);
         }));
 
         // Deleting poster by event id version
         Tasks.await(imgStore.deleteEventPoster(task -> {}, eventId));
 
-        // Check that the image was deleted
-        assertThrows("No object exists at the specified reference.", StorageException.class, () -> {
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
-            Tasks.await(storageReference.child(eventId + ".jpg").delete());
-        });
         // Remove to make sure that we don't double delete during the takedown
-        createdImgs.remove(eventId + ".jpg");
+        createdImgs.remove(imgName);
+        // Check that the image was deleted (the actual exception is a StorageException, but since
+        // we are using Tasks.await it will throw an ExecutionException instead)
+        assertThrows("Object does not exist at location.", ExecutionException.class, () -> {
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
+            Tasks.await(storageReference.child(imgName).delete());
+        });
     }
 
     @After

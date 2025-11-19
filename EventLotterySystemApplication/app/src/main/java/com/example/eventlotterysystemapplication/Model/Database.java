@@ -643,7 +643,7 @@ public class Database {
             if (task.isSuccessful()) {
                 Log.d("Database", "Notification added successfully with Event ID: " + notification.getNotificationID());
                 Log.d("Database", "Event added successfully with timestamp: " + notification.getNotificationSendTime());
-
+                listener.onComplete(task);
 
             } else {
                 Log.e("Database", "Failed to add notification: " + task.getException());
@@ -827,7 +827,6 @@ public class Database {
 
                                 tcs.setResult(event);
 
-                                Log.d("Test Database 1", "Success");
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());

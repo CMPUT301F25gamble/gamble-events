@@ -46,7 +46,7 @@ public class EventNotificationManager {
                 + ". Make sure to accept or decline the invitation by"
                 + event.getInvitationAcceptanceDeadlineString();
 
-        Notification winNotification = new Notification(event.getOrganizer(), event, notificationWinTitle, notificationWinBody, "lotteryWinNotification");
+        Notification winNotification = new Notification(event.getOrganizerID(), event.getEventID(), notificationWinTitle, notificationWinBody, "lotteryWinNotification");
 
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
@@ -62,7 +62,7 @@ public class EventNotificationManager {
         String notificationLoseBody = "You have lost the lottery selection for " + event.getName() + ". You may still be " +
                 "given a chance to join if someone else declines their invitation";
 
-        Notification loseNotification = new Notification(event.getOrganizer(), event, notificationLoseTitle, notificationLoseBody, "lotteryLoseNotification");
+        Notification loseNotification = new Notification(event.getOrganizerID(), event.getEventID(), notificationLoseTitle, notificationLoseBody, "lotteryLoseNotification");
 
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
@@ -98,7 +98,7 @@ public class EventNotificationManager {
                     }
                 });
             } else {
-                Notification notification =  new Notification(event.getOrganizer(), event, notificationTitle, notificationBody, "lotteryRedrawNotification");
+                Notification notification =  new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
                 Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
                         notification.sendNotification(user);
@@ -117,10 +117,13 @@ public class EventNotificationManager {
      * @param body The body of the notification
      */
     public static void notifyWaitingList(Event event, String title, String body){
-        Notification notification = new Notification(event.getOrganizer(), event, title, body, "waitingListNotification");
+        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "waitingListNotification");
+
+        Log.d("EventNotificationManager", "WaitingListFunction is called");
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
+                Log.d("EventNotificationManager", "successfully added notification");
                 for (User user : event.getEntrantList().getWaiting()){
                     notification.sendNotification(user);
                 }
@@ -137,7 +140,7 @@ public class EventNotificationManager {
      * @param body The body of the notification
      */
     public static void notifyChosenList(Event event, String title, String body){
-        Notification notification = new Notification(event.getOrganizer(), event, title, body,"chosenListNotification");
+        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body,"chosenListNotification");
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
@@ -157,7 +160,7 @@ public class EventNotificationManager {
      * @param body The body of the notification
      */
     public static void notifyCancelledList(Event event, String title, String body){
-        Notification notification = new Notification(event.getOrganizer(), event, title, body, "cancelledListNotification");
+        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "cancelledListNotification");
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){

@@ -5,67 +5,53 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 
 public class Notification {
-    private User sender;
-    private Event event;
+    private String senderID;
+    private String eventID;
     private String title;
     private String message;
     private String channelName;
     private Timestamp notificationSendTime;
     private String notificationID;
 
-    public Notification(User sender, Event event, String title, String message, String channelName, Timestamp notificationSendTime){
-        this.sender = sender;
-        this.event = event;
+    public Notification(String senderID, String eventID, String title, String message, String channelName, Timestamp notificationSendTime){
+        this.senderID = senderID;
+        this.eventID = eventID;
         this.title = title;
         this. message = message;
         this.channelName = channelName;
         this.notificationSendTime = notificationSendTime;
     }
 
-    public Notification(User sender, Event event, String title, String message, String channelName){
-        this.sender = sender;
-        this.event = event;
+    public Notification(String senderID, String eventID, String title, String message, String channelName){
+        this.senderID = senderID;
+        this.eventID = eventID;
         this.title = title;
         this. message = message;
         this.channelName = channelName;
         this.notificationSendTime = Timestamp.now();
     }
 
-    @Exclude
-    public User getSender() {
-        return sender;
-    }
+    /**
+     * A no argument public constructor for firebase
+     */
+    public Notification(){
 
-    @Exclude
-    public void setSender(User sender) {
-        this.sender = sender;
     }
 
     public String getSenderID(){
-        return sender.getUserID();
+        return senderID;
     }
 
     public void setSenderID(String senderID){
-        sender.setUserID(senderID);
-    }
-
-
-    @Exclude
-    public Event getEvent() {
-        return event;
-    }
-
-    @Exclude
-    public void setEvent(Event event) {
-        this.event = event;
+        this.senderID = senderID;
     }
 
     public String getEventID(){
-        return event.getEventID();
+        return eventID;
     }
 
     public void setEventID(String eventID){
-        event.setEventID(eventID);
+        this.eventID = eventID;
     }
 
     public String getTitle() {
@@ -109,7 +95,7 @@ public class Notification {
     }
 
     public void sendNotification(User user){
-        NotificationSender.sendNotification(user.getDeviceToken(), title, message, event.getEventID(), channelName);
+        NotificationSender.sendNotification(user.getDeviceToken(), title, message, eventID, channelName);
         Database.getDatabase().addNotificationRecipient(this, user, task -> {});
     }
 }

@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.NotificationSender;
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
 import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
@@ -37,6 +39,8 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     private String notificationType;
     private String eventId;
     private String channelName;
+
+    private String TAG = "OrganiserSendNotificationUIFragment";
 
     public OrganiserSendNotificationUIFragment() {
         // Required empty public constructor
@@ -115,15 +119,31 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 notificationMessage.setError("Message is required");
             }
 
-            Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
+            if (!messageTitle.isEmpty() && !messageContent.isEmpty()) {
 
-            // Todo: send to specific users based on criteria
-            String token = "cVmUisgDQUaawt3q0JHrGg:APA91bFdrg7fRCPxQHZ50pIvSQR1tkxtsefnLVh70dgKAun1XNiGc689gzaYrcSKJb7ymvDJC9E4_PFWsAtoQxCgoR4wAW7AOjDWqWga6gzYkVK_674U8VA";
+                Log.d(TAG, "Sent notification button clicked");
 
-            NotificationSender.sendNotification(token, messageTitle, messageContent, eventId, channelName);
+                Database.getDatabase().getEvent(eventId, task -> {
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "EventRetrieved");
+                        Log.d(TAG, messageTitle);
+                        Log.d(TAG, messageContent);
+                        switch (notificationType) {
+                            case "waitlist":
+                                EventNotificationManager.notifyWaitingList(task.getResult(), messageTitle, messageContent);
+                                break;
+                            case "chosen":
+                                EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
+                                break;
+                            case "cancelled":
+                                EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
+                                break;
+                        }
+                    } else {
+                        // TODO
+                    }
+                });
+            }
         });
-
-        // Add notification to database here
-        // Todo: add notifications to database
     }
 }

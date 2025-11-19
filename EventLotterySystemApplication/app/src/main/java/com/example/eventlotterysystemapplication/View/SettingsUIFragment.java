@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,8 +76,6 @@ public class SettingsUIFragment extends Fragment {
             AdminSession.setSelectedUserId(null);
         }
 
-        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
-
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
             // Navigate to notification settings fragment
@@ -101,16 +100,16 @@ public class SettingsUIFragment extends Fragment {
         database.getUser(uid, task -> {
             if (task.isSuccessful()) {
                 User adminUser = task.getResult();
-                if (adminUser.isAdmin()) { // if admin show the button
-                    adminViewButton.setVisibility(View.VISIBLE);
-                    // Hide loading and show content
-                    binding.loadingSettingsScreen.setVisibility(View.GONE);
-                    binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
-                }
+                binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
+                adminViewButton.setVisibility(adminUser.isAdmin() ? View.VISIBLE : View.GONE);
+
             } else {
                 Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
             }
+            // Hide loading and show content
+            binding.loadingSettingsScreen.setVisibility(View.GONE);
         });
+
 
         adminViewButton.setOnClickListener(v -> {
             if (getActivity() instanceof ContentActivity) {

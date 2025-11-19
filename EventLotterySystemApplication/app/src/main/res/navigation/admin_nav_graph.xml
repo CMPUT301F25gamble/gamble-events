@@ -37,5 +37,20 @@
         <action
             android:id="@+id/action_profileUIFragment_to_allProfilesFragment"
             app:destination="@id/allProfilesFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_deleteProfileFragment"
+            app:destination="@id/deleteProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deleteProfileFragment"
+        android:name="com.example.eventlotterysystemapplication.View.DeleteProfileFragment"
+        android:label="fragment_delete_profile"
+        tools:layout="@layout/fragment_delete_profile" >
+        <action
+            android:id="@+id/action_deleteProfileFragment_to_profileUIFragment2"
+            app:destination="@id/profileUIFragment" />
+        <action
+            android:id="@+id/action_deleteProfileFragment_to_allProfilesFragment"
+            app:destination="@id/allProfilesFragment" />
     </fragment>
 </navigation>

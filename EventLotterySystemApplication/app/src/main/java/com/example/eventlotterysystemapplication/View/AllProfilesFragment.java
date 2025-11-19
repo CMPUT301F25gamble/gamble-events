@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
@@ -64,14 +65,11 @@ public class AllProfilesFragment extends Fragment {
         binding.allProfilesList.setOnItemClickListener((parent, v, position, id) -> {
             User selectedUser = allUsers.get(position);
 
-            // Create a bundle to pass the selected user's ID to ADMIN SPECIFIC UI
-            Bundle bundle = new Bundle();
-            bundle.putString("userId", selectedUser.getUserID());
-            bundle.putBoolean("isAdminMode", true);
+            // Use global variable to store the selected user's ID
+            AdminSession.setSelectedUserId(selectedUser.getUserID());
 
-            // TODO: create a fragment + xml for the admin specific ui
             NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_allProfilesFragment_to_profileUIFragment, bundle);
+                    .navigate(R.id.action_allProfilesFragment_to_profileUIFragment);
 
         });
     }

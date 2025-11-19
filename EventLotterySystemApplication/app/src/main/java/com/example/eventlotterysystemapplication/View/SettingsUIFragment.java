@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
@@ -69,6 +70,9 @@ public class SettingsUIFragment extends Fragment {
             adminViewButton.setText("Switch to Admin View");
         } else {
             adminViewButton.setText("Switch to User View");
+            // Reset admin mode and user ID
+            AdminSession.setAdminMode(false);
+            AdminSession.setSelectedUserId(null);
         }
 
         adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
@@ -111,6 +115,10 @@ public class SettingsUIFragment extends Fragment {
         adminViewButton.setOnClickListener(v -> {
             if (getActivity() instanceof ContentActivity) {
                 Intent goToAdminViewIntent = new Intent(requireContext(), AdminActivity.class);
+
+                // Set admin mode and selected user id
+                AdminSession.setAdminMode(true);
+
                 startActivity(goToAdminViewIntent);
                 getActivity().finish();
             } else {

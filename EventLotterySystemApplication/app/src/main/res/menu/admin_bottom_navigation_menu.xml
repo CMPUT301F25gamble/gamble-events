@@ -11,6 +11,11 @@
         android:id="@+id/example">
     </item>
 
+    <item android:title="@string/bottom_menu_event_text"
+        android:icon="@drawable/events_icon"
+        android:id="@+id/eventUIFragment">
+    </item>
+
     <item android:title="@string/notification_logs_text"
         android:icon="@drawable/notifications_icon"
         android:id="@+id/adminNotifications">

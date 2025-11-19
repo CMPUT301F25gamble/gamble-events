@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -38,16 +39,12 @@ public class ProfileUIFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            userId = getArguments().getString("userId");
-            isAdminMode = getArguments().getBoolean("isAdminMode");
-        } else {
-            userId = null;
-            isAdminMode = false;
-        }
+        // Fetch the global user ID and admin mode from the AdminSession class
+        userId = AdminSession.getSelectedUserId();
+        isAdminMode = AdminSession.getAdminMode();
 
         Log.d("ProfileUIFragment",
-                "userId arg = " + userId + " isAdminMode = " + isAdminMode);
+                "userId arg = " + userId + "; isAdminMode = " + isAdminMode);
     }
 
     @Override
@@ -77,6 +74,9 @@ public class ProfileUIFragment extends Fragment {
 
                         // Admin Back button
                         binding.adminProfileBackButton.setOnClickListener(v -> {
+                            // Reset the selected user ID
+                            AdminSession.setSelectedUserId(null);
+                            // Navigate back to the previous fragment
                             NavHostFragment.findNavController(ProfileUIFragment.this).navigateUp();
                         });
                     }

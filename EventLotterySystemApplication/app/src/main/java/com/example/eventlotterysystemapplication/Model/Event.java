@@ -858,7 +858,7 @@ public class Event {
                 break;
             case 3:
                 this.entrantList.addToFinalized(user);
-//                Log.d("Event", "Finalized list size now: " + entrantList.getFinalized().size());
+//                Log.d("Event", "Finalized list size nFow: " + entrantList.getFinalized().size());
                 break;
             default:
                 throw new IllegalArgumentException("List number out of range");

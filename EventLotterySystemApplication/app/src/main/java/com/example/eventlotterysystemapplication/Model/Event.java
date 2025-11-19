@@ -176,59 +176,6 @@ public class Event {
     }
 
     /**
-     * This constructor can also allow for the instantiation of the event object from the program,
-     * but the main purpose here is to help with mock testing
-     * @param name The event's name
-     * @param description The event's description
-     * @param place The event's location
-     * @param eventTags The event's tags
-     * @param organizerID The ID of the user who organizes the event
-     * @param eventStartTime The start time of the event
-     * @param eventEndTime The ending time of the event
-     * @param registrationStartTime The time when the registration for the event opens
-     * @param registrationEndTime The time when the registration for the event closes
-     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
-     *                                     assuming that you were selected by the lottery
-     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
-     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
-     *                             the lottery system
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
-                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
-        // Used for mock test
-
-        this.name = name;
-        this.description = description;
-        this.place = place;
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.organizerID = organizerID;
-
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
-        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
-        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
-        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
-        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-
-        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.place = place;
-
-        this.entrantList = new EntrantList();
-        this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = -1; // Default as no limit
-        this.isRecurring = false; // Default as non-recurring
-        this.recurringFrequency = -1; // Default as non-recurring
-    }
-
-    /**
      * Gets the event's eventID
      * @return The eventID of the event
      */
@@ -444,6 +391,22 @@ public class Event {
      */
     public void setMaxFinalListCapacity(int maxFinalListCapacity) {
         this.maxFinalListCapacity = maxFinalListCapacity;
+    }
+
+    /**
+     * Returns the event poster download url
+     * @return Download url of the event poster
+     */
+    public String getEventPosterUrl() {
+        return eventPosterUrl;
+    }
+
+    /**
+     * Sets the event poster download url (to be stored on Firebase Storage) of the event
+     * @param eventPosterUrl the download url of the event poster image
+     */
+    public void setEventPosterUrl(String eventPosterUrl) {
+        this.eventPosterUrl = eventPosterUrl;
     }
 
     /**
@@ -733,6 +696,53 @@ public class Event {
     }
 
     /**
+     * A getter for the posters list
+     * @return The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    /**
+     * A setter for the posters list
+     * @param posters The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+
+        Database db = new Database();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
+    }
+
+    /**
+     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
+     * before returning
+     * @return A bitmap object of the QR code image
+     */
+    @Exclude
+    public Bitmap getQRCodeBitmap() {
+        if (QRCodeBitmap == null){
+            generateQRCode();
+        }
+        return QRCodeBitmap;
+    }
+
+    /**
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
+     */
+    @Exclude
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
+    }
+
+    /**
      * Parses the timestamp objects and saves them into the LocalDateTime objects
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -773,7 +783,6 @@ public class Event {
      * Adds a new tag to the list of event tags
      * @param tag The tag to be added
      */
-    @Exclude
     public void addEventTag(String tag){
         this.eventTags.add(tag);
     }
@@ -782,12 +791,14 @@ public class Event {
      * Remove a tag from the list of event tags
      * @param tag The tag to be removed
      */
-    @Exclude
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
     }
 
-    @Exclude
+    /**
+     * Remove a tag from the list of event tags based on index
+     * @param position The index of the tag
+     */
     public void deleteEventTag(int position){
         if (0 <= position && position < this.eventTags.size()){
             this.eventTags.remove(position);
@@ -810,7 +821,6 @@ public class Event {
      *             3: finalized list
      * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
      */
-    @Exclude
     public void setEntrantListValues(ArrayList<User> entrantListValues, int list) throws IllegalArgumentException{
         switch (list) {
             case 0:
@@ -846,19 +856,15 @@ public class Event {
         switch (list) {
             case 0:
                 this.entrantList.addToWaiting(user);
-//                Log.d("Event", "Waiting list size now: " + entrantList.getWaiting().size());
                 break;
             case 1:
                 this.entrantList.addToChosen(user);
-//                Log.d("Event", "Chosen list size now: " + entrantList.getChosen().size());
                 break;
             case 2:
                 this.entrantList.addToCancelled(user);
-//                Log.d("Event", "Cancelled list size now: " + entrantList.getCancelled().size());
                 break;
             case 3:
                 this.entrantList.addToFinalized(user);
-//                Log.d("Event", "Finalized list size nFow: " + entrantList.getFinalized().size());
                 break;
             default:
                 throw new IllegalArgumentException("List number out of range");
@@ -985,25 +991,27 @@ public class Event {
     }
 
     /**
-     * Allows a user to join the cancelled list, unlike other joins, this one has almost no
-     * conditions, as a user can enter the cancelled list from any entrant list, or even from just
-     * not being in the registration at all
+     * Allows a user to join the cancelled list
      * @param user The user that is to be put into the cancelled list
      */
-    public void joinCancelledList(User user){
-        if (!entrantList.getCancelled().contains(user)){
-            removeFromEntrantList(user, 0);
-            removeFromEntrantList(user, 1);
-            removeFromEntrantList(user, 3);
-            addToEntrantList(user, 2);
-            Database db = new Database();
-            db.updateEvent(this, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Event", "User successfully joins cancelled list");
-                }
-            });
+    public void joinCancelledList(User user) {
+        if (entrantList.getWaiting().contains(user) || entrantList.getChosen().contains(user) || entrantList.getFinalized().contains(user)) {
+            if (!entrantList.getCancelled().contains(user)) {
+                removeFromEntrantList(user, 0);
+                removeFromEntrantList(user, 1);
+                removeFromEntrantList(user, 3);
+                addToEntrantList(user, 2);
+                Database db = new Database();
+                db.updateEvent(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Event", "User successfully joins cancelled list");
+                    }
+                });
+            } else {
+                Log.e("Event", "User is already in the cancelled list");
+            }
         } else {
-            Log.e("Event", "User is already in the cancelled list");
+            Log.e("Event", "User is not associated with this event");
         }
     }
 
@@ -1016,6 +1024,7 @@ public class Event {
         if(entrantList.getChosen().contains(user)) {
             if (!entrantList.getWaiting().contains(user) && !entrantList.getCancelled().contains(user)) {
                 if (!entrantList.getFinalized().contains(user)) {
+                    removeFromEntrantList(user, 1);
                     addToEntrantList(user, 3);
                     Database db = new Database();
                     db.updateEvent(this, task -> {
@@ -1050,31 +1059,6 @@ public class Event {
         } else {
             Log.e("Event", "User is not in the finalized list");
         }
-    }
-
-    /**
-     * A getter for the posters list
-     * @return The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public ArrayList<Bitmap> getPosters() {
-        return posters;
-    }
-
-    /**
-     * A setter for the posters list
-     * @param posters The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public void setPosters(ArrayList<Bitmap> posters) {
-        this.posters = posters;
-
-        Database db = new Database();
-        db.updateEvent(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot update event");
-            }
-        });
     }
 
     /**
@@ -1140,41 +1124,4 @@ public class Event {
         }
     }
 
-    /**
-     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
-     * before returning
-     * @return A bitmap object of the QR code image
-     */
-    @Exclude
-    public Bitmap getQRCodeBitmap() {
-        if (QRCodeBitmap == null){
-            generateQRCode();
-        }
-        return QRCodeBitmap;
-    }
-
-    /**
-     * Sets the QR code bitmap to a specific bitmap
-     * @param QRCodeBitmap The bitmap to set the QR code to
-     */
-    @Exclude
-    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
-        this.QRCodeBitmap = QRCodeBitmap;
-    }
-
-    /**
-     * Sets the event poster download url (to be stored on Firebase Storage) of the event
-     * @param eventPosterUrl the download url of the event poster image
-     */
-    public void setEventPosterUrl(String eventPosterUrl) {
-        this.eventPosterUrl = eventPosterUrl;
-    }
-
-    /**
-     * Returns the event poster download url
-     * @return Download url of the event poster
-     */
-    public String getEventPosterUrl() {
-        return eventPosterUrl;
-    }
 }

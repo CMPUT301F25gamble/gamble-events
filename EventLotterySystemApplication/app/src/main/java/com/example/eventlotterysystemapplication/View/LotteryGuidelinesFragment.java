@@ -40,7 +40,7 @@ public class LotteryGuidelinesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        database = new Database();
+        database = Database.getDatabase();
         SharedUserViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedUserViewModel.class);
 
         // Cancel button to go back to previous register screen

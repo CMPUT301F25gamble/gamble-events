@@ -30,9 +30,14 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * An instance of this class represents a connection to the firebase firestore database
+ * An instance of this class represents a connection to the firebase firestore database. Since this
+ * is following a singleton design, our program is desinged to only have a single point of access to
+ * the database
  */
 public class Database {
+
+    // our singleton instance
+    private static Database database = null;
     private CollectionReference userRef;
     private CollectionReference eventRef;
     private CollectionReference notificationRef;
@@ -41,7 +46,7 @@ public class Database {
     /**
      * Initializes the database object, without being given any database or authorization
      */
-    public Database() {
+    private Database() {
         this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
     }
 
@@ -50,11 +55,38 @@ public class Database {
      * @param firestore
      * @param firebaseAuth
      */
-    public Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
+    private Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
         this.userRef = firestore.collection("User");
         this.eventRef = firestore.collection("Event");
         this.notificationRef = firestore.collection("Notification");
         this.firebaseAuth = firebaseAuth;
+    }
+
+    /**
+     * A lazy constructor of the singleton instance of the database
+     * @return The singleton database instance
+     */
+    public static Database getDatabase(){
+        if (database == null){
+            database = new Database();
+        }
+
+        return database;
+    }
+
+    /**
+     * A lazy constructor for the singleton instance for the database, where we are given some
+     * database and authorization
+     * @param firestore
+     * @param firebaseAuth
+     * @return The singleton database instance
+     */
+    public static Database getDatabase(FirebaseFirestore firestore, FirebaseAuth firebaseAuth){
+        if (database == null){
+            database = new Database(firestore, firebaseAuth);
+        }
+
+        return database;
     }
 
     /**
@@ -102,9 +134,11 @@ public class Database {
                 if (users.size() == 1) {
                     tcs.setResult(users.get(0));
                 } else {
+                    Log.e("Database", "More than one user with same device");
                     tcs.setException(new IllegalStateException("More than one user with same device"));
                 }
             } else {
+                Log.e("Database", task.getException().toString());
                 tcs.setException(task.getException());
             }
         });

@@ -48,7 +48,7 @@ public class EventNotificationManager {
 
         Notification winNotification = new Notification(event.getOrganizer(), event, notificationWinTitle, notificationWinBody, "lotteryWinNotification");
 
-        new Database().addNotification(winNotification, task -> {
+        Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getChosen()){
                     winNotification.sendNotification(user);
@@ -64,7 +64,7 @@ public class EventNotificationManager {
 
         Notification loseNotification = new Notification(event.getOrganizer(), event, notificationLoseTitle, notificationLoseBody, "lotteryLoseNotification");
 
-        new Database().addNotification(winNotification, task -> {
+        Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getWaiting()){
                     loseNotification.sendNotification(user);
@@ -86,11 +86,11 @@ public class EventNotificationManager {
                 + " because someone else declined their invitataion. Make sure to accept or decline " +
                 "the invitation by" + event.getInvitationAcceptanceDeadlineString();
 
-        new Database().getRedrawNotification(event.getEventID(), task -> {
+        Database.getDatabase().getRedrawNotification(event.getEventID(), task -> {
             if (task.isSuccessful()){
                 Notification notification = task.getResult();
 
-                new Database().addNotification(notification, task1 -> {
+                Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
                         notification.sendNotification(user);
                     } else {
@@ -99,7 +99,7 @@ public class EventNotificationManager {
                 });
             } else {
                 Notification notification =  new Notification(event.getOrganizer(), event, notificationTitle, notificationBody, "lotteryRedrawNotification");
-                new Database().addNotification(notification, task1 -> {
+                Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
                         notification.sendNotification(user);
                     } else {
@@ -119,7 +119,7 @@ public class EventNotificationManager {
     public static void notifyWaitingList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizer(), event, title, body, "waitingListNotification");
 
-        new Database().addNotification(notification, task -> {
+        Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getWaiting()){
                     notification.sendNotification(user);
@@ -139,7 +139,7 @@ public class EventNotificationManager {
     public static void notifyChosenList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizer(), event, title, body,"chosenListNotification");
 
-        new Database().addNotification(notification, task -> {
+        Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getChosen()){
                     notification.sendNotification(user);
@@ -159,7 +159,7 @@ public class EventNotificationManager {
     public static void notifyCancelledList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizer(), event, title, body, "cancelledListNotification");
 
-        new Database().addNotification(notification, task -> {
+        Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getCancelled()){
                     notification.sendNotification(user);

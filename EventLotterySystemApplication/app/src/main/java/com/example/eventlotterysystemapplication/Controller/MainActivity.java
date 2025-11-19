@@ -40,7 +40,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
-    Database database = new Database();
+    Database database = Database.getDatabase();
 
     /**
      * Checks if user is registered via device

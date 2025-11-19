@@ -110,6 +110,6 @@ public class Notification {
 
     public void sendNotification(User user){
         NotificationSender.sendNotification(user.getDeviceToken(), title, message, event.getEventID(), channelName);
-        new Database().addNotificationRecipient(this, user, task -> {});
+        Database.getDatabase().addNotificationRecipient(this, user, task -> {});
     }
 }

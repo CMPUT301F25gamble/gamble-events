@@ -42,7 +42,7 @@ public class DeleteProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        database = Database.getDatabase();
 
         // Back button navigates to profile fragment
         binding.deleteProfileBackButton.setOnClickListener(v -> {

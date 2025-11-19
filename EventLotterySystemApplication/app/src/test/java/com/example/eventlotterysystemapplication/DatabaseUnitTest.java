@@ -67,7 +67,7 @@ public class DatabaseUnitTest {
         when(mockDb.collection("Event")).thenReturn(eventRef);
         when(mockDb.collection("Notification")).thenReturn(notificationRef);
 
-        database = new Database(mockDb, mockAuth);
+        database = Database.getDatabase(mockDb, mockAuth);
     }
 
 

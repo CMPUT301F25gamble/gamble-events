@@ -543,6 +543,11 @@ public class Database {
         }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
     }
 
+    /**
+     * Given some notificationID, retrieve the notification object from the database
+     * @param notificationID The notificationID we are querying against
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
     public void getNotification(String notificationID, OnCompleteListener<Notification> listener){
         DocumentReference notificationDocRef = notificationRef.document(notificationID);
 
@@ -559,6 +564,14 @@ public class Database {
         });
     }
 
+    /**
+     * This method is specific for allowing us to add to the recipient collection of the redraw of a
+     * particular event, here check if the event already has a redraw notification, and if it does
+     * we return that object, otherwise we return an exception indicating that a new redraw
+     * notification object should be created
+     * @param eventID The event we want to check for redraws
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
     public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
         Query redrawNotificationQuery = notificationRef.where(Filter.and(
                 Filter.equalTo("eventID", eventID),
@@ -582,6 +595,11 @@ public class Database {
         });
     }
 
+    /**
+     * Adds a new notification object to the database
+     * @param notification The notification object to be added to the database
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
     public void addNotification(Notification notification, OnCompleteListener<Void> listener){
 
         DocumentReference notificationDocRef = notificationRef.document();
@@ -600,6 +618,13 @@ public class Database {
         });
     }
 
+    /**
+     * Adds a userID to the recipient collection, indicating that the user is a recipient of the
+     * notification
+     * @param notification The notification object that is sent to the user
+     * @param user The user who received the notification
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
     public void addNotificationRecipient(Notification notification, User user, OnCompleteListener<Void> listener){
         DocumentReference notificationDocRef = notificationRef.document(notification.getNotificationID());
 

@@ -203,6 +203,40 @@ public class EventUnitTest {
     }
 
     @Test
+    public void testSetRecurringEvent() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertTrue(event.getIsRecurring());
+    }
+
+    @Test
+    public void testSetRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(1);
+
+        assertEquals(1, event.getRecurringFrequency());
+    }
+
+    @Test
+    public void testSetInvalidRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertThrows(IllegalArgumentException.class, () -> event.setRecurringFrequency(5));
+    }
+
+    @Test
+    public void testGetRecurringFrequencyString() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(3);
+
+        assertEquals("Monthly", event.displayRecurrenceFrequency());
+    }
+
+    @Test
     public void testSetEntrantListValues(){
         Event event = mockEvent1();
 

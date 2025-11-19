@@ -28,11 +28,12 @@ public class Event {
     private String description;
     private String place;
     private ArrayList<String> eventTags;
-    private User organizer;
     private String organizerID;
     private EntrantList entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
+    private boolean isRecurring;
+    private int recurringFrequency;
     private String eventPosterUrl;
 
 
@@ -50,6 +51,7 @@ public class Event {
     private transient LocalDateTime registrationStartTime;
     private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
+    private transient LocalDateTime recurringEndDate;
     private static DateTimeFormatter formatter;
 
 
@@ -58,11 +60,6 @@ public class Event {
 
     @Exclude
     private ArrayList<Bitmap> posters;
-
-    /*
-    Include code to have some attributes that points to an event poster, I wouldn't know how to
-    declare attributes of that type yet
-     */
 
     /*
     Geolocation requirement
@@ -122,8 +119,8 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
-        this.posters = posters;
-
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -174,7 +171,8 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
-
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -226,25 +224,8 @@ public class Event {
         this.entrantList = new EntrantList();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = -1; // Default as no limit
-
-    }
-
-
-    /**
-     * Parses the timestamp objects and saves them into the LocalDateTime objects
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void parseTimestamps() {
-        if (eventStartTimeTS != null)
-            eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (eventEndTimeTS != null)
-            eventEndTime = eventEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (registrationStartTimeTS != null)
-            registrationStartTime = registrationStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (registrationEndTimeTS != null)
-            registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (invitationAcceptanceDeadlineTS != null)
-            invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -466,6 +447,45 @@ public class Event {
     }
 
     /**
+     * Gets if the event is an recurring event
+     * @return true if event recurring, false otherwise
+     */
+    @Exclude
+    public boolean getIsRecurring() {
+        return this.isRecurring;
+    }
+
+    /**
+     * Sets an event recurring status
+     * @param isRecurring boolean indicating whether or not an event is recurring
+     */
+    @Exclude
+    public void setIsRecurring(boolean isRecurring) {
+        this.isRecurring = isRecurring;
+    }
+
+    /**
+     * Gets recurring frequency of an event
+     * @return recurring frequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public int getRecurringFrequency() {
+        return this.recurringFrequency;
+    }
+
+    /**
+     * Sets recurring frequency of an event
+     * @param recurringFrequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public void setRecurringFrequency(int recurringFrequency) {
+        if (recurringFrequency != -1 && (recurringFrequency < 1 || recurringFrequency > 4)) {
+            throw new IllegalArgumentException("Invalid recurring frequency");
+        }
+        this.recurringFrequency = recurringFrequency;
+    }
+
+    /**
      * Gets the event's start time
      * @return The event's start time
      */
@@ -523,6 +543,24 @@ public class Event {
     @Exclude
     public void setEventEndTime(LocalDateTime eventEndTime) {
         this.eventEndTime = eventEndTime;
+    }
+
+    /**
+     * Gets an event's recurring end date
+     * @return The event's recurring end date
+     */
+    @Exclude
+    public LocalDateTime getRecurringEndDate() {
+        return this.recurringEndDate;
+    }
+
+    /**
+     * Sets an event's recurring end date
+     * @param recurringEndDate The event's recurring end date
+     */
+    @Exclude
+    public void setRecurringEndDate(LocalDateTime recurringEndDate) {
+        this.recurringEndDate = recurringEndDate;
     }
 
     /**
@@ -677,6 +715,61 @@ public class Event {
     }
 
     /**
+     * A getter for the entrant list
+     * @return The entrant list object
+     */
+    @Exclude
+    public EntrantList getEntrantList() {
+        return entrantList;
+    }
+
+    /**
+     * A setter for the entrant list
+     * @param entrantList The entrant list object
+     */
+    @Exclude
+    public void setEntrantList(EntrantList entrantList) {
+        this.entrantList = entrantList;
+    }
+
+    /**
+     * Parses the timestamp objects and saves them into the LocalDateTime objects
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void parseTimestamps() {
+        if (eventStartTimeTS != null)
+            eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (eventEndTimeTS != null)
+            eventEndTime = eventEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationStartTimeTS != null)
+            registrationStartTime = registrationStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationEndTimeTS != null)
+            registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (invitationAcceptanceDeadlineTS != null)
+            invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
+     * Retrieves an event's recurrence frequency in String
+     * @return The event's recurrence frequency in String
+     */
+    public String displayRecurrenceFrequency() {
+        if (this.getRecurringFrequency() == 1) {
+            return "Daily";
+        }
+        if (this.getRecurringFrequency() == 2) {
+            return "Weekly";
+        }
+        if (this.getRecurringFrequency() == 3) {
+            return "Monthly";
+        }
+        if (this.getRecurringFrequency() == 4) {
+            return "Yearly";
+        }
+        return "Not a recurring event";
+    }
+
+    /**
      * Adds a new tag to the list of event tags
      * @param tag The tag to be added
      */
@@ -701,42 +794,6 @@ public class Event {
         } else {
             Log.e("Event", "Index out of bound, cannot delete tag");
         }
-    }
-
-    /**
-     * A getter for the user object that represents the user who is organizing the event
-     * @return The user object of the organizer
-     */
-    @Exclude
-    public User getOrganizer() {
-        return organizer;
-    }
-
-    /**
-     * A setter for the user object that represents the user who is organizing the event
-     * @param organizer The user object of the organizer
-     */
-    @Exclude
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
-    }
-
-    /**
-     * A getter for the entrant list
-     * @return The entrant list object
-     */
-    @Exclude
-    public EntrantList getEntrantList() {
-        return entrantList;
-    }
-
-    /**
-     * A setter for the entrant list
-     * @param entrantList The entrant list object
-     */
-    @Exclude
-    public void setEntrantList(EntrantList entrantList) {
-        this.entrantList = entrantList;
     }
 
     /**

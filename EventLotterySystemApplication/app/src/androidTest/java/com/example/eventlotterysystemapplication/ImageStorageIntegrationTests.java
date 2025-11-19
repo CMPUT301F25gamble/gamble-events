@@ -156,7 +156,7 @@ public class ImageStorageIntegrationTests {
             throw new FileNotFoundException("Test Image File was not created");
         }
 
-        // Obtain the download uri so that
+        // Obtain the download uri so that we can delete the image pointed to by the download uri
         Uri imgUri = Tasks.await(imgStore.uploadEventPoster(eventId, testImage, task -> {
             Uri uri = task.getResult();
             downloadUrls.add(uri.toString());
@@ -164,6 +164,7 @@ public class ImageStorageIntegrationTests {
             createdImgs.add(imgName);
         }));
 
+        // Deleting event poster by download uri (recommended way)
         Tasks.await(imgStore.deleteEventPoster(imgUri.toString(), task -> {}));
 
         // Remove to make sure that we don't double delete during the takedown
@@ -188,9 +189,6 @@ public class ImageStorageIntegrationTests {
         }
 
         Tasks.await(imgStore.uploadEventPoster(eventId, testImage, task -> {
-            Uri uri = task.getResult();
-            downloadUrls.add(uri.toString());
-            Log.d("ImgStorageTestDeleteEventPosterById", "download uri is: " + uri);
             createdImgs.add(imgName);
         }));
 

@@ -664,23 +664,40 @@ public class Database {
 
         notificationDocRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
+                Log.d("Database", "Successfully retrieved notification document from reference");
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (!documentSnapshot.exists()){
+                    Log.d("Database", "Document does not previously exist in the database, adding it now");
                     addNotification(notification, task1 -> {
-                        CollectionReference recipients = notificationDocRef.collection("Recipients");
+                        if (task1.isSuccessful()) {
+                            Log.d("Database", "Document successfully added for the purpose of adding the recipient subcollection");
+                            CollectionReference recipients = notificationDocRef.collection("Recipients");
+                            Log.d("Database", "Notification document exists");
 
-                        recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
-                                .addOnCompleteListener(task2 -> {
-                                    listener.onComplete(task2);
-                                });
+                            DocumentReference recipientDocRef = recipients.document(user.getUserID());
+                            HashMap<String, Object> data = new HashMap<String, Object>();
+                            data.put("userID", user.getUserID());
+                            recipientDocRef.set(data).addOnCompleteListener(task2 -> {
+                                        if (task2.isSuccessful()) {
+                                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                                        }
+                                        listener.onComplete(task2);
+                                    });
+                        }
                     });
                 } else {
                     CollectionReference recipients = notificationDocRef.collection("Recipients");
+                    Log.d("Database", "Notification document exists");
 
-                    recipients.document(user.getUserID()).set(new HashMap<String, String>().put("userID", user.getUserID()))
-                            .addOnCompleteListener(task1 -> {
-                                listener.onComplete(task1);
-                            });
+                    DocumentReference recipientDocRef = recipients.document(user.getUserID());
+                    HashMap<String, Object> data = new HashMap<String, Object>();
+                    data.put("userID", user.getUserID());
+                    recipientDocRef.set(data).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()){
+                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                        }
+                        listener.onComplete(task1);
+                    });
                 }
             }
         });

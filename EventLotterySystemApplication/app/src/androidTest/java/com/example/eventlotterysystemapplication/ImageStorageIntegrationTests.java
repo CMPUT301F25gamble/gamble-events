@@ -37,6 +37,7 @@ public class ImageStorageIntegrationTests {
 
     private ImageStorage imgStore;
     private final List<String> createdImgs = new ArrayList<>();
+    private String posterImageDownloadUrl;
 
     @Before
     public void setup() {
@@ -82,6 +83,7 @@ public class ImageStorageIntegrationTests {
             Uri uri = task.getResult();
             Log.d("ImgStoreTestsInner", uri.toString());
             assertTrue(uri.toString().contains(eventId));
+            posterImageDownloadUrl = uri.toString();
         }));
 
         createdImgs.add(eventId + ".jpg");

@@ -65,8 +65,7 @@ public class EventUnitTest {
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
                 50,
-                20,
-                true
+                20
         );
         return event;
     }
@@ -141,11 +140,6 @@ public class EventUnitTest {
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
-    }
-
-    @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
     }
 
     @Test

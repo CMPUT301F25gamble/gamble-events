@@ -162,7 +162,6 @@ public class ImageStorage {
                 listener.onComplete(Tasks.forException(Objects.requireNonNull(task.getException())));
                 return;
             }
-            Log.d(TAG, "Successfully fetched all events");
             List<StorageReference> posterRefList = task.getResult().getItems();
             List<String> downloadUrls = new ArrayList<>();
             List<Task<Uri>> downloadTasks = new ArrayList<>();
@@ -186,6 +185,7 @@ public class ImageStorage {
                     return;
                 }
 
+                Log.d(TAG, "Successfully fetched all event poster download urls");
                 listener.onComplete(Tasks.forResult(downloadUrls));
             });
         });

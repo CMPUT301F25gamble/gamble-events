@@ -8,10 +8,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -88,6 +91,103 @@ public class ImageStorage {
             Log.d(TAG, "Event Poster Image " + imageRef.getName() + " Successfully Added");
             // Passes the download url to imageUrlListener
             imageUrlListener.onComplete(Tasks.forResult(uri));
+        });
+    }
+
+    /**
+     * (PREFERRED WAY) Given a poster image download url that is stored on the event object,
+     * delete that poster image on the storage bucket
+     * @param posterDownloadUrl The poster download url (formatted like
+     *                          https://firebasestorage.googleapis.com/v0/b/cmput301-gamblers.firebasestorage.app/o/...jpg?alt=media&token=...)
+     * @param listener A void OnCompleteListener that will be called upon delete task completion
+     * @return An asynchronous void task used ONLY for integration testing purposes. Please do not
+     * use the return result to access the task, use the OnCompleteListener instead :)
+     */
+    public Task<Void> deleteEventPoster(String posterDownloadUrl, OnCompleteListener<Void> listener) {
+        StorageReference eventPoster = FirebaseStorage.getInstance().getReferenceFromUrl(posterDownloadUrl);
+
+        return eventPoster.delete().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Delete task was unsuccessful: " + Objects.requireNonNull(task.getException()));
+                listener.onComplete(Tasks.forException(task.getException()));
+                return;
+            }
+            Log.d(TAG, "Successfully deleted " + posterDownloadUrl);
+            listener.onComplete(task);
+        }).addOnFailureListener(exception -> {
+            // File could not be deleted so it might not have been found
+            Log.e(TAG, Objects.requireNonNull(exception.getMessage()));
+            listener.onComplete(Tasks.forException(exception));
+        });
+    }
+
+    /**
+     * Given an eventId, delete the associated event poster stored on the storage bucket
+     * This function assumes that the eventId poster is stored as an .jpg file which may lead to errors.
+     * Therefore, use the posterDownloadUrl deleteEventPoster function if possible.
+     * @param listener A void OnCompleteListener that will be called upon delete task completion
+     * @param eventId The eventId of the event image poster (may or may not have an associated image so beware)
+     * @return An asynchronous void task used ONLY for integration testing purposes. Please do not
+     * use the return result to access the task, use the OnCompleteListener instead :)
+     */
+    public Task<Void> deleteEventPoster(OnCompleteListener<Void> listener, String eventId) {
+        StorageReference eventPoster = posterImagesRef.child(eventId + ".jpg");
+
+       return eventPoster.delete().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Delete task was unsuccessful: " + Objects.requireNonNull(task.getException()));
+                listener.onComplete(Tasks.forException(task.getException()));
+                return;
+            }
+            Log.d(TAG, "Successfully deleted " + eventId + ".jpg");
+            listener.onComplete(task);
+        }).addOnFailureListener(exception -> {
+            // File could not be deleted so it might not have been found
+            Log.e(TAG, Objects.requireNonNull(exception.getMessage()));
+            listener.onComplete(Tasks.forException(exception));
+        });
+    }
+
+    /**
+     * One caveat is that all the images will be stored in memory so hopefully we don't have that many posters
+     * @param listener A OnCompleteListener that will be called upon fetch task completion, the task
+     *                 object will contain the list of download urls for all posters
+     * @return An asynchronous ListResult task used ONLY for integration testing purposes. Please do not
+     * use the return result to access the task, use the OnCompleteListener instead :)
+     */
+    public Task<ListResult> fetchAllPosterImageUrls(OnCompleteListener<List<String>> listener) {
+        return posterImagesRef.listAll().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Could not fetch all events");
+                listener.onComplete(Tasks.forException(Objects.requireNonNull(task.getException())));
+                return;
+            }
+            List<StorageReference> posterRefList = task.getResult().getItems();
+            List<String> downloadUrls = new ArrayList<>();
+            List<Task<Uri>> downloadTasks = new ArrayList<>();
+
+            // Since download uris are fetched asynchronously... GRRR... we need to store list of tasks to "await for"
+            for (StorageReference posterRef : posterRefList) {
+                Task<Uri> downloadTask = posterRef.getDownloadUrl().addOnCompleteListener(downloadUriTask -> {
+                    if (!task.isSuccessful()) {
+                        Log.e(TAG, "Unable to get poster image download uri");
+                        return;
+                    }
+                    downloadUrls.add(downloadUriTask.getResult().toString());
+                });
+                downloadTasks.add(downloadTask);
+            }
+
+            Tasks.whenAllComplete(downloadTasks).addOnCompleteListener(urlListTask -> {
+                if (!urlListTask.isSuccessful()) {
+                    Log.e(TAG, "Fetching poster download URLs unsuccessful");
+                    listener.onComplete(Tasks.forException(Objects.requireNonNull(urlListTask.getException())));
+                    return;
+                }
+
+                Log.d(TAG, "Successfully fetched all event poster download urls");
+                listener.onComplete(Tasks.forResult(downloadUrls));
+            });
         });
     }
 }

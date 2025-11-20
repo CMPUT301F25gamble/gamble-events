@@ -10,25 +10,23 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
+import com.example.eventlotterysystemapplication.databinding.ActivityAdminBinding;
 
-/**
- * Activity that displays the main
- */
+public class AdminActivity extends AppCompatActivity {
 
-public class ContentActivity extends AppCompatActivity {
+    private ActivityAdminBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
+
+        binding = ActivityAdminBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
-                (v, insets) -> {
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.adminNavHostFragment, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -36,34 +34,35 @@ public class ContentActivity extends AppCompatActivity {
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(binding.contentNavHostFragment.getId());
+                .findFragmentById(binding.adminNavHostFragment.getId());
 
         assert navHostFragment != null;
 
         // Get NavController
         NavController navController = navHostFragment.getNavController();
+        navController.setGraph(R.navigation.admin_nav_graph);
 
-        // Start navigation on second tab (events page) and display it
-        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
-        navController.navigate(R.id.events_ui_fragment);
+        // start navigation on the notifications tab
+        binding.adminBottomNavMenu.setSelectedItemId(R.id.adminNotifications);
+        navController.navigate(R.id.adminNotifications);
 
         /*
-         * Nav logic for BottomNavigationView
+         * Nav logic for AdminBottomNavigationView
          * -> Fixes the issue withe the back stack on the bottom menu
          */
-        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
+        binding.adminBottomNavMenu.setOnItemSelectedListener(item -> {
             int destinationId = item.getItemId();
 
             NavOptions navOptions = new NavOptions.Builder()
-                // Main fix here
-                .setPopUpTo(R.id.content_nav_graph, true)
-                .build();
+                    // Main fix here
+                    .setPopUpTo(destinationId, true)
+                    .build();
 
             // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
+
     }
+
 }
-
-

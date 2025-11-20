@@ -470,11 +470,11 @@ public class Database {
                                 updateEventRegistration(event, eventDocRef, task1 -> {
                                     if (task1.isSuccessful()) {
                                         Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-                                        listener.onComplete(task);
+                                        listener.onComplete(task1);
                                     } else {
                                         Log.e("Database", "Failed to update registration: " + task.getException());
                                         listener.onComplete(Tasks.forException(
-                                                Objects.requireNonNull(task.getException())
+                                                Objects.requireNonNull(task1.getException())
                                         ));
                                     }
                                 });

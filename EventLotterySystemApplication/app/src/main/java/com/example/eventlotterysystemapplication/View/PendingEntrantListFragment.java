@@ -16,12 +16,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentPendingEntrantListBinding;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PendingEntrantListFragment
@@ -42,6 +46,8 @@ public class PendingEntrantListFragment extends Fragment {
     private ArrayAdapter<CharSequence> adapter;
     // List of pending entrants
     private final ArrayList<User> pendingEntrants = new ArrayList<>();
+
+    LotterySelector lotterySelector;
 
 
     @Override
@@ -116,6 +122,25 @@ public class PendingEntrantListFragment extends Fragment {
                 binding.contentGroupPendingEntrantsList.setVisibility(View.VISIBLE);
             });
         }
+
+        // Randomly Select Entrants for Event when button pressed
+        binding.selectEntrantsButton.setOnClickListener(v->{
+            database.getEvent(eventId,  task -> {
+                if (task.isSuccessful()) {
+                    Event event = task.getResult();
+
+                    // Use lottery selector to randomly select entrants
+                    List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
+
+                    for (User u : selectedEntrants)
+                    {
+                        event.joinChosenList(u); // add entrants to chosen list
+                    }
+
+                    Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
     // Private method to help with loading the data into the ListView

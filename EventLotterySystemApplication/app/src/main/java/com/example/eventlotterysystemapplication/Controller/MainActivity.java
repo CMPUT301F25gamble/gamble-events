@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -67,13 +68,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             eventID = null;
         }
-
-        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
-        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -216,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);

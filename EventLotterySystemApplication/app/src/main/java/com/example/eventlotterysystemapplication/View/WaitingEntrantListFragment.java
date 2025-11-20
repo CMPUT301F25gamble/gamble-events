@@ -15,24 +15,25 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
-import com.example.eventlotterysystemapplication.databinding.FragmentCancelledEntrantListBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentWaitingEntrantListBinding;
 
 import java.util.ArrayList;
 
 /**
- * Displays a listview of all cancelled entrants for the selected event
- * Will fetch all cancelled entrants from the database to display in the listview
+ * WaitingEntrantListFragment
+ * Fragment that displays a ListView of all waiting entrants that have yet to accept an
+ * invitation to join the event
  * Navigated to from {@link EntrantListSelectionFragment}
  */
 
-public class CancelledEntrantListFragment extends Fragment {
-    private FragmentCancelledEntrantListBinding binding;
+public class WaitingEntrantListFragment extends Fragment {
+    private FragmentWaitingEntrantListBinding binding;
     private Database database;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentCancelledEntrantListBinding.inflate(inflater, container, false);
+        binding = FragmentWaitingEntrantListBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -40,7 +41,7 @@ public class CancelledEntrantListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = Database.getDatabase();
+        database = new Database();
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -60,14 +61,14 @@ public class CancelledEntrantListFragment extends Fragment {
         }
 
         // Back Button to return to Event Lists page
-        binding.cancelledEntrantListBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(CancelledEntrantListFragment.this)
+        binding.waitingEntrantListBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(WaitingEntrantListFragment.this)
                     .navigateUp();
         });
 
         // Display the loading screen while the data is being fetched
-        binding.loadingCancelledEntrantsList.setVisibility(View.VISIBLE);
-        binding.contentGroupCancelledEntrantsList.setVisibility(View.GONE);
+        binding.loadingWaitingEntrantsList.setVisibility(View.VISIBLE);
+        binding.contentGroupWaitingEntrantsList.setVisibility(View.GONE);
 
         // call parseEventRegistration
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -75,7 +76,7 @@ public class CancelledEntrantListFragment extends Fragment {
 
                 // Error check if task is not successful
                 if (!task.isSuccessful()) {
-                    binding.loadingCancelledEntrantsList.setVisibility(View.GONE);
+                    binding.loadingWaitingEntrantsList.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -84,18 +85,18 @@ public class CancelledEntrantListFragment extends Fragment {
                 Event event = task.getResult();
 
                 // Populate the ListView with all entrants
-                loadCancelledEntrantsIntoList(event);
+                loadWaitingEntrantsIntoList(event);
 
                 // Hide loading and show content
-                binding.loadingCancelledEntrantsList.setVisibility(View.GONE);
-                binding.contentGroupCancelledEntrantsList.setVisibility(View.VISIBLE);
+                binding.loadingWaitingEntrantsList.setVisibility(View.GONE);
+                binding.contentGroupWaitingEntrantsList.setVisibility(View.VISIBLE);
             });
         }
     }
 
     // Private method to help with loading the data into the ListView
-    private void loadCancelledEntrantsIntoList(Event event) {
-        // List for cancelled entrants
+    private void loadWaitingEntrantsIntoList(Event event) {
+        // List for waiting entrants
         ArrayList<CharSequence> data = new ArrayList<>();
         // Adapter for listview
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
@@ -104,7 +105,8 @@ public class CancelledEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getCancelled()) {
+        // Loop through all waiting entrants
+        for (User u : event.getEntrantList().getWaiting()) {
             String name = u.getName();
             data.add(name);
         }
@@ -112,6 +114,6 @@ public class CancelledEntrantListFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         // Set the adapter for the ListView
-        binding.cancelledListOfEntrantsListView.setAdapter(adapter);
+        binding.waitingListOfEntrantsListView.setAdapter(adapter);
     }
 }

@@ -10,6 +10,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -56,12 +57,31 @@ public class ContentActivity extends AppCompatActivity {
         // Get NavController
         NavController navController = navHostFragment.getNavController();
 
+        // Start navigation on second tab (events page) and display it
+        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
+        navController.navigate(R.id.events_ui_fragment);
+
+        /*
+         * Nav logic for BottomNavigationView
+         * -> Fixes the issue withe the back stack on the bottom menu
+         */
+        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
+            int destinationId = item.getItemId();
+
+            NavOptions navOptions = new NavOptions.Builder()
+                // Main fix here
+                .setPopUpTo(R.id.content_nav_graph, true)
+                .build();
         Bundle startArgs = new Bundle();
         if (intent != null && intent.hasExtra("eventId")) {
             startArgs.putString("eventId", intent.getStringExtra("eventId"));
             Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
         }
 
+            // Second arg is null because there is no start args
+            navController.navigate(destinationId, null, navOptions);
+            return true;
+        });
         // Test
 //        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
 

@@ -22,8 +22,7 @@
         app:constraint_referenced_ids="
             waitingEntrantListBackButton,
             waitingListOfEntrantsText,
-            waitingListOfEntrantsListView,
-            selectEntrantsButton"
+            waitingListOfEntrantsListView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -67,16 +66,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/waitingListOfEntrantsText" />
 
-    <Button
-        android:id="@+id/selectEntrantsButton"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_beige"
-        android:layout_marginTop="16dp"
-        android:text="Randomly Select Entrants for Event"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/waitingListOfEntrantsListView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

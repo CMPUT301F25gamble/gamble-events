@@ -18,7 +18,7 @@ import com.example.eventlotterysystemapplication.databinding.FragmentEntrantList
  * for viewing the chosen list of entrants
  * User can choose to see all entrants, chosen entrants, pending entrants, cancelled entrants, and
  * finalised list of entrants, with buttons linking to {@link AllEntrantsListFragment},
- * {@link ChosenEntrantListFragment}, {@link PendingEntrantListFragment},
+ * {@link ChosenEntrantListFragment}, {@link WaitingEntrantListFragment},
  * {@link CancelledEntrantListFragment}, and {@link FinalEntrantListFragment}
  */
 

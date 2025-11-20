@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/app_beige"
-        android:text="@string/all_pending_entrants_text"
+        android:text="@string/all_waiting_entrants_text"
         android:textColor="@color/grey"
         android:textSize="18sp"
         android:textStyle="bold"

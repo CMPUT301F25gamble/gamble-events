@@ -7,13 +7,14 @@ import android.content.Context;
 import android.os.Build;
 
 public class NotificationChannelFactory {
-    public void createNotificationChannel(String channelName){
-        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
-        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
+    public static void createNotificationChannels(Context context){
+        checkAndCreateNotificationChannel(context, "lotteryWinNotification");
+        checkAndCreateNotificationChannel(context,"lotteryLoseNotification");
+        checkAndCreateNotificationChannel(context,"lotteryRedrawNotification");
+        checkAndCreateNotificationChannel(context,"waitingListNotification");
+        checkAndCreateNotificationChannel(context,"chosenListNotification");
+        checkAndCreateNotificationChannel(context,"cancelledListNotification");
+        checkAndCreateNotificationChannel(context, "finalizedListNotification");
     }
 
     /**
@@ -21,12 +22,12 @@ public class NotificationChannelFactory {
      * list of notification channels
      * @param channelName The notification channel we want to check if already exists
      */
-    public static void checkNotificationChannel(String channelName) {
+    public static void checkAndCreateNotificationChannel(Context context, String channelName) {
 
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NotificationManager.class);
         NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
 
-        String description = "Filler";
+        String description;
 
         if (channelName.equals("lotteryWinNotification")) {
             description = "This notification channel is used to notify entrants for lottery selection";
@@ -41,6 +42,8 @@ public class NotificationChannelFactory {
             description = "This notification channel is used to notify entrants in the chosen list";
         } else if (channelName.equals("cancelledListNotification")) {
             description = "This notification channel is used to notify entrants in the chosen list";
+        } else {
+            description = "This notification channel is used to notify entrants in the finalized list";
         }
 
         if (notificationChannel == null) {
@@ -54,7 +57,7 @@ public class NotificationChannelFactory {
         }
     }
 
-    private void createNotificationChannel(String channelName, String description) {
+    private void createNotificationChannel(Context context, String channelName, String description) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             NotificationChannel notificationChannel = new NotificationChannel(
@@ -65,7 +68,7 @@ public class NotificationChannelFactory {
 
             notificationChannel.enableVibration(true); // Allow vibration for notifications
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(notificationChannel);
             }

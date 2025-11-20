@@ -36,7 +36,7 @@ public class ProfileUIFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProfileUiBinding.inflate(inflater, container, false);
-        database = new Database();
+        database = Database.getDatabase();
 
 
         // Fetch user using Device ID

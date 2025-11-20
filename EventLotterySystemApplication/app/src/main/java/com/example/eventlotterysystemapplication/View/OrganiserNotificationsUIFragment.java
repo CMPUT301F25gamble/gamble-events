@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserNo
 
 public class OrganiserNotificationsUIFragment extends Fragment {
 
+    private String eventId;
+
     private FragmentOrganiserNotificationUiBinding binding;
 
     public OrganiserNotificationsUIFragment() {
@@ -38,6 +41,13 @@ public class OrganiserNotificationsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        OrganiserNotificationsUIFragmentArgs args = OrganiserNotificationsUIFragmentArgs
+                .fromBundle(getArguments());
+
+        eventId = args.getEventId();
+
+        Log.d("OrganiserNotificationsUIFragment", "Event ID: " + eventId);
     }
 
     @Override
@@ -62,19 +72,19 @@ public class OrganiserNotificationsUIFragment extends Fragment {
         waitlistEntrantsButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
                     .navigate(OrganiserNotificationsUIFragmentDirections
-                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("waitlist"));
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("waitlist", eventId));
         });
 
         chosenEntrantsButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
                     .navigate(OrganiserNotificationsUIFragmentDirections
-                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen", eventId));
         });
 
         cancelledEntrantsButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
                     .navigate(OrganiserNotificationsUIFragmentDirections
-                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen"));
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen", eventId));
         });
 
     }

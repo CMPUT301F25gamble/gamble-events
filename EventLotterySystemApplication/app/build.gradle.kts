@@ -48,7 +48,8 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:9.1.1") // FirebaseUI for image loading
     implementation("com.github.bumptech.glide:glide:5.0.5") // Glide for image loading
     implementation(libs.firebase.installations) // auth service
-    implementation(libs.firebase.messaging) // auth service
+    implementation(libs.firebase.messaging)
+    implementation(libs.volley) // auth service
 
     //Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.20.0")
@@ -73,5 +74,14 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     //Firebase messaging
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-messaging:25.0.1")
+
+    // Volley
+    implementation("com.android.volley:volley:1.2.1")
+
+    // Location and Maps services
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
 }

@@ -67,7 +67,7 @@ public class DatabaseUnitTest {
         when(mockDb.collection("Event")).thenReturn(eventRef);
         when(mockDb.collection("Notification")).thenReturn(notificationRef);
 
-        database = new Database(mockDb, mockAuth);
+        database = Database.getDatabase(mockDb, mockAuth);
     }
 
 
@@ -79,7 +79,7 @@ public class DatabaseUnitTest {
         final Task<QuerySnapshot> mockEventGetTask = mock(Task.class);
         final Task<DocumentSnapshot> mockRegGetTask = mock(Task.class);
         final Task<Void> mockRegDeleteTask = mock(Task.class);
-        User user = new User("John Doe", "johndoe@gmail.com", "4036767", "deviceID2");
+        User user = new User("John Doe", "johndoe@gmail.com", "4036767", "deviceID2", "random token");
 
         //Mocks the current logged-in Firebase user
         when(mockAuth.getCurrentUser()).thenReturn(mockAuthUser);
@@ -174,7 +174,7 @@ public class DatabaseUnitTest {
         final Task<DocumentSnapshot> mockRegGetTask2 = mock(Task.class);
         final Task<Void> mockRegDeleteTask1 = mock(Task.class);
         final Task<Void> mockRegDeleteTask2 = mock(Task.class);
-        User user = new User("John Doe", "johndoe@gmail.com", "4036767", "deviceID2");
+        User user = new User("John Doe", "johndoe@gmail.com", "4036767", "deviceID2", "new token");
 
         //Mocks the current logged-in Firebase user
         when(mockAuth.getCurrentUser()).thenReturn(mockAuthUser);

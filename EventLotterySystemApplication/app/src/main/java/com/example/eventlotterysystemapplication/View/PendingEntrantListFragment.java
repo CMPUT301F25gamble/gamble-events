@@ -61,9 +61,7 @@ public class PendingEntrantListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
-        lotterySelector = new LotterySelector();
-
+        database = Database.getDatabase();
 
         // Initialize the adapter with the data
         adapter = new ArrayAdapter<>(

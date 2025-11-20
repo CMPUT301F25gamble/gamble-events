@@ -28,7 +28,7 @@ public class SettingsUIFragment extends Fragment {
 
     private FragmentSettingsUiBinding binding;
 
-    Database database = new Database();
+    Database database = Database.getDatabase();
 
     public SettingsUIFragment () {
         // Required empty public constructor

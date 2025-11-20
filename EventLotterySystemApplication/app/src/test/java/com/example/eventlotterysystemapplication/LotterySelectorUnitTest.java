@@ -32,35 +32,40 @@ public class LotterySelectorUnitTest {
             "billybob@mymail.com",
             "123-456-7890",
             "Billy Bob <3",
-            "billyBobDeviceID"
+            "billyBobDeviceID",
+            "new token"
     );
 
     User alice = new User(
             "alice@mymail.com",
             "888-888-8888",
             "Alice",
-            "AliceDeviceID"
+            "AliceDeviceID",
+            "new token"
     );
 
     User santa = new User(
             "nick@north-pole.ca",
             "505-050-5067",
             "Santa Claus",
-            "SAINT_NICK_DEVICE_ID"
+            "SAINT_NICK_DEVICE_ID",
+            "new token"
     );
 
     User elf10597120397 = new User(
             "elf105971203970@north-pole.ca",
             "505-048-3130",
             "Elf #10597120397 @ North Pole",
-            "10597120397_elf_device_id"
+            "10597120397_elf_device_id",
+            "new token"
     );
 
     User elf7683989 = new User(
             "elf7683989@north-pole.ca",
             "505-391-0441",
             "Elf #7683989 @ North Pole",
-            "7683989_elf_device_id"
+            "7683989_elf_device_id",
+            "new token"
     );
 
     // Note that I am not adding user ids to each user cuz i am lazy

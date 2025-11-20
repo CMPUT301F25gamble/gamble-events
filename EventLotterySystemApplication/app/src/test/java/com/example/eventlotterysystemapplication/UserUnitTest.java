@@ -7,7 +7,8 @@ import com.example.eventlotterysystemapplication.Model.User;
 import org.junit.Test;
 
 public class UserUnitTest {
-    private User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID");
+    private User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID",
+            "new token");
 
     @Test
     public void addition_isCorrect() {

@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,9 +30,14 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * An instance of this class represents a connection to the firebase firestore database
+ * An instance of this class represents a connection to the firebase firestore database. Since this
+ * is following a singleton design, our program is desinged to only have a single point of access to
+ * the database
  */
 public class Database {
+
+    // our singleton instance
+    private static Database database = null;
     private CollectionReference userRef;
     private CollectionReference eventRef;
     private CollectionReference notificationRef;
@@ -40,7 +46,7 @@ public class Database {
     /**
      * Initializes the database object, without being given any database or authorization
      */
-    public Database() {
+    private Database() {
         this(FirebaseFirestore.getInstance(), FirebaseAuth.getInstance());
     }
 
@@ -49,11 +55,38 @@ public class Database {
      * @param firestore
      * @param firebaseAuth
      */
-    public Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
+    private Database(FirebaseFirestore firestore, FirebaseAuth firebaseAuth) {
         this.userRef = firestore.collection("User");
         this.eventRef = firestore.collection("Event");
         this.notificationRef = firestore.collection("Notification");
         this.firebaseAuth = firebaseAuth;
+    }
+
+    /**
+     * A lazy constructor of the singleton instance of the database
+     * @return The singleton database instance
+     */
+    public static Database getDatabase(){
+        if (database == null){
+            database = new Database();
+        }
+
+        return database;
+    }
+
+    /**
+     * A lazy constructor for the singleton instance for the database, where we are given some
+     * database and authorization
+     * @param firestore
+     * @param firebaseAuth
+     * @return The singleton database instance
+     */
+    public static Database getDatabase(FirebaseFirestore firestore, FirebaseAuth firebaseAuth){
+        if (database == null){
+            database = new Database(firestore, firebaseAuth);
+        }
+
+        return database;
     }
 
     /**
@@ -101,9 +134,11 @@ public class Database {
                 if (users.size() == 1) {
                     tcs.setResult(users.get(0));
                 } else {
+                    Log.e("Database", "More than one user with same device");
                     tcs.setException(new IllegalStateException("More than one user with same device"));
                 }
             } else {
+                Log.e("Database", task.getException().toString());
                 tcs.setException(task.getException());
             }
         });
@@ -542,8 +577,130 @@ public class Database {
         }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
     }
 
-    public void addNotificationLog(){
-        // TODO: implement this method
+    /**
+     * Given some notificationID, retrieve the notification object from the database
+     * @param notificationID The notificationID we are querying against
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
+    public void getNotification(String notificationID, OnCompleteListener<Notification> listener){
+        DocumentReference notificationDocRef = notificationRef.document(notificationID);
+
+        notificationDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()){
+                Notification notification = task.getResult().toObject(Notification.class);
+                notification.setNotificationID(notificationID);
+                listener.onComplete(Tasks.forResult(notification));
+            } else if (!task.getResult().exists()){
+                Log.e("Database", "Document does not exist");
+            } else {
+                Log.e("Database", "Could not execute query");
+            }
+        });
+    }
+
+    /**
+     * This method is specific for allowing us to add to the recipient collection of the redraw of a
+     * particular event, here check if the event already has a redraw notification, and if it does
+     * we return that object, otherwise we return an exception indicating that a new redraw
+     * notification object should be created
+     * @param eventID The event we want to check for redraws
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
+    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
+        Query redrawNotificationQuery = notificationRef.where(Filter.and(
+                Filter.equalTo("eventID", eventID),
+                Filter.equalTo("channelName", "lotteryRedrawNotification")
+        ));
+
+        redrawNotificationQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
+                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
+
+                if (notifications.size() > 0){
+                    listener.onComplete(Tasks.forResult(notifications.get(0)));
+                } else {
+                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+                }
+            } else {
+                Log.e("Database", "Failed to query database");
+                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+            }
+        });
+    }
+
+    /**
+     * Adds a new notification object to the database
+     * @param notification The notification object to be added to the database
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
+    public void addNotification(Notification notification, OnCompleteListener<Void> listener){
+
+        DocumentReference notificationDocRef = notificationRef.document();
+        notification.setNotificationID(notificationDocRef.getId());
+
+        notificationDocRef.set(notification).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("Database", "Notification added successfully with Event ID: " + notification.getNotificationID());
+                Log.d("Database", "Event added successfully with timestamp: " + notification.getNotificationSendTime());
+                listener.onComplete(task);
+
+            } else {
+                Log.e("Database", "Failed to add notification: " + task.getException());
+                listener.onComplete(task);
+            }
+        });
+    }
+
+    /**
+     * Adds a userID to the recipient collection, indicating that the user is a recipient of the
+     * notification
+     * @param notification The notification object that is sent to the user
+     * @param user The user who received the notification
+     * @param listener An OnCompleteListener that will be called when the operation finishes
+     */
+    public void addNotificationRecipient(Notification notification, User user, OnCompleteListener<Void> listener){
+        DocumentReference notificationDocRef = notificationRef.document(notification.getNotificationID());
+
+        notificationDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                Log.d("Database", "Successfully retrieved notification document from reference");
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (!documentSnapshot.exists()){
+                    Log.d("Database", "Document does not previously exist in the database, adding it now");
+                    addNotification(notification, task1 -> {
+                        if (task1.isSuccessful()) {
+                            Log.d("Database", "Document successfully added for the purpose of adding the recipient subcollection");
+                            CollectionReference recipients = notificationDocRef.collection("Recipients");
+                            Log.d("Database", "Notification document exists");
+
+                            DocumentReference recipientDocRef = recipients.document(user.getUserID());
+                            HashMap<String, Object> data = new HashMap<String, Object>();
+                            data.put("userID", user.getUserID());
+                            recipientDocRef.set(data).addOnCompleteListener(task2 -> {
+                                        if (task2.isSuccessful()) {
+                                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                                        }
+                                        listener.onComplete(task2);
+                                    });
+                        }
+                    });
+                } else {
+                    CollectionReference recipients = notificationDocRef.collection("Recipients");
+                    Log.d("Database", "Notification document exists");
+
+                    DocumentReference recipientDocRef = recipients.document(user.getUserID());
+                    HashMap<String, Object> data = new HashMap<String, Object>();
+                    data.put("userID", user.getUserID());
+                    recipientDocRef.set(data).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()){
+                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                        }
+                        listener.onComplete(task1);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -687,7 +844,6 @@ public class Database {
 
                                 tcs.setResult(event);
 
-                                Log.d("Test Database 1", "Success");
 
                             } else {
                                 Log.e("Error", "Failed to get user", task.getException());
@@ -734,14 +890,13 @@ public class Database {
                             }
                         });
                         break;
-                }
 
-                Log.d("Test Database 2", "Success");
+                    default:
+                        Log.e("Database", "Registration parsed illegal status");
+                }
                 parseEventRegistrationTasks.add(tcs.getTask());
 
             }
-
-            Log.d("Test Database 3", "Success");
 
             Tasks.whenAllComplete(parseEventRegistrationTasks).addOnCompleteListener(done -> {
                 listener.onComplete(Tasks.forResult(event));

@@ -193,23 +193,6 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void createNotificationChannel(String channelName, String description) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelName,
-                    description,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-
-            notificationChannel.enableVibration(true); // Allow vibration for notifications
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-        }
-    }
 
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);

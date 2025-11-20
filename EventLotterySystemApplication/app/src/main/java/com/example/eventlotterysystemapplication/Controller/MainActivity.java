@@ -24,7 +24,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
-import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
     Database database = new Database();
+
+    private boolean isAdmin = false;
 
     /**
      * Checks if user is registered via device
@@ -93,22 +94,9 @@ public class MainActivity extends AppCompatActivity {
                     // Check to see if device ID is in database
                     database.getUserFromDeviceID(deviceId, task -> {
                         if (task.isSuccessful()) {
-                            User currentUser = task.getResult();
-                            if (currentUser != null) {
-                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        String token = task1.getResult();
-                                        String storedToken = currentUser.getDeviceToken();
-                                        if (storedToken == null || !storedToken.equals(token)) {
-                                            currentUser.setDeviceToken(token);
-                                            database.modifyUser(currentUser, task2 -> {
-                                                if (!task2.isSuccessful()) {
-                                                    Log.e("Database", "Cannot modify user while updating token");
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
+                            Boolean exists = task.getResult();
+                            if (exists != null && exists) {
+
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
                                     goToContentActivityWithEvent(eventID);
@@ -216,12 +204,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);
         goToContentIntentWithEvent.putExtra("eventID", eventID); // pass the QR code event ID
         startActivity(goToContentIntentWithEvent);
         finish();
     }
-
 }

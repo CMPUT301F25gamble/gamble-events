@@ -172,4 +172,8 @@ public class EventNotificationManager {
             }
         });
     }
+
+    public static void notifyFinalizedList(Event event, String title, String body){
+        Notification notification = n
+    }
 }

@@ -68,12 +68,6 @@ public class MainActivity extends AppCompatActivity {
             eventID = null;
         }
 
-        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
-        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -197,24 +191,6 @@ public class MainActivity extends AppCompatActivity {
         Intent goToRegisterIntent = new Intent(this, RegisterActivity.class);
         startActivity(goToRegisterIntent);
         finish();
-    }
-
-    private void createNotificationChannel(String channelName, String description) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelName,
-                    description,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-
-            notificationChannel.enableVibration(true); // Allow vibration for notifications
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-        }
     }
 
 

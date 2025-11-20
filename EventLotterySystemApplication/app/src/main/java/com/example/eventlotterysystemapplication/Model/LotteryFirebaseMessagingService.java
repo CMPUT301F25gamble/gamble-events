@@ -42,7 +42,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
             String channelName = remoteMessage.getData().get("channelName");
             Log.d("LotteryFirebaseMessagingService", "Channel Name: " + channelName);
 
-            checkNotificationChannel(channelName);
+            NotificationChannelFactory.checkNotificationChannel(channelName);
 
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");
@@ -112,43 +112,5 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         int notificationId = 1;
         notificationManager.notify(notificationId, builder.build());
     }
-
-    /**
-     * In case the notification channel does not already exist, we want to be able to add it to the
-     * list of notification channels
-     * @param channelName The notification channel we want to check if already exists
-     */
-    private void checkNotificationChannel(String channelName) {
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
-
-            String description = "Filler";
-
-            if (channelName.equals("lotteryWinNotification")) {
-                description = "This notification channel is used to notify entrants for lottery selection";
-            } else if (channelName.equals("lotteryLoseNotification")){
-                description = "This notification channel is used to notify entrants that they lost lottery selection";
-            } else if (channelName.equals("lotteryRedrawNotification")){
-                description = "This notification channel is used to notify entrants if they have won lottery redrawing";
-            } if (channelName.equals("waitingListNotification")) {
-                description = "This notification channel is used to notify entrants in the waiting list";
-            } else if (channelName.equals("chosenListNotification")){
-                description = "This notification channel is used to notify entrants in the chosen list";
-            } else if (channelName.equals("cancelledListNotification")){
-                description = "This notification channel is used to notify entrants in the chosen list";
-            }
-
-            if (notificationChannel == null) {
-                NotificationChannel channel = new NotificationChannel(
-                        channelName,
-                        description,
-                        NotificationManager.IMPORTANCE_HIGH
-                );
-                notificationManager.createNotificationChannel(channel);
-                channel.enableVibration(true);
-            }
-
-        }
 
 }

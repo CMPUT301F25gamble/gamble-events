@@ -14,7 +14,7 @@ public class User{
     private String phoneNumber;
     private String deviceID;
     private String userID;
-    private boolean admin;
+    private boolean isAdmin;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -37,7 +37,7 @@ public class User{
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.deviceID = deviceID;
-        admin = false;
+        isAdmin = false;
     }
 
     /**
@@ -125,7 +125,7 @@ public class User{
      * @return A boolean that represents whether or not the user is an admin
      */
     public boolean isAdmin() {
-        return admin;
+        return isAdmin;
     }
 
     /**
@@ -133,7 +133,7 @@ public class User{
      * @param admin A boolean that represents whether or not the user is an admin
      */
     public void setAdmin(boolean admin) {
-        this.admin = admin;
+        isAdmin = admin;
     }
 
     /**

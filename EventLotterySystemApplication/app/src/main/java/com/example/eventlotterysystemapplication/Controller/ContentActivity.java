@@ -56,13 +56,15 @@ public class ContentActivity extends AppCompatActivity {
 
             NavOptions navOptions = new NavOptions.Builder()
                 // Main fix here
-                .setPopUpTo(R.id.content_nav_graph, true)
+                .setPopUpTo(destinationId, true)
                 .build();
 
             // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
+
+
     }
 }
 

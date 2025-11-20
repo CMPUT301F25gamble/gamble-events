@@ -96,9 +96,9 @@
     </fragment>
     <fragment
         android:id="@+id/pendingEntrantList"
-        android:name="com.example.eventlotterysystemapplication.View.WaitingEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.PendingEntrantListFragment"
         android:label="fragment_pending_entrant_list"
-        tools:layout="@layout/fragment_waiting_entrant_list" >
+        tools:layout="@layout/fragment_pending_entrant_list" >
         <action
             android:id="@+id/action_pendingEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.WaitingEntrantListFragment">
+    tools:context=".View.PendingEntrantListFragment">
 
     <ProgressBar
-        android:id="@+id/loading_waiting_entrants_list"
+        android:id="@+id/loading_pending_entrants_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,17 +17,18 @@
 
     <!-- Group referencing all content to HIDE while loading the DB info  -->
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/content_group_waiting_entrants_list"
+        android:id="@+id/content_group_pending_entrants_list"
         android:visibility="gone"
         app:constraint_referenced_ids="
-            waitingEntrantListBackButton,
-            waitingListOfEntrantsText,
-            waitingListOfEntrantsListView"
+            pendingEntrantListBackButton,
+            pendingListOfEntrantsText,
+            pendingListOfEntrantsListView,
+            selectEntrantsButton"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
     <ImageButton
-        android:id="@+id/waitingEntrantListBackButton"
+        android:id="@+id/pendingEntrantListBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -40,21 +41,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/waitingListOfEntrantsText"
+        android:id="@+id/pendingListOfEntrantsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/all_waiting_entrants_text"
+        android:text="@string/all_pending_entrants_text"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/waitingEntrantListBackButton"
+        app:layout_constraintTop_toBottomOf="@+id/pendingEntrantListBackButton"
         tools:layout_editor_absoluteX="16dp" />
 
     <ListView
-        android:id="@+id/waitingListOfEntrantsListView"
+        android:id="@+id/pendingListOfEntrantsListView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -64,6 +65,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/waitingListOfEntrantsText" />
+        app:layout_constraintTop_toBottomOf="@+id/pendingListOfEntrantsText" />
+
+    <Button
+        android:id="@+id/selectEntrantsButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_beige"
+        android:layout_marginTop="16dp"
+        android:text="Randomly Select Entrants for Event"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pendingListOfEntrantsListView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

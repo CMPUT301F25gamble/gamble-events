@@ -1,14 +1,11 @@
 package com.example.eventlotterysystemapplication.View;
 
-import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,14 +15,13 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
-import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentWaitingEntrantListBinding;
 
 import java.util.ArrayList;
 
 /**
- * PendingEntrantListFragment
- * Fragment that displays a ListView of all pending entrants that have yet to accept an
+ * WaitingEntrantListFragment
+ * Fragment that displays a ListView of all waiting entrants that have yet to accept an
  * invitation to join the event
  * Navigated to from {@link EntrantListSelectionFragment}
  */
@@ -109,7 +105,7 @@ public class WaitingEntrantListFragment extends Fragment {
                 data
         );
 
-        // Loop through all pending entrants
+        // Loop through all waiting entrants
         for (User u : event.getEntrantList().getWaiting()) {
             String name = u.getName();
             data.add(name);

@@ -174,16 +174,6 @@ public class EventNotificationManager {
     }
 
     public static void notifyFinalizedList(Event event, String title, String body){
-        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "finalizedListNotification");
-
-        Database.getDatabase().addNotification(notification, task -> {
-            if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getFinalized()){
-                    notification.sendNotification(user);
-                }
-            } else {
-                Log.e("EventNotificationManager", "Could not save notification to database");
-            }
-        });
+        Notification notification = n
     }
 }

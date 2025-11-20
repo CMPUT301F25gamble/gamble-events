@@ -27,7 +27,7 @@ public class NotificationChannelFactory {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NotificationManager.class);
         NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
 
-        String description = "Filler";
+        String description;
 
         if (channelName.equals("lotteryWinNotification")) {
             description = "This notification channel is used to notify entrants for lottery selection";
@@ -35,14 +35,13 @@ public class NotificationChannelFactory {
             description = "This notification channel is used to notify entrants that they lost lottery selection";
         } else if (channelName.equals("lotteryRedrawNotification")) {
             description = "This notification channel is used to notify entrants if they have won lottery redrawing";
-        }
-        if (channelName.equals("waitingListNotification")) {
+        } else if (channelName.equals("waitingListNotification")) {
             description = "This notification channel is used to notify entrants in the waiting list";
         } else if (channelName.equals("chosenListNotification")) {
             description = "This notification channel is used to notify entrants in the chosen list";
         } else if (channelName.equals("cancelledListNotification")) {
             description = "This notification channel is used to notify entrants in the cancelled list";
-        } else if (channelName.equals("finalizedListNotification")) {
+        } else {
             description = "This notification channel is used to notify entrants in the finalized list";
         }
 

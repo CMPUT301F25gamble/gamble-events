@@ -85,7 +85,7 @@ public class ContentActivity extends AppCompatActivity {
         // Test
 //        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
 
-        navController.setGraph(R.navigation.content_nav_graph, startArgs);
+        navController.setGraph(R.navigation.content_nav_graph);
 
         NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }

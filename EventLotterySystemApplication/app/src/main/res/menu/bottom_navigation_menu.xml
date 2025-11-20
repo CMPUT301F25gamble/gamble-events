@@ -9,6 +9,7 @@
     <item android:title="@string/bottom_menu_event_text"
         android:icon="@drawable/events_icon"
         android:id="@+id/events_ui_fragment">
+
     </item>
 
     <item android:title="@string/bottom_menu_notifications_text"

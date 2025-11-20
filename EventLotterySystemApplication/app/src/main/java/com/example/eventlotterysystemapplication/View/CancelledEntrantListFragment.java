@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
+
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class CancelledEntrantListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        database = Database.getDatabase();
 
         // Safely read arguments
         Bundle args = getArguments();

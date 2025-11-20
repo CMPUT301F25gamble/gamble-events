@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.Controller;
 import android.os.StrictMode;
+import android.util.Log;
+
 import org.json.JSONObject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -32,7 +34,7 @@ public class NotificationSender {
             os.close();
 
             int responseCode = conn.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
+            Log.d("Response Code", Integer.toString(responseCode));
 
         } catch (Exception e) {
             e.printStackTrace();

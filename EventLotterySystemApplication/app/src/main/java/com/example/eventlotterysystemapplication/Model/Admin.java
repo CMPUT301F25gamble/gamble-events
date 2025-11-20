@@ -14,7 +14,7 @@ import java.util.List;
  * An instance of this class represents an admin
  */
 public class Admin extends User{
-    private Database db = new Database();
+    private Database db = Database.getDatabase();
 
     /**
      * A constructor for creating an Admin object, assuming such user does not exist yet

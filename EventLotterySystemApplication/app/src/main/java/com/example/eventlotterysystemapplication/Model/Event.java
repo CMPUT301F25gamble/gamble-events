@@ -124,14 +124,6 @@ public class Event {
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.posters = posters;
 
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
     }
 
     /**
@@ -142,7 +134,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
+     * @param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes
@@ -183,15 +175,6 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
 
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
-
     }
 
     /**
@@ -202,7 +185,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
+     * @param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes

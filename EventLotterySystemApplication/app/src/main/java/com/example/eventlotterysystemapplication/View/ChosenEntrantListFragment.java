@@ -1,11 +1,14 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,8 +24,7 @@ import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntra
 import java.util.ArrayList;
 
 /**
- * Displays a listview of chosen entrants that includes pending entrants, cancelled entrants,
- * and entrants that accepted and invitation to the event
+ * Displays a listview of chosen entrants that includes chosen entrants.
  * Will fetch a list of the above from the database to be displayed in the listview
  * Navigated to from {@link EntrantListSelectionFragment}
  */
@@ -30,6 +32,15 @@ import java.util.ArrayList;
 public class ChosenEntrantListFragment extends Fragment {
     private FragmentChosenEntrantListBinding binding;
     private Database database;
+    // Global scope event var
+    private Event currentEvent;
+
+    // List of data for each chosen entrant
+    private ArrayList<CharSequence> data = new ArrayList<>();
+    // Adapter for listview
+    private ArrayAdapter<CharSequence> adapter;
+    // List of chosen entrants
+    private final ArrayList<User> chosenEntrants = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -43,6 +54,15 @@ public class ChosenEntrantListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         database = new Database();
+
+        // Initialize the adapter with the data
+        adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                data
+        );
+        // Set the adapter for the ListView
+        binding.chosenListOfEntrantsListView.setAdapter(adapter);
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -84,6 +104,7 @@ public class ChosenEntrantListFragment extends Fragment {
 
                 // Fetch the event from the task
                 Event event = task.getResult();
+                currentEvent = event;
 
                 // Populate the ListView with all entrants
                 loadChosenEntrantsIntoList(event);
@@ -97,23 +118,123 @@ public class ChosenEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadChosenEntrantsIntoList(Event event) {
-        // List for chosen entrants
-        ArrayList<CharSequence> data = new ArrayList<>();
-        // Adapter for listview
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                data
-        );
+//        // List for chosen entrants
+//        ArrayList<CharSequence> data = new ArrayList<>();
+//        // Adapter for listview
+//        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
+//                requireContext(),
+//                android.R.layout.simple_list_item_1,
+//                data
+//        );
 
         for (User u : event.getEntrantList().getChosen()) {
+            chosenEntrants.add(u);      // Add user details to the list
             String name = u.getName();
-            data.add(name);
+            data.add(name);             // Add ONLY user's name to the list
         }
         // Notify the adapter
         adapter.notifyDataSetChanged();
 
-        // Set the adapter for the ListView
-        binding.chosenListOfEntrantsListView.setAdapter(adapter);
+        // When you tap a name in the list, show the user details popup:
+        binding.chosenListOfEntrantsListView.setOnItemClickListener((parent, view, position, id) -> {
+            User selectedUser = chosenEntrants.get(position);
+            showChosenEntrantDialog(selectedUser);
+        });
+    }
+
+    /**
+     * Displays a dialog containing the selected user's information and provides the
+     * option to decline their pending event invitation. If declined, the user is
+     * moved from the event’s chosen list to the cancelled list, the local ListView
+     * and the database are updated accordingly, and a confirmation toast is shown.
+     *
+     * @param user The chosen entrant whose details should be displayed and acted upon.
+     */
+    private void showChosenEntrantDialog(User user) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogChosenEntrantView = inflater.inflate(R.layout.dialog_chosen_entrant, null);
+
+        TextView nameText = dialogChosenEntrantView.findViewById(R.id.enterName);
+        TextView emailText = dialogChosenEntrantView.findViewById(R.id.enterEmail);
+        TextView phoneText = dialogChosenEntrantView.findViewById(R.id.enterPhone);
+        // TODO: implement Geolocation
+        // TextView locationText = dialogChosenEntrantView.findViewById(R.id.enterLocation);
+        Button declineButton = dialogChosenEntrantView.findViewById(R.id.dialogDeclineButton);
+        Button backButton1 = dialogChosenEntrantView.findViewById(R.id.dialogBackButton);
+
+        nameText.setText(user.getName());
+        emailText.setText(user.getEmail());
+
+        // If phone number null, don't display
+        if (user.getPhoneNumber() == null) {
+            phoneText.setVisibility(View.GONE);
+            dialogChosenEntrantView.findViewById(R.id.dialogUserPhone).setVisibility(View.GONE);
+        } else {
+            phoneText.setText(user.getPhoneNumber());
+        }
+
+        // TODO: implement Geolocation
+        // locationText.setText(user.getLocation());
+
+        // Setup first dialog for displaying user info
+        AlertDialog dialog1 = new AlertDialog.Builder(requireContext())
+                .setView(dialogChosenEntrantView)
+                .setCancelable(true)
+                .create();
+
+        // Set the background to transparent so we can show the rounded corners
+        dialog1.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        // Return to list view
+        backButton1.setOnClickListener(v -> dialog1.dismiss());
+
+        // Move to a new dialog
+        declineButton.setOnClickListener(v -> {
+            LayoutInflater inflater2 = LayoutInflater.from(requireContext());
+            View dialogChosenEntrantDeclineView = inflater2
+                    .inflate(R.layout.dialog_chosen_entrant_decline, null);
+            Button confirmButton = dialogChosenEntrantDeclineView
+                    .findViewById(R.id.dialogConfirmButton);
+            Button backButton2 = dialogChosenEntrantDeclineView
+                    .findViewById(R.id.dialogBackButton);
+
+            // Setup second dialog for declining the invitation
+            AlertDialog dialog2 = new AlertDialog.Builder(requireContext())
+                    .setView(dialogChosenEntrantDeclineView)
+                    .setCancelable(true)
+                    .create();
+
+            // Strengthen background dimness (to emphasize the dialog)
+            dialog2.getWindow().setDimAmount(.7f);
+            // Set the background to transparent so we can show the rounded corners
+            dialog2.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+            // Return to dialog chosen entrant view (i.e., dialog1)
+            backButton2.setOnClickListener(view -> dialog2.dismiss());
+
+            // Remove User from chosen list (i.e., send user to cancelled list)
+            confirmButton.setOnClickListener(view -> {
+                // Dismiss dialog1 first for a clean transition
+                dialog1.dismiss();
+                // Remove user from event's chosen list DB
+                currentEvent.joinCancelledList(user);
+
+                // Remove user from LOCAL chosen list
+                chosenEntrants.remove(user);
+                data.remove(user.getName());
+
+                // Refresh the ListView
+                adapter.notifyDataSetChanged();
+                // Dismiss the dialog
+                dialog2.dismiss();
+                Toast.makeText(requireContext(),
+                        "Invite declined for " + user.getName(),
+                        Toast.LENGTH_SHORT).show();
+            });
+            // Show the dialog 2 (i.e., the user decline dialog)
+            dialog2.show();
+        });
+        // Show the dialog 1 (i.e., the user info dialog)
+        dialog1.show();
     }
 }

@@ -1,22 +1,15 @@
 package com.example.eventlotterysystemapplication.Model;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.View.EventDetailScreenFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -42,7 +35,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
             String channelName = remoteMessage.getData().get("channelName");
             Log.d("LotteryFirebaseMessagingService", "Channel Name: " + channelName);
 
-            NotificationChannelFactory.checkNotificationChannel(channelName);
+            NotificationChannelFactory.checkAndCreateNotificationChannel(this.getApplicationContext(), channelName);
 
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");

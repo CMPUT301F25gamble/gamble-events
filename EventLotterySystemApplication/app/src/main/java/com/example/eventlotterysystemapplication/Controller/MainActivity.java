@@ -23,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.NotificationChannelFactory;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             eventID = null;
         }
+
+        NotificationChannelFactory.createNotificationChannels(this);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)

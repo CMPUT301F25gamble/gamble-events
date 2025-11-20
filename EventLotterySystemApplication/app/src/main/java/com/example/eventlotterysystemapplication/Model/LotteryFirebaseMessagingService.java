@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.Model;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -41,8 +43,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
             String channelName = remoteMessage.getData().get("channelName");
             Log.d("LotteryFirebaseMessagingService", "Channel Name: " + channelName);
-
-            NotificationChannelFactory.checkNotificationChannel(channelName);
+            NotificationChannelFactory.checkAndCreateNotificationChannel(this, channelName);
 
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");
@@ -112,5 +113,4 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         int notificationId = 1;
         notificationManager.notify(notificationId, builder.build());
     }
-
 }

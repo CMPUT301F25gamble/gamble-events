@@ -1,7 +1,5 @@
 package com.example.eventlotterysystemapplication.Controller;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,7 +23,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.NotificationChannelFactory;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -71,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             eventID = null;
         }
-
-        NotificationChannelFactory.createNotificationChannels(this);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -197,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToRegisterIntent);
         finish();
     }
+
 
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <application
         android:allowBackup="true"
@@ -42,6 +43,7 @@
                     android:scheme="cmput301gamblers" />
             </intent-filter>
         </activity>
+        <receiver android:name="com.example.eventlotterysystemapplication.Controller.LotteryAlarmReceiver" />
         <service
             android:name=".Model.LotteryFirebaseMessagingService"
             android:exported="false">

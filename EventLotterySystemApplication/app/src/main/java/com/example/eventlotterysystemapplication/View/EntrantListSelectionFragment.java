@@ -18,7 +18,7 @@ import com.example.eventlotterysystemapplication.databinding.FragmentEntrantList
  * for viewing the chosen list of entrants
  * User can choose to see all entrants, chosen entrants, pending entrants, cancelled entrants, and
  * finalised list of entrants, with buttons linking to {@link AllEntrantsListFragment},
- * {@link ChosenEntrantListFragment}, {@link WaitingEntrantListFragment},
+ * {@link ChosenEntrantListFragment}, {@link PendingEntrantListFragment},
  * {@link CancelledEntrantListFragment}, and {@link FinalEntrantListFragment}
  */
 
@@ -62,30 +62,40 @@ public class EntrantListSelectionFragment extends Fragment {
 
         // View all entrants Button to access list of all entrants
         binding.viewAllEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_allEntrantsListFragment, bundle);
         });
 
         // View all chosen entrants Button to access list of all entrants
         binding.allChosenEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle2 = new Bundle();
+            bundle2.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_chosenEntrantList, bundle);
         });
 
         // View all pending entrants Button to access list of all entrants
         binding.allPendingEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle3 = new Bundle();
+            bundle3.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_pendingEntrantList, bundle);
         });
 
         // View all cancelled entrants Button to access list of all entrants
         binding.allCancelledEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle4 = new Bundle();
+            bundle4.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_cancelledEntrantListFragment, bundle);
         });
 
         // View final entrants Button to access list of all entrants
         binding.finalListOfEntrantsButton.setOnClickListener(v -> {
+            Bundle bundle5 = new Bundle();
+            bundle5.putString("eventID", eventId);
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList, bundle);
         });

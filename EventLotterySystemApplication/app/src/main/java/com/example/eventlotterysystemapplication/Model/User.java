@@ -16,6 +16,8 @@ public class User{
     private String deviceToken;
     private String userID;
     private boolean admin;
+    private boolean optOutLotteryStatusNotifications;
+    private boolean optOutSpecificNotifications;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -40,8 +42,20 @@ public class User{
         this.deviceID = deviceID;
         this.deviceToken = deviceToken;
         admin = false;
+        this.optOutLotteryStatusNotifications = false;
+        this.optOutSpecificNotifications = false;
     }
 
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.deviceID = deviceID;
+        this.deviceToken = deviceToken;
+        admin = false;
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
+    }
     /**
      * Gets the userID of the current user object
      * @return The userID string set by the database
@@ -144,6 +158,22 @@ public class User{
      */
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public boolean isOptOutLotteryStatusNotifications() {
+        return optOutLotteryStatusNotifications;
+    }
+
+    public void setOptOutLotteryStatusNotifications(boolean optOutLotteryStatusNotifications) {
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+    }
+
+    public boolean isOptOutSpecificNotifications() {
+        return optOutSpecificNotifications;
+    }
+
+    public void setOptOutSpecificNotifications(boolean optOutSpecificNotifications) {
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
     }
 
     /**

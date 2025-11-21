@@ -37,7 +37,7 @@
     <string name="entrant_lists_text">Entrant Lists</string>
     <string name="view_all_entrants_text">View All Entrants</string>
     <string name="all_chosen_entrants_text">All Chosen Entrants</string>
-    <string name="all_waiting_entrants_text">All Waiting Entrants</string>
+    <string name="all_pending_entrants_text">All Pending Entrants</string>
     <string name="all_cancelled_entrants_text">All Cancelled Entrants</string>
     <string name="final_list_of_entrants_text">Final List of Entrants</string>
     <string name="event_details_title_text">Event Details</string>
@@ -95,9 +95,9 @@
     <string name="create_event_title_text">Create Event</string>
     <string name="done_creating_event_text">Done Creating Event</string>
     <string name="done_editing_event_text">Done Editing Event</string>
-    <string name="notification_title_text">Notification Title</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="notification_logs_text">Notification Logs</string>
     <string name="browse_profiles">All Profiles</string>
     <string name="browse_images">Browse Images</string>
+    <string name="notification_title_text">Notification Title</string>
 </resources>

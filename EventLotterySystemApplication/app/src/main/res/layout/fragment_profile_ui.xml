@@ -6,36 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".View.ProfileUIFragment">
 
-    <!-- Loading bar to wait for DB info -->
-    <ProgressBar
-        android:id="@+id/loading_profile_ui"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Group referencing all content to HIDE while loading the DB info  -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/content_group_profile_ui"
-        android:visibility="gone"
-        app:constraint_referenced_ids="
-            profile_header,
-            profile_name_header,
-            profile_emailer_header,
-            profile_phone_header,
-            profile_name,
-            profile_email,
-            profile_phone,
-            admin_profile_back_button,
-            update_profile_button,
-            delete_profile_button,
-            user_profile_events,
-            profile_history_button"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
-
     <TextView
         android:id="@+id/profile_header"
         android:layout_width="wrap_content"
@@ -138,19 +108,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_phone_header" />
 
-    <!-- All Buttons -->
-    <ImageButton
-        android:id="@+id/admin_profile_back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:padding="8dp"
-        android:contentDescription="@string/back_button_text"
-        android:src="@drawable/back_icon"
-        android:background="@drawable/round_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/update_profile_button"
@@ -175,26 +132,15 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_history_button" />
 
     <Button
-        android:id="@+id/user_profile_events"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        android:backgroundTint="@color/blue"
-        android:text="User's Events"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/update_profile_button" />
-
-    <Button
         android:id="@+id/profile_history_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="136dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         android:backgroundTint="@color/blue"
         android:text="@string/profile_history_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_profile_events" />
+        app:layout_constraintTop_toBottomOf="@+id/update_profile_button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,12 +54,18 @@ public class ContentActivity extends AppCompatActivity {
 
         assert navHostFragment != null;
 
+        Bundle startArgs = new Bundle();
+        if (intent != null && intent.hasExtra("eventId")) {
+            startArgs.putString("eventId", intent.getStringExtra("eventId"));
+            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
+        }
+
         // Get NavController
         NavController navController = navHostFragment.getNavController();
+        navController.setGraph(R.navigation.content_nav_graph, startArgs);
 
         // Start navigation on second tab (events page) and display it
         binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
-        navController.navigate(R.id.events_ui_fragment);
 
         /*
          * Nav logic for BottomNavigationView
@@ -72,21 +78,13 @@ public class ContentActivity extends AppCompatActivity {
                 // Main fix here
                 .setPopUpTo(R.id.content_nav_graph, true)
                 .build();
-        Bundle startArgs = new Bundle();
-        if (intent != null && intent.hasExtra("eventId")) {
-            startArgs.putString("eventId", intent.getStringExtra("eventId"));
-            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
-        }
 
-            // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
         // Test
 //        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
-
-        navController.setGraph(R.navigation.content_nav_graph);
-
-        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }
 }
+
+

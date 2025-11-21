@@ -120,7 +120,10 @@ public class EventDetailScreenFragment extends Fragment {
                             Log.d(TAG, "Initial Waiting list: " + event.getEntrantList().getWaiting());
 
                             showGenerateQRCodeButton();
-                            changeWaitlistBtn(event.getEntrantList().getWaiting().contains(user));
+                            changeWaitlistBtn(
+                                    event.getEntrantList().getWaiting().contains(user),
+                                    event.getEntrantList().getCancelled().contains(user)
+                            );
                         } else {
                             // Failed to load user; hide loading and show error
                             binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -169,14 +172,16 @@ public class EventDetailScreenFragment extends Fragment {
                            if (taskUser.isSuccessful()) {
                                // Grab user and check if already in waiting list
                                User user = taskUser.getResult();
-                               if (!event.getEntrantList().getWaiting().contains(user)) {
+                               if (event.getEntrantList().getCancelled().contains(user)) {
+                                   changeWaitlistBtn(false, true);
+                               } else if (!event.getEntrantList().getWaiting().contains(user)) {
                                    // User is not in waiting list, so join the waitlist
                                    event.joinWaitingList(user);
-                                   changeWaitlistBtn(true);
+                                   changeWaitlistBtn(true, false);
                                } else {
                                    // User is in waiting list, so leave the waitlist
                                    event.leaveWaitingList(user);
-                                   changeWaitlistBtn(false);
+                                   changeWaitlistBtn(false, false);
                                }
                                Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList().getWaiting());
                            } else {
@@ -233,10 +238,8 @@ public class EventDetailScreenFragment extends Fragment {
      * Updates the waitlist button colors and text based on if the user is in the waitlist
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
-    private void changeWaitlistBtn(boolean userInWaitlist) {
-        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
+    private void changeWaitlistBtn(boolean userInWaitlist, boolean userIsBlacklisted) {
         if (isOwnedEvent) {
-
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
                     ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
@@ -244,8 +247,11 @@ public class EventDetailScreenFragment extends Fragment {
             return;
         }
 
-
-        if (userInWaitlist) {
+        if (userIsBlacklisted) {
+            binding.navigationBarButton.setText("BLACKLISTED");
+            binding.navigationBarButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black));
+        } else if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist
             binding.navigationBarButton.setText(R.string.leave_waitlist_text);
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));

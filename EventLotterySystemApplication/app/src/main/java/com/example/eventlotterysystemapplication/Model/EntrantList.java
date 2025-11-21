@@ -7,6 +7,7 @@ import java.util.HashMap;
  * An instance of this class represents the waiting lists for a single event
  */
 public class EntrantList {
+    //TODO opt out for specific users using hashmap
     protected ArrayList<User> waiting;
     protected ArrayList<User> chosen;
     protected ArrayList<User> cancelled;

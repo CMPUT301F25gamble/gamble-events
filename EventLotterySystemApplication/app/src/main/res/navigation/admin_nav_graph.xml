@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_nav_graph"
+    app:startDestination="@id/eventsUIFragment">
+
+    <fragment
+        android:id="@+id/adminNotifications"
+        android:name="com.example.eventlotterysystemapplication.View.AdminNotifications"
+        android:label="fragment_admin_notifications"
+        tools:layout="@layout/fragment_admin_notifications" />
+    <fragment
+        android:id="@+id/eventsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" >
+        <action
+            android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
+            app:destination="@id/eventDetailScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.SettingsUIFragment"
+        android:label="fragment_settings_ui"
+        tools:layout="@layout/fragment_settings_ui" />
+    <fragment
+        android:id="@+id/allProfilesFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AllProfilesFragment"
+        android:label="fragment_all_profiles"
+        tools:layout="@layout/fragment_all_profiles" >
+        <action
+            android:id="@+id/action_allProfilesFragment_to_profileUIFragment"
+            app:destination="@id/profileUIFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ProfileUIFragment"
+        android:label="fragment_profile_ui"
+        tools:layout="@layout/fragment_profile_ui" >
+        <action
+            android:id="@+id/action_profileUIFragment_to_allProfilesFragment"
+            app:destination="@id/allProfilesFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_deleteProfileFragment"
+            app:destination="@id/deleteProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deleteProfileFragment"
+        android:name="com.example.eventlotterysystemapplication.View.DeleteProfileFragment"
+        android:label="fragment_delete_profile"
+        tools:layout="@layout/fragment_delete_profile" >
+        <action
+            android:id="@+id/action_deleteProfileFragment_to_profileUIFragment2"
+            app:destination="@id/profileUIFragment" />
+        <action
+            android:id="@+id/action_deleteProfileFragment_to_allProfilesFragment"
+            app:destination="@id/allProfilesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventDetailScreenFragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
+        android:label="fragment_event_detail_screen"
+        tools:layout="@layout/fragment_event_detail_screen" />
+        <argument
+            android:name="isOwnedEvent"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+</navigation>

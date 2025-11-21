@@ -1,36 +1,17 @@
 package com.example.eventlotterysystemapplication;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
-
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mockStatic;
-
-import android.util.Log;
 
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class LotterySelectorUnitTest {
-
-    @Mock
-    private FirebaseFirestore mockDb;
-    @Mock
-    private FirebaseAuth mockAuth;
-    private MockedStatic<FirebaseAuth> mockAuthStatic;
-    private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
-    private MockedStatic<Log> mockLogStatic;
     private final String userID = "mwahahahahah";
     private Event event = new Event(
                 "Casino Paradise Gambling 18+",
@@ -48,56 +29,41 @@ public class LotterySelectorUnitTest {
     );
 
     User billyBob = new User(
-            "Billy Bob <3",
             "billybob@mymail.com",
             "123-456-7890",
-            "billyBobDeviceID",
-            "new token"
+            "Billy Bob <3",
+            "billyBobDeviceID"
     );
 
     User alice = new User(
-            "Alice",
             "alice@mymail.com",
             "888-888-8888",
-            "AliceDeviceID",
-            "new token"
+            "Alice",
+            "AliceDeviceID"
     );
 
     User santa = new User(
-            "Santa Claus",
             "nick@north-pole.ca",
             "505-050-5067",
-            "SAINT_NICK_DEVICE_ID",
-            "new token"
+            "Santa Claus",
+            "SAINT_NICK_DEVICE_ID"
     );
 
     User elf10597120397 = new User(
-            "Elf #10597120397 @ North Pole",
             "elf105971203970@north-pole.ca",
             "505-048-3130",
-            "10597120397_elf_device_id",
-            "new token"
+            "Elf #10597120397 @ North Pole",
+            "10597120397_elf_device_id"
     );
 
     User elf7683989 = new User(
-            "Elf #7683989 @ North Pole",
             "elf7683989@north-pole.ca",
+            "505-391-0441",
             "Elf #7683989 @ North Pole",
-            "7683989_elf_device_id",
-            "new token"
+            "7683989_elf_device_id"
     );
 
     // Note that I am not adding user ids to each user cuz i am lazy
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        mockAuthStatic = mockStatic(FirebaseAuth.class); // Mocks FirebaseFirestore
-        mockFirestoreStatic = mockStatic(FirebaseFirestore.class); // Mocks FirebaseAuth
-        mockLogStatic = mockStatic(Log.class); // Mocks the logs
-        mockAuthStatic.when(FirebaseAuth::getInstance).thenReturn(mockAuth);
-        mockFirestoreStatic.when(FirebaseFirestore::getInstance).thenReturn(mockDb);
-    }
 
     @Test
     public void testDrawUsersOverCapacity() {
@@ -190,12 +156,5 @@ public class LotterySelectorUnitTest {
 
         LotterySelector ls = new LotterySelector();
         assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event));
-    }
-
-    @After
-    public void tearDown() {
-        mockAuthStatic.close();
-        mockFirestoreStatic.close();
-        mockLogStatic.close();
     }
 }

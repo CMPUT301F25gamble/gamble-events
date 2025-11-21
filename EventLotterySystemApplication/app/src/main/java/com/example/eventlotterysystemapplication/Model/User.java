@@ -268,12 +268,12 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-       Database db = Database.getDatabase();
-       db.modifyUser(this, task -> {
-           if (!task.isSuccessful()) {
-               Log.e("Database", "Cannot modify user");
-           }
-       });
+        Database db = Database.getDatabase();
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     /**

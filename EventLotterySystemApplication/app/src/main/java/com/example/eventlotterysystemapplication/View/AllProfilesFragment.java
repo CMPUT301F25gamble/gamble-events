@@ -37,7 +37,7 @@ public class AllProfilesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        database = Database.getDatabase();
 
         // Display the loading screen while the data is being fetched
         binding.loadingAllProfiles.setVisibility(View.VISIBLE);

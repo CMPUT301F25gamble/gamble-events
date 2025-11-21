@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.firebase.firestore.CollectionReference;
@@ -190,6 +191,7 @@ public class DatabaseIntegrationTests {
                         "2025-11-01T23:59",
                         "2025-11-10T23:59",
                         "2025-11-12T23:59",
+                        new EntrantList(),
                         50,
                         20
                 );

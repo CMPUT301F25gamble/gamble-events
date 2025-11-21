@@ -41,7 +41,7 @@ public class WaitingEntrantListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        database = Database.getDatabase();
 
         // Safely read arguments
         Bundle args = getArguments();

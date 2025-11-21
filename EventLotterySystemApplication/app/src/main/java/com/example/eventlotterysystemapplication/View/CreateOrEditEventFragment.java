@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Controller.LotteryDrawScheduler;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
@@ -104,7 +105,7 @@ public class CreateOrEditEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        database = new Database();
+        database = Database.getDatabase();
 
         // Change title/button text depending on if the user is editing the event or creating one
         if (eventId != null) {
@@ -298,6 +299,8 @@ public class CreateOrEditEventFragment extends Fragment {
                                             if (posterFile != null) {
                                                 Log.d(TAG, "Adding poster image to event...");
                                                 uploadEventPosterToStorage(event);
+                                                LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
+                                                lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
                                             } else {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
@@ -318,6 +321,8 @@ public class CreateOrEditEventFragment extends Fragment {
                                         if (posterFile != null) {
                                             Log.d(TAG, "Adding poster image to event...");
                                             uploadEventPosterToStorage(event);
+                                            LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
+                                            lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");

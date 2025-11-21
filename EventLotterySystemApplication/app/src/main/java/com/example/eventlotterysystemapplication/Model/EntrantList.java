@@ -1,15 +1,17 @@
 package com.example.eventlotterysystemapplication.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * An instance of this class represents the waiting lists for a single event
  */
 public class EntrantList {
-    private ArrayList<User> waiting;
-    private ArrayList<User> chosen;
-    private ArrayList<User> cancelled;
-    private ArrayList<User> finalized;
+    //TODO opt out for specific users using hashmap
+    protected ArrayList<User> waiting;
+    protected ArrayList<User> chosen;
+    protected ArrayList<User> cancelled;
+    protected ArrayList<User> finalized;
 
     /**
      * The general constructor for this class does not require any arguments, all attributes are

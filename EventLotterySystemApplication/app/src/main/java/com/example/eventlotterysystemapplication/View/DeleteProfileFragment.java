@@ -45,7 +45,7 @@ public class DeleteProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = new Database();
+        database = Database.getDatabase();
 
         // Fetch the global user ID and admin mode from the AdminSession class
         userId = AdminSession.getSelectedUserId();

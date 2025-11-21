@@ -91,6 +91,7 @@ public class Event {
      * @param registrationEndTime The time when the registration for the event closes
      * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
      *                                     assuming that you were selected by the lottery
+     * @param entrantList Dependency injection for entrantList
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
@@ -98,6 +99,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
+                 EntrantList entrantList,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
@@ -119,12 +121,12 @@ public class Event {
         this.registrationEndTimeTS = new Timestamp(registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
         this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
 
-        this.entrantList = new EntrantList();
+        this.entrantList = entrantList;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.posters = posters;
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.getUser(organizerID, task -> {
             if (task.isSuccessful()) {
                 this.organizer = task.getResult();
@@ -148,6 +150,7 @@ public class Event {
      * @param registrationEndTime The time when the registration for the event closes
      * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
      *                                     assuming that you were selected by the lottery
+     * @param entrantList Dependency injection for entrantList
      * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
@@ -155,6 +158,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
+                 EntrantList entrantList,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
 
         this.name = name;
@@ -179,11 +183,11 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.place = place;
 
-        this.entrantList = new EntrantList();
+        this.entrantList = entrantList;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.getUser(organizerID, task -> {
             if (task.isSuccessful()) {
                 this.organizer = task.getResult();
@@ -215,7 +219,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
+                 int maxWaitingListCapacity, int maxFinalListCapacity){
         // Used for mock test
 
         this.name = name;
@@ -865,7 +869,7 @@ public class Event {
         if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
             if (!entrantList.getWaiting().contains(user)){
                 addToEntrantList(user, 0);
-                Database db = new Database();
+                Database db = Database.getDatabase();
                 db.updateEvent(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d("Event", "User successfully joins waiting list");
@@ -887,7 +891,7 @@ public class Event {
     public void leaveWaitingList(User user){
         if (entrantList.getWaiting().contains(user)){
             removeFromEntrantList(user, 0);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Event", "User successfully leaves waiting list");
@@ -909,7 +913,7 @@ public class Event {
                 if (!entrantList.getChosen().contains(user)) {
                     removeFromEntrantList(user, 0);
                     addToEntrantList(user, 1);
-                    Database db = new Database();
+                    Database db = Database.getDatabase();
                     db.updateEvent(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Event", "User successfully joins chosen list");
@@ -933,7 +937,7 @@ public class Event {
     public void leaveChosenList(User user) throws IllegalArgumentException{
         if (entrantList.getChosen().contains(user)){
             removeFromEntrantList(user, 1);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Database", "User successfully leaves chosen list");
@@ -956,7 +960,7 @@ public class Event {
             removeFromEntrantList(user, 1);
             removeFromEntrantList(user, 3);
             addToEntrantList(user, 2);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Event", "User successfully joins cancelled list");
@@ -977,7 +981,7 @@ public class Event {
             if (!entrantList.getWaiting().contains(user) && !entrantList.getCancelled().contains(user)) {
                 if (!entrantList.getFinalized().contains(user)) {
                     addToEntrantList(user, 3);
-                    Database db = new Database();
+                    Database db = Database.getDatabase();
                     db.updateEvent(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Database", "User successfully joins finalized list");
@@ -1001,7 +1005,7 @@ public class Event {
     public void leaveFinalizedList(User user){
         if (entrantList.getFinalized().contains(user)){
             removeFromEntrantList(user, 3);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Event", "User successfully leaves finalized list");
@@ -1029,7 +1033,7 @@ public class Event {
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -1044,7 +1048,7 @@ public class Event {
     public void addPoster(Bitmap poster){
         posters.add(poster);
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -1059,7 +1063,7 @@ public class Event {
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -1078,7 +1082,7 @@ public class Event {
             Log.e("Event", "Index out of bounds");
         }
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");

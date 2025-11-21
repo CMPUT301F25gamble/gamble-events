@@ -47,7 +47,7 @@ public class DatabaseIntegrationTests {
 
     @Before
     public void setup() {
-        database = new Database();
+        database = Database.getDatabase();
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         userRef = db.collection("User");
@@ -56,7 +56,8 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testAddUser() throws InterruptedException {
-        User user = new User("John", "john@john.com", "19034623", "deviceID1");
+        User user = new User("John", "john@john.com", "19034623", "deviceID1",
+                "new token");
 
         // Adds user
         database.addUser(user, task -> {
@@ -80,7 +81,8 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserStartingPoint() throws Exception {
-        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2");
+        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2",
+                "new token");
 
         // Adds user
         database.addUser(user, task -> {
@@ -149,7 +151,8 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserOrganizedEventsStartingPoint() throws Exception {
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3",
+                "new token");
 
         // Adds user
         database.addUser(user, task -> {
@@ -273,7 +276,8 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testUpdateUser() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4",
+                "new token");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){
@@ -302,7 +306,8 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testViewAvailableEvents() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5",
+                "new token");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){

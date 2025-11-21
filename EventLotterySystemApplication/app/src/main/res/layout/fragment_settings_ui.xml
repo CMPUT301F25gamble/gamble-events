@@ -8,27 +8,6 @@
     tools:context=".View.SettingsUIFragment"
     android:id="@+id/bottomNavMenu">
 
-    <ProgressBar
-        android:id="@+id/loading_settings_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Group referencing all content to HIDE while loading the DB info  -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/content_group_settings_screen"
-        android:visibility="gone"
-        app:constraint_referenced_ids="
-            settings_header,
-            notification_settings_button,
-            tos_button,
-            admin_view_button"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
-
     <TextView
         android:id="@+id/settings_header"
         android:layout_width="wrap_content"
@@ -39,34 +18,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/notification_settings_button"
+    <LinearLayout
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/grey"
-        android:text="Notification Settings"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_header" />
+        app:layout_constraintTop_toBottomOf="@+id/settings_header">
 
-    <Button
-        android:id="@+id/tos_button"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/grey"
-        android:text="Important Information"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/notification_settings_button" />
+        <Button
+            android:id="@+id/notification_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/grey"
+            android:text="Notification Settings"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settings_header" />
 
-    <Button
-        android:id="@+id/admin_view_button"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/blue"
-        android:text="Switch to Admin View"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tos_button" />
+        <Button
+            android:id="@+id/tos_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/grey"
+            android:text="Important Information"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/notification_settings_button" />
 
+        <Button
+            android:id="@+id/admin_view_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/blue"
+            android:text="Switch to Admin View"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tos_button" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

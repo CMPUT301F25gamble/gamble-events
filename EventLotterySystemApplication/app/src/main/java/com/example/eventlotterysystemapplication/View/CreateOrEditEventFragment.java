@@ -104,7 +104,7 @@ public class CreateOrEditEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        database = Database.getDatabase();
+        database = new Database();
 
         // Change title/button text depending on if the user is editing the event or creating one
         if (eventId != null) {

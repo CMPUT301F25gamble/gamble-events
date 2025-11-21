@@ -52,7 +52,7 @@ public class AllEntrantsListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        database = Database.getDatabase();
+        database = new Database();
 
         // Safely read arguments
         Bundle args = getArguments();

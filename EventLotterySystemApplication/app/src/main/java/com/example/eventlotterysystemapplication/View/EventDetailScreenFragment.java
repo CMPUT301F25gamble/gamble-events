@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -51,6 +52,10 @@ public class EventDetailScreenFragment extends Fragment {
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
 
+    // Used for ADMIN control
+    private String userId;
+    private boolean isAdminMode;
+
     public EventDetailScreenFragment() {
         // Required empty public constructor
     }
@@ -82,6 +87,9 @@ public class EventDetailScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isAdminMode = AdminSession.getAdminMode();
+        userId = AdminSession.getSelectedUserId();
+
         ImageButton backButton = binding.eventDetailScreenBackButton;
 
         if (getActivity() instanceof EditEventActivity) {
@@ -91,13 +99,14 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             backButton.setOnClickListener(v -> {
                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
+                       .navigateUp();
             });
         }
 
         // Show loading and hide content until it is fetched
         binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
         binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.GONE);
 
         // Obtain deviceID
         FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceID -> {
@@ -127,10 +136,17 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.makeText(requireContext(), "Failed to fetch user from device ID",
                                     Toast.LENGTH_LONG).show();
                         }
-                        // Hide loading and show content
-                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     });
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    if (isAdminMode) {
+                        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                        // Hide join waitlist/edit event button and hide generateQR button
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                    } else {
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     // Failed to load event; hide loading and show error
                     Log.e(TAG, "Failed to load event, " + task.getResult());
@@ -234,7 +250,6 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
-        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
 
             binding.navigationBarButton.setText("Edit Event");
@@ -262,13 +277,13 @@ public class EventDetailScreenFragment extends Fragment {
      * @param callback a callback function that runs when the query is done running
      */
     private void getUserFromDeviceID(String deviceID, OnCompleteListener<User> callback) {
-        Database db = Database.getDatabase();
+        Database db = new Database();
 
         db.getUserFromDeviceID(deviceID, callback);
     }
 
     private void getEvent(OnCompleteListener<Event> callback) {
-        Database db = Database.getDatabase();
+        Database db = new Database();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
             Log.d(TAG, "Fetching event from DB...");

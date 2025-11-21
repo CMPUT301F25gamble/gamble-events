@@ -14,7 +14,7 @@ import java.util.List;
  * An instance of this class represents an admin
  */
 public class Admin extends User{
-    private Database db = Database.getDatabase();
+    private Database db = new Database();
 
     /**
      * A constructor for creating an Admin object, assuming such user does not exist yet
@@ -23,8 +23,8 @@ public class Admin extends User{
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
      */
-    public Admin(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
-        super(name, email, phoneNumber, deviceID, deviceToken);
+    public Admin(String name, String email, String phoneNumber , String deviceID) {
+        super(name, email, phoneNumber, deviceID);
         super.setAdmin(true);
     }
 

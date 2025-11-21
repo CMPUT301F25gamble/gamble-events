@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.Model;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,29 +16,38 @@ import android.widget.RemoteViews;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.View.EventDetailScreenFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+/**
+ * This class inherits functionality from the already created and built in FirebaseMessagingService
+ * class, and this class is responsible for handling the notification event when the app receives a
+ * push notification from Firebase
+ */
 public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
+    /**
+     * The function that is called whenever a messaging event has occurred
+     * @param remoteMessage Remote message that has been received.
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d("LotteryFirebaseMessagingService", remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().containsKey("channelName")) {
 
             String channelName = remoteMessage.getData().get("channelName");
-            Log.d("LotteryFirebaseMessagingService", channelName);
+            Log.d("LotteryFirebaseMessagingService", "Channel Name: " + channelName);
+            NotificationChannelFactory.checkAndCreateNotificationChannel(this, channelName);
 
             if (remoteMessage.getData().containsKey("eventID")) {
                 String eventID = remoteMessage.getData().get("eventID");
-                Log.d("LotteryFirebaseMessagingService", eventID);
+                Log.d("LotteryFirebaseMessagingService", "EventId: " +eventID);
             }
 
             sendNotification(channelName, remoteMessage);
@@ -47,12 +58,20 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Is responsible for taking the data from the RemoteMessage object, and then using that to
+     * build the notification object and then send that notification
+     * @param channelName The name of the notification channel we want to send the notification to
+     * @param remoteMessage The RemoteMessage object that contains all of our data
+     */
     @SuppressLint("MissingPermission")
     private void sendNotification(String channelName, RemoteMessage remoteMessage) {
 
-        // TODO Do the intent that is triggered when the notification is tapped
         // Intent that triggers when the notification is tapped
-        Intent intent = new Intent(this, Notification.class);
+        Intent intent = new Intent(this, ContentActivity.class);
+
+        // add eventId to the intent
+        intent.putExtra("eventId", remoteMessage.getData().get("eventID"));
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -62,13 +81,17 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         // Build the notification
         NotificationCompat.Builder builder;
 
-        if (channelName.equals("lotteryNotification")) {
+        /* If the notification is a win or a redraw notification, we will want to include actions in
+        * the notification itself as buttons, therefore we have two different ways in which the
+        * notification is built
+        */
+        if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification")) {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
                     .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
                     .setContentIntent(pendingIntent) // Pending intent triggered when tapped
-                    .setAutoCancel(true) // Dismiss notification when tapped
+                    .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .addAction(0, "Accept", pendingIntent)
                     .addAction(1, "Decline", pendingIntent);
@@ -84,6 +107,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
 
         // Display the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        Log.d("LotteryFirebaseMessagingService", "Message Received");
 
         //TODO add a dynamic notificationID system
         int notificationId = 1;

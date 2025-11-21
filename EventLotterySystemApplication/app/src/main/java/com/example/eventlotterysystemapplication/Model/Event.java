@@ -219,7 +219,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
+                 int maxWaitingListCapacity, int maxFinalListCapacity){
         // Used for mock test
 
         this.name = name;

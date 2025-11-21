@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.Task;
@@ -53,6 +54,7 @@ public class EventUnitTest {
     }
 
     public Event mockEvent1(){
+        EntrantList entrantList = mock(EntrantList.class);
         Event event = new Event(
                 "Twice concert watch party",
                 "We love Twice",
@@ -64,6 +66,7 @@ public class EventUnitTest {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
+                entrantList,
                 50,
                 20
         );

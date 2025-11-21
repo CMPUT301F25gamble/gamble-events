@@ -1,5 +1,7 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -23,8 +25,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.NotificationChannelFactory;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
     Database database = Database.getDatabase();
+    private boolean isAdmin = false;
 
     /**
      * Checks if user is registered via device
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        checkNotificationPermission();
+        NotificationChannelFactory.createNotificationChannels(this);
 
         // Check if app was opened via QR code / deep link
         String eventID;
@@ -68,12 +73,7 @@ public class MainActivity extends AppCompatActivity {
             eventID = null;
         }
 
-        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
-        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
+        NotificationChannelFactory.createNotificationChannels(this);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -198,25 +198,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goToRegisterIntent);
         finish();
     }
-
-    private void createNotificationChannel(String channelName, String description) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelName,
-                    description,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-
-            notificationChannel.enableVibration(true); // Allow vibration for notifications
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(notificationChannel);
-            }
-        }
-    }
-
 
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);

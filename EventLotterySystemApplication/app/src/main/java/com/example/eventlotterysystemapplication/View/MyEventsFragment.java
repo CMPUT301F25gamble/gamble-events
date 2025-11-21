@@ -66,7 +66,7 @@ public class MyEventsFragment extends Fragment {
         binding.contentGroupMyEvents.setVisibility(View.GONE);
 
 
-        // Get the user from device id
+        // Get the user/device id
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             binding.loadingMyEvents.setVisibility(View.GONE);

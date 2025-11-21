@@ -30,6 +30,15 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
+    <!-- ADMIN Group referencing all content to HIDE while loading the DB info -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_admin_events_detail_screen"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            adminButtonContainer"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
     <ImageButton
         android:id="@+id/eventDetailScreenBackButton"
         android:layout_width="wrap_content"
@@ -166,5 +175,59 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/adminButtonContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/removeEventLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/removeEventButton"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:backgroundTint="@color/red"
+                android:text="Remove Event"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/removeImageButton"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:backgroundTint="@color/red"
+                android:text="Remove Image"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/removeOrganizerButton"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:backgroundTint="@color/red"
+                android:text="Remove Organizer"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

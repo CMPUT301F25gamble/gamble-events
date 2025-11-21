@@ -28,6 +28,7 @@ public class Event {
     private String description;
     private String place;
     private ArrayList<String> eventTags;
+    private User organizer;
     private String organizerID;
     private EntrantList entrantList;
     private int maxWaitingListCapacity;
@@ -88,6 +89,7 @@ public class Event {
      * @param registrationEndTime The time when the registration for the event closes
      * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
      *                                     assuming that you were selected by the lottery
+     * @param entrantList Dependency injection for entrantList
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
@@ -95,6 +97,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
+                 EntrantList entrantList,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
         this.name = name;
         this.description = description;
@@ -116,7 +119,7 @@ public class Event {
         this.registrationEndTimeTS = new Timestamp(registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
         this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
 
-        this.entrantList = new EntrantList();
+        this.entrantList = entrantList;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.isRecurring = false; // Default as non-recurring
@@ -137,6 +140,7 @@ public class Event {
      * @param registrationEndTime The time when the registration for the event closes
      * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
      *                                     assuming that you were selected by the lottery
+     * @param entrantList Dependency injection for entrantList
      * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
@@ -144,6 +148,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
+                 EntrantList entrantList,
                  int maxWaitingListCapacity, int maxFinalListCapacity){
 
         this.name = name;
@@ -168,7 +173,7 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.place = place;
 
-        this.entrantList = new EntrantList();
+        this.entrantList = entrantList;
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.isRecurring = false; // Default as non-recurring

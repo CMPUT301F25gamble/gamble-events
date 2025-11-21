@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.firebase.firestore.CollectionReference;
@@ -47,7 +48,7 @@ public class DatabaseIntegrationTests {
 
     @Before
     public void setup() {
-        database = Database.getDatabase();
+        database = new Database();
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         userRef = db.collection("User");
@@ -56,8 +57,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testAddUser() throws InterruptedException {
-        User user = new User("John", "john@john.com", "19034623", "deviceID1",
-                "new token");
+        User user = new User("John", "john@john.com", "19034623", "deviceID1");
 
         // Adds user
         database.addUser(user, task -> {
@@ -81,8 +81,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserStartingPoint() throws Exception {
-        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2",
-                "new token");
+        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2");
 
         // Adds user
         database.addUser(user, task -> {
@@ -151,8 +150,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserOrganizedEventsStartingPoint() throws Exception {
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3",
-                "new token");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3");
 
         // Adds user
         database.addUser(user, task -> {
@@ -193,6 +191,7 @@ public class DatabaseIntegrationTests {
                         "2025-11-01T23:59",
                         "2025-11-10T23:59",
                         "2025-11-12T23:59",
+                        new EntrantList(),
                         50,
                         20
                 );
@@ -276,8 +275,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testUpdateUser() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4",
-                "new token");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){
@@ -306,8 +304,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testViewAvailableEvents() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5",
-                "new token");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){

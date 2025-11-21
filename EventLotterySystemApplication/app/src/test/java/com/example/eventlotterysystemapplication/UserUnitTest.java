@@ -29,7 +29,7 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 public class UserUnitTest {
-    private User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID", "new token");
+    private User user;
     private Database database;
     @Mock
     private FirebaseFirestore mockDb;
@@ -103,6 +103,7 @@ public class UserUnitTest {
 
     @Test
     public void testUpdateAllUserInfo() {
+        User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID", "new token");
         user.updateUserInfo(user, "Midterm Wizard", "wizard@gmail.com", "67-67-67");
         assertEquals("Midterm Wizard", user.getName());
         assertEquals("wizard@gmail.com", user.getEmail());
@@ -112,6 +113,7 @@ public class UserUnitTest {
 
     @Test
     public void testUpdateNameOnly() {
+        User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID", "new token");
         user.updateUserInfo(user, "Henry", null, "");
         assertEquals("Henry", user.getName());
         assertEquals("johndoe@gmail.com", user.getEmail());
@@ -121,6 +123,7 @@ public class UserUnitTest {
 
     @Test
     public void testUpdatePhoneAndEmail() {
+        User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID", "new token");
         user.updateUserInfo(user, null, "johndough@gmail.com", "12345");
         assertEquals("John Doe", user.getName());
         assertEquals("johndough@gmail.com", user.getEmail());
@@ -130,6 +133,7 @@ public class UserUnitTest {
 
     @Test
     public void testUpdateNothing() {
+        User user = new User("John Doe", "johndoe@gmail.com", "00000", "deviceID", "new token");
         user.updateUserInfo(user, null, null, null);
         assertEquals("John Doe", user.getName());
         assertEquals("johndoe@gmail.com", user.getEmail());

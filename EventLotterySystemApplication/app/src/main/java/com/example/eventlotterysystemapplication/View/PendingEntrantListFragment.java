@@ -62,6 +62,7 @@ public class PendingEntrantListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         database = Database.getDatabase();
+        lotterySelector = new LotterySelector();
 
         // Initialize the adapter with the data
         adapter = new ArrayAdapter<>(
@@ -130,7 +131,7 @@ public class PendingEntrantListFragment extends Fragment {
                     Event event = task.getResult();
 
                     // Use lottery selector to randomly select entrants
-                    List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
+                    List<User> selectedEntrants = lotterySelector.drawAcceptedUsers(event);
 
                     for (User u : selectedEntrants)
                     {

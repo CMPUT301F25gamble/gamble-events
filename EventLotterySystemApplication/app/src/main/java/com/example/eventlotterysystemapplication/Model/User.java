@@ -38,8 +38,8 @@ public class User{
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.deviceID = deviceID;
-        admin = false;
         this.deviceToken = deviceToken;
+        admin = false;
     }
 
     /**
@@ -238,7 +238,7 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-       Database db = new Database();
+       Database db = Database.getDatabase();
        db.modifyUser(this, task -> {
            if (!task.isSuccessful()) {
                Log.e("Database", "Cannot modify user");

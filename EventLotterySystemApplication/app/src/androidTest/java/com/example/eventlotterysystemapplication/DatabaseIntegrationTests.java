@@ -47,7 +47,7 @@ public class DatabaseIntegrationTests {
 
     @Before
     public void setup() {
-        database = new Database();
+        database = Database.getDatabase();
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         userRef = db.collection("User");

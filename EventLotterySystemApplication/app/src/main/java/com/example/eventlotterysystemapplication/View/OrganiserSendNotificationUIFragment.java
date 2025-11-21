@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Controller.NotificationSender;
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
 import com.example.eventlotterysystemapplication.View.OrganiserSendNotificationUIFragmentArgs;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentOrganiserSendNotificationUiBinding;
@@ -33,6 +37,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
     private OrganiserSendNotificationUIFragmentArgs args;
 
     private String notificationType;
+    private String eventId;
+    private String channelName;
+
+    private String TAG = "OrganiserSendNotificationUIFragment";
 
     public OrganiserSendNotificationUIFragment() {
         // Required empty public constructor
@@ -51,6 +59,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 .fromBundle(getArguments());
 
         notificationType = args.getNotificationType();
+        eventId = args.getEventId();
+
+        Log.d("OrganiserSendNotificationUIFragment", "EventId: " + eventId);
+        Log.d("OrganiserSendNotificationUIFragment", "NotificationType: " + notificationType);
     }
 
     @Override
@@ -67,6 +79,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         // Get views
         TextView notificationHeader = binding.sendNotificationHeader;
         EditText notificationMessage = binding.notificationMessageContent;
+        EditText notificationTitle = binding.notificationMessageTitle;
 
         // get buttons
         ImageButton backButton = binding.sendNotificationBackButton;
@@ -82,22 +95,55 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         switch (notificationType) {
             case "waitlist":
                 notificationHeader.setText("Waitlist Entrants Notification");
+                channelName = "waitingListNotification";
                 break;
             case "chosen":
                 notificationHeader.setText("Chosen Entrants Notification");
+                channelName = "chosenListNotification";
                 break;
             case "cancelled":
                 notificationHeader.setText("Cancelled Entrants Notification");
+                channelName = "cancelledListNotification";
                 break;
         }
 
-        // Send the notification
-        String messageContent = notificationMessage.getText().toString();
+        sendNotificationButton.setOnClickListener(v -> {
+            // Send the notification
+            String messageTitle = notificationTitle.getText().toString();
+            if (messageTitle.isEmpty()) {
+                notificationTitle.setError("Title is required");
+            }
 
-        if (messageContent.isEmpty()) {
-            notificationMessage.setError("Message is required");
-        }
+            String messageContent = notificationMessage.getText().toString();
+            if (messageContent.isEmpty()) {
+                notificationMessage.setError("Message is required");
+            }
 
-        // Add notification to database here
+            if (!messageTitle.isEmpty() && !messageContent.isEmpty()) {
+
+                Log.d(TAG, "Sent notification button clicked");
+
+                Database.getDatabase().getEvent(eventId, task -> {
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "EventRetrieved");
+                        Log.d(TAG, messageTitle);
+                        Log.d(TAG, messageContent);
+                        switch (notificationType) {
+                            case "waitlist":
+                                EventNotificationManager.notifyWaitingList(task.getResult(), messageTitle, messageContent);
+                                break;
+                            case "chosen":
+                                EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
+                                break;
+                            case "cancelled":
+                                EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
+                                break;
+                        }
+                    } else {
+                        // TODO
+                    }
+                });
+            }
+        });
     }
 }

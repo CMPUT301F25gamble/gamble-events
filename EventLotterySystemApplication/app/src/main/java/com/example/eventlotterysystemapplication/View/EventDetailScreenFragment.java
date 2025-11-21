@@ -91,7 +91,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             backButton.setOnClickListener(v -> {
                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigateUp();
+                       .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
             });
         }
 
@@ -234,6 +234,7 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
 
             binding.navigationBarButton.setText("Edit Event");
@@ -261,13 +262,13 @@ public class EventDetailScreenFragment extends Fragment {
      * @param callback a callback function that runs when the query is done running
      */
     private void getUserFromDeviceID(String deviceID, OnCompleteListener<User> callback) {
-        Database db = new Database();
+        Database db = Database.getDatabase();
 
         db.getUserFromDeviceID(deviceID, callback);
     }
 
     private void getEvent(OnCompleteListener<Event> callback) {
-        Database db = new Database();
+        Database db = Database.getDatabase();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
             Log.d(TAG, "Fetching event from DB...");

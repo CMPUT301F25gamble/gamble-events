@@ -712,7 +712,7 @@ public class Event {
     public void setPosters(ArrayList<Bitmap> posters) {
         this.posters = posters;
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -911,7 +911,7 @@ public class Event {
         if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
             if (!entrantList.getWaiting().contains(user)){
                 addToEntrantList(user, 0);
-                Database db = new Database();
+                Database db = Database.getDatabase();
                 db.updateEvent(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d("Event", "User successfully joins waiting list");
@@ -933,7 +933,7 @@ public class Event {
     public void leaveWaitingList(User user){
         if (entrantList.getWaiting().contains(user)){
             removeFromEntrantList(user, 0);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Event", "User successfully leaves waiting list");
@@ -955,7 +955,7 @@ public class Event {
                 if (!entrantList.getChosen().contains(user)) {
                     removeFromEntrantList(user, 0);
                     addToEntrantList(user, 1);
-                    Database db = new Database();
+                    Database db = Database.getDatabase();
                     db.updateEvent(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Event", "User successfully joins chosen list");
@@ -979,7 +979,7 @@ public class Event {
     public void leaveChosenList(User user) throws IllegalArgumentException{
         if (entrantList.getChosen().contains(user)){
             removeFromEntrantList(user, 1);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Database", "User successfully leaves chosen list");
@@ -1001,7 +1001,7 @@ public class Event {
                 removeFromEntrantList(user, 1);
                 removeFromEntrantList(user, 3);
                 addToEntrantList(user, 2);
-                Database db = new Database();
+                Database db = Database.getDatabase();
                 db.updateEvent(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d("Event", "User successfully joins cancelled list");
@@ -1026,7 +1026,7 @@ public class Event {
                 if (!entrantList.getFinalized().contains(user)) {
                     removeFromEntrantList(user, 1);
                     addToEntrantList(user, 3);
-                    Database db = new Database();
+                    Database db = Database.getDatabase();
                     db.updateEvent(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Database", "User successfully joins finalized list");
@@ -1050,7 +1050,7 @@ public class Event {
     public void leaveFinalizedList(User user){
         if (entrantList.getFinalized().contains(user)){
             removeFromEntrantList(user, 3);
-            Database db = new Database();
+            Database db = Database.getDatabase();
             db.updateEvent(this, task -> {
                 if (task.isSuccessful()) {
                     Log.d("Event", "User successfully leaves finalized list");
@@ -1068,7 +1068,7 @@ public class Event {
     public void addPoster(Bitmap poster){
         posters.add(poster);
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -1083,7 +1083,7 @@ public class Event {
     public void deletePoster(Bitmap poster){
         posters.remove(poster);
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");
@@ -1102,7 +1102,7 @@ public class Event {
             Log.e("Event", "Index out of bounds");
         }
 
-        Database db = new Database();
+        Database db = Database.getDatabase();
         db.updateEvent(this, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Database", "Cannot update event");

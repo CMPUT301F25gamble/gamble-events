@@ -1,10 +1,13 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,12 +16,15 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
+import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,9 +39,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
-    Database database = new Database();
-
-    private boolean isAdmin = false;
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
+    Database database = Database.getDatabase();
 
     /**
      * Checks if user is registered via device
@@ -43,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        checkNotificationPermission();
 
         // Check if app was opened via QR code / deep link
         String eventID;
@@ -59,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             eventID = null;
         }
+
+        createNotificationChannel("lotteryWinNotification", "This notification channel is used to notify entrants for lottery selection");
+        createNotificationChannel("lotteryLoseNotification", "This notification channel is used to notify entrants that they lost lottery selection");
+        createNotificationChannel("lotteryRedrawNotification", "This notification channel is used to notify entrants if they have won lottery redrawing");
+        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
+        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
+        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -77,11 +92,24 @@ public class MainActivity extends AppCompatActivity {
                     // String test = "deviceID67"; // replace deviceId with test to test going to content activity
 
                     // Check to see if device ID is in database
-                    database.queryDeviceID(deviceId, task -> {
+                    database.getUserFromDeviceID(deviceId, task -> {
                         if (task.isSuccessful()) {
-                            Boolean exists = task.getResult();
-                            if (exists != null && exists) {
-
+                            User currentUser = task.getResult();
+                            if (currentUser != null) {
+                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        String token = task1.getResult();
+                                        String storedToken = currentUser.getDeviceToken();
+                                        if (storedToken == null || !storedToken.equals(token)) {
+                                            currentUser.setDeviceToken(token);
+                                            database.modifyUser(currentUser, task2 -> {
+                                                if (!task2.isSuccessful()) {
+                                                    Log.e("Database", "Cannot modify user while updating token");
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
                                     goToContentActivityWithEvent(eventID);
@@ -93,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d(TAG, "Device not registered. Going to registration activity.");
                                 goToRegisterActivity();
                             }
+
                         } else {
                             Log.e(TAG, "Error querying deviceID", task.getException());
                             goToRegisterActivity();
@@ -103,28 +132,52 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to get device ID", e);
                     goToRegisterActivity();
                 });
-
-        // get device registration token
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>(){
-                    @Override
-                    public void onComplete(@NonNull Task<String> task){
-                        if (task.isSuccessful()){
-
-                            // get the new FCM token
-                            String token = task.getResult();
-
-                            Log.d("Token", token);
-                        }
-                    }
-                });
-
-        createNotificationChannel("lotteryNotification", "This notification channel is used to notify entrants for lottery selection");
-        createNotificationChannel("waitingListNotification", "This notification channel is used to notify entrants in the waiting list");
-        createNotificationChannel("chosenListNotification", "This notification channel is used to notify entrants in the chosen list");
-        createNotificationChannel("cancelledListNotification", "This notification channel is used to notify entrants in the chosen list");
-
     }
+
+    /**
+     * Check Notification permission is allowed. If not, request to allow.
+     */
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission not granted — request it
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_NOTIFICATION_PERMISSION);
+            } else {
+                // Permission already granted
+                // You can proceed with showing notifications
+            }
+        } else {
+            // No need to check permission for Android < 13
+        }
+    }
+
+    /**
+     * On Request permission result - after allowing or rejecting the notification permission request.
+     * @param requestCode The request code passed in {@link #requestPermissions(
+     * android.app.Activity, String[], int)}
+     * @param permissions The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions
+     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     *
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted
+            } else {
+                // Permission denied
+            }
+        }
+    }
+
 
     /**
      * DeviceID found, send user to content activity
@@ -163,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);

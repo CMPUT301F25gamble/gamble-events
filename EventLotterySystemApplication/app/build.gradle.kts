@@ -80,4 +80,8 @@ dependencies {
 
     // Volley
     implementation("com.android.volley:volley:1.2.1")
+
+    // Location and Maps services
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
 }

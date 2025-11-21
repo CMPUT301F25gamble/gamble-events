@@ -316,6 +316,6 @@ public class User{
         // Draws a new entrant and send them a notification
         LotterySelector lottery = new LotterySelector();
         User newEntrant = lottery.drawReplacementUser(event);
-        // TODO: send notification
+        EventNotificationManager.notifyLotteryReselection(newEntrant, event);
     }
 }

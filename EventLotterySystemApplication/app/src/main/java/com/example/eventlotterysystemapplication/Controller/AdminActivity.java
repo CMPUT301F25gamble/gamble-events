@@ -43,8 +43,8 @@ public class AdminActivity extends AppCompatActivity {
         navController.setGraph(R.navigation.admin_nav_graph);
 
         // start navigation on the notifications tab
-        binding.adminBottomNavMenu.setSelectedItemId(R.id.adminNotifications);
-        navController.navigate(R.id.adminNotifications);
+        binding.adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
+        navController.navigate(R.id.eventsUIFragment);
 
         /*
          * Nav logic for AdminBottomNavigationView

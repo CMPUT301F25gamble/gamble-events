@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -51,6 +52,10 @@ public class EventDetailScreenFragment extends Fragment {
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
 
+    // Used for ADMIN control
+    private String userId;
+    private boolean isAdminMode;
+
     public EventDetailScreenFragment() {
         // Required empty public constructor
     }
@@ -82,6 +87,9 @@ public class EventDetailScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isAdminMode = AdminSession.getAdminMode();
+        userId = AdminSession.getSelectedUserId();
+
         ImageButton backButton = binding.eventDetailScreenBackButton;
 
         if (getActivity() instanceof EditEventActivity) {
@@ -98,6 +106,7 @@ public class EventDetailScreenFragment extends Fragment {
         // Show loading and hide content until it is fetched
         binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
         binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.GONE);
 
         // Obtain deviceID
         FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceID -> {
@@ -130,10 +139,17 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.makeText(requireContext(), "Failed to fetch user from device ID",
                                     Toast.LENGTH_LONG).show();
                         }
-                        // Hide loading and show content
-                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     });
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    if (isAdminMode) {
+                        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                        // Hide join waitlist/edit event button and hide generateQR button
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                    } else {
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     // Failed to load event; hide loading and show error
                     Log.e(TAG, "Failed to load event, " + task.getResult());

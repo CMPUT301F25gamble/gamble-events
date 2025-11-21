@@ -32,7 +32,7 @@ public class UserEventHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentUserEventHistoryBinding.inflate(inflater, container, false);
         // Create new instance of DB
-        database = Database.getDatabase();
+        database = new Database();
 
         // Fetch user using Device ID
         FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {

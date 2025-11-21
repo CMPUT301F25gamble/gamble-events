@@ -13,7 +13,6 @@ public class User{
     private String email;
     private String phoneNumber;
     private String deviceID;
-    private String deviceToken;
     private String userID;
     private boolean admin;
 
@@ -33,12 +32,11 @@ public class User{
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
      */
-    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
+    public User(String name, String email, String phoneNumber , String deviceID) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.deviceID = deviceID;
-        this.deviceToken = deviceToken;
         admin = false;
     }
 
@@ -120,14 +118,6 @@ public class User{
      */
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
-    }
-
-    public String getDeviceToken() {
-        return deviceToken;
-    }
-
-    public void setDeviceToken(String deviceToken) {
-        this.deviceToken = deviceToken;
     }
 
     /**
@@ -238,7 +228,7 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-       Database db = Database.getDatabase();
+       Database db = new Database();
        db.modifyUser(this, task -> {
            if (!task.isSuccessful()) {
                Log.e("Database", "Cannot modify user");

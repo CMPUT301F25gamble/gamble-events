@@ -13,7 +13,7 @@
 
     <item android:title="@string/bottom_menu_event_text"
         android:icon="@drawable/events_icon"
-        android:id="@+id/eventsUIFragment">
+        android:id="@+id/eventUIFragment">
     </item>
 
     <item android:title="@string/notification_logs_text"

@@ -9,7 +9,6 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 
-import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,10 +48,6 @@ public class EventsUIFragment extends Fragment {
 
     // For the owned vs not owned event (used to all events on events UI)
     private final ArrayList<Boolean> ownedFlags = new ArrayList<>();
-    // Used for ADMIN control
-    private String userId;
-    private boolean isAdminMode;
-
 
     private String eventId;
 
@@ -102,44 +96,23 @@ public class EventsUIFragment extends Fragment {
                     .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, args);
         }
 
-        // Get the global user ID and admin mode from the AdminSession class
-        isAdminMode = AdminSession.getAdminMode();
-        userId = AdminSession.getSelectedUserId();
-        // Log global user ID and admin mode from the AdminSession class for debugging
-        Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
+        // Create Event button navigates to event creation page
+        binding.createEventButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("eventId", null);
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
+        });
 
-        if (isAdminMode) {
-            // Show loading and hide content until data is fetched from db
-            binding.loadingEventUi.setVisibility(View.VISIBLE);
-            binding.contentGroupEventsUi.setVisibility(View.GONE);
-            /* Separate content group for admin related buttons so Create Event button and
-             * My Events button are not visible to the admin
-             */
+        // My Events button navigates to my events page
+        binding.myEventsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(EventsUIFragment.this)
+                    .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
+        });
 
-            // TODO: Add logic for my events
-
-            binding.loadingEventUi.setVisibility(View.GONE);
-            binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
-        } else {
-            // Create Event button navigates to event creation page
-            binding.createEventButton.setOnClickListener(v -> {
-                Bundle args = new Bundle();
-                args.putString("eventId", null);
-                NavHostFragment.findNavController(EventsUIFragment.this)
-                        .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
-            });
-
-            // My Events button navigates to my events page
-            binding.myEventsButton.setOnClickListener(v -> {
-                NavHostFragment.findNavController(EventsUIFragment.this)
-                        .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
-            });
-
-            // Show loading and hide content until it is fetched
-            binding.loadingEventUi.setVisibility(View.VISIBLE);
-            binding.contentGroupEventsUi.setVisibility(View.GONE);
-            binding.contentGroupAdminEventsUi.setVisibility(View.GONE);
-        }
+        // Show loading and hide content until it is fetched
+        binding.loadingEventUi.setVisibility(View.VISIBLE);
+        binding.contentGroupEventsUi.setVisibility(View.GONE);
 
         // Fetch all Event docs and display their "name" field in the listView
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -148,63 +121,50 @@ public class EventsUIFragment extends Fragment {
                 : null;
 
         db.collection("Event")
-                .get()
-                .addOnSuccessListener(qs -> {
-                    // Hide loading and show content
-                    binding.loadingEventUi.setVisibility(View.GONE);
-                    binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
-                    // If the user is not an admin, show the nont-admin-specific content group
-                    if (!isAdminMode) {
-                        binding.contentGroupAdminEventsUi.setVisibility(View.VISIBLE);
+            .get()
+            .addOnSuccessListener(qs -> {
+                // Hide loading and show content
+                binding.loadingEventUi.setVisibility(View.GONE);
+                binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+                eventNames.clear();
+                docIds.clear();
+                ownedFlags.clear();
+
+                for (DocumentSnapshot doc : qs.getDocuments()) {
+                    String eventName = doc.getString("name");
+                    String organizerId = doc.getString("organizerID");
+                    boolean owned = (uid != null && organizerId != null && organizerId.equals(uid));
+
+                    // Fallback on the doc ID if event name is missing
+                    if (eventName == null) {
+                        eventName = doc.getId();
+                        eventNames.add(eventName);
+                    } else {
+                        eventNames.add(eventName);
                     }
-                    eventNames.clear();
-                    docIds.clear();
-                    ownedFlags.clear();
 
-                    for (DocumentSnapshot doc : qs.getDocuments()) {
-                        String eventName = doc.getString("name");
-                        String organizerId = doc.getString("organizerID");
-                        boolean owned = (uid != null && organizerId != null && organizerId.equals(uid));
+                    // Add docId in parallel list
+                    docIds.add(doc.getId());
 
-                        // Fallback on the doc ID if event name is missing
-                        if (eventName == null) {
-                            eventName = doc.getId();
-                            eventNames.add(eventName);
-                        } else {
-                            eventNames.add(eventName);
-                        }
-
-                        // Add docId in parallel list
-                        docIds.add(doc.getId());
-
-                        // Add owned flag in parallel list
-                        ownedFlags.add(owned);
-                    }
-                    // Notify the adapter that the data set has changed
-                    eventNamesAdapter.notifyDataSetChanged();
-                })
-                // Hide loading and add a listener to handle errors
-                .addOnFailureListener(e -> {
-                    binding.loadingEventUi.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
-                });
+                    // Add owned flag in parallel list
+                    ownedFlags.add(owned);
+                }
+                // Notify the adapter that the data set has changed
+                eventNamesAdapter.notifyDataSetChanged();
+            })
+            // Hide loading and add a listener to handle errors
+            .addOnFailureListener(e -> {
+                binding.loadingEventUi.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            });
 
         // Switched from NavHostFragment to a bundle to pass data between fragments
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
             Bundle args = new Bundle();
             args.putString("eventId", docIds.get(position));
             args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
-            Log.d("EventsUIFragmentsss", "isOwnedEvent = " + ownedFlags.get(position));
-            Log.d("EventsUIFragment", "eventId = " + docIds.get(position));
-
-
-            if (isAdminMode) {
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
-            } else {
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.event_detail_screen, args);
-            }
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.event_detail_screen, args);
         });
 
         // Auto-navigate if eventID was passed from MainActivity

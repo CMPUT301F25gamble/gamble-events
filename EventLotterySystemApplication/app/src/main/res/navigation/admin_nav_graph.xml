@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/admin_nav_graph"
-    app:startDestination="@id/eventsUIFragment">
+    app:startDestination="@id/settingsUIFragment">
 
     <fragment
         android:id="@+id/adminNotifications"
@@ -14,11 +14,7 @@
         android:id="@+id/eventsUIFragment"
         android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
         android:label="fragment_events_ui"
-        tools:layout="@layout/fragment_events_ui" >
-        <action
-            android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
-            app:destination="@id/eventDetailScreenFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_events_ui" />
     <fragment
         android:id="@+id/settingsUIFragment"
         android:name="com.example.eventlotterysystemapplication.View.SettingsUIFragment"
@@ -57,13 +53,4 @@
             android:id="@+id/action_deleteProfileFragment_to_allProfilesFragment"
             app:destination="@id/allProfilesFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/eventDetailScreenFragment"
-        android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
-        android:label="fragment_event_detail_screen"
-        tools:layout="@layout/fragment_event_detail_screen" />
-        <argument
-            android:name="isOwnedEvent"
-            app:argType="boolean"
-            android:defaultValue="false"/>
 </navigation>

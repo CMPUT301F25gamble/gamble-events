@@ -1,24 +1,18 @@
 package com.example.eventlotterysystemapplication.View;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlotterysystemapplication.AdminSession;
-import com.example.eventlotterysystemapplication.Controller.AdminActivity;
-import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentSettingsUiBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -65,16 +59,7 @@ public class SettingsUIFragment extends Fragment {
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
         Button adminViewButton = binding.adminViewButton;
-
-        // set the admin view text
-        if (getActivity() instanceof ContentActivity) {
-            adminViewButton.setText("Switch to Admin View");
-        } else {
-            adminViewButton.setText("Switch to User View");
-            // Reset admin mode and user ID
-            AdminSession.setAdminMode(false);
-            AdminSession.setSelectedUserId(null);
-        }
+        adminViewButton.setVisibility(View.GONE); // Hide button by default (check admin later)
 
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
@@ -89,42 +74,15 @@ public class SettingsUIFragment extends Fragment {
                     .navigate(R.id.action_settingsUIFragment_to_settingsTOSFragment);
         });
 
-        // Show loading and hide content until it is fetched
-        binding.loadingSettingsScreen.setVisibility(View.VISIBLE);
-        binding.contentGroupSettingsScreen.setVisibility(View.GONE);
-
-        // get admin status of user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String uid = user.getUid();
-
-        database.getUser(uid, task -> {
-            if (task.isSuccessful()) {
-                User adminUser = task.getResult();
-                binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
-                adminViewButton.setVisibility(adminUser.isAdmin() ? View.VISIBLE : View.GONE);
-
-            } else {
-                Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();
-            }
-            // Hide loading and show content
-            binding.loadingSettingsScreen.setVisibility(View.GONE);
-        });
 
 
         adminViewButton.setOnClickListener(v -> {
-            if (getActivity() instanceof ContentActivity) {
-                Intent goToAdminViewIntent = new Intent(requireContext(), AdminActivity.class);
+            // Small bug fix for bottom nav being buggy
+            BottomNavigationView bottomNav =
+                    requireActivity().findViewById(R.id.bottomNavMenu);
 
-                // Set admin mode and selected user id
-                AdminSession.setAdminMode(true);
-
-                startActivity(goToAdminViewIntent);
-                getActivity().finish();
-            } else {
-                Intent goToEntrantViewIntent = new Intent(requireContext(), ContentActivity.class);
-                startActivity(goToEntrantViewIntent);
-                getActivity().finish();
-            }
+            bottomNav.setSelectedItemId(R.id.events_ui_fragment);
         });
     }
 }

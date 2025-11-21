@@ -72,21 +72,21 @@ public class ContentActivity extends AppCompatActivity {
                 // Main fix here
                 .setPopUpTo(R.id.content_nav_graph, true)
                 .build();
-        Bundle startArgs = new Bundle();
-        if (intent != null && intent.hasExtra("eventId")) {
-            startArgs.putString("eventId", intent.getStringExtra("eventId"));
-            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
-        }
 
             // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
+
+            Bundle startArgs = new Bundle();
+            if (intent != null && intent.hasExtra("eventId")) {
+                startArgs.putString("eventId", intent.getStringExtra("eventId"));
+                Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
+                navController.navigate(R.id.action_events_ui_fragment_to_event_detail_screen, startArgs);
+            }
             return true;
         });
         // Test
 //        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
-
-        navController.setGraph(R.navigation.content_nav_graph, startArgs);
-
-        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }
 }
+
+

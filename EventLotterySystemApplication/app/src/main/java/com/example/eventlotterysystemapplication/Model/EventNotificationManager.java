@@ -51,7 +51,9 @@ public class EventNotificationManager {
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getChosen()){
-                    winNotification.sendNotification(user);
+                    if (!user.isOptOutLotteryStatusNotifications()) {
+                        winNotification.sendNotification(user);
+                    }
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");
@@ -67,7 +69,9 @@ public class EventNotificationManager {
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getWaiting()){
-                    loseNotification.sendNotification(user);
+                    if (!user.isOptOutLotteryStatusNotifications()) {
+                        loseNotification.sendNotification(user);
+                    }
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");
@@ -92,7 +96,9 @@ public class EventNotificationManager {
 
                 Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
-                        notification.sendNotification(user);
+                        if (!user.isOptOutLotteryStatusNotifications()) {
+                            notification.sendNotification(user);
+                        }
                     } else {
                         Log.e("EventNotificationManager", "Could not save notification to database");
                     }
@@ -101,7 +107,9 @@ public class EventNotificationManager {
                 Notification notification =  new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
                 Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
-                        notification.sendNotification(user);
+                        if (!user.isOptOutLotteryStatusNotifications()) {
+                            notification.sendNotification(user);
+                        }
                     } else {
                         Log.e("EventNotificationManager", "Could not save notification to database");
                     }
@@ -125,7 +133,9 @@ public class EventNotificationManager {
             if (task.isSuccessful()){
                 Log.d("EventNotificationManager", "successfully added notification");
                 for (User user : event.getEntrantList().getWaiting()){
-                    notification.sendNotification(user);
+                    if (!user.isOptOutSpecificNotifications()) {
+                        notification.sendNotification(user);
+                    }
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");
@@ -145,7 +155,9 @@ public class EventNotificationManager {
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getChosen()){
-                    notification.sendNotification(user);
+                    if (!user.isOptOutSpecificNotifications()) {
+                        notification.sendNotification(user);
+                    }
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");
@@ -165,7 +177,25 @@ public class EventNotificationManager {
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
                 for (User user : event.getEntrantList().getCancelled()){
-                    notification.sendNotification(user);
+                    if (!user.isOptOutSpecificNotifications()) {
+                        notification.sendNotification(user);
+                    }
+                }
+            } else {
+                Log.e("EventNotificationManager", "Could not save notification to database");
+            }
+        });
+    }
+
+    public static void notifyFinalizedList(Event event, String title, String body){
+        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "finalizedListNotification");
+
+        Database.getDatabase().addNotification(notification, task -> {
+            if (task.isSuccessful()){
+                for (User user : event.getEntrantList().getFinalized()){
+                    if (!user.isOptOutSpecificNotifications()) {
+                        notification.sendNotification(user);
+                    }
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");

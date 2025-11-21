@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -51,6 +52,10 @@ public class EventDetailScreenFragment extends Fragment {
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
 
+    // Used for ADMIN control
+    private String userId;
+    private boolean isAdminMode;
+
     public EventDetailScreenFragment() {
         // Required empty public constructor
     }
@@ -82,6 +87,9 @@ public class EventDetailScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isAdminMode = AdminSession.getAdminMode();
+        userId = AdminSession.getSelectedUserId();
+
         ImageButton backButton = binding.eventDetailScreenBackButton;
 
         if (getActivity() instanceof EditEventActivity) {
@@ -91,13 +99,14 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             backButton.setOnClickListener(v -> {
                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
+                       .navigateUp();
             });
         }
 
         // Show loading and hide content until it is fetched
         binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
         binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.GONE);
 
         // Obtain deviceID
         FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceID -> {
@@ -120,20 +129,24 @@ public class EventDetailScreenFragment extends Fragment {
                             Log.d(TAG, "Initial Waiting list: " + event.getEntrantList().getWaiting());
 
                             showGenerateQRCodeButton();
-                            changeWaitlistBtn(
-                                    event.getEntrantList().getWaiting().contains(user),
-                                    event.getEntrantList().getCancelled().contains(user)
-                            );
+                            changeWaitlistBtn(event.getEntrantList().getWaiting().contains(user));
                         } else {
                             // Failed to load user; hide loading and show error
                             binding.loadingEventDetailScreen.setVisibility(View.GONE);
                             Toast.makeText(requireContext(), "Failed to fetch user from device ID",
                                     Toast.LENGTH_LONG).show();
                         }
-                        // Hide loading and show content
-                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     });
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    if (isAdminMode) {
+                        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                        // Hide join waitlist/edit event button and hide generateQR button
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                    } else {
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     // Failed to load event; hide loading and show error
                     Log.e(TAG, "Failed to load event, " + task.getResult());
@@ -172,16 +185,14 @@ public class EventDetailScreenFragment extends Fragment {
                            if (taskUser.isSuccessful()) {
                                // Grab user and check if already in waiting list
                                User user = taskUser.getResult();
-                               if (event.getEntrantList().getCancelled().contains(user)) {
-                                   changeWaitlistBtn(false, true);
-                               } else if (!event.getEntrantList().getWaiting().contains(user)) {
+                               if (!event.getEntrantList().getWaiting().contains(user)) {
                                    // User is not in waiting list, so join the waitlist
                                    event.joinWaitingList(user);
-                                   changeWaitlistBtn(true, false);
+                                   changeWaitlistBtn(true);
                                } else {
                                    // User is in waiting list, so leave the waitlist
                                    event.leaveWaitingList(user);
-                                   changeWaitlistBtn(false, false);
+                                   changeWaitlistBtn(false);
                                }
                                Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList().getWaiting());
                            } else {
@@ -238,8 +249,9 @@ public class EventDetailScreenFragment extends Fragment {
      * Updates the waitlist button colors and text based on if the user is in the waitlist
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
-    private void changeWaitlistBtn(boolean userInWaitlist, boolean userIsBlacklisted) {
+    private void changeWaitlistBtn(boolean userInWaitlist) {
         if (isOwnedEvent) {
+
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
                     ContextCompat.getColorStateList(requireContext(), R.color.app_beige)
@@ -247,11 +259,8 @@ public class EventDetailScreenFragment extends Fragment {
             return;
         }
 
-        if (userIsBlacklisted) {
-            binding.navigationBarButton.setText("BLACKLISTED");
-            binding.navigationBarButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black));
-        } else if (userInWaitlist) {
+
+        if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist
             binding.navigationBarButton.setText(R.string.leave_waitlist_text);
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));

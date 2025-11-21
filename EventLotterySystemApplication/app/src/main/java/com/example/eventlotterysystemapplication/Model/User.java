@@ -16,6 +16,8 @@ public class User{
     private String deviceToken;
     private String userID;
     private boolean admin;
+    private boolean optOutLotteryStatusNotifications;
+    private boolean optOutSpecificNotifications;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -40,8 +42,20 @@ public class User{
         this.deviceID = deviceID;
         this.deviceToken = deviceToken;
         admin = false;
+        this.optOutLotteryStatusNotifications = false;
+        this.optOutSpecificNotifications = false;
     }
 
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.deviceID = deviceID;
+        this.deviceToken = deviceToken;
+        admin = false;
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
+    }
     /**
      * Gets the userID of the current user object
      * @return The userID string set by the database
@@ -146,6 +160,22 @@ public class User{
         this.admin = admin;
     }
 
+    public boolean isOptOutLotteryStatusNotifications() {
+        return optOutLotteryStatusNotifications;
+    }
+
+    public void setOptOutLotteryStatusNotifications(boolean optOutLotteryStatusNotifications) {
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+    }
+
+    public boolean isOptOutSpecificNotifications() {
+        return optOutSpecificNotifications;
+    }
+
+    public void setOptOutSpecificNotifications(boolean optOutSpecificNotifications) {
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
+    }
+
     /**
      * Adds the user to the waiting list of the event, given that they are already not in that list
      * @param event The event whose waiting list you want to join
@@ -238,12 +268,12 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-       Database db = Database.getDatabase();
-       db.modifyUser(this, task -> {
-           if (!task.isSuccessful()) {
-               Log.e("Database", "Cannot modify user");
-           }
-       });
+        Database db = Database.getDatabase();
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     /**

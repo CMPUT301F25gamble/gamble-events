@@ -16,7 +16,6 @@ import com.example.eventlotterysystemapplication.SharedUserViewModel;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentFirstTimeInputBinding;
 import com.google.firebase.installations.FirebaseInstallations;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
  * Fragment for first time user registration
@@ -70,29 +69,18 @@ public class FirstTimeUserInfoFragment extends Fragment {
                     .addOnSuccessListener(deviceId -> {
                         Log.d(TAG, "Firebase Device ID: " + deviceId);
 
-                        // get device registration token
-                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()) {
+                        // Build user object
+                        User user = new User();
+                        user.setDeviceID(deviceId);
+                        user.setName(userName);
+                        user.setEmail(userEmail);
+                        if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
 
-                                String token = task1.getResult();
+                        viewModel.setUser(user);
 
-                                Log.d("Token", token);
-
-                                // Build user object
-                                User user = new User();
-                                user.setDeviceID(deviceId);
-                                user.setName(userName);
-                                user.setEmail(userEmail);
-                                user.setDeviceToken(token);
-                                if (!userPhone.isEmpty()) user.setPhoneNumber(userPhone);
-
-                                viewModel.setUser(user);
-
-                                // Go to lottery guidelines screen
-                                NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
-                                        .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
-                            }
-                        });
+                        // Go to lottery guidelines screen
+                        NavHostFragment.findNavController(FirstTimeUserInfoFragment.this)
+                                .navigate(R.id.action_first_time_user_info_fragment_to_lotteryGuidelinesFragment);
                     });
         });
     }

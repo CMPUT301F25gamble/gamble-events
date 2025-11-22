@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Model.Verification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.SharedUserViewModel;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -62,6 +63,17 @@ public class FirstTimeUserInfoFragment extends Fragment {
             if (userEmail.isEmpty()) {
                 binding.emailEditText.setError("Email is required");
                 return;
+            } else {
+                if (!Verification.validEmail(userEmail)) {
+                    binding.emailEditText.setError("Invalid email address");
+                    return;
+                }
+            }
+            if (!userPhone.isEmpty()) {
+                if (!Verification.validPhoneNumber(userPhone)) {
+                    binding.phoneEditText.setError("Invalid phone number");
+                    return;
+                }
             }
 
             // Get device's actual ID

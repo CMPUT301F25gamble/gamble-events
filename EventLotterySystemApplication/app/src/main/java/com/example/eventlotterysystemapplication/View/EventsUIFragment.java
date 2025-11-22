@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays a listview of all available events that the user can join, as well as an option to go to
@@ -50,7 +53,7 @@ public class EventsUIFragment extends Fragment {
     private String userId;
     private boolean isAdminMode;
 
-
+    private List<Event> eventList;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -153,12 +156,66 @@ public class EventsUIFragment extends Fragment {
             binding.contentGroupAdminEventsUi.setVisibility(View.GONE);
         }
 
+        fetchAllEvents();
+
+        // This method is a lot slower so will keep the current method of fetching events as well
+        Database.getDatabase().getAllEvents(task -> {
+            if (!task.isSuccessful()) {
+                binding.loadingEventUi.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            eventList = task.getResult();
+        });
+
+        // Switched from NavHostFragment to a bundle to pass data between fragments
+        binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
+            Bundle args = new Bundle();
+            args.putString("eventId", docIds.get(position));
+            args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
+            Log.d("EventsUIFragmentsss", "isOwnedEvent = " + ownedFlags.get(position));
+            Log.d("EventsUIFragment", "eventId = " + docIds.get(position));
+
+
+            if (isAdminMode) {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
+            } else {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.event_detail_screen, args);
+            }
+        });
+
+        // Auto-navigate if eventID was passed from MainActivity
+        String eventID = null;
+        if (getActivity() != null && getActivity().getIntent() != null) {
+            eventID = getActivity().getIntent().getStringExtra("eventID");
+        }
+
+        if (eventID != null) {
+            // Find the document index to set isOwnedEvent flag
+            int index = docIds.indexOf(eventID);
+            boolean isOwnedEvent = (index != -1) ? ownedFlags.get(index) : false;
+
+            Bundle args = new Bundle();
+            args.putString("eventId", eventID);
+            args.putBoolean("isOwnedEvent", isOwnedEvent);
+
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.event_detail_screen, args);
+        }
+    }
+
+    /**
+     * Fetch all events from Firebase and set the event names, docIDs, and owned arraylists
+     */
+    private void fetchAllEvents() {
         // Fetch all Event docs and display their "name" field in the listView
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
-
         db.collection("Event")
                 .get()
                 .addOnSuccessListener(qs -> {
@@ -200,42 +257,54 @@ public class EventsUIFragment extends Fragment {
                     binding.loadingEventUi.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
                 });
-
-        // Switched from NavHostFragment to a bundle to pass data between fragments
-        binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
-            Bundle args = new Bundle();
-            args.putString("eventId", docIds.get(position));
-            args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
-            Log.d("EventsUIFragmentsss", "isOwnedEvent = " + ownedFlags.get(position));
-            Log.d("EventsUIFragment", "eventId = " + docIds.get(position));
+    }
 
 
-            if (isAdminMode) {
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
-            } else {
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.event_detail_screen, args);
+    /**
+     * Filters by name, description, tags, and location case-insensitively by a keyword.
+     * The keyword must be a substring within any of the 4 filtering categories as described before
+     * for the event to be matched. After filtering is done, updates the UI.
+     * @param keyword the keyword to filter events by
+     */
+    private void filterEventsByKeyword(String keyword) {
+        if (eventList == null) {
+            Log.e("EventsUi", "THE EVENT LIST IS NULL AHHH");
+            return;
+        }
+
+        // If keyword is empty then fetch all events again
+        if (keyword == null || keyword.isEmpty()) {
+            fetchAllEvents();
+            return;
+        }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
+        eventNames.clear();
+        docIds.clear();
+        ownedFlags.clear();
+
+        // Filter events by keyword (CASE-INSENSITIVE)
+        eventList.forEach(event -> {
+            String name = event.getName();
+            String description = event.getDescription();
+            String location = event.getPlace();
+            String tags = String.join(" ", event.getEventTags());
+
+            if (name.toLowerCase().contains(keyword.toLowerCase()) ||
+                description.toLowerCase().contains(keyword.toLowerCase()) ||
+                location.toLowerCase().contains(keyword.toLowerCase()) ||
+                tags.toLowerCase().contains(keyword.toLowerCase())) {
+
+                eventNames.add(name);
+                docIds.add(event.getEventID());
+                ownedFlags.add(event.getOrganizerID().equals(uid));
             }
         });
 
-        // Auto-navigate if eventID was passed from MainActivity
-        String eventID = null;
-        if (getActivity() != null && getActivity().getIntent() != null) {
-            eventID = getActivity().getIntent().getStringExtra("eventID");
-        }
-
-        if (eventID != null) {
-            // Find the document index to set isOwnedEvent flag
-            int index = docIds.indexOf(eventID);
-            boolean isOwnedEvent = (index != -1) ? ownedFlags.get(index) : false;
-
-            Bundle args = new Bundle();
-            args.putString("eventId", eventID);
-            args.putBoolean("isOwnedEvent", isOwnedEvent);
-
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.event_detail_screen, args);
-        }
+        // Update UI
+        eventNamesAdapter.notifyDataSetChanged();
     }
 }

@@ -364,7 +364,6 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
-        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(

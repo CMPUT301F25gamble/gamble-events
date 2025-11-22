@@ -101,5 +101,7 @@
     <string name="browse_images">Browse Images</string>
     <string name="notification_title_text">Notification Title</string>
     <string name="confirm_remove_action">CONFIRM REMOVE</string>
-    <string name="dialog_remove_event_text">This action will <i>REMOVE</i> the user’s created event and <i>cannot be undone</i>.</string>
+    <string name="dialog_remove_event_text">You are about to <em>PERMANENTLY REMOVE</em> the user’s created event. This action is <em>IRREVERSIBLE</em>!</string>
+    <string name="dialog_remove_image_text">You are about to <em>PERMANENTLY REMOVE</em> the image uploaded by the user for this event. This action is <em>IRREVERSIBLE</em>!</string>
+    <string name="dialog_remove_organizer_text">You are about to <em>PERMANENTLY REMOVE</em> this organizer from <em>ALL</em> events they have created. This action will also <em>PERMANENTLY DELETE</em> their profile from the app. These action are <em>IRREVERSIBLE</em>!</string>
 </resources>

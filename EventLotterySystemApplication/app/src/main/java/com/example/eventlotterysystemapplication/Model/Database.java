@@ -853,7 +853,7 @@ public class Database {
                         entrant.setStatus(entrantStatus);
                         event.addToEntrantList(entrant);
                         tcs.setResult(event);
-                        
+
                         Log.d("Test Database 1", "Success");
 
                     } else {

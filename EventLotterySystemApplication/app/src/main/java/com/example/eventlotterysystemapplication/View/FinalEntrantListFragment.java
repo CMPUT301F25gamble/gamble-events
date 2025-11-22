@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Displays a listview of all final entrants that have accepted an invitation to join the event
@@ -110,7 +112,9 @@ public class FinalEntrantListFragment extends Fragment {
                     String eventName = event.getName();
 
                     // Get a list of finalized entrants
-                    ArrayList<User> finalizedEntrants = event.getEntrantList().getFinalized();
+                    ArrayList<User> finalizedEntrants = event.getEntrantFinalizedList().stream()
+                            .map(Entrant::getUser)
+                            .collect(Collectors.toCollection(ArrayList::new));
 
                     try {
                         exportCSV(eventName, finalizedEntrants); // try to create the CSV file
@@ -133,7 +137,7 @@ public class FinalEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getFinalized()) {
+        for (User u : event.getUserFinalizedList()) {
             String name = u.getName();
             data.add(name);
         }

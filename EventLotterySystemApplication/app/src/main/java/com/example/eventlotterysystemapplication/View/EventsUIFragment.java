@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -299,6 +300,43 @@ public class EventsUIFragment extends Fragment {
                 tags.toLowerCase().contains(keyword.toLowerCase())) {
 
                 eventNames.add(name);
+                docIds.add(event.getEventID());
+                ownedFlags.add(event.getOrganizerID().equals(uid));
+            }
+        });
+
+        // Update UI
+        eventNamesAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     *
+     * @param date date to filter event start dates after
+     */
+    private void filterEventsByStartDate(LocalDateTime date) {
+        if (eventList == null) {
+            Log.e("EventsUi", "THE EVENT LIST IS NULL AHHH");
+            return;
+        }
+
+        // If date is empty then fetch all events again
+        if (date == null) {
+            fetchAllEvents();
+            return;
+        }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
+        eventNames.clear();
+        docIds.clear();
+        ownedFlags.clear();
+
+        // Filter events by start date being after the date provided
+        eventList.forEach(event -> {
+            if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
+                eventNames.add(event.getName());
                 docIds.add(event.getEventID());
                 ownedFlags.add(event.getOrganizerID().equals(uid));
             }

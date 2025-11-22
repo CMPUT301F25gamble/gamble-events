@@ -168,6 +168,7 @@ public class Database {
                         tcs.setException(new IllegalStateException("User data is null"));
                     }
                 } else {
+                    Log.e("DBBB", "user id not found: " + userID);
                     tcs.setException(new IllegalStateException("No user exists with that userID"));
                 }
             } else {
@@ -846,7 +847,7 @@ public class Database {
                 TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
 
                 String status = entrantDoc.getString("status");
-                switch (status) {
+                switch (status.toLowerCase()) {
                     case "waiting":
                         getUser(entrantDoc.getId(), task -> {
                             if (task.isSuccessful()) {

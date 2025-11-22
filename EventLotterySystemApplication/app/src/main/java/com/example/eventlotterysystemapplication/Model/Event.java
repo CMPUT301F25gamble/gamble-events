@@ -35,6 +35,8 @@ public class Event {
     private List<Entrant> entrantList=new ArrayList<Entrant>();
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
+    private boolean isRecurring;
+    private int recurringFrequency;
     private String eventPosterUrl;
 
 
@@ -52,6 +54,7 @@ public class Event {
     private transient LocalDateTime registrationStartTime;
     private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
+    private transient LocalDateTime recurringEndDate;
     private static DateTimeFormatter formatter;
 
 
@@ -60,11 +63,6 @@ public class Event {
 
     @Exclude
     private ArrayList<Bitmap> posters;
-
-    /*
-    Include code to have some attributes that points to an event poster, I wouldn't know how to
-    declare attributes of that type yet
-     */
 
     /*
     Geolocation requirement
@@ -124,16 +122,8 @@ public class Event {
         this.entrantList = new ArrayList<Entrant>();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
-        this.posters = posters;
-
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -144,7 +134,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
+     * @param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes
@@ -196,58 +186,7 @@ public class Event {
 
     }
 
-//    /**
-//     * This constructor can also allow for the instantiation of the event object from the program,
-//     * but the main purpose here is to help with mock testing
-//     * @param name The event's name
-//     * @param description The event's description
-//     * @param place The event's location
-//     * @param eventTags The event's tags
-//     * @param organizerID The ID of the user who organizes the event
-//     *@param eventStartTime The start time of the event
-//     * @param eventEndTime The ending time of the event
-//     * @param registrationStartTime The time when the registration for the event opens
-//     * @param registrationEndTime The time when the registration for the event closes
-//     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
-//     *                                     assuming that you were selected by the lottery
-//     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
-//     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
-//     *                             the lottery system
-//     */
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
-//                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-//                 int maxWaitingListCapacity, int maxFinalListCapacity){
-//        // Used for mock test
-//
-//        this.name = name;
-//        this.description = description;
-//        this.place = place;
-//        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-//        this.organizerID = organizerID;
-//
-//        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-//        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
-//        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
-//        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
-//        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
-//        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-//
-//        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
-//        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
-//        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
-//        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
-//        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-//
-//        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-//        this.place = place;
-//
-//        this.entrantList = new ArrayList<Entrant>();
-//        this.maxFinalListCapacity = maxWaitingListCapacity;
-//        this.maxFinalListCapacity = maxFinalListCapacity;
-//        this.maxWaitingListCapacity = -1; // Default as no limit
-//
-//    }
+
 
 
     /**
@@ -265,6 +204,8 @@ public class Event {
             registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (invitationAcceptanceDeadlineTS != null)
             invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -486,6 +427,61 @@ public class Event {
     }
 
     /**
+     * Returns the event poster download url
+     * @return Download url of the event poster
+     */
+    public String getEventPosterUrl() {
+        return eventPosterUrl;
+    }
+
+    /**
+     * Sets the event poster download url (to be stored on Firebase Storage) of the event
+     * @param eventPosterUrl the download url of the event poster image
+     */
+    public void setEventPosterUrl(String eventPosterUrl) {
+        this.eventPosterUrl = eventPosterUrl;
+    }
+
+    /**
+     * Gets if the event is an recurring event
+     * @return true if event recurring, false otherwise
+     */
+    @Exclude
+    public boolean getIsRecurring() {
+        return this.isRecurring;
+    }
+
+    /**
+     * Sets an event recurring status
+     * @param isRecurring boolean indicating whether or not an event is recurring
+     */
+    @Exclude
+    public void setIsRecurring(boolean isRecurring) {
+        this.isRecurring = isRecurring;
+    }
+
+    /**
+     * Gets recurring frequency of an event
+     * @return recurring frequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public int getRecurringFrequency() {
+        return this.recurringFrequency;
+    }
+
+    /**
+     * Sets recurring frequency of an event
+     * @param recurringFrequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public void setRecurringFrequency(int recurringFrequency) {
+        if (recurringFrequency != -1 && (recurringFrequency < 1 || recurringFrequency > 4)) {
+            throw new IllegalArgumentException("Invalid recurring frequency");
+        }
+        this.recurringFrequency = recurringFrequency;
+    }
+
+    /**
      * Gets the event's start time
      * @return The event's start time
      */
@@ -543,6 +539,24 @@ public class Event {
     @Exclude
     public void setEventEndTime(LocalDateTime eventEndTime) {
         this.eventEndTime = eventEndTime;
+    }
+
+    /**
+     * Gets an event's recurring end date
+     * @return The event's recurring end date
+     */
+    @Exclude
+    public LocalDateTime getRecurringEndDate() {
+        return this.recurringEndDate;
+    }
+
+    /**
+     * Sets an event's recurring end date
+     * @param recurringEndDate The event's recurring end date
+     */
+    @Exclude
+    public void setRecurringEndDate(LocalDateTime recurringEndDate) {
+        this.recurringEndDate = recurringEndDate;
     }
 
     /**
@@ -697,53 +711,64 @@ public class Event {
     }
 
     /**
-     * Adds a new tag to the list of event tags
-     * @param tag The tag to be added
-     */
-    @Exclude
-    public void addEventTag(String tag){
-        this.eventTags.add(tag);
-    }
-
-    /**
-     * Remove a tag from the list of event tags
-     * @param tag The tag to be removed
-     */
-    @Exclude
-    public void deleteEventTag(String tag){
-        this.eventTags.remove(tag);
-    }
-
-    @Exclude
-    public void deleteEventTag(int position){
-        if (0 <= position && position < this.eventTags.size()){
-            this.eventTags.remove(position);
-        } else {
-            Log.e("Event", "Index out of bound, cannot delete tag");
-        }
-    }
-
-    /**
-     * A getter for the user object that represents the user who is organizing the event
-     * @return The user object of the organizer
-     */
-    @Exclude
-    public User getOrganizer() {
-        return organizer;
-    }
-
-    /**
-     * A setter for the user object that represents the user who is organizing the event
-     * @param organizer The user object of the organizer
-     */
-    @Exclude
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
-    }
-
-    /**
      * A getter for the entrant list
      * @return The entrant list object
+     */
+    @Exclude
+    public EntrantList getEntrantList() {
+        return entrantList;
+    }
+
+    /**
+     * A setter for the entrant list
+     * @param entrantList The entrant list object
+     */
+    @Exclude
+    public void setEntrantList(EntrantList entrantList) {
+        this.entrantList = entrantList;
+    }
+
+    /**
+     * A getter for the posters list
+     * @return The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    /**
+     * A setter for the posters list
+     * @param posters The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
+    }
+
+    /**
+     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
+     * before returning
+     * @return A bitmap object of the QR code image
+     */
+    @Exclude
+    public Bitmap getQRCodeBitmap() {
+        if (QRCodeBitmap == null){
+            generateQRCode();
+        }
+        return QRCodeBitmap;
+    }
+
+    /**
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
      */
     @Exclude
     public List<Entrant> getEntrantList() {
@@ -763,6 +788,73 @@ public class Event {
         return entrantList.stream()
                 .filter(e -> e.getStatus() == entrantStatus)
                 .collect(Collectors.toList());
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
+    }
+
+    /**
+     * Parses the timestamp objects and saves them into the LocalDateTime objects
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void parseTimestamps() {
+        if (eventStartTimeTS != null)
+            eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (eventEndTimeTS != null)
+            eventEndTime = eventEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationStartTimeTS != null)
+            registrationStartTime = registrationStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (registrationEndTimeTS != null)
+            registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (invitationAcceptanceDeadlineTS != null)
+            invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
+     * Retrieves an event's recurrence frequency in String
+     * @return The event's recurrence frequency in String
+     */
+    public String displayRecurrenceFrequency() {
+        if (this.getRecurringFrequency() == 1) {
+            return "Daily";
+        }
+        if (this.getRecurringFrequency() == 2) {
+            return "Weekly";
+        }
+        if (this.getRecurringFrequency() == 3) {
+            return "Monthly";
+        }
+        if (this.getRecurringFrequency() == 4) {
+            return "Yearly";
+        }
+        return "Not a recurring event";
+    }
+
+    /**
+     * Adds a new tag to the list of event tags
+     * @param tag The tag to be added
+     */
+    public void addEventTag(String tag){
+        this.eventTags.add(tag);
+    }
+
+    /**
+     * Remove a tag from the list of event tags
+     * @param tag The tag to be removed
+     */
+    public void deleteEventTag(String tag){
+        this.eventTags.remove(tag);
+    }
+
+    /**
+     * Remove a tag from the list of event tags based on index
+     * @param position The index of the tag
+     */
+    public void deleteEventTag(int position){
+        if (0 <= position && position < this.eventTags.size()){
+            this.eventTags.remove(position);
+        } else {
+            Log.e("Event", "Index out of bound, cannot delete tag");
+        }
     }
 
     /**
@@ -943,31 +1035,6 @@ public class Event {
 
 
     /**
-     * A getter for the posters list
-     * @return The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public ArrayList<Bitmap> getPosters() {
-        return posters;
-    }
-
-    /**
-     * A setter for the posters list
-     * @param posters The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public void setPosters(ArrayList<Bitmap> posters) {
-        this.posters = posters;
-
-        Database db = Database.getDatabase();
-        db.updateEvent(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot update event");
-            }
-        });
-    }
-
-    /**
      * Adds a new poster to the posters list
      * @param poster The bitmap of the new poster to be added to the event list
      */
@@ -1030,41 +1097,4 @@ public class Event {
         }
     }
 
-    /**
-     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
-     * before returning
-     * @return A bitmap object of the QR code image
-     */
-    @Exclude
-    public Bitmap getQRCodeBitmap() {
-        if (QRCodeBitmap == null){
-            generateQRCode();
-        }
-        return QRCodeBitmap;
-    }
-
-    /**
-     * Sets the QR code bitmap to a specific bitmap
-     * @param QRCodeBitmap The bitmap to set the QR code to
-     */
-    @Exclude
-    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
-        this.QRCodeBitmap = QRCodeBitmap;
-    }
-
-    /**
-     * Sets the event poster download url (to be stored on Firebase Storage) of the event
-     * @param eventPosterUrl the download url of the event poster image
-     */
-    public void setEventPosterUrl(String eventPosterUrl) {
-        this.eventPosterUrl = eventPosterUrl;
-    }
-
-    /**
-     * Returns the event poster download url
-     * @return Download url of the event poster
-     */
-    public String getEventPosterUrl() {
-        return eventPosterUrl;
-    }
 }

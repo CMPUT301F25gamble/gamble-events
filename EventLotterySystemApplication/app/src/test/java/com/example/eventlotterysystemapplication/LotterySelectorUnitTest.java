@@ -8,10 +8,12 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -32,6 +34,7 @@ public class LotterySelectorUnitTest {
     private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
     private MockedStatic<Log> mockLogStatic;
     private final String userID = "mwahahahahah";
+    private EntrantList entrantList = mock(EntrantList.class);
     private Event event = new Event(
             "Casino Paradise Gambling 18+",
             "Have lots of fun throwing your life savings away",
@@ -43,6 +46,7 @@ public class LotterySelectorUnitTest {
             "2025-11-01T23:59",
             "2025-11-10T23:59",
             "2025-11-12T23:59",
+            entrantList,
             10,
             5
     );

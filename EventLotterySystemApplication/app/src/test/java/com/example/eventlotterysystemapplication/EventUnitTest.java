@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.Task;
@@ -53,6 +54,7 @@ public class EventUnitTest {
     }
 
     public Event mockEvent1(){
+        EntrantList entrantList = mock(EntrantList.class);
         Event event = new Event(
                 "Twice concert watch party",
                 "We love Twice",
@@ -64,6 +66,7 @@ public class EventUnitTest {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
+                entrantList,
                 50,
                 20
         );
@@ -200,6 +203,40 @@ public class EventUnitTest {
 
         assert(event.getEventTags().equals(Arrays.asList(new String[]{"Twice"})));
 
+    }
+
+    @Test
+    public void testSetRecurringEvent() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertTrue(event.getIsRecurring());
+    }
+
+    @Test
+    public void testSetRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(1);
+
+        assertEquals(1, event.getRecurringFrequency());
+    }
+
+    @Test
+    public void testSetInvalidRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertThrows(IllegalArgumentException.class, () -> event.setRecurringFrequency(5));
+    }
+
+    @Test
+    public void testGetRecurringFrequencyString() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(3);
+
+        assertEquals("Monthly", event.displayRecurrenceFrequency());
     }
 
     @Test

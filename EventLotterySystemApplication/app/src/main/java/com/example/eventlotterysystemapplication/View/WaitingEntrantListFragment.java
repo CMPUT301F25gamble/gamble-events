@@ -15,10 +15,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentWaitingEntrantListBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * WaitingEntrantListFragment
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 public class WaitingEntrantListFragment extends Fragment {
     private FragmentWaitingEntrantListBinding binding;
     private Database database;
+    LotterySelector lotterySelector;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -43,6 +46,7 @@ public class WaitingEntrantListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         database = Database.getDatabase();
+        lotterySelector = new LotterySelector();
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -93,6 +97,25 @@ public class WaitingEntrantListFragment extends Fragment {
                 binding.contentGroupWaitingEntrantsList.setVisibility(View.VISIBLE);
             });
         }
+
+        // Randomly Select Entrants for Event when button pressed
+        binding.selectEntrantsButton.setOnClickListener(v->{
+            database.getEvent(eventId,  task -> {
+                if (task.isSuccessful()) {
+                    Event event = task.getResult();
+
+                    // Use lottery selector to randomly select entrants
+                    List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
+
+                    for (User u : selectedEntrants)
+                    {
+                        event.joinChosenList(u); // add entrants to chosen list
+                    }
+
+                    Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
     // Private method to help with loading the data into the ListView

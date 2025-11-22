@@ -108,7 +108,7 @@
 
     </LinearLayout>
 
-    <!-- User's Location -->
+    <!-- User's EntrantLocation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
             android:paddingTop="12dp"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:text="@string/location" />
+            android:text="@string/entrantLocation" />
 
         <TextView
             android:id="@+id/enterLocation"

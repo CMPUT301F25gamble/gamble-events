@@ -788,6 +788,8 @@ public class Event {
         return entrantList.stream()
                 .filter(e -> e.getStatus() == entrantStatus)
                 .collect(Collectors.toList());
+    }
+    
     public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
         this.QRCodeBitmap = QRCodeBitmap;
     }

@@ -1,6 +1,9 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -21,12 +25,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.Location;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.installations.FirebaseInstallations;
 
@@ -80,6 +89,13 @@ public class EventDetailScreenFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
+        if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1001);
+        }
+
         return binding.getRoot();
     }
 
@@ -114,7 +130,7 @@ public class EventDetailScreenFragment extends Fragment {
             assert deviceID != null;
 
             // Fetch this event and bind
-            getEvent(task -> {
+            Database.getDatabase().getEvent(eventId, task -> {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
                     Event event = task.getResult();
@@ -122,14 +138,15 @@ public class EventDetailScreenFragment extends Fragment {
                     bindEvent(event);
 
                     // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
-                    getUserFromDeviceID(deviceID, taskUser -> {
+                    Database.getDatabase().getUserFromDeviceID(deviceID, taskUser -> {
                         if (taskUser.isSuccessful()) {
                             User user = taskUser.getResult();
                             Log.d(TAG, "Grabbed user is: " + user);
-                            Log.d(TAG, "Initial Waiting list: " + event.getEntrantList().getWaiting());
+                            Log.d(TAG, "Initial Waiting list: " + event.getEntrantWaitingList());
 
                             showGenerateQRCodeButton();
-                            changeWaitlistBtn(event.getEntrantList().getWaiting().contains(user));
+                            Entrant entrant = event.genEntrantIfExists(user);
+                            changeWaitlistBtn(entrant != null);
                         } else {
                             // Failed to load user; hide loading and show error
                             binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -158,7 +175,7 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Generate QR Code when the GenerateQRCode Button is pressed
             binding.generateQRCodeButton.setOnClickListener(v -> {
-                getEvent(taskEvent -> {
+                Database.getDatabase().getEvent(eventId, taskEvent -> {
                     Event event = taskEvent.getResult();
                     Bitmap qrBitmap = event.getQRCodeBitmap();
                     showQRCodeDialog(qrBitmap);
@@ -178,43 +195,80 @@ public class EventDetailScreenFragment extends Fragment {
                     return;
                 }
 
-               getEvent(taskEvent -> {
-                   if (taskEvent.isSuccessful()) {
-                       Event event = taskEvent.getResult();
-                       getUserFromDeviceID(deviceID, taskUser -> {
-                           if (taskUser.isSuccessful()) {
-                               // Grab user and check if already in waiting list
-                               User user = taskUser.getResult();
-                               if (!event.getEntrantList().getWaiting().contains(user)) {
-                                   // User is not in waiting list, so join the waitlist
-                                   event.joinWaitingList(user);
-                                   changeWaitlistBtn(true);
-                               } else {
-                                   // User is in waiting list, so leave the waitlist
-                                   event.leaveWaitingList(user);
-                                   changeWaitlistBtn(false);
-                               }
-                               Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList().getWaiting());
-                           } else {
-                               // Failed to obtain user; hide loading and show error
-                               binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                               Toast.makeText(requireContext(), "Failed to obtain user from device ID",
-                                       Toast.LENGTH_LONG).show();
-                           }
-                       });
+                Database.getDatabase().getEvent(eventId, taskEvent -> {
+                    if (taskEvent.isSuccessful()) {
+                        Event event = taskEvent.getResult();
+                        getUserFromDeviceID(deviceID, taskUser -> {
+                            if (taskUser.isSuccessful()) {
+                                // Grab user and check if already in waiting list
+                                User user = taskUser.getResult();
+                                Entrant entrant = event.genEntrantIfExists(user);
+                                if (entrant == null) {
+                                    //Get geo entrantLocation
+                                    Context context = v.getContext();
+                                    if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        Entrant newEntrant = new Entrant();
+                                        newEntrant.setLocation(null);
+                                        newEntrant.setStatus(EntrantStatus.WAITING);
+                                        newEntrant.setUser(user);
+                                        event.addToEntrantList(newEntrant);
+                                        updateEventDB(event);
+                                    } else {
+                                        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                                        // Make entrant effectively final by using a final variable
+                                        fusedLocationClient.getLastLocation()
+                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                    Location entrantLocation = null;
+                                                    if (location != null) {
+                                                        entrantLocation = new Location();
+                                                        entrantLocation.setLatitude(location.getLatitude());
+                                                        entrantLocation.setLongitude(location.getLongitude());
+                                                    }
+                                                    Entrant newEntrant = new Entrant();
+                                                    newEntrant.setLocation(entrantLocation);
+                                                    newEntrant.setStatus(EntrantStatus.WAITING);
+                                                    newEntrant.setUser(user);
+                                                    event.addToEntrantList(newEntrant);
+                                                    updateEventDB(event);
+                                                    changeWaitlistBtn(true);
 
-                   } else {
-                       // Failed to load event; hide loading and show error
-                       binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                       Toast.makeText(requireContext(), "Failed to load event",
-                               Toast.LENGTH_LONG).show();
-                   }
-               });
+                                                });
+                                        // User is not in waiting list, so join the waitlist
+                                    }
+                                } else {
+                                    // User is in waiting list, so leave the waitlist
+                                    event.removeEntrant(entrant);
+                                    updateEventDB(event);
+                                    changeWaitlistBtn(false);
+                                }
+                                Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
+                            } else {
+                                // Failed to obtain user; hide loading and show error
+                                binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                                Toast.makeText(requireContext(), "Failed to obtain user from device ID",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    } else {
+                        // Failed to load event; hide loading and show error
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load event",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
             });
-
         });
     }
 
+    private void updateEventDB(Event event){
+        Database db = Database.getDatabase();
+        db.updateEvent(event, task -> {
+            if (task.isSuccessful()) {
+                Log.d("Event", "User successfully joins waiting list");
+            }
+        });
+    }
 
     /**
      * Shows Generate QR Code button in event details screen if current user is the organizer of the event
@@ -250,8 +304,8 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
-
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
                     ContextCompat.getColorStateList(requireContext(), R.color.app_beige)

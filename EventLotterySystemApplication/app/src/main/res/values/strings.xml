@@ -87,7 +87,7 @@
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
-    <string name="location">Location:</string>
+    <string name="entrantLocation">Location:</string>
     <string name="decline_invite">DECLINE Invite</string>
     <string name="pending_entrant_decline_text_1">This action will <i>DECLINE</i> the user’s invitation and <i>cannot be undone</i>.</string>
     <string name="pending_entrant_decline_text_2">Do you wish to continue?</string>

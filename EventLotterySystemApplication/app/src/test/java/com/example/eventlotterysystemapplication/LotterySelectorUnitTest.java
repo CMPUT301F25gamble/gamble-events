@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
@@ -46,7 +47,6 @@ public class LotterySelectorUnitTest {
             "2025-11-01T23:59",
             "2025-11-10T23:59",
             "2025-11-12T23:59",
-            entrantList,
             10,
             5
     );
@@ -113,17 +113,17 @@ public class LotterySelectorUnitTest {
 
         // There are more people on waiting list than the final list capacity
         event.setMaxFinalListCapacity(maxFinalListCapacity);
-        event.getEntrantList().setWaiting(waitingList);
+        event.setW(waitingList);
 
         LotterySelector ls = new LotterySelector();
-        List<User> acceptedList;
+        List<Entrant> acceptedList;
         acceptedList = ls.drawAcceptedUsers(event);
 
         // Check that length of acceptedList is equal to maxFinalListCapacity
         assertEquals(maxFinalListCapacity, acceptedList.size());
         // Check each user in accepted list was on waiting list before
-        for (User user : acceptedList) {
-            assertTrue(waitingList.contains(user));
+        for (Entrant entrant : acceptedList) {
+            assertTrue(waitingList.contains(entrant));
         }
     }
 
@@ -140,14 +140,14 @@ public class LotterySelectorUnitTest {
         event.getEntrantList().setWaiting(waitingList);
 
         LotterySelector ls = new LotterySelector();
-        List<User> acceptedList;
+        List<Entrant> acceptedList;
         acceptedList = ls.drawAcceptedUsers(event);
 
         // Check that length of acceptedList is equal to waitingList (everyone got accepted)
         assertEquals(waitingList.size(), acceptedList.size());
         // Check each user in accepted list was on waiting list before
-        for (User user : acceptedList) {
-            assertTrue(waitingList.contains(user));
+        for (Entrant entrant : acceptedList) {
+            assertTrue(waitingList.contains(entrant));
         }
     }
 

@@ -93,17 +93,17 @@ public class EntrantListSelectionFragment extends Fragment {
             bundle3.putString("eventID", "2jKXO77SjVanAOxAcdBd");
             bundle3.putString("entrantStatus", String.valueOf(EntrantStatus.WAITING));
 
-            Fragment fragment = new MapsFragment();
-            fragment.setArguments(bundle3);
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            Fragment fragment = new MapsFragment();
+//            fragment.setArguments(bundle3);
+//            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//            fragmentTransaction.replace(R.id.main, fragment);
+//            fragmentTransaction.addToBackStack(null); // optional, allows back navigation
+//            fragmentTransaction.commit();
 
-            fragmentTransaction.replace(R.id.main, fragment);
-            fragmentTransaction.addToBackStack(null); // optional, allows back navigation
-            fragmentTransaction.commit();
-
-//            NavHostFragment.findNavController(EntrantListSelectionFragment.this)
-  //                  .navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle);
+            NavHostFragment.findNavController(EntrantListSelectionFragment.this)
+                    .navigate(R.id.action_entrantListSelectionFragment_to_mapsFragment, bundle3);
         });
 
         // View all cancelled entrants Button to access list of all entrants

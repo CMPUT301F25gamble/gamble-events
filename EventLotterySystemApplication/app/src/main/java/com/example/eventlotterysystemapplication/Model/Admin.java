@@ -18,7 +18,7 @@ public class Admin extends User{
     private ImageStorage imageStorage = ImageStorage.getInstance();
 
     /**
-     * A constructor for creating an Admin object, assuming such user does not exist yet
+     * A constructor for creating an Admin object
      * @param name The name of the user
      * @param email The email of the user
      * @param phoneNumber The phone number of the user
@@ -30,14 +30,25 @@ public class Admin extends User{
     }
 
     /**
+     * Updates isAdmin to true in the database
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
+     */
+    public void updateAdminRecordOnDB(OnCompleteListener<Void> listener) {
+        db.modifyUser(this, task -> {
+            if (task.isSuccessful()) {
+                listener.onComplete(Tasks.forResult(null));
+            } else {
+                Log.e("Admin", "Cannot update record on database");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
+        });
+    }
+
+    /**
      * Removes an event
-     * @param admin The admin
      * @param event The event to be removed
      */
-    public void removeEvent(User admin, Event event) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void removeEvent(Event event) {
         db.deleteEvent(event, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Admin", "Cannot remove event");
@@ -47,13 +58,9 @@ public class Admin extends User{
 
     /**
      * Removes a user profile
-     * @param admin The admin
      * @param user  The user to be removed
      */
-    public void removeProfile(User admin, User user) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void removeProfile(User user) {
         db.deleteUser(user, task -> {
             if (!task.isSuccessful()) {
                 Log.e("Admin", "Cannot remove user profile");
@@ -63,13 +70,9 @@ public class Admin extends User{
 
     /**
      * Removes an organizer's profile and all their organized events due to violation of app policy
-     * @param admin The admin
      * @param organizer The organizer to be removed
      */
-    public void removeOrganizer(User admin, User organizer) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void removeOrganizer(User organizer) {
         db.deleteUser(organizer, task -> {
             if (task.isSuccessful()) {
                 Log.d("Admin", "Removed organizer due to violation of app policy");
@@ -81,13 +84,9 @@ public class Admin extends User{
 
     /**
      * Removes an image based on its URL
-     * @param admin The admin
      * @param imageUrl the URL of the image
      */
-    public void removeImage(User admin, String imageUrl) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void removeImage(String imageUrl) {
         imageStorage.deleteEventPoster(imageUrl, task -> {
             if (task.isSuccessful()) {
                 Log.d("Admin", "Removed image");
@@ -98,19 +97,54 @@ public class Admin extends User{
     }
 
     /**
+     * Removes a user's admin privileges
+     * @param admin The admin to have their privileges revoked
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
+     */
+    public void removeAdmin(Admin admin, OnCompleteListener<Void> listener) {
+        User user = new User(admin.getName(), admin.getEmail(), admin.getPhoneNumber(), admin.getDeviceID(), admin.getDeviceToken());
+        db.modifyUserById(admin.getUserID(), user, task -> {
+            if (task.isSuccessful()) {
+                listener.onComplete(Tasks.forResult(null));
+                Log.d("Admin", "Successfully revoked user's admin privilege");
+            } else {
+                listener.onComplete(Tasks.forException(task.getException()));
+                Log.e("Admin", "Cannot revoke user's admin privilege");
+            }
+        });
+
+    }
+
+    /**
+     * Grants admin privileges to a user
+     * @param user The user to have admin privileges granted to
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
+     */
+    public void grantAdmin(User user, OnCompleteListener<Void> listener) {
+        Admin admin = new Admin(user.getName(), user.getEmail(), user.getPhoneNumber(), user.getDeviceID(), user.getDeviceToken());
+        db.modifyUserById(user.getUserID(), admin, task -> {
+            if (task.isSuccessful()) {
+                listener.onComplete(Tasks.forResult(null));
+                Log.d("Admin", "Successfully granted admin privilege to the user");
+            } else {
+                listener.onComplete(Tasks.forException(task.getException()));
+                Log.e("Admin", "Cannot grant admin privilege");
+            }
+        });
+
+    }
+
+    /**
      * Browses a list of events
-     * @param admin The admin
      * @param listener An OnCompleteListener used to retrieve a list of events
      */
-    public void browseEvents(User admin, OnCompleteListener<List<Event>> listener) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void browseEvents(OnCompleteListener<List<Event>> listener) {
         db.getAllEvents(task -> {
             if (task.isSuccessful()) {
                 List<Event> events = task.getResult();
                 listener.onComplete(Tasks.forResult(events));
             } else {
+                listener.onComplete(Tasks.forException(task.getException()));
                 Log.e("Admin", "Cannot browse events");
             }
         });
@@ -118,18 +152,15 @@ public class Admin extends User{
 
     /**
      * Browses a list of user profiles
-     * @param admin The admin
      * @param listener An OnCompleteListener used to retrieve a list of users
      */
-    public void browseProfiles(User admin, OnCompleteListener<List<User>> listener) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void browseProfiles(OnCompleteListener<List<User>> listener) {
         db.getAllUsers(task -> {
             if (task.isSuccessful()) {
                 List<User> users = task.getResult();
                 listener.onComplete(Tasks.forResult(users));
             } else {
+                listener.onComplete(Tasks.forException(task.getException()));
                 Log.e("Admin", "Cannot browse profiles");
             }
         });
@@ -137,24 +168,21 @@ public class Admin extends User{
 
     /**
      * Browses a list of images
-     * @param admin The admin
      * @param listener An OnCompleteListener used to retrieve a list of image URLs
      */
-    public void browseImages(User admin, OnCompleteListener<List<String>> listener) {
-        if (!admin.isAdmin()) {
-            throw new IllegalStateException("User is not an admin.");
-        }
+    public void browseImages(OnCompleteListener<List<String>> listener) {
         imageStorage.fetchAllPosterImageUrls(task -> {
             if (task.isSuccessful()) {
                 List<String> imageUrls = task.getResult();
                 listener.onComplete(Tasks.forResult(imageUrls));
             } else {
+                listener.onComplete(Tasks.forException(task.getException()));
                 Log.e("Admin", "Cannot browse images");
             }
         });
     }
 
-    public void reviewNotificationLogs(User admin) {
+    public void reviewNotificationLogs() {
         // TODO
     }
 

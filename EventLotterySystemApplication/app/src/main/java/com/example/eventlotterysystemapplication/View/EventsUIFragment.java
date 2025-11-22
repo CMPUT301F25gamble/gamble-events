@@ -310,7 +310,7 @@ public class EventsUIFragment extends Fragment {
     }
 
     /**
-     *
+     * Filters events by the start date being after the date given
      * @param date date to filter event start dates after
      */
     private void filterEventsByStartDate(LocalDateTime date) {

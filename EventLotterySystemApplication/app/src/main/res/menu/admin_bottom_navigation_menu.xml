@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/browse_profiles"
+        android:icon="@drawable/entrants_icon"
+        android:id="@+id/allProfilesFragment">
+    </item>
+
+    <item android:title="@string/browse_images"
+        android:icon="@drawable/images_icon"
+        android:id="@+id/example">
+    </item>
+
+    <item android:title="@string/bottom_menu_event_text"
+        android:icon="@drawable/events_icon"
+        android:id="@+id/eventsUIFragment">
+    </item>
+
+    <item android:title="@string/notification_logs_text"
+        android:icon="@drawable/notifications_icon"
+        android:id="@+id/adminNotifications">
+    </item>
+
+    <item android:title="@string/bottom_menu_settings_text"
+        android:icon="@drawable/settings_icon"
+        android:id="@+id/settingsUIFragment">
+    </item>
+</menu>

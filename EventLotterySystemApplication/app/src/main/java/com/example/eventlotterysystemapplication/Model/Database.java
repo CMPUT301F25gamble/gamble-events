@@ -256,6 +256,16 @@ public class Database {
     }
 
     /**
+     * Given a user, ADMIN can update or create their record in the database
+     * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the modify operation finishes
+     */
+    public void modifyUserById(String userId, User user, OnCompleteListener<Void> listener) {
+        DocumentReference userDoc = userRef.document(userId);
+        userDoc.set(user, SetOptions.merge()).addOnCompleteListener(listener);
+    }
+
+    /**
      * Given a user, delete their record from the database
      * @param user The user profile
      * @param listener An OnCompleteListener that will be called when the delete operation finishes
@@ -678,11 +688,11 @@ public class Database {
                             HashMap<String, Object> data = new HashMap<String, Object>();
                             data.put("userID", user.getUserID());
                             recipientDocRef.set(data).addOnCompleteListener(task2 -> {
-                                        if (task2.isSuccessful()) {
-                                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
-                                        }
-                                        listener.onComplete(task2);
-                                    });
+                                if (task2.isSuccessful()) {
+                                    Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                                }
+                                listener.onComplete(task2);
+                            });
                         }
                     });
                 } else {

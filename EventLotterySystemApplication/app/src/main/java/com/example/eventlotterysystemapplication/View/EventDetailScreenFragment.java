@@ -23,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
@@ -59,6 +60,10 @@ public class EventDetailScreenFragment extends Fragment {
     private String eventId;
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
+
+    // Used for ADMIN control
+    private String userId;
+    private boolean isAdminMode;
 
     public EventDetailScreenFragment() {
         // Required empty public constructor
@@ -98,6 +103,9 @@ public class EventDetailScreenFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        isAdminMode = AdminSession.getAdminMode();
+        userId = AdminSession.getSelectedUserId();
+
         ImageButton backButton = binding.eventDetailScreenBackButton;
 
         if (getActivity() instanceof EditEventActivity) {
@@ -107,13 +115,14 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             backButton.setOnClickListener(v -> {
                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
+                       .navigateUp();
             });
         }
 
         // Show loading and hide content until it is fetched
         binding.loadingEventDetailScreen.setVisibility(View.VISIBLE);
         binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.GONE);
 
         // Obtain deviceID
         FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceID -> {
@@ -133,7 +142,7 @@ public class EventDetailScreenFragment extends Fragment {
                         if (taskUser.isSuccessful()) {
                             User user = taskUser.getResult();
                             Log.d(TAG, "Grabbed user is: " + user);
-                           // Log.d(TAG, "Initial Waiting list: " + event.getEntrantWaitingList());
+                            Log.d(TAG, "Initial Waiting list: " + event.getEntrantWaitingList());
 
                             showGenerateQRCodeButton();
                             Entrant entrant = event.genEntrantIfExists(user);
@@ -144,10 +153,17 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.makeText(requireContext(), "Failed to fetch user from device ID",
                                     Toast.LENGTH_LONG).show();
                         }
-                        // Hide loading and show content
-                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     });
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    if (isAdminMode) {
+                        binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                        // Hide join waitlist/edit event button and hide generateQR button
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                    } else {
+                        binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     // Failed to load event; hide loading and show error
                     Log.e(TAG, "Failed to load event, " + task.getResult());
@@ -243,8 +259,6 @@ public class EventDetailScreenFragment extends Fragment {
                    }
                });
             });
-        });
-    }
 
     private void updateEventDB(Event event){
         Database db = Database.getDatabase();
@@ -253,7 +267,6 @@ public class EventDetailScreenFragment extends Fragment {
                 Log.d("Event", "User successfully joins waiting list");
             }
         });
-
     }
 
     /**
@@ -292,7 +305,6 @@ public class EventDetailScreenFragment extends Fragment {
     private void changeWaitlistBtn(boolean userInWaitlist) {
         Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
-
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
                     ContextCompat.getColorStateList(requireContext(), R.color.app_beige)

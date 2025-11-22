@@ -53,9 +53,6 @@
         <action
             android:id="@+id/action_organiserNotificationsUIFragment_to_organiserSendNotificationUIFragment"
             app:destination="@id/organiserSendNotificationUIFragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/organiserSendNotificationUIFragment"
@@ -68,9 +65,6 @@
         <action
             android:id="@+id/action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment"
             app:destination="@id/organiserNotificationsUIFragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/my_event_detail_screen"
@@ -126,9 +120,9 @@
     </fragment>
     <fragment
         android:id="@+id/pendingEntrantList"
-        android:name="com.example.eventlotterysystemapplication.View.PendingEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.WaitingEntrantListFragment"
         android:label="fragment_pending_entrant_list"
-        tools:layout="@layout/fragment_pending_entrant_list" >
+        tools:layout="@layout/fragment_waiting_entrant_list" >
         <action
             android:id="@+id/action_pendingEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />

@@ -144,7 +144,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     * @param eventStartTime The start time of the event
+     *@param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes
@@ -204,7 +204,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     * @param eventStartTime The start time of the event
+     *@param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes
@@ -217,7 +217,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
+                 int maxWaitingListCapacity, int maxFinalListCapacity){
         // Used for mock test
 
         this.name = name;

@@ -33,18 +33,18 @@ public class LotterySelectorUnitTest {
     private MockedStatic<Log> mockLogStatic;
     private final String userID = "mwahahahahah";
     private Event event = new Event(
-                "Casino Paradise Gambling 18+",
-                "Have lots of fun throwing your life savings away",
-                "1234 Gambler Debt Road",
-                new String[]{"gambling", "alcohol"},
-                userID,
-                "2025-11-15T14:00",
-                "2025-11-25T16:00",
-                "2025-11-01T23:59",
-                "2025-11-10T23:59",
-                "2025-11-12T23:59",
-                10,
-                5
+            "Casino Paradise Gambling 18+",
+            "Have lots of fun throwing your life savings away",
+            "1234 Gambler Debt Road",
+            new String[]{"gambling", "alcohol"},
+            userID,
+            "2025-11-15T14:00",
+            "2025-11-25T16:00",
+            "2025-11-01T23:59",
+            "2025-11-10T23:59",
+            "2025-11-12T23:59",
+            10,
+            5
     );
 
     User billyBob = new User(

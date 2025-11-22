@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -146,7 +147,13 @@ public class EventDetailScreenFragment extends Fragment {
                             Log.d(TAG, "Grabbed user is: " + user);
                             Log.d(TAG, "Initial Waiting list: " + event.getEntrantWaitingList());
 
-                            showGenerateQRCodeButton();
+                            // If Admin mode, hide generateQR button, else show it
+                            if (isAdminMode) {
+                                binding.generateQRCodeButton.setVisibility(View.GONE);
+                            } else {
+                                showGenerateQRCodeButton();
+                            }
+
                             Entrant entrant = event.genEntrantIfExists(user);
                             changeWaitlistBtn(entrant != null);
                         } else {
@@ -160,11 +167,11 @@ public class EventDetailScreenFragment extends Fragment {
                     if (isAdminMode) {
                         binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-                        // Hide join waitlist/edit event button and hide generateQR button
+                        // Hide join waitlist/edit event button
                         binding.navigationBarButton.setVisibility(View.GONE);
-                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                        // Hide generate QR Code button logic is done when db called (line 152)
                     } else {
-                        // Show join waitlist/edit event button and show generateQR button
+                        // Show join waitlist/edit event button
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -176,11 +183,16 @@ public class EventDetailScreenFragment extends Fragment {
                 }
             });
 
-            // Remove Event Button
+            // Remove Event Button (Only in admin mode)
             binding.removeEventButton.setOnClickListener(v -> {
-                if (isAdminMode) {
-                    Admin.removeEvent(event);
-                }
+                Admin.removeEvent(event);
+
+                // Hide all elements on screen and display text saying event has been removed
+                binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+
+
+                NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                        .navigateUp();
             });
 
             // Generate QR Code when the GenerateQRCode Button is pressed

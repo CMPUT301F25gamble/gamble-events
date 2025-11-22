@@ -100,4 +100,5 @@
     <string name="browse_profiles">All Profiles</string>
     <string name="browse_images">Browse Images</string>
     <string name="notification_title_text">Notification Title</string>
+    <string name="confirm_remove_action">CONFIRM REMOVE</string>
 </resources>

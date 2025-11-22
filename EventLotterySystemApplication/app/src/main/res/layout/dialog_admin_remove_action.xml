@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="32dp"
+    android:paddingBottom="56dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:background="@drawable/popup_background"
+    android:backgroundTint="@color/light_grey">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dialogUserNameTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="24dp"
+        android:gravity="center"
+        android:text="⚠️ WARNING ⚠️"
+        android:textStyle="bold"
+        android:textSize="36sp"
+        android:textColor="@color/transparent_dark_red"/>
+
+    <!-- Sentence 1 -->
+    <TextView
+        android:id="@+id/dialogTextView1"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingTop="32dp"
+        android:paddingBottom="12dp"
+        android:text="@string/pending_entrant_decline_text_1"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Sentence 2 -->
+    <TextView
+        android:id="@+id/dialogTextView2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:paddingTop="32dp"
+        android:paddingBottom="40dp"
+        android:text="@string/pending_entrant_decline_text_2"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <!-- Buttons -->
+    <Button
+        android:id="@+id/dialogConfirmButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/important_field"
+        android:text="@string/confirm_remove_action" />
+
+    <Button
+        android:id="@+id/dialogBackButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/dark_grey"
+        android:text="@string/back_button_text" />
+
+</LinearLayout>

@@ -65,6 +65,7 @@ public class EventDetailScreenFragment extends Fragment {
     // Used for ADMIN control
     private String userId;
     private boolean isAdminMode;
+    private Event event;
 
     public EventDetailScreenFragment() {
         // Required empty public constructor
@@ -134,7 +135,7 @@ public class EventDetailScreenFragment extends Fragment {
             Database.getDatabase().getEvent(eventId, task -> {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
-                    Event event = task.getResult();
+                    event = task.getResult();
                     Log.d(TAG, "Event retrieved is: " + event);
                     bindEvent(event);
 
@@ -178,8 +179,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Remove Event Button
             binding.removeEventButton.setOnClickListener(v -> {
                 if (isAdminMode) {
-                    //Admin.removeEvent(event);
-                    //Log.d(TAG, "Admin: " + user.getName());
+                    Admin.removeEvent(event);
                 }
             });
 

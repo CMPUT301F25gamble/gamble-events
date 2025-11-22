@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Log.e("MyApp", "Uncaught exception", throwable);
+        });
+
         super.onCreate(savedInstanceState);
 
         NotificationChannelFactory.createNotificationChannels(this);

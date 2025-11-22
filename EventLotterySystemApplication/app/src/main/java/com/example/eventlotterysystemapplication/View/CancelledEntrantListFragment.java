@@ -105,7 +105,7 @@ public class CancelledEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getCancelled()) {
+        for (User u : event.getUserCancelledList()) {
             String name = u.getName();
             data.add(name);
         }

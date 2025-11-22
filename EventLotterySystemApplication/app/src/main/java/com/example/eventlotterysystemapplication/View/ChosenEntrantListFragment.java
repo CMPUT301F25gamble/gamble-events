@@ -106,7 +106,7 @@ public class ChosenEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getChosen()) {
+        for (User u : event.getUserChosenList()) {
             String name = u.getName();
             data.add(name);
         }

@@ -46,7 +46,7 @@ public class LotterySelector {
                 return;
             }
 
-            if(event.getEntrantList().getWaiting().size() == 0){
+            if(event.getEntrantWaitingList().size() == 0){
                 Toast.makeText(context, "Event " + event.getName() + " is already drawn or no one register for it.", Toast.LENGTH_LONG).show();
             }
 
@@ -56,9 +56,11 @@ public class LotterySelector {
 
             // This code automatically takes care of taking the users from the waiting list and
             // adding to the chosen list
-            for (User user : acceptedUsers){
+            
+            // TODO make the users join the chosen list
+            /* for (User user : acceptedUsers){
                 event.joinChosenList(user);
-            }
+            } */
 
             db.updateEvent(event,task1 ->  {
                 // Error check if task is not successful
@@ -80,7 +82,7 @@ public class LotterySelector {
      */
     public List<User> drawAcceptedUsers(Event event) {
         int finalListCapacity = event.getMaxFinalListCapacity();
-        ArrayList<User> waitingList = event.getEntrantList().getWaiting();
+        List<User> waitingList = event.getUserWaitingList();
 
         if (waitingList.size() <= finalListCapacity) {
             // Don't need to draw randomly since under capacity so EVERYONE IS ACCEPTED WOOHOO
@@ -102,9 +104,9 @@ public class LotterySelector {
      * (cannot draw a unique replacement user)
      */
     public User drawReplacementUser(Event event) {
-        Set<User> waitingList = new HashSet<>(event.getEntrantList().getWaiting());
-        Set<User> acceptedList = new HashSet<>(event.getEntrantList().getChosen());
-        Set<User> cancelledList = new HashSet<>(event.getEntrantList().getCancelled());
+        Set<User> waitingList = new HashSet<>(event.getUserWaitingList());
+        Set<User> acceptedList = new HashSet<>(event.getUserChosenList());
+        Set<User> cancelledList = new HashSet<>(event.getUserCancelledList());
 
         if (waitingList.equals(acceptedList)) {
             throw new IllegalStateException("Cannot draw unique replacement user; accepted list and waiting list are identical");

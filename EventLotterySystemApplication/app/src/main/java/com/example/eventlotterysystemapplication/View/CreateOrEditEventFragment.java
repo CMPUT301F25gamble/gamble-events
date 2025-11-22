@@ -158,7 +158,7 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
             if (eventLocation.isEmpty()) {
-                binding.createOrEditEventLocationEditText.setError("Location is required");
+                binding.createOrEditEventLocationEditText.setError("EntrantLocation is required");
                 return;
             }
             if (eventStartTimeStr.isEmpty()) {
@@ -284,9 +284,6 @@ public class CreateOrEditEventFragment extends Fragment {
                                 // Set organizer ID
                                 User currentUser = task.getResult();
                                 event.setOrganizerID(currentUser.getUserID());
-
-                                // Set entrant list
-                                event.setEntrantList(new EntrantList());
 
                                 // update event if editing the event
                                 if (fetchedEvent != null) {

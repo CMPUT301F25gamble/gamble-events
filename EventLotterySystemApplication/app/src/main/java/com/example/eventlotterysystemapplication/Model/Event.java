@@ -961,6 +961,7 @@ public class Event {
                     removeFromEntrantList(user, 0);
                     addToEntrantList(user, 1);
                     Database db = Database.getDatabase();
+
                     db.updateEvent(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Event", "User successfully joins chosen list");

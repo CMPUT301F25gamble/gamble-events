@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication.View;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,11 @@ public class WaitingEntrantListFragment extends Fragment {
     private Database database;
     LotterySelector lotterySelector;
 
+    // Adapter fields for listview
+    private ArrayAdapter<CharSequence> waitingAdapter;
+    private ArrayList<CharSequence> waitingData;
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -46,6 +52,15 @@ public class WaitingEntrantListFragment extends Fragment {
 
         database = Database.getDatabase();
         lotterySelector = new LotterySelector();
+
+        // Initialize adapter
+        waitingData = new ArrayList<>();
+        waitingAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                waitingData
+        );
+        binding.waitingListOfEntrantsListView.setAdapter(waitingAdapter);
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -106,11 +121,12 @@ public class WaitingEntrantListFragment extends Fragment {
                     // Use lottery selector to randomly select entrants
                     List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
 
-                    for (User u : selectedEntrants)
+                    List<User> waitingToMove = new ArrayList<>(selectedEntrants);
+                    for (User u : waitingToMove)
                     {
                         event.joinChosenList(u); // add entrants to chosen list
                     }
-
+                    loadWaitingEntrantsIntoList(event);
                     Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -119,24 +135,15 @@ public class WaitingEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadWaitingEntrantsIntoList(Event event) {
-        // List for waiting entrants
-        ArrayList<CharSequence> data = new ArrayList<>();
-        // Adapter for listview
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                data
-        );
+        // Clear old data
+        waitingData.clear();
 
         // Loop through all waiting entrants
         for (User u : event.getEntrantList().getWaiting()) {
-            String name = u.getName();
-            data.add(name);
+            waitingData.add(u.getName());
         }
-        // Notify the adapter
-        adapter.notifyDataSetChanged();
 
-        // Set the adapter for the ListView
-        binding.waitingListOfEntrantsListView.setAdapter(adapter);
+        // Notify the adapter; refresh the UI
+        waitingAdapter.notifyDataSetChanged();
     }
 }

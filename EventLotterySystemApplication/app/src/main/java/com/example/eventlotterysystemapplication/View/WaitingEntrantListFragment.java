@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentWaitingEntrantListBinding;
@@ -106,8 +107,8 @@ public class WaitingEntrantListFragment extends Fragment {
         );
 
         // Loop through all waiting entrants
-        for (User u : event.getEntrantList().getWaiting()) {
-            String name = u.getName();
+        for (Entrant e : event.getEntrantWaitingList()) {
+            String name = e.getUser().getName();
             data.add(name);
         }
         // Notify the adapter

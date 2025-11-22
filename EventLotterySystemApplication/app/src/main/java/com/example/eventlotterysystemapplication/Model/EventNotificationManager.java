@@ -81,7 +81,7 @@ public class EventNotificationManager {
 
     /**
      * Notifies users who have been reselected by the lottery
-     * @param user The user who has been selected by the lottery
+     * @param entrant The user who has been selected by the lottery
      * @param event The event they have been reselected for
      */
     public static void notifyLotteryReselection(Entrant entrant, Event event){
@@ -201,4 +201,6 @@ public class EventNotificationManager {
             }
         });
     }
+
+    // TODO do a notification deleteEvent
 }

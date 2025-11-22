@@ -713,6 +713,13 @@ public class Database {
         });
     }
 
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
+//        Query notificationHistory = notificationRef.g
+    }
+
+    // TODO Add get events from userID
+
     /**
      * Given some DocumentSnapshot from the "Event" collection, this method takes the fields from
      * that document and manually matches it up with the fields from the event class, giving us fine
@@ -782,7 +789,7 @@ public class Database {
             data.put("status", entrant.getStatus());
             Double latitude = null;
             Double longitude = null;
-            EntrantLocation entrantLocation = entrant.getLocation();
+            Location entrantLocation = entrant.getLocation();
             if(entrantLocation !=null) {
                 latitude = entrantLocation.getLatitude();
                 longitude = entrantLocation.getLongitude();
@@ -827,9 +834,9 @@ public class Database {
                         Double latitude = entrantDoc.getDouble("latitude");
                         Double longitude = entrantDoc.getDouble("longitude");
 
-                        EntrantLocation entrantLocation = null;
+                        Location entrantLocation = null;
                         if(latitude!=null && longitude !=null) {
-                            entrantLocation = new EntrantLocation();
+                            entrantLocation = new Location();
                             entrantLocation.setLatitude(latitude);
                             entrantLocation.setLongitude(longitude);
                         }

@@ -196,57 +196,58 @@ public class Event {
 
     }
 
-    /**
-     * This constructor can also allow for the instantiation of the event object from the program,
-     * but the main purpose here is to help with mock testing
-     * @param name The event's name
-     * @param description The event's description
-     * @param place The event's location
-     * @param eventTags The event's tags
-     * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
-     * @param eventEndTime The ending time of the event
-     * @param registrationStartTime The time when the registration for the event opens
-     * @param registrationEndTime The time when the registration for the event closes
-     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
-     *                                     assuming that you were selected by the lottery
-     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
-     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
-     *                             the lottery system
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
-                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
-        // Used for mock test
-
-        this.name = name;
-        this.description = description;
-        this.place = place;
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.organizerID = organizerID;
-
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
-        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
-        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
-        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
-        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-
-        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.place = place;
-
-        this.entrantList = new ArrayList<Entrant>();
-        this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = -1; // Default as no limit
-
-    }
+//    /**
+//     * This constructor can also allow for the instantiation of the event object from the program,
+//     * but the main purpose here is to help with mock testing
+//     * @param name The event's name
+//     * @param description The event's description
+//     * @param place The event's location
+//     * @param eventTags The event's tags
+//     * @param organizerID The ID of the user who organizes the event
+//     *@param eventStartTime The start time of the event
+//     * @param eventEndTime The ending time of the event
+//     * @param registrationStartTime The time when the registration for the event opens
+//     * @param registrationEndTime The time when the registration for the event closes
+//     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
+//     *                                     assuming that you were selected by the lottery
+//     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
+//     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
+//     *                             the lottery system
+//     */
+//    @RequiresApi(api = Build.VERSION_CODES.O)
+//    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
+//                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
+//                 int maxWaitingListCapacity, int maxFinalListCapacity){
+//        // Used for mock test
+//
+//        this.name = name;
+//        this.description = description;
+//        this.place = place;
+//        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+//        this.organizerID = organizerID;
+//
+//        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+//        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
+//        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
+//        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
+//        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
+//        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
+//
+//        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
+//        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
+//        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
+//        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
+//        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
+//
+//        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
+//        this.place = place;
+//
+//        this.entrantList = new ArrayList<Entrant>();
+//        this.maxFinalListCapacity = maxWaitingListCapacity;
+//        this.maxFinalListCapacity = maxFinalListCapacity;
+//        this.maxWaitingListCapacity = -1; // Default as no limit
+//
+//    }
 
 
     /**
@@ -850,7 +851,6 @@ public class Event {
         return getUserListByStatus(EntrantStatus.FINALIZED);
     }
 
-
     /**
      * A setter for the entrant list
      * @param entrantList The entrant list object
@@ -861,11 +861,12 @@ public class Event {
     }
 
     @Exclude
-    public void addToEntrantList(User user, EntrantLocation entrantLocation) throws IllegalArgumentException {
+    public void addToEntrantList(User user, Location entrantLocation) throws IllegalArgumentException {
         Entrant entrant = new Entrant();
         entrant.setUser(user);
         entrant.setStatus(EntrantStatus.WAITING);
         entrant.setLocation(entrantLocation);
+        entrant.setEvent(this);
         addToEntrantList(entrant);
     }
     /**
@@ -879,14 +880,39 @@ public class Event {
             entrantList = new ArrayList<Entrant>();
         }
         if(!isEntrantExists(entrant)){
+            entrant.setEvent(this);
             entrantList.add(entrant);
+        }
+    }
+
+    public void addEntrantToChosenList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.WAITING) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.CHOSEN);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the waiting list");
+        }
+    }
+
+    public void addEntrantToCancelledList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.CANCELLED);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the chosen list");
+        }
+    }
+
+    public void addEntrantToFinalizedList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.FINALIZED);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the chosen list");
         }
     }
 
     @Exclude
     public boolean isEntrantExists(Entrant entrant){
         for(Entrant entrant1:entrantList){
-            if(entrant1.getUser().getUserID().equals(entrant.getUser().getUserID())){
+            if(entrant1.equals(entrant)){
                 return true;
             }
         }

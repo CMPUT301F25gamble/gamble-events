@@ -28,7 +28,7 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
-import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.Location;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
@@ -130,7 +130,7 @@ public class EventDetailScreenFragment extends Fragment {
             assert deviceID != null;
 
             // Fetch this event and bind
-            getEvent(task -> {
+            Database.getDatabase().getEvent(eventId, task -> {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
                     Event event = task.getResult();
@@ -138,7 +138,7 @@ public class EventDetailScreenFragment extends Fragment {
                     bindEvent(event);
 
                     // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
-                    getUserFromDeviceID(deviceID, taskUser -> {
+                    Database.getDatabase().getUserFromDeviceID(deviceID, taskUser -> {
                         if (taskUser.isSuccessful()) {
                             User user = taskUser.getResult();
                             Log.d(TAG, "Grabbed user is: " + user);
@@ -146,7 +146,7 @@ public class EventDetailScreenFragment extends Fragment {
 
                             showGenerateQRCodeButton();
                             Entrant entrant = event.genEntrantIfExists(user);
-                            changeWaitlistBtn(entrant!=null);
+                            changeWaitlistBtn(entrant != null);
                         } else {
                             // Failed to load user; hide loading and show error
                             binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -175,7 +175,7 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Generate QR Code when the GenerateQRCode Button is pressed
             binding.generateQRCodeButton.setOnClickListener(v -> {
-                getEvent(taskEvent -> {
+                Database.getDatabase().getEvent(eventId, taskEvent -> {
                     Event event = taskEvent.getResult();
                     Bitmap qrBitmap = event.getQRCodeBitmap();
                     showQRCodeDialog(qrBitmap);
@@ -195,70 +195,71 @@ public class EventDetailScreenFragment extends Fragment {
                     return;
                 }
 
-               getEvent(taskEvent -> {
-                   if (taskEvent.isSuccessful()) {
-                       Event event = taskEvent.getResult();
-                       getUserFromDeviceID(deviceID, taskUser -> {
-                           if (taskUser.isSuccessful()) {
-                               // Grab user and check if already in waiting list
-                               User user = taskUser.getResult();
-                               Entrant entrant = event.genEntrantIfExists(user);
-                               if (entrant==null) {
-                                   //Get geo entrantLocation
-                                   Context context = v.getContext();
-                                   if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                       Entrant newEntrant = new Entrant();
-                                       newEntrant.setLocation(null);
-                                       newEntrant.setStatus(EntrantStatus.WAITING);
-                                       newEntrant.setUser(user);
-                                       event.addToEntrantList(newEntrant);
-                                       updateEventDB(event);
-                                   } else {
-                                       FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                                       // Make entrant effectively final by using a final variable
-                                       fusedLocationClient.getLastLocation()
-                                               .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                                   EntrantLocation entrantLocation = null;
-                                                   if (location != null) {
-                                                       entrantLocation = new EntrantLocation();
-                                                       entrantLocation.setLatitude(location.getLatitude());
-                                                       entrantLocation.setLongitude(location.getLongitude());
-                                                   }
-                                                   Entrant newEntrant = new Entrant();
-                                                   newEntrant.setLocation(entrantLocation);
-                                                   newEntrant.setStatus(EntrantStatus.WAITING);
-                                                   newEntrant.setUser(user);
-                                                   event.addToEntrantList(newEntrant);
-                                                   updateEventDB(event);
-                                                   changeWaitlistBtn(true);
+                Database.getDatabase().getEvent(eventId, taskEvent -> {
+                    if (taskEvent.isSuccessful()) {
+                        Event event = taskEvent.getResult();
+                        getUserFromDeviceID(deviceID, taskUser -> {
+                            if (taskUser.isSuccessful()) {
+                                // Grab user and check if already in waiting list
+                                User user = taskUser.getResult();
+                                Entrant entrant = event.genEntrantIfExists(user);
+                                if (entrant == null) {
+                                    //Get geo entrantLocation
+                                    Context context = v.getContext();
+                                    if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        Entrant newEntrant = new Entrant();
+                                        newEntrant.setLocation(null);
+                                        newEntrant.setStatus(EntrantStatus.WAITING);
+                                        newEntrant.setUser(user);
+                                        event.addToEntrantList(newEntrant);
+                                        updateEventDB(event);
+                                    } else {
+                                        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                                        // Make entrant effectively final by using a final variable
+                                        fusedLocationClient.getLastLocation()
+                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                    Location entrantLocation = null;
+                                                    if (location != null) {
+                                                        entrantLocation = new Location();
+                                                        entrantLocation.setLatitude(location.getLatitude());
+                                                        entrantLocation.setLongitude(location.getLongitude());
+                                                    }
+                                                    Entrant newEntrant = new Entrant();
+                                                    newEntrant.setLocation(entrantLocation);
+                                                    newEntrant.setStatus(EntrantStatus.WAITING);
+                                                    newEntrant.setUser(user);
+                                                    event.addToEntrantList(newEntrant);
+                                                    updateEventDB(event);
+                                                    changeWaitlistBtn(true);
 
-                                               });
-                                       // User is not in waiting list, so join the waitlist
-                                   }
-                               }
-                               else{
-                                   // User is in waiting list, so leave the waitlist
-                                   event.removeEntrant(entrant);
-                                   updateEventDB(event);
-                                   changeWaitlistBtn(false);
-                               }
-                               Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
-                           } else {
-                               // Failed to obtain user; hide loading and show error
-                               binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                               Toast.makeText(requireContext(), "Failed to obtain user from device ID",
-                                       Toast.LENGTH_LONG).show();
-                           }
-                       });
+                                                });
+                                        // User is not in waiting list, so join the waitlist
+                                    }
+                                } else {
+                                    // User is in waiting list, so leave the waitlist
+                                    event.removeEntrant(entrant);
+                                    updateEventDB(event);
+                                    changeWaitlistBtn(false);
+                                }
+                                Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
+                            } else {
+                                // Failed to obtain user; hide loading and show error
+                                binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                                Toast.makeText(requireContext(), "Failed to obtain user from device ID",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
 
-                   } else {
-                       // Failed to load event; hide loading and show error
-                       binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                       Toast.makeText(requireContext(), "Failed to load event",
-                               Toast.LENGTH_LONG).show();
-                   }
-               });
+                    } else {
+                        // Failed to load event; hide loading and show error
+                        binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load event",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
             });
+        });
+    }
 
     private void updateEventDB(Event event){
         Database db = Database.getDatabase();

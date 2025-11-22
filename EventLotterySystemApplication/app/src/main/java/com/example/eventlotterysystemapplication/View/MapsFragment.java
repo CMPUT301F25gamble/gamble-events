@@ -15,7 +15,7 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
-import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.Location;
 import com.example.eventlotterysystemapplication.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,7 +62,7 @@ public class MapsFragment extends Fragment {
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     if (waitingEntrants != null && waitingEntrants.size() > 0) {
                         for (Entrant entrant : waitingEntrants) {
-                            EntrantLocation entrantLocation = entrant.getLocation();
+                            Location entrantLocation = entrant.getLocation();
                             if (entrantLocation != null) {
                                 Double latitude = entrantLocation.getLatitude();
                                 Double longitude = entrantLocation.getLongitude();

@@ -711,24 +711,6 @@ public class Event {
     }
 
     /**
-     * A getter for the entrant list
-     * @return The entrant list object
-     */
-    @Exclude
-    public EntrantList getEntrantList() {
-        return entrantList;
-    }
-
-    /**
-     * A setter for the entrant list
-     * @param entrantList The entrant list object
-     */
-    @Exclude
-    public void setEntrantList(EntrantList entrantList) {
-        this.entrantList = entrantList;
-    }
-
-    /**
      * A getter for the posters list
      * @return The list of posters, which are bitmap objects in the program
      */
@@ -766,10 +748,7 @@ public class Event {
         return QRCodeBitmap;
     }
 
-    /**
-     * Sets the QR code bitmap to a specific bitmap
-     * @param QRCodeBitmap The bitmap to set the QR code to
-     */
+
     @Exclude
     public List<Entrant> getEntrantList() {
         if(entrantList==null){
@@ -789,26 +768,13 @@ public class Event {
                 .filter(e -> e.getStatus() == entrantStatus)
                 .collect(Collectors.toList());
     }
-    
-    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
-        this.QRCodeBitmap = QRCodeBitmap;
-    }
 
     /**
-     * Parses the timestamp objects and saves them into the LocalDateTime objects
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void parseTimestamps() {
-        if (eventStartTimeTS != null)
-            eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (eventEndTimeTS != null)
-            eventEndTime = eventEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (registrationStartTimeTS != null)
-            registrationStartTime = registrationStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (registrationEndTimeTS != null)
-            registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (invitationAcceptanceDeadlineTS != null)
-            invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
     }
 
     /**

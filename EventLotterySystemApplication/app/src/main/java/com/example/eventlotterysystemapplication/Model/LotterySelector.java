@@ -52,15 +52,13 @@ public class LotterySelector {
 
 
 
-            List<User> acceptedUsers = drawAcceptedUsers(event);
+            List<Entrant> acceptedUsers = drawAcceptedUsers(event);
 
             // This code automatically takes care of taking the users from the waiting list and
             // adding to the chosen list
-            
-            // TODO make the users join the chosen list
-            /* for (User user : acceptedUsers){
-                event.joinChosenList(user);
-            } */
+            for (Entrant entrant : acceptedUsers){
+                event.addEntrantToChosenList(entrant);
+            }
 
             db.updateEvent(event,task1 ->  {
                 // Error check if task is not successful
@@ -80,9 +78,9 @@ public class LotterySelector {
      * @param event Event containing waiting list for users
      * @return The list of randomly accepted users to event
      */
-    public List<User> drawAcceptedUsers(Event event) {
+    public List<Entrant> drawAcceptedUsers(Event event) {
         int finalListCapacity = event.getMaxFinalListCapacity();
-        List<User> waitingList = event.getUserWaitingList();
+        List<Entrant> waitingList = event.getEntrantWaitingList();
 
         if (waitingList.size() <= finalListCapacity) {
             // Don't need to draw randomly since under capacity so EVERYONE IS ACCEPTED WOOHOO

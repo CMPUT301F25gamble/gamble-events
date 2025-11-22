@@ -101,4 +101,5 @@
     <string name="browse_images">Browse Images</string>
     <string name="notification_title_text">Notification Title</string>
     <string name="confirm_remove_action">CONFIRM REMOVE</string>
+    <string name="dialog_remove_event_text">This action will <i>REMOVE</i> the user’s created event and <i>cannot be undone</i>.</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -12,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -185,14 +188,49 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Remove Event Button (Only in admin mode)
             binding.removeEventButton.setOnClickListener(v -> {
-                Admin.removeEvent(event);
+                // Inflate the layout
+                LayoutInflater inflater = LayoutInflater.from(requireContext());
+                View dialogAdminRemoveAction = inflater
+                        .inflate(R.layout.dialog_admin_remove_action, null);
+                Button dialogConfirmRemoveButton = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogConfirmRemoveButton);
+                Button dialogBackButton = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogBackButton);
+                TextView dialogTextView1 = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogTextView1);
 
-                // Hide all elements on screen and display text saying event has been removed
-                binding.contentGroupEventsDetailScreen.setVisibility(View.GONE);
+                // Set text of dialog
+                dialogTextView1.setText(R.string.dialog_remove_event_text);
 
+                // Setup dialog for removing event
+                AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                        .setView(dialogAdminRemoveAction)
+                        .setCancelable(true)
+                        .create();
 
-                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                        .navigateUp();
+                // Strengthen background dimness (to emphasize the dialog)
+                dialog.getWindow().setDimAmount(.7f);
+                // Set the background to transparent so we can show the rounded corners
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+                // Return to event details screen
+                dialogBackButton.setOnClickListener(dialogView -> dialog.dismiss());
+
+                // Remove event from DB
+                dialogConfirmRemoveButton.setOnClickListener(dialogView -> {
+                    // Admin confirms remove event from DB
+                    Admin.removeEvent(event);
+
+                    // Dismiss the dialog and return to event details screen
+                    dialog.dismiss();
+                    NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                            .navigateUp();
+                    // Show toast that event has been removed
+                    Toast.makeText(requireContext(), "Event removed",
+                            Toast.LENGTH_SHORT).show();
+                });
+                // Show the dialog (i.e., confirm remove dialog)
+                dialog.show();
             });
 
             // Generate QR Code when the GenerateQRCode Button is pressed

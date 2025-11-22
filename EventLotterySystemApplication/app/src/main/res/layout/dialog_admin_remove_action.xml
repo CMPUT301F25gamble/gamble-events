@@ -54,7 +54,7 @@
 
     <!-- Buttons -->
     <Button
-        android:id="@+id/dialogConfirmButton"
+        android:id="@+id/dialogConfirmRemoveButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

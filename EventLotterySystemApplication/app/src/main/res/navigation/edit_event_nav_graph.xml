@@ -37,6 +37,13 @@
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_finalEntrantList"
             app:destination="@id/finalEntrantList" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+
+        <!--        <action-->
+<!--            android:id="@+id/action_entrantListSelectionFragment_to_my_event_entrants_map"-->
+<!--            app:destination="@id/my_event_entrants_map" />-->
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -75,6 +82,23 @@
         <action
             android:id="@+id/action_my_event_detail_screen_to_create_or_edit_event_fragment"
             app:destination="@id/create_or_edit_event_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/my_event_entrants_map"
+        android:name="com.example.eventlotterysystemapplication.View.MapsFragment"
+        android:label="fragment_event_entrants_map"
+        tools:layout="@layout/fragment_maps">
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="error"/>
+        <argument
+            android:name="entrantStatus"
+            app:argType="string"
+            android:defaultValue="WAITING"/>
+        <action
+            android:id="@+id/action_my_event_entrants_map_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/allEntrantsListFragment"
@@ -119,6 +143,15 @@
         tools:layout="@layout/fragment_final_entrant_list" >
         <action
             android:id="@+id/action_finalEntrantList_to_entrantListSelectionFragment"
+            app:destination="@id/entrantListSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.eventlotterysystemapplication.View.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
 

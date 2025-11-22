@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -104,11 +106,10 @@ public class WaitingEntrantListFragment extends Fragment {
                     Event event = task.getResult();
 
                     // Use lottery selector to randomly select entrants
-                    List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
+                    List<Entrant> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
 
-                    for (User u : selectedEntrants)
-                    {
-                        event.joinChosenList(u); // add entrants to chosen list
+                    for (Entrant e : selectedEntrants) {
+                        event.addEntrantToChosenList(e); // add entrants to chosen list
                     }
 
                     Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
@@ -129,8 +130,8 @@ public class WaitingEntrantListFragment extends Fragment {
         );
 
         // Loop through all waiting entrants
-        for (User u : event.getEntrantList().getWaiting()) {
-            String name = u.getName();
+        for (Entrant e : event.getEntrantWaitingList()) {
+            String name = e.getUser().getName();
             data.add(name);
         }
         // Notify the adapter

@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -49,7 +49,7 @@
                     android:scheme="cmput301gamblers" />
             </intent-filter>
         </activity>
-
+        <receiver android:name="com.example.eventlotterysystemapplication.Controller.LotteryAlarmReceiver" />
         <service
             android:name=".Model.LotteryFirebaseMessagingService"
             android:exported="false">

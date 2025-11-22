@@ -275,13 +275,13 @@ public class EventDetailScreenFragment extends Fragment {
      * @param callback a callback function that runs when the query is done running
      */
     private void getUserFromDeviceID(String deviceID, OnCompleteListener<User> callback) {
-        Database db = new Database();
+        Database db = Database.getDatabase();
 
         db.getUserFromDeviceID(deviceID, callback);
     }
 
     private void getEvent(OnCompleteListener<Event> callback) {
-        Database db = new Database();
+        Database db = Database.getDatabase();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // API level must be 26 or above
             Log.d(TAG, "Fetching event from DB...");

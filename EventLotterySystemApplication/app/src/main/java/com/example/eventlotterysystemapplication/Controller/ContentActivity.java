@@ -29,10 +29,10 @@ public class ContentActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                    return insets;
+                });
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -55,9 +55,9 @@ public class ContentActivity extends AppCompatActivity {
             int destinationId = item.getItemId();
 
             NavOptions navOptions = new NavOptions.Builder()
-                // Main fix here
-                .setPopUpTo(R.id.content_nav_graph, true)
-                .build();
+                    // Main fix here
+                    .setPopUpTo(R.id.content_nav_graph, true)
+                    .build();
 
             // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
@@ -65,5 +65,3 @@ public class ContentActivity extends AppCompatActivity {
         });
     }
 }
-
-

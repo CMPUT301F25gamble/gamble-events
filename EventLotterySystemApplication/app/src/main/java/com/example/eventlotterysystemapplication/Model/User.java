@@ -13,8 +13,11 @@ public class User{
     private String email;
     private String phoneNumber;
     private String deviceID;
+    private String deviceToken;
     private String userID;
     private boolean admin;
+    private boolean optOutLotteryStatusNotifications;
+    private boolean optOutSpecificNotifications;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -32,14 +35,27 @@ public class User{
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
      */
-    public User(String name, String email, String phoneNumber , String deviceID) {
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.deviceID = deviceID;
+        this.deviceToken = deviceToken;
         admin = false;
+        this.optOutLotteryStatusNotifications = false;
+        this.optOutSpecificNotifications = false;
     }
 
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.deviceID = deviceID;
+        this.deviceToken = deviceToken;
+        admin = false;
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
+    }
     /**
      * Gets the userID of the current user object
      * @return The userID string set by the database
@@ -120,6 +136,14 @@ public class User{
         this.deviceID = deviceID;
     }
 
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
     /**
      * Returns the admin status of the user
      * @return A boolean that represents whether or not the user is an admin
@@ -134,6 +158,22 @@ public class User{
      */
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public boolean isOptOutLotteryStatusNotifications() {
+        return optOutLotteryStatusNotifications;
+    }
+
+    public void setOptOutLotteryStatusNotifications(boolean optOutLotteryStatusNotifications) {
+        this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
+    }
+
+    public boolean isOptOutSpecificNotifications() {
+        return optOutSpecificNotifications;
+    }
+
+    public void setOptOutSpecificNotifications(boolean optOutSpecificNotifications) {
+        this.optOutSpecificNotifications = optOutSpecificNotifications;
     }
 
     /**
@@ -228,12 +268,12 @@ public class User{
         }
 
         // Will need to comment these out when running UserUnitTest
-       Database db = new Database();
-       db.modifyUser(this, task -> {
-           if (!task.isSuccessful()) {
-               Log.e("Database", "Cannot modify user");
-           }
-       });
+        Database db = Database.getDatabase();
+        db.modifyUser(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot modify user");
+            }
+        });
     }
 
     /**
@@ -276,6 +316,6 @@ public class User{
         // Draws a new entrant and send them a notification
         LotterySelector lottery = new LotterySelector();
         User newEntrant = lottery.drawReplacementUser(event);
-        // TODO: send notification
+        EventNotificationManager.notifyLotteryReselection(newEntrant, event);
     }
 }

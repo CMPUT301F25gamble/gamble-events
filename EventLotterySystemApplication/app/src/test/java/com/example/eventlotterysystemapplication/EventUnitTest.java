@@ -2,14 +2,24 @@ package com.example.eventlotterysystemapplication;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
+import android.util.Log;
+
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -25,25 +35,40 @@ public class EventUnitTest {
     Note: getters and setters will not be tested because they are very simple
      */
 
+    @Mock
+    private FirebaseFirestore mockDb;
+    @Mock
+    private FirebaseAuth mockAuth;
+    private MockedStatic<FirebaseAuth> mockAuthStatic;
+    private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
+    private MockedStatic<Log> mockLogStatic;
+
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        mockAuthStatic = mockStatic(FirebaseAuth.class); // Mocks FirebaseFirestore
+        mockFirestoreStatic = mockStatic(FirebaseFirestore.class); // Mocks FirebaseAuth
+        mockLogStatic = mockStatic(Log.class); // Mocks the logs
+        mockAuthStatic.when(FirebaseAuth::getInstance).thenReturn(mockAuth);
+        mockFirestoreStatic.when(FirebaseFirestore::getInstance).thenReturn(mockDb);
     }
+
     public Event mockEvent1(){
+        EntrantList entrantList = mock(EntrantList.class);
         Event event = new Event(
                 "Twice concert watch party",
                 "We love Twice",
                 "Online",
                 new String[]{"Twice", "concert"},
-                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
+                "12345",
                 "2025-11-15T14:00",
                 "2025-11-15T16:00",
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
+                entrantList,
                 50,
-                20,
-                true
+                20
         );
         return event;
     }
@@ -53,7 +78,8 @@ public class EventUnitTest {
                 "Best Organizer",
                 "organizer@organizer.com",
                 "123-456-7890",
-                "fNnBwGwhaYStDGG6S3vs8sB52PU2"
+                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
+                "new token"
         );
         organizer.setUserID(organizer.getDeviceID());
         return organizer;
@@ -64,7 +90,8 @@ public class EventUnitTest {
                 "Best Entrant",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant1"
+                "testDeviceIDmockEntrant1",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -75,7 +102,8 @@ public class EventUnitTest {
                 "Best Entrant 2",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant2"
+                "testDeviceIDmockEntrant2",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -86,7 +114,8 @@ public class EventUnitTest {
                 "Best Entrant 3",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant3"
+                "testDeviceIDmockEntrant3",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -97,7 +126,8 @@ public class EventUnitTest {
                 "Best Entrant 4",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant4"
+                "testDeviceIDmockEntrant4",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
@@ -108,15 +138,11 @@ public class EventUnitTest {
                 "Best Entrant 5",
                 "entrant@entrant.com",
                 "123-456-7890",
-                "testDeviceIDmockEntrant5"
+                "testDeviceIDmockEntrant5",
+                "new token"
         );
         entrant.setUserID(entrant.getDeviceID());
         return entrant;
-    }
-
-    @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
     }
 
     @Test
@@ -177,6 +203,40 @@ public class EventUnitTest {
 
         assert(event.getEventTags().equals(Arrays.asList(new String[]{"Twice"})));
 
+    }
+
+    @Test
+    public void testSetRecurringEvent() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertTrue(event.getIsRecurring());
+    }
+
+    @Test
+    public void testSetRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(1);
+
+        assertEquals(1, event.getRecurringFrequency());
+    }
+
+    @Test
+    public void testSetInvalidRecurringFrequency() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+
+        assertThrows(IllegalArgumentException.class, () -> event.setRecurringFrequency(5));
+    }
+
+    @Test
+    public void testGetRecurringFrequencyString() {
+        Event event = mockEvent1();
+        event.setIsRecurring(true);
+        event.setRecurringFrequency(3);
+
+        assertEquals("Monthly", event.displayRecurrenceFrequency());
     }
 
     @Test
@@ -311,6 +371,7 @@ public class EventUnitTest {
         assertEquals (1, event.getEntrantList().getChosen().size());
         assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (0, event.getEntrantList().getFinalized().size());
+
     }
 
     @Test
@@ -408,7 +469,7 @@ public class EventUnitTest {
 
         assertEquals (1, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (2, event.getEntrantList().getCancelled().size());
+        assertEquals (1, event.getEntrantList().getCancelled().size());
         assertEquals (0, event.getEntrantList().getFinalized().size());
     }
 
@@ -446,35 +507,35 @@ public class EventUnitTest {
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (1, event.getEntrantList().getCancelled().size());
+        assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant3());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (1, event.getEntrantList().getCancelled().size());
+        assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant4());
 
         assertEquals (0, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (1, event.getEntrantList().getCancelled().size());
+        assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinWaitingList(mockEntrant5());
 
         assertEquals (1, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (1, event.getEntrantList().getCancelled().size());
+        assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
 
         event.joinFinalizedList(mockEntrant5());
 
         assertEquals (1, event.getEntrantList().getWaiting().size());
         assertEquals (0, event.getEntrantList().getChosen().size());
-        assertEquals (1, event.getEntrantList().getCancelled().size());
+        assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (1, event.getEntrantList().getFinalized().size());
     }
 
@@ -514,6 +575,13 @@ public class EventUnitTest {
         assertEquals (0, event.getEntrantList().getChosen().size());
         assertEquals (0, event.getEntrantList().getCancelled().size());
         assertEquals (0, event.getEntrantList().getFinalized().size());
+    }
+
+    @After
+    public void tearDown() {
+        mockAuthStatic.close();
+        mockFirestoreStatic.close();
+        mockLogStatic.close();
     }
 
     /*

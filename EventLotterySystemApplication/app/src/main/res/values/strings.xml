@@ -99,4 +99,5 @@
     <string name="notification_logs_text">Notification Logs</string>
     <string name="browse_profiles">All Profiles</string>
     <string name="browse_images">Browse Images</string>
+    <string name="notification_title_text">Notification Title</string>
 </resources>

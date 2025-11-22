@@ -257,6 +257,7 @@ public class Database {
 
     /**
      * Given a user, ADMIN can update or create their record in the database
+     * @param userId ID of the user
      * @param user The user profile
      * @param listener An OnCompleteListener that will be called when the modify operation finishes
      */

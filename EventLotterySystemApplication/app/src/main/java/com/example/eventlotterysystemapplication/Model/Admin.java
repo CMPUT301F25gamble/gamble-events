@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class Admin extends User{
     private Database db = Database.getDatabase();
+    private ImageStorage imageStorage = ImageStorage.getInstance();
 
     /**
      * A constructor for creating an Admin object, assuming such user does not exist yet
@@ -49,7 +50,6 @@ public class Admin extends User{
      * @param admin The admin
      * @param user  The user to be removed
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeProfile(User admin, User user) {
         if (!admin.isAdmin()) {
             throw new IllegalStateException("User is not an admin.");
@@ -66,7 +66,6 @@ public class Admin extends User{
      * @param admin The admin
      * @param organizer The organizer to be removed
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void removeOrganizer(User admin, User organizer) {
         if (!admin.isAdmin()) {
             throw new IllegalStateException("User is not an admin.");
@@ -80,16 +79,33 @@ public class Admin extends User{
         });
     }
 
-    public void removeImage() {
-        // TODO: wait for implentation for removeImage
+    /**
+     * Removes an image based on its URL
+     * @param admin The admin
+     * @param imageUrl the URL of the image
+     */
+    public void removeImage(User admin, String imageUrl) {
+        if (!admin.isAdmin()) {
+            throw new IllegalStateException("User is not an admin.");
+        }
+        imageStorage.deleteEventPoster(imageUrl, task -> {
+            if (task.isSuccessful()) {
+                Log.d("Admin", "Removed image");
+            } else {
+                Log.e("Admin", "Cannot remove image");
+            }
+        });
     }
 
     /**
      * Browses a list of events
+     * @param admin The admin
      * @param listener An OnCompleteListener used to retrieve a list of events
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void browseEvents(OnCompleteListener<List<Event>> listener) {
+    public void browseEvents(User admin, OnCompleteListener<List<Event>> listener) {
+        if (!admin.isAdmin()) {
+            throw new IllegalStateException("User is not an admin.");
+        }
         db.getAllEvents(task -> {
             if (task.isSuccessful()) {
                 List<Event> events = task.getResult();
@@ -102,9 +118,13 @@ public class Admin extends User{
 
     /**
      * Browses a list of user profiles
+     * @param admin The admin
      * @param listener An OnCompleteListener used to retrieve a list of users
      */
-    public void browseProfiles(OnCompleteListener<List<User>> listener) {
+    public void browseProfiles(User admin, OnCompleteListener<List<User>> listener) {
+        if (!admin.isAdmin()) {
+            throw new IllegalStateException("User is not an admin.");
+        }
         db.getAllUsers(task -> {
             if (task.isSuccessful()) {
                 List<User> users = task.getResult();
@@ -115,12 +135,27 @@ public class Admin extends User{
         });
     }
 
-    public void browseImages() {
-
+    /**
+     * Browses a list of images
+     * @param admin The admin
+     * @param listener An OnCompleteListener used to retrieve a list of image URLs
+     */
+    public void browseImages(User admin, OnCompleteListener<List<String>> listener) {
+        if (!admin.isAdmin()) {
+            throw new IllegalStateException("User is not an admin.");
+        }
+        imageStorage.fetchAllPosterImageUrls(task -> {
+            if (task.isSuccessful()) {
+                List<String> imageUrls = task.getResult();
+                listener.onComplete(Tasks.forResult(imageUrls));
+            } else {
+                Log.e("Admin", "Cannot browse images");
+            }
+        });
     }
 
-    public void reviewNotificationLogs() {
-
+    public void reviewNotificationLogs(User admin) {
+        // TODO
     }
 
 }

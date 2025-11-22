@@ -713,6 +713,13 @@ public class Database {
         });
     }
 
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
+//        Query notificationHistory = notificationRef.g
+    }
+
+    // TODO Add get events from userID
+
     /**
      * Given some DocumentSnapshot from the "Event" collection, this method takes the fields from
      * that document and manually matches it up with the fields from the event class, giving us fine
@@ -753,21 +760,13 @@ public class Database {
         if (doc.getLong("maxFinalListCapacity").intValue() > 0) {
             event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
         }
-        if (event.getEntrantList() == null) {
-            event.setEntrantList(new EntrantList());
-            Log.d("ParseEvent", "entrantList initialized");
-
-            parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){
-                    listener.onComplete(Tasks.forResult(event));
-                } else {
-                    Log.e("Database", "Unable to parse event registration" + task.getException());
-                    listener.onComplete(Tasks.forException(task.getException()));
-                }
-            });
-        } else {
-            listener.onComplete(Tasks.forResult(event));
-        }
+        parseEventRegistration(event, doc, task -> {
+            if (task.isSuccessful()){
+                listener.onComplete(task);
+            } else {
+                Log.e("Database", "Unable to parse event registration" + task.getException());
+            }
+        });
     }
 
     /**
@@ -784,38 +783,21 @@ public class Database {
 
         List<Task<Void>> regTasks = new ArrayList<>();
 
-        // Add waiting users
-        for (User user : event.getEntrantList().getWaiting()) {
+        for (Entrant entrant : event.getEntrantList()) {
             Map<String, Object> data = new HashMap<>();
-            data.put("status", "waiting");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
+            data.put("userID", entrant.getUser().getUserID());
+            data.put("status", entrant.getStatus());
+            Double latitude = null;
+            Double longitude = null;
+            Location entrantLocation = entrant.getLocation();
+            if(entrantLocation !=null) {
+                latitude = entrantLocation.getLatitude();
+                longitude = entrantLocation.getLongitude();
+            }
+            data.put("latitude",latitude);
+            data.put("longitude", longitude);
+            regTasks.add(registration.document(entrant.getUser().getUserID()).set(data));
         }
-
-        // Add chosen users
-        for (User user : event.getEntrantList().getChosen()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "chosen");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
-        // Add cancelled users
-        for (User user : event.getEntrantList().getCancelled()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "cancelled");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
-        // Add finalized users
-        for (User user : event.getEntrantList().getFinalized()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "finalized");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
         Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
             listener.onComplete(Tasks.forResult(null));
         });
@@ -845,70 +827,39 @@ public class Database {
             for (DocumentSnapshot entrantDoc : regTask.getResult()) {
                 TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
 
-                String status = entrantDoc.getString("status");
-                switch (status) {
-                    case "waiting":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 0);
+                getUser(entrantDoc.getId(), task -> {
+                    if (task.isSuccessful()) {
+                        User user = task.getResult();
+                        String status = entrantDoc.getString("status");
+                        Double latitude = entrantDoc.getDouble("latitude");
+                        Double longitude = entrantDoc.getDouble("longitude");
 
-                                tcs.setResult(event);
+                        Location entrantLocation = null;
+                        if(latitude!=null && longitude !=null) {
+                            entrantLocation = new Location();
+                            entrantLocation.setLatitude(latitude);
+                            entrantLocation.setLongitude(longitude);
+                        }
+                        EntrantStatus entrantStatus = null;
+                        if(status!=null){
+                            entrantStatus = EntrantStatus.valueOf(status.toUpperCase());
+                        }else{
+                            entrantStatus = EntrantStatus.WAITING;
+                        }
+                        Entrant entrant = new Entrant();
+                        entrant.setUser(user);
+                        entrant.setLocation(entrantLocation);
+                        entrant.setStatus(entrantStatus);
+                        event.addToEntrantList(entrant);
+                        tcs.setResult(event);
+                        
+                        Log.d("Test Database 1", "Success");
 
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                                tcs.setException(task.getException());
-                            }
-                        });
-                        break;
-
-                    case "chosen":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 1);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                                tcs.setException(task.getException());
-                            }
-                        });
-                        break;
-                    case "cancelled":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 2);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                                tcs.setException(task.getException());
-                            }
-                        });
-                        break;
-                    case "finalized":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 3);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                                tcs.setException(task.getException());
-                            }
-                        });
-                        break;
-
-                    default:
-                        Log.e("Database", "Registration parsed illegal status");
-                }
+                    } else {
+                        Log.e("Error", "Failed to get user", task.getException());
+                        tcs.setException(task.getException());
+                    }
+                });
                 parseEventRegistrationTasks.add(tcs.getTask());
 
             }

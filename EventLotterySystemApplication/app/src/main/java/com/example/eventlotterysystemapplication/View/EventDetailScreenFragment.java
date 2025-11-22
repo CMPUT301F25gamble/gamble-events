@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
@@ -162,6 +163,7 @@ public class EventDetailScreenFragment extends Fragment {
                         binding.navigationBarButton.setVisibility(View.GONE);
                         binding.generateQRCodeButton.setVisibility(View.GONE);
                     } else {
+                        // Show join waitlist/edit event button and show generateQR button
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -170,6 +172,14 @@ public class EventDetailScreenFragment extends Fragment {
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to load event",
                             Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Remove Event Button
+            binding.removeEventButton.setOnClickListener(v -> {
+                if (isAdminMode) {
+                    //Admin.removeEvent(event);
+                    //Log.d(TAG, "Admin: " + user.getName());
                 }
             });
 

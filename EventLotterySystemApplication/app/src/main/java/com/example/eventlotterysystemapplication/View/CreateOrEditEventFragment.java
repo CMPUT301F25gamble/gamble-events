@@ -323,7 +323,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                     event.setEventID(fetchedEvent.getEventID());
                                     event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
 
-                                    database.updateEvent(event, updateEventTask ->{
+                                    database.updateEvent(event, updateEventTask -> {
                                         if (updateEventTask.isSuccessful()) {
                                             // Upload event poster to storage bucket
                                             if (posterFile != null) {

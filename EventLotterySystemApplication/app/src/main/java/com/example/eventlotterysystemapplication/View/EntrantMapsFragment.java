@@ -1,5 +1,9 @@
 package com.example.eventlotterysystemapplication.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,15 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
+import com.example.eventlotterysystemapplication.Model.EntrantLocation;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
-import com.example.eventlotterysystemapplication.Model.Location;
 import com.example.eventlotterysystemapplication.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,12 +29,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 
 import java.util.List;
 
-public class MapsFragment extends Fragment {
+public class EntrantMapsFragment extends Fragment {
 
     private String eventID;
     private String entrantStatus;
-
     private final String TAG = "EntrantsMap";
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -62,7 +62,7 @@ public class MapsFragment extends Fragment {
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     if (waitingEntrants != null && waitingEntrants.size() > 0) {
                         for (Entrant entrant : waitingEntrants) {
-                            Location entrantLocation = entrant.getLocation();
+                            EntrantLocation entrantLocation = entrant.getLocation();
                             if (entrantLocation != null) {
                                 Double latitude = entrantLocation.getLatitude();
                                 Double longitude = entrantLocation.getLongitude();
@@ -99,7 +99,6 @@ public class MapsFragment extends Fragment {
 
     };
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -110,24 +109,16 @@ public class MapsFragment extends Fragment {
             eventID = args.getString("eventID");
             entrantStatus = args.getString("entrantStatus");
         }
-
-        return inflater.inflate(R.layout.fragment_maps, container, false);
-
+        return inflater.inflate(R.layout.fragment_entrant_maps, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.my_event_enterants_map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        requireActivity().setTitle("Event Name");
     }
 }

@@ -455,27 +455,27 @@ public class Database {
         event.setEventID(eventDocRef.getId());
 
         eventDocRef.set(event)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
-                        Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
+                    Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
 
-                        updateEventRegistration(event, eventDocRef, task1 -> {
-                            if (task1.isSuccessful()){
-                                Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
-                                listener.onComplete(task);
-                            } else {
-                                Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(Tasks.forException(
-                                        Objects.requireNonNull(task.getException())
-                                ));
-                            }
-                        });
-                    } else {
-                        Log.e("Database", "Failed to add event: " + task.getException());
-                        listener.onComplete(task);
-                    }
-                });
+                    updateEventRegistration(event, eventDocRef, task1 -> {
+                        if (task1.isSuccessful()){
+                            Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                            listener.onComplete(task);
+                        } else {
+                            Log.e("Database", "Failed to add registration: " + task.getException());
+                            listener.onComplete(Tasks.forException(
+                                    Objects.requireNonNull(task.getException())
+                            ));
+                        }
+                    });
+                } else {
+                    Log.e("Database", "Failed to add event: " + task.getException());
+                    listener.onComplete(task);
+                }
+            });
     }
 
 

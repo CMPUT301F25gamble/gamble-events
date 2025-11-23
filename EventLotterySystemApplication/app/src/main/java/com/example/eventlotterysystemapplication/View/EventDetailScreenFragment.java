@@ -314,7 +314,7 @@ public class EventDetailScreenFragment extends Fragment {
     }
 
     /**
-     * Removes an action from the database
+     * Removes an action from the database (action could be: event, image, or organizer)
      * @param action
      */
     private void removeAction(String action) {

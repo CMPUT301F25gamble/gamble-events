@@ -294,10 +294,11 @@ public class EventsUIFragment extends Fragment {
             String location = event.getPlace();
             String tags = String.join(" ", event.getEventTags());
 
-            if (name.toLowerCase().contains(keyword.toLowerCase()) ||
-                description.toLowerCase().contains(keyword.toLowerCase()) ||
-                location.toLowerCase().contains(keyword.toLowerCase()) ||
-                tags.toLowerCase().contains(keyword.toLowerCase())) {
+            String lowercaseKeyword = keyword.toLowerCase();
+            if (name.toLowerCase().contains(lowercaseKeyword) ||
+                description.toLowerCase().contains(lowercaseKeyword) ||
+                location.toLowerCase().contains(lowercaseKeyword) ||
+                tags.toLowerCase().contains(lowercaseKeyword)) {
 
                 eventNames.add(name);
                 docIds.add(event.getEventID());
@@ -340,6 +341,57 @@ public class EventsUIFragment extends Fragment {
                 docIds.add(event.getEventID());
                 ownedFlags.add(event.getOrganizerID().equals(uid));
             }
+        });
+
+        // Update UI
+        eventNamesAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Filters event by start date AND by a keyword within name, description, tags, and location case-insensitively.
+     * The keyword must be a substring within any of the 4 filtering categories as described before
+     * for the event to be matched. After filtering is done, updates the UI.
+     * @param date date to filter event start dates after
+     */
+    private void filterEventsByKeywordAndStartDate(String keyword, LocalDateTime date) {
+        if (eventList == null) {
+            Log.e("EventsUi", "THE EVENT LIST IS NULL AHHH");
+            return;
+        }
+
+        // If date is empty then fetch all events again
+        if (date == null || keyword == null || keyword.isEmpty()) {
+            fetchAllEvents();
+            return;
+        }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
+        eventNames.clear();
+        docIds.clear();
+        ownedFlags.clear();
+
+        // Filter events by start date being after the date provided
+        eventList.forEach(event -> {
+            String name = event.getName();
+            String description = event.getDescription();
+            String location = event.getPlace();
+            String tags = String.join(" ", event.getEventTags());
+
+            String lowercaseKeyword = keyword.toLowerCase();
+            if (name.toLowerCase().contains(lowercaseKeyword) ||
+                    description.toLowerCase().contains(lowercaseKeyword) ||
+                    location.toLowerCase().contains(lowercaseKeyword) ||
+                    tags.toLowerCase().contains(lowercaseKeyword)) {
+                if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
+                    eventNames.add(event.getName());
+                    docIds.add(event.getEventID());
+                    ownedFlags.add(event.getOrganizerID().equals(uid));
+                }
+            }
+
         });
 
         // Update UI

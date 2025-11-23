@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -267,6 +268,14 @@ public class CreateOrEditEventFragment extends Fragment {
 
                                     Timestamp invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
                                     event.setInvitationAcceptanceDeadlineTS(invitationAcceptanceDeadlineTS);
+                                }
+
+                                CheckBox geolocationCheckbox = view.findViewById(R.id.checkbox_enableGeolocation);
+
+                                if (geolocationCheckbox.isChecked()){
+                                    event.setGeolocationRequirement(true);
+                                } else {
+                                    event.setGeolocationRequirement(false);
                                 }
 
                                 // Set event int values

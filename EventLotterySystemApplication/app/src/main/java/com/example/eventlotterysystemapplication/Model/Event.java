@@ -36,6 +36,7 @@ public class Event {
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
     private boolean isRecurring;
+    private boolean geolocationRequirement;
     private int recurringFrequency;
     private String eventPosterUrl;
 
@@ -94,11 +95,12 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
+     * @param geolocationRequirement
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean geolocationRequirement){
         this.name = name;
         this.description = description;
         this.place = place;
@@ -124,6 +126,7 @@ public class Event {
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.isRecurring = false; // Default as non-recurring
         this.recurringFrequency = -1; // Default as non-recurring
+        this.geolocationRequirement = geolocationRequirement;
     }
 
     /**
@@ -147,7 +150,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean geolocationRequirement){
 
         this.name = name;
         this.description = description;
@@ -174,6 +177,7 @@ public class Event {
         this.entrantList = new ArrayList<Entrant>();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
+        this.geolocationRequirement = geolocationRequirement;
 
         Database db = Database.getDatabase();
         db.getUser(organizerID, task -> {
@@ -481,6 +485,14 @@ public class Event {
         this.recurringFrequency = recurringFrequency;
     }
 
+    public boolean isGeolocationRequirement() {
+        return geolocationRequirement;
+    }
+
+    public void setGeolocationRequirement(boolean geolocationRequirement) {
+        this.geolocationRequirement = geolocationRequirement;
+    }
+
     /**
      * Gets the event's start time
      * @return The event's start time
@@ -710,45 +722,6 @@ public class Event {
         }
     }
 
-    /**
-     * A getter for the posters list
-     * @return The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public ArrayList<Bitmap> getPosters() {
-        return posters;
-    }
-
-    /**
-     * A setter for the posters list
-     * @param posters The list of posters, which are bitmap objects in the program
-     */
-    @Exclude
-    public void setPosters(ArrayList<Bitmap> posters) {
-        this.posters = posters;
-
-        Database db = Database.getDatabase();
-        db.updateEvent(this, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("Database", "Cannot update event");
-            }
-        });
-    }
-
-    /**
-     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
-     * before returning
-     * @return A bitmap object of the QR code image
-     */
-    @Exclude
-    public Bitmap getQRCodeBitmap() {
-        if (QRCodeBitmap == null){
-            generateQRCode();
-        }
-        return QRCodeBitmap;
-    }
-
-
     @Exclude
     public List<Entrant> getEntrantList() {
         if(entrantList==null){
@@ -767,14 +740,6 @@ public class Event {
         return entrantList.stream()
                 .filter(e -> e.getStatus() == entrantStatus)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Sets the QR code bitmap to a specific bitmap
-     * @param QRCodeBitmap The bitmap to set the QR code to
-     */
-    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
-        this.QRCodeBitmap = QRCodeBitmap;
     }
 
     /**
@@ -921,12 +886,11 @@ public class Event {
     }
 
     @Exclude
-    public void addToEntrantList(User user, Location entrantLocation) throws IllegalArgumentException {
+    public void addToEntrantList(User user, EntrantLocation entrantLocation) throws IllegalArgumentException {
         Entrant entrant = new Entrant();
         entrant.setUser(user);
         entrant.setStatus(EntrantStatus.WAITING);
         entrant.setLocation(entrantLocation);
-        entrant.setEvent(this);
         addToEntrantList(entrant);
     }
     /**
@@ -940,7 +904,6 @@ public class Event {
             entrantList = new ArrayList<Entrant>();
         }
         if(!isEntrantExists(entrant)){
-            entrant.setEvent(this);
             entrantList.add(entrant);
         }
     }
@@ -1001,6 +964,31 @@ public class Event {
         return false;
     }
 
+    /**
+     * A getter for the posters list
+     * @return The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public ArrayList<Bitmap> getPosters() {
+        return posters;
+    }
+
+    /**
+     * A setter for the posters list
+     * @param posters The list of posters, which are bitmap objects in the program
+     */
+    @Exclude
+    public void setPosters(ArrayList<Bitmap> posters) {
+        this.posters = posters;
+
+        Database db = Database.getDatabase();
+        db.updateEvent(this, task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Cannot update event");
+            }
+        });
+    }
+
 
     /**
      * Adds a new poster to the posters list
@@ -1049,6 +1037,27 @@ public class Event {
                 Log.e("Database", "Cannot update event");
             }
         });
+    }
+
+    /**
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
+     */
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
+    }
+
+    /**
+     * Returns the QR Code bitmap object, if it hasn't been generated yet then we generate first
+     * before returning
+     * @return A bitmap object of the QR code image
+     */
+    @Exclude
+    public Bitmap getQRCodeBitmap() {
+        if (QRCodeBitmap == null){
+            generateQRCode();
+        }
+        return QRCodeBitmap;
     }
 
     /**

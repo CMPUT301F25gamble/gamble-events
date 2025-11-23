@@ -1,6 +1,6 @@
 package com.example.eventlotterysystemapplication.Model;
 
-public class Location {
+public class EntrantLocation {
 
     private Double longitude;
     private Double latitude;

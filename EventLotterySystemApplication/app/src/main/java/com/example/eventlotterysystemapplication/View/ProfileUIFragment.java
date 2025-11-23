@@ -32,6 +32,7 @@ public class ProfileUIFragment extends Fragment {
     private FragmentProfileUiBinding binding;
     private Database database;
     private User currentUser;
+    // Admin flow
     private String userId;
     private boolean isAdminMode;
 
@@ -73,6 +74,12 @@ public class ProfileUIFragment extends Fragment {
                             AdminSession.setSelectedUserId(null);
                             // Navigate back to the previous fragment
                             NavHostFragment.findNavController(ProfileUIFragment.this).navigateUp();
+                        });
+
+                        // User Profile Events Button
+                        binding.userProfileEvents.setOnClickListener(v -> {
+                           NavHostFragment.findNavController(ProfileUIFragment.this)
+                                   .navigate(R.id.action_allProfilesFragment_to_myEventsFragment);
                         });
 
                         // Delete Button
@@ -136,9 +143,10 @@ public class ProfileUIFragment extends Fragment {
                             // Hide loading and show content
                             binding.loadingProfileUi.setVisibility(View.GONE);
                             binding.contentGroupProfileUi.setVisibility(View.VISIBLE);
-
+                            // If non admin
                             binding.adminProfileBackButton.setVisibility(View.GONE);
                             binding.userProfileEvents.setVisibility(View.GONE);
+                            // Display the user's data
                             binding.profileName.setText(currentUser.getName());
                             binding.profileEmail.setText(currentUser.getEmail());
                             binding.profilePhone.setText(currentUser.getPhoneNumber());

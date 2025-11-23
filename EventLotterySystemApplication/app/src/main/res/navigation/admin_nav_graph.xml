@@ -32,6 +32,9 @@
         <action
             android:id="@+id/action_allProfilesFragment_to_profileUIFragment"
             app:destination="@id/profileUIFragment" />
+        <action
+            android:id="@+id/action_allProfilesFragment_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileUIFragment"
@@ -66,4 +69,13 @@
             android:name="isOwnedEvent"
             app:argType="boolean"
             android:defaultValue="false"/>
+    <fragment
+        android:id="@+id/myEventsFragment"
+        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
+        android:label="fragment_my_events"
+        tools:layout="@layout/fragment_my_events" >
+        <action
+            android:id="@+id/action_myEventsFragment_to_allProfilesFragment"
+            app:destination="@id/allProfilesFragment" />
+    </fragment>
 </navigation>

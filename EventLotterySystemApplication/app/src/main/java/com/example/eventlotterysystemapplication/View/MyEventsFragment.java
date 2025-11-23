@@ -34,6 +34,9 @@ public class MyEventsFragment extends Fragment {
     private ArrayAdapter<String> myEventNamesAdapter;
     private final ArrayList<String> myEventNames = new ArrayList<>();
     private final ArrayList<String> myEventDocIds = new ArrayList<>();
+    // Admin flow
+    private String userId;
+    private boolean isAdminMode;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

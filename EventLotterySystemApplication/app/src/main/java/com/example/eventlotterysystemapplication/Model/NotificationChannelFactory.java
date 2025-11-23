@@ -15,6 +15,7 @@ public class NotificationChannelFactory {
         checkAndCreateNotificationChannel(context,"chosenListNotification");
         checkAndCreateNotificationChannel(context,"cancelledListNotification");
         checkAndCreateNotificationChannel(context, "finalizedListNotification");
+        // TODO notification deleteEvent
     }
 
     /**

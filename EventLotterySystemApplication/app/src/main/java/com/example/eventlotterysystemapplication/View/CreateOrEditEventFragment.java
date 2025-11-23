@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -158,7 +159,7 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
             if (eventLocation.isEmpty()) {
-                binding.createOrEditEventLocationEditText.setError("Location is required");
+                binding.createOrEditEventLocationEditText.setError("EntrantLocation is required");
                 return;
             }
             if (eventStartTimeStr.isEmpty()) {
@@ -293,6 +294,14 @@ public class CreateOrEditEventFragment extends Fragment {
                                     event.setInvitationAcceptanceDeadlineTS(invitationAcceptanceDeadlineTS);
                                 }
 
+                                CheckBox geolocationCheckbox = view.findViewById(R.id.checkbox_enableGeolocation);
+
+                                if (geolocationCheckbox.isChecked()){
+                                    event.setGeolocationRequirement(true);
+                                } else {
+                                    event.setGeolocationRequirement(false);
+                                }
+
                                 // Set event int values
                                 if (limitWaitlistValue > 0){
                                     // If editing event then can only set the max waitlist capacity to be larger than what it originally was
@@ -309,15 +318,12 @@ public class CreateOrEditEventFragment extends Fragment {
                                 User currentUser = task.getResult();
                                 event.setOrganizerID(currentUser.getUserID());
 
-                                // Set entrant list
-                                event.setEntrantList(new EntrantList());
-
                                 // update event if editing the event
                                 if (fetchedEvent != null) {
                                     event.setEventID(fetchedEvent.getEventID());
                                     event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
 
-                                    database.updateEvent(event, updateEventTask ->{
+                                    database.updateEvent(event, updateEventTask -> {
                                         if (updateEventTask.isSuccessful()) {
                                             // Upload event poster to storage bucket
                                             if (posterFile != null) {

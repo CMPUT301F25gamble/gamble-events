@@ -50,9 +50,9 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getChosen()){
-                    if (!user.isOptOutLotteryStatusNotifications()) {
-                        winNotification.sendNotification(user);
+                for (Entrant entrant : event.getEntrantChosenList()) {
+                    if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                        winNotification.sendNotification(entrant.getUser());
                     }
                 }
             } else {
@@ -68,10 +68,10 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(winNotification, task -> {
             if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getWaiting()){
-                    if (!user.isOptOutLotteryStatusNotifications()) {
-                        loseNotification.sendNotification(user);
-                    }
+                for (Entrant entrant : event.getEntrantWaitingList()){
+                	if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                		loseNotification.sendNotification(entrant.getUser());
+            		}
                 }
             } else {
                 Log.e("EventNotificationManager", "Could not save notification to database");
@@ -81,10 +81,10 @@ public class EventNotificationManager {
 
     /**
      * Notifies users who have been reselected by the lottery
-     * @param user The user who has been selected by the lottery
+     * @param entrant The user who has been selected by the lottery
      * @param event The event they have been reselected for
      */
-    public static void notifyLotteryReselection(User user, Event event){
+    public static void notifyLotteryReselection(Entrant entrant, Event event){
         String notificationTitle = "Congratulations, you have won the lottery re-selection";
         String notificationBody = "Congratulations, you have been selected to join " + event.getName()
                 + " because someone else declined their invitataion. Make sure to accept or decline " +
@@ -96,9 +96,9 @@ public class EventNotificationManager {
 
                 Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
-                        if (!user.isOptOutLotteryStatusNotifications()) {
-                            notification.sendNotification(user);
-                        }
+                        if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                    		notification.sendNotification(entrant.getUser());
+                		}
                     } else {
                         Log.e("EventNotificationManager", "Could not save notification to database");
                     }
@@ -107,8 +107,8 @@ public class EventNotificationManager {
                 Notification notification =  new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
                 Database.getDatabase().addNotification(notification, task1 -> {
                     if (task1.isSuccessful()){
-                        if (!user.isOptOutLotteryStatusNotifications()) {
-                            notification.sendNotification(user);
+                        if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                            notification.sendNotification(entrant.getUser());
                         }
                     } else {
                         Log.e("EventNotificationManager", "Could not save notification to database");
@@ -131,10 +131,9 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
-                Log.d("EventNotificationManager", "successfully added notification");
-                for (User user : event.getEntrantList().getWaiting()){
-                    if (!user.isOptOutSpecificNotifications()) {
-                        notification.sendNotification(user);
+                for (Entrant entrant : event.getEntrantWaitingList()){
+                    if (!entrant.getUser().isOptOutSpecificNotifications()) {
+                        notification.sendNotification(entrant.getUser());
                     }
                 }
             } else {
@@ -154,9 +153,9 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getChosen()){
-                    if (!user.isOptOutSpecificNotifications()) {
-                        notification.sendNotification(user);
+                for (Entrant entrant : event.getEntrantChosenList()){
+                    if (!entrant.getUser().isOptOutSpecificNotifications()) {
+                        notification.sendNotification(entrant.getUser());
                     }
                 }
             } else {
@@ -176,9 +175,9 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getCancelled()){
-                    if (!user.isOptOutSpecificNotifications()) {
-                        notification.sendNotification(user);
+                for (Entrant entrant : event.getEntrantCancelledList()){
+                    if (!entrant.getUser().isOptOutSpecificNotifications()) {
+                        notification.sendNotification(entrant.getUser());
                     }
                 }
             } else {
@@ -192,9 +191,9 @@ public class EventNotificationManager {
 
         Database.getDatabase().addNotification(notification, task -> {
             if (task.isSuccessful()){
-                for (User user : event.getEntrantList().getFinalized()){
-                    if (!user.isOptOutSpecificNotifications()) {
-                        notification.sendNotification(user);
+                for (Entrant entrant: event.getEntrantFinalizedList()){
+                    if (!entrant.getUser().isOptOutSpecificNotifications()) {
+                        notification.sendNotification(entrant.getUser());
                     }
                 }
             } else {
@@ -202,4 +201,6 @@ public class EventNotificationManager {
             }
         });
     }
+
+    // TODO do a notification deleteEvent
 }

@@ -7,8 +7,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEntrantListSelectionBinding;
 
@@ -89,5 +93,21 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this)
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList, bundle);
         });
+
+        binding.pendingMapButton.setOnClickListener(v -> {
+            Bundle bundle3 = new Bundle();
+            bundle3.putString("eventID", eventId);
+            bundle3.putString("entrantStatus", String.valueOf(EntrantStatus.WAITING));
+            NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
+        });
+
+//        Database.getDatabase().getEvent(eventId, task -> {
+//            if (task.isSuccessful()){
+//                if (task.getResult().isGeolocationRequirement()) {
+                    // View all pending entrants Button to access list of all entrants
+
+//                }
+//            }
+//        });
     }
 }

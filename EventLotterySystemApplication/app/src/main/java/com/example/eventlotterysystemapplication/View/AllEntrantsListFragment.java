@@ -117,7 +117,7 @@ public class AllEntrantsListFragment extends Fragment {
         );
 
         // Loop "waiting" users
-        for (User u : event.getEntrantList().getWaiting()) {
+        for (User u : event.getUserWaitingList()) {
             String status = "(WAITING)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
@@ -144,7 +144,7 @@ public class AllEntrantsListFragment extends Fragment {
         }
 
         // Loop "chosen" users
-        for (User u : event.getEntrantList().getChosen()) {
+        for (User u : event.getUserChosenList()) {
             String status = "(CHOSEN)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
@@ -171,7 +171,7 @@ public class AllEntrantsListFragment extends Fragment {
         }
 
         // Loop "cancelled" users
-        for (User u : event.getEntrantList().getCancelled()) {
+        for (User u : event.getUserCancelledList()) {
             String status = "(CANCELLED)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line
@@ -198,7 +198,7 @@ public class AllEntrantsListFragment extends Fragment {
         }
 
         // Loop "finalized" users
-        for (User u : event.getEntrantList().getFinalized()) {
+        for (User u : event.getUserFinalizedList()) {
             String status = "(FINALIZED)";
             String line = String.format("\n%s\n%s\n", u.getName(), status);
             // Create a SpannableString from the line

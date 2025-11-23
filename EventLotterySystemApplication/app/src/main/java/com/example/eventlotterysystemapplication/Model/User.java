@@ -177,62 +177,6 @@ public class User{
     }
 
     /**
-     * Adds the user to the waiting list of the event, given that they are already not in that list
-     * @param event The event whose waiting list you want to join
-     */
-    public void joinEventWaitingList(Event event){
-        event.joinWaitingList(this);
-    }
-
-    /**
-     * Removes the user from the waiting list of the event, given that they are in that list
-     * @param event The event whose waiting list you want to leave
-     */
-    public void leaveEventWaitingList(Event event){
-        event.leaveWaitingList(this);
-    }
-
-    /**
-     * Adds the user to the chosen list of the event, given that they are already not in that list
-     * @param event The event whose chosen list you want to join
-     */
-    public void joinEventChosenList(Event event) {
-        event.joinChosenList(this);
-    }
-
-    /**
-     * Removes the user from the chosen list of the event, given that they are in that list
-     * @param event The event whose chosen list you want to leave
-     */
-    public void leaveEventChosenList(Event event) {
-        event.leaveChosenList(this);
-    }
-
-    /**
-     * Adds the user to the cancelled list of the event, given that they are already not in that list
-     * @param event The event whose cancelled list you want to join
-     */
-    public void joinEventCancelledList(Event event) {
-        event.joinCancelledList(this);
-    }
-
-    /**
-     * Adds the user to the finalized list of the event, given that they are already not in that list
-     * @param event The event whose finalized list you want to join
-     */
-    public void joinEventFinalizedList(Event event) {
-        event.joinFinalizedList(this);
-    }
-
-    /**
-     * Removes the user from the finalized list of the event, given that they are in that list
-     * @param event The event whose finalized list you want to leave
-     */
-    public void leaveEventFinalizedList(Event event) {
-        event.leaveFinalizedList(this);
-    }
-
-    /**
      * Check if a user object is equivalent to another user object
      * @param o An object that we are trying to test if this object is equal to
      * @return True if the two objects are equal, false otherwise
@@ -245,7 +189,7 @@ public class User{
             return true;
         } else {
             User user2 = (User) o;
-            return Objects.equals(this.userID, user2.userID) && Objects.equals(this.deviceID, user2.deviceID);
+            return Objects.equals(this.userID, user2.userID);
         }
     }
 
@@ -274,48 +218,5 @@ public class User{
                 Log.e("Database", "Cannot modify user");
             }
         });
-    }
-
-    /**
-     * Accepts the invitation when chosen for an event
-     * @param event the event for which the user accepts invitation
-     */
-    public void acceptInvitation(Event event) {
-        EntrantList entrantList = event.getEntrantList();
-        if (!entrantList.getChosen().contains(this)) {
-            throw new NoSuchElementException("User is not chosen for this event.");
-        }
-        if (entrantList.getFinalized().contains(this)) {
-            throw new IllegalStateException("User has already accepted the invitation.");
-        }
-        if (entrantList.getCancelled().contains(this)) {
-            throw new IllegalStateException("User has cancelled joining this event.");
-        }
-
-        // Assumes user will also be in chosen list
-        event.joinFinalizedList(this);
-    }
-
-    /**
-     * Declines the invitation when chosen for an event
-     * @param event the event for which the user declines invitation
-     */
-    public void declineInvitation(Event event) {
-        EntrantList entrantList = event.getEntrantList();
-        if (!entrantList.getChosen().contains(this)) {
-            throw new NoSuchElementException("User is not chosen for this event.");
-        }
-        if (entrantList.getFinalized().contains(this)) {
-            throw new IllegalStateException("User has already accepted the invitation.");
-        }
-        if (entrantList.getCancelled().contains(this)) {
-            throw new IllegalStateException("User has cancelled joining this event.");
-        }
-        event.joinCancelledList(this);
-
-        // Draws a new entrant and send them a notification
-        LotterySelector lottery = new LotterySelector();
-        User newEntrant = lottery.drawReplacementUser(event);
-        EventNotificationManager.notifyLotteryReselection(newEntrant, event);
     }
 }

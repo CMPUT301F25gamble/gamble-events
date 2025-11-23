@@ -87,7 +87,7 @@
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
-    <string name="location">Location:</string>
+    <string name="entrantLocation">Location:</string>
     <string name="decline_invite">DECLINE Invite</string>
     <string name="pending_entrant_decline_text_1">This action will <i>DECLINE</i> the user’s invitation and <i>cannot be undone</i>.</string>
     <string name="pending_entrant_decline_text_2">Do you wish to continue?</string>
@@ -100,4 +100,11 @@
     <string name="browse_profiles">All Profiles</string>
     <string name="browse_images">Browse Images</string>
     <string name="notification_title_text">Notification Title</string>
+    <string name="confirm_remove_action">CONFIRM REMOVE</string>
+    <string name="dialog_remove_event_text">You are about to <em>PERMANENTLY REMOVE</em> the user’s created event. This action is <em>IRREVERSIBLE</em>!</string>
+    <string name="dialog_remove_image_text">You are about to <em>PERMANENTLY REMOVE</em> the image uploaded by the user for this event. This action is <em>IRREVERSIBLE</em>!</string>
+    <string name="dialog_remove_organizer_text">
+        You are about to <em>PERMANENTLY REMOVE</em> this organizer from <em>ALL</em> events they have created.\n
+        This action will also <em>PERMANENTLY DELETE</em> their profile from the app.\n\n
+        These action are <em>IRREVERSIBLE</em>!</string>
 </resources>

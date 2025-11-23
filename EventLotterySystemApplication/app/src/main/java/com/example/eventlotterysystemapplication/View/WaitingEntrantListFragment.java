@@ -2,7 +2,6 @@ package com.example.eventlotterysystemapplication.View;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
+import com.example.eventlotterysystemapplication.Model.EntrantList;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -34,7 +35,7 @@ public class WaitingEntrantListFragment extends Fragment {
     private Database database;
     LotterySelector lotterySelector;
 
-    // Adapter fields for listview
+    // Global adapter and data list
     private ArrayAdapter<CharSequence> waitingAdapter;
     private ArrayList<CharSequence> waitingData;
 
@@ -119,15 +120,23 @@ public class WaitingEntrantListFragment extends Fragment {
                     Event event = task.getResult();
 
                     // Use lottery selector to randomly select entrants
-                    List<User> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
+                    List<Entrant> selectedEntrants =  lotterySelector.drawAcceptedUsers(event);
 
-                    List<User> waitingToMove = new ArrayList<>(selectedEntrants);
-                    for (User u : waitingToMove)
-                    {
-                        event.joinChosenList(u); // add entrants to chosen list
+                    for (Entrant e : selectedEntrants) {
+                        event.addEntrantToChosenList(e); // add entrants to chosen list
                     }
-                    loadWaitingEntrantsIntoList(event);
-                    Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+
+                    // Refresh the waiting list
+                    // After updating the chosen list
+                    database.updateEvent(event, updateTask -> {
+                        if (updateTask.isSuccessful()) {
+                            // Refresh the UI
+                            loadWaitingEntrantsIntoList(event);
+                            Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Error saving event: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
         });
@@ -135,15 +144,28 @@ public class WaitingEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadWaitingEntrantsIntoList(Event event) {
-        // Clear old data
         waitingData.clear();
 
         // Loop through all waiting entrants
-        for (User u : event.getEntrantList().getWaiting()) {
-            waitingData.add(u.getName());
+        for (Entrant e : event.getEntrantWaitingList()) {
+            String name = e.getUser().getName();
+            waitingData.add(name);
         }
-
-        // Notify the adapter; refresh the UI
+        // Notify the adapter
         waitingAdapter.notifyDataSetChanged();
+
+        // Update button state based on list capacity
+        updateSelectButtonState(event);
+    }
+
+    // Helper function for if chosen list is full or waiting list is empty, disable button
+    private void updateSelectButtonState(Event event) {
+        boolean canSelect = event.getEntrantChosenList().size() < event.getMaxFinalListCapacity()
+                && !event.getEntrantWaitingList().isEmpty();
+
+        binding.selectEntrantsButton.setEnabled(canSelect);
+
+        // Grey out button when disabled
+        binding.selectEntrantsButton.setAlpha(canSelect ? 1f : 0.5f);
     }
 }

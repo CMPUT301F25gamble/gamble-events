@@ -622,6 +622,26 @@ public class Database {
     }
 
     /**
+     * Retrieves all notifications in the notification collection
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void getAllNotifications(OnCompleteListener<List<Notification>> listener) {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Notification> notifications = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    Notification notification = doc.toObject(Notification.class);
+                    notifications.add(notification);
+                }
+                listener.onComplete(Tasks.forResult(notifications));
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
+        });
+    }
+
+    /**
      * This method is specific for allowing us to add to the recipient collection of the redraw of a
      * particular event, here check if the event already has a redraw notification, and if it does
      * we return that object, otherwise we return an exception indicating that a new redraw

@@ -359,7 +359,7 @@ public class EventsUIFragment extends Fragment {
         }
 
         // If date is empty then fetch all events again
-        if (date == null) {
+        if (date == null || keyword == null || keyword.isEmpty()) {
             fetchAllEvents();
             return;
         }

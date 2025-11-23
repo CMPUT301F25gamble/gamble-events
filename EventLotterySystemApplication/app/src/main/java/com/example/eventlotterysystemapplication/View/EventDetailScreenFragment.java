@@ -313,6 +313,10 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Removes an action from the database
+     * @param action
+     */
     private void removeAction(String action) {
         // Inflate the layout
         LayoutInflater inflater = LayoutInflater.from(requireContext());
@@ -381,6 +385,11 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     break;
             }
+            // Dismiss dialog
+            dialog.dismiss();
+            // Return to event details screen
+            NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                    .navigateUp();
         });
         // Show the dialog (i.e., confirm action dialog)
         dialog.show();

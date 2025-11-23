@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Verification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.databinding.FragmentProfileUiBinding;
@@ -170,6 +171,17 @@ public class ProfileUIFragment extends Fragment {
                                     if (userEmail.isEmpty()) {
                                         binding.profileEmail.setError("Email is required");
                                         return;
+                                    } else {
+                                        if (!Verification.validEmail(userEmail)) {
+                                            binding.profileEmail.setError("Invalid email address");
+                                            return;
+                                        }
+                                    }
+                                    if(!userPhone.isEmpty()) {
+                                        if (!Verification.validPhoneNumber(userPhone)) {
+                                            binding.profilePhone.setError("Invalid phone number");
+                                            return;
+                                        }
                                     }
 
                                     // Update the user's params

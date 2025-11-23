@@ -1,8 +1,11 @@
 package com.example.eventlotterysystemapplication.View;
 
+import android.app.AlertDialog;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -11,11 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
@@ -24,8 +31,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Displays a listview of all available events that the user can join, as well as an option to go to
@@ -206,7 +216,105 @@ public class EventsUIFragment extends Fragment {
             NavHostFragment.findNavController(this)
                     .navigate(R.id.event_detail_screen, args);
         }
+
+
+        // Show pop-up when filter button pressed
+        binding.eventsScreenFilterButton.setOnClickListener(v->{
+
+            showFilterEventDialog(binding);
+        });
+
+
+
+
     }
+
+    /**
+     * Displays a dialog containing interests and availability fields
+     * for the user to input optionally such that upon clicking the
+     * confirm button, the events ui page will update based on what
+     * the user inputted.
+     */
+    private void showFilterEventDialog(FragmentEventsUiBinding binding) {
+
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogFilterEventsView = inflater.inflate(R.layout.dialog_filter_events, null);
+
+        EditText keywordEditText = dialogFilterEventsView.findViewById(R.id.keywordSearchEditText);
+        EditText availabilityEditText = dialogFilterEventsView.findViewById(R.id.availabilityEditText);
+
+        Button searchButton = dialogFilterEventsView.findViewById(R.id.dialogSearchButton);
+        Button backButton1 = dialogFilterEventsView.findViewById(R.id.dialogBackButton);
+
+
+        // Setup first dialog for displaying user info
+        AlertDialog dialog1 = new AlertDialog.Builder(requireContext())
+                .setView(dialogFilterEventsView)
+                .setCancelable(true)
+                .create();
+
+        // Set the background to transparent so we can show the rounded corners
+        Objects.requireNonNull(dialog1.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+
+        // Return to list view
+        backButton1.setOnClickListener(v -> dialog1.dismiss());
+
+        // Move to a new dialog
+        searchButton.setOnClickListener(v -> {
+            // fetch edit text fields
+            String keyword = keywordEditText.getText().toString().trim();
+            String availabilityStr = availabilityEditText.getText().toString().trim();
+
+            // TODO: split keywords
+
+            // Format availability input
+            LocalDateTime availability = null;
+            if (!availabilityStr.isEmpty()) {
+                availability = DateTimeFormatter(availabilityStr);
+            }
+
+
+            if (keyword.isEmpty() && availability == null) {
+                // Both empty, so reset list
+                fetchAllEvents();
+            }
+            else if (!keyword.isEmpty() && availability == null) {
+                // Only keyword
+                filterEventsByKeyword(keyword);
+            }
+            else if (keyword.isEmpty()) {
+                // Only date
+                filterEventsByStartDate(availability);
+            }
+            else {
+                // Both fields filled
+                filterEventsByKeywordAndStartDate(keyword, availability);
+            }
+            dialog1.dismiss();
+
+        });
+        dialog1.show();
+    }
+
+    /**
+     * Converts the user inputted string into a LocalDateTime object
+     * @param dateTimeStr The user inputted datetime string
+     * @return A LocalDateTime object
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public LocalDateTime DateTimeFormatter(String dateTimeStr) {
+        DateTimeFormatter formatter = null;
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime eventDateTime = null;
+        try {
+            eventDateTime = LocalDateTime.parse(dateTimeStr, formatter);
+        } catch (DateTimeParseException e) {
+            Toast.makeText(getContext(), "Invalid date/time format. Use yyyy-MM-dd HH:mm", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return eventDateTime;
+    }
+
 
     /**
      * Fetch all events from Firebase and set the event names, docIDs, and owned arraylists

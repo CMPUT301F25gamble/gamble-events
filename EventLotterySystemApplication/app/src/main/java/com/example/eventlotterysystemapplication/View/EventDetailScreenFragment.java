@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -11,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
@@ -64,6 +69,7 @@ public class EventDetailScreenFragment extends Fragment {
     // Used for ADMIN control
     private String userId;
     private boolean isAdminMode;
+    private Event event;
 
     public EventDetailScreenFragment() {
         // Required empty public constructor
@@ -133,7 +139,7 @@ public class EventDetailScreenFragment extends Fragment {
             Database.getDatabase().getEvent(eventId, task -> {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
-                    Event event = task.getResult();
+                    event = task.getResult();
                     Log.d(TAG, "Event retrieved is: " + event);
                     bindEvent(event);
 
@@ -144,7 +150,13 @@ public class EventDetailScreenFragment extends Fragment {
                             Log.d(TAG, "Grabbed user is: " + user);
                             Log.d(TAG, "Initial Waiting list: " + event.getEntrantWaitingList());
 
-                            showGenerateQRCodeButton();
+                            // If Admin mode, hide generateQR button, else show it
+                            if (isAdminMode) {
+                                binding.generateQRCodeButton.setVisibility(View.GONE);
+                            } else {
+                                showGenerateQRCodeButton();
+                            }
+
                             Entrant entrant = event.genEntrantIfExists(user);
                             changeWaitlistBtn(entrant != null);
                         } else {
@@ -158,10 +170,11 @@ public class EventDetailScreenFragment extends Fragment {
                     if (isAdminMode) {
                         binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
-                        // Hide join waitlist/edit event button and hide generateQR button
+                        // Hide join waitlist/edit event button
                         binding.navigationBarButton.setVisibility(View.GONE);
-                        binding.generateQRCodeButton.setVisibility(View.GONE);
+                        // Hide generate QR Code button logic is done when db called (line 152)
                     } else {
+                        // Show join waitlist/edit event button
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -171,6 +184,53 @@ public class EventDetailScreenFragment extends Fragment {
                     Toast.makeText(requireContext(), "Failed to load event",
                             Toast.LENGTH_LONG).show();
                 }
+            });
+
+            // Remove Event Button (Only in admin mode)
+            binding.removeEventButton.setOnClickListener(v -> {
+                // Inflate the layout
+                LayoutInflater inflater = LayoutInflater.from(requireContext());
+                View dialogAdminRemoveAction = inflater
+                        .inflate(R.layout.dialog_admin_remove_action, null);
+                Button dialogConfirmRemoveButton = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogConfirmRemoveButton);
+                Button dialogBackButton = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogBackButton);
+                TextView dialogTextView1 = dialogAdminRemoveAction
+                        .findViewById(R.id.dialogTextView1);
+
+                // Set text of dialog
+                dialogTextView1.setText(R.string.dialog_remove_event_text);
+
+                // Setup dialog for removing event
+                AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                        .setView(dialogAdminRemoveAction)
+                        .setCancelable(true)
+                        .create();
+
+                // Strengthen background dimness (to emphasize the dialog)
+                dialog.getWindow().setDimAmount(.7f);
+                // Set the background to transparent so we can show the rounded corners
+                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+                // Return to event details screen
+                dialogBackButton.setOnClickListener(dialogView -> dialog.dismiss());
+
+                // Remove event from DB
+                dialogConfirmRemoveButton.setOnClickListener(dialogView -> {
+                    // Admin confirms remove event from DB
+                    Admin.removeEvent(event);
+
+                    // Dismiss the dialog and return to event details screen
+                    dialog.dismiss();
+                    NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                            .navigateUp();
+                    // Show toast that event has been removed
+                    Toast.makeText(requireContext(), "Event removed",
+                            Toast.LENGTH_SHORT).show();
+                });
+                // Show the dialog (i.e., confirm remove dialog)
+                dialog.show();
             });
 
             // Generate QR Code when the GenerateQRCode Button is pressed
@@ -304,7 +364,6 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
-        Toast.makeText(getContext(), "Ownership: " + isOwnedEvent, Toast.LENGTH_SHORT).show();
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
@@ -312,7 +371,6 @@ public class EventDetailScreenFragment extends Fragment {
             );
             return;
         }
-
 
         if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist

@@ -165,7 +165,7 @@ public class EventsUIFragment extends Fragment {
                     // Hide loading and show content
                     binding.loadingEventUi.setVisibility(View.GONE);
                     binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
-                    // If the user is not an admin, show the nont-admin-specific content group
+                    // If the user is not an admin, show the non-admin-specific content group
                     if (!isAdminMode) {
                         binding.contentGroupAdminEventsUi.setVisibility(View.VISIBLE);
                     }

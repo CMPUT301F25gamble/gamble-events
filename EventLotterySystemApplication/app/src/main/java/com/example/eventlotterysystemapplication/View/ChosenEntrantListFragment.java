@@ -119,15 +119,6 @@ public class ChosenEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadChosenEntrantsIntoList(Event event) {
-//        // List for chosen entrants
-//        ArrayList<CharSequence> data = new ArrayList<>();
-//        // Adapter for listview
-//        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-//                requireContext(),
-//                android.R.layout.simple_list_item_1,
-//                data
-//        );
-
         for (User u : event.getUserChosenList()) {
             String name = u.getName();
             data.add(name);             // Add ONLY user's name to the list

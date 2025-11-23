@@ -262,10 +262,21 @@ public class EventsUIFragment extends Fragment {
         // Move to a new dialog
         searchButton.setOnClickListener(v -> {
             // fetch edit text fields
-            String keyword = keywordEditText.getText().toString().trim();
+            String keywordsStr = keywordEditText.getText().toString().trim();
             String availabilityStr = availabilityEditText.getText().toString().trim();
 
             // TODO: split keywords
+            // Parse tags; split by commas
+            ArrayList<String> keywordsList = new ArrayList<>();
+            if (!keywordsStr.isEmpty()) {
+                String[] keywordsArray = keywordsStr.split(",");
+                for (String keyword : keywordsArray) {
+                    String trimmedKeyword = keyword.trim();
+                    if (!trimmedKeyword.isEmpty()) {
+                        keywordsList.add(trimmedKeyword);
+                    }
+                }
+            }
 
             // Format availability input
             LocalDateTime availability = null;
@@ -274,21 +285,21 @@ public class EventsUIFragment extends Fragment {
             }
 
 
-            if (keyword.isEmpty() && availability == null) {
+            if (keywordsList.isEmpty() && availability == null) {
                 // Both empty, so reset list
                 fetchAllEvents();
             }
-            else if (!keyword.isEmpty() && availability == null) {
+            else if (!keywordsList.isEmpty() && availability == null) {
                 // Only keyword
-                filterEventsByKeyword(keyword);
+                filterEventsByKeyword(keywordsList);
             }
-            else if (keyword.isEmpty()) {
+            else if (keywordsList.isEmpty()) {
                 // Only date
                 filterEventsByStartDate(availability);
             }
             else {
                 // Both fields filled
-                filterEventsByKeywordAndStartDate(keyword, availability);
+                filterEventsByKeywordAndStartDate(keywordsList, availability);
             }
             dialog1.dismiss();
 
@@ -373,16 +384,16 @@ public class EventsUIFragment extends Fragment {
      * Filters by name, description, tags, and location case-insensitively by a keyword.
      * The keyword must be a substring within any of the 4 filtering categories as described before
      * for the event to be matched. After filtering is done, updates the UI.
-     * @param keyword the keyword to filter events by
+     * @param keywordsList the list of keywords to filter events by
      */
-    private void filterEventsByKeyword(String keyword) {
+    private void filterEventsByKeyword(ArrayList<String> keywordsList) {
         if (eventList == null) {
             Log.e("EventsUi", "THE EVENT LIST IS NULL AHHH");
             return;
         }
 
         // If keyword is empty then fetch all events again
-        if (keyword == null || keyword.isEmpty()) {
+        if (keywordsList == null || keywordsList.isEmpty()) {
             fetchAllEvents();
             return;
         }
@@ -402,12 +413,20 @@ public class EventsUIFragment extends Fragment {
             String location = event.getPlace();
             String tags = String.join(" ", event.getEventTags());
 
-            String lowercaseKeyword = keyword.toLowerCase();
-            if (name.toLowerCase().contains(lowercaseKeyword) ||
-                description.toLowerCase().contains(lowercaseKeyword) ||
-                location.toLowerCase().contains(lowercaseKeyword) ||
-                tags.toLowerCase().contains(lowercaseKeyword)) {
+            boolean matched = false;
 
+            for (String keyword : keywordsList) {
+                String lowercaseKeyword = keyword.toLowerCase();
+                if (name.toLowerCase().contains(lowercaseKeyword) ||
+                        description.toLowerCase().contains(lowercaseKeyword) ||
+                        location.toLowerCase().contains(lowercaseKeyword) ||
+                        tags.toLowerCase().contains(lowercaseKeyword)) {
+                        matched = true;
+                        break; // prevent duplicate matches with OR semantics
+                }
+            }
+
+            if (matched) {
                 eventNames.add(name);
                 docIds.add(event.getEventID());
                 ownedFlags.add(event.getOrganizerID().equals(uid));
@@ -461,14 +480,14 @@ public class EventsUIFragment extends Fragment {
      * for the event to be matched. After filtering is done, updates the UI.
      * @param date date to filter event start dates after
      */
-    private void filterEventsByKeywordAndStartDate(String keyword, LocalDateTime date) {
+    private void filterEventsByKeywordAndStartDate(ArrayList<String> keywordsList, LocalDateTime date) {
         if (eventList == null) {
             Log.e("EventsUi", "THE EVENT LIST IS NULL AHHH");
             return;
         }
 
         // If date is empty then fetch all events again
-        if (date == null || keyword == null || keyword.isEmpty()) {
+        if (date == null || keywordsList == null || keywordsList.isEmpty()) {
             fetchAllEvents();
             return;
         }
@@ -488,16 +507,25 @@ public class EventsUIFragment extends Fragment {
             String location = event.getPlace();
             String tags = String.join(" ", event.getEventTags());
 
-            String lowercaseKeyword = keyword.toLowerCase();
-            if (name.toLowerCase().contains(lowercaseKeyword) ||
-                    description.toLowerCase().contains(lowercaseKeyword) ||
-                    location.toLowerCase().contains(lowercaseKeyword) ||
-                    tags.toLowerCase().contains(lowercaseKeyword)) {
-                if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
-                    eventNames.add(event.getName());
-                    docIds.add(event.getEventID());
-                    ownedFlags.add(event.getOrganizerID().equals(uid));
+            boolean matched = false;
+
+            for (String keyword : keywordsList){
+                String lowercaseKeyword = keyword.toLowerCase();
+                if (name.toLowerCase().contains(lowercaseKeyword) ||
+                        description.toLowerCase().contains(lowercaseKeyword) ||
+                        location.toLowerCase().contains(lowercaseKeyword) ||
+                        tags.toLowerCase().contains(lowercaseKeyword)) {
+                    if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
+                        matched = true;
+                        break; // prevent duplicates
+                    }
                 }
+            }
+
+            if (matched) {
+                eventNames.add(event.getName());
+                docIds.add(event.getEventID());
+                ownedFlags.add(event.getOrganizerID().equals(uid));
             }
 
         });

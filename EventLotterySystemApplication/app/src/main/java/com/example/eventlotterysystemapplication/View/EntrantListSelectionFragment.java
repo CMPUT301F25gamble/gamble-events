@@ -101,6 +101,8 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
         });
 
+        // TODO figure out some way to check if geolocation requirement is enabled
+
 //        Database.getDatabase().getEvent(eventId, task -> {
 //            if (task.isSuccessful()){
 //                if (task.getResult().isGeolocationRequirement()) {

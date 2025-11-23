@@ -209,7 +209,7 @@ public class EventDetailScreenFragment extends Fragment {
                                 if (entrant == null) {
                                     //Get geo entrantLocation
                                     Context context = v.getContext();
-                                    //If Event Geo location requirement is off or device is not allowing geo location, save null as locationa
+                                    //If Event Geo location requirement is off or device is not allowing geo location, save null as location
                                     if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
                                         Entrant newEntrant = new Entrant();
                                         newEntrant.setLocation(null);

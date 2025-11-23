@@ -94,18 +94,20 @@ public class EntrantListSelectionFragment extends Fragment {
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList, bundle);
         });
 
-        Database.getDatabase().getEvent(eventId, task -> {
-            if (task.isSuccessful()){
-                if (task.getResult().isGeolocationRequirement()) {
-                    // View all pending entrants Button to access list of all entrants
-                    binding.pendingMapButton.setOnClickListener(v -> {
-                        Bundle bundle3 = new Bundle();
-                        bundle3.putString("eventID", eventId);
-                        bundle3.putString("entrantStatus", String.valueOf(EntrantStatus.WAITING));
-                        NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
-                    });
-                }
-            }
+        binding.pendingMapButton.setOnClickListener(v -> {
+            Bundle bundle3 = new Bundle();
+            bundle3.putString("eventID", eventId);
+            bundle3.putString("entrantStatus", String.valueOf(EntrantStatus.WAITING));
+            NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
         });
+
+//        Database.getDatabase().getEvent(eventId, task -> {
+//            if (task.isSuccessful()){
+//                if (task.getResult().isGeolocationRequirement()) {
+                    // View all pending entrants Button to access list of all entrants
+
+//                }
+//            }
+//        });
     }
 }

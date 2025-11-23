@@ -35,6 +35,11 @@ public class WaitingEntrantListFragment extends Fragment {
     private Database database;
     LotterySelector lotterySelector;
 
+    // Global adapter and data list
+    private ArrayAdapter<CharSequence> waitingAdapter;
+    private ArrayList<CharSequence> waitingData;
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -48,6 +53,15 @@ public class WaitingEntrantListFragment extends Fragment {
 
         database = Database.getDatabase();
         lotterySelector = new LotterySelector();
+
+        // Initialize adapter
+        waitingData = new ArrayList<>();
+        waitingAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                waitingData
+        );
+        binding.waitingListOfEntrantsListView.setAdapter(waitingAdapter);
 
         // Safely read arguments
         Bundle args = getArguments();
@@ -112,7 +126,17 @@ public class WaitingEntrantListFragment extends Fragment {
                         event.addEntrantToChosenList(e); // add entrants to chosen list
                     }
 
-                    Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+                    // Refresh the waiting list
+                    // After updating the chosen list
+                    database.updateEvent(event, updateTask -> {
+                        if (updateTask.isSuccessful()) {
+                            // Refresh the UI
+                            loadWaitingEntrantsIntoList(event);
+                            Toast.makeText(requireContext(), "Entrants from waiting list randomly selected!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Error saving event: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
         });
@@ -120,24 +144,28 @@ public class WaitingEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadWaitingEntrantsIntoList(Event event) {
-        // List for waiting entrants
-        ArrayList<CharSequence> data = new ArrayList<>();
-        // Adapter for listview
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                data
-        );
+        waitingData.clear();
 
         // Loop through all waiting entrants
         for (Entrant e : event.getEntrantWaitingList()) {
             String name = e.getUser().getName();
-            data.add(name);
+            waitingData.add(name);
         }
         // Notify the adapter
-        adapter.notifyDataSetChanged();
+        waitingAdapter.notifyDataSetChanged();
 
-        // Set the adapter for the ListView
-        binding.waitingListOfEntrantsListView.setAdapter(adapter);
+        // Update button state based on list capacity
+        updateSelectButtonState(event);
+    }
+
+    // Helper function for if chosen list is full or waiting list is empty, disable button
+    private void updateSelectButtonState(Event event) {
+        boolean canSelect = event.getEntrantChosenList().size() < event.getMaxFinalListCapacity()
+                && !event.getEntrantWaitingList().isEmpty();
+
+        binding.selectEntrantsButton.setEnabled(canSelect);
+
+        // Grey out button when disabled
+        binding.selectEntrantsButton.setAlpha(canSelect ? 1f : 0.5f);
     }
 }

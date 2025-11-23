@@ -280,13 +280,14 @@ public class Database {
             return;
         }
 
-        String userId = authUser.getUid();
+        String targetUserId = user.getUserID();
+        boolean deletingSelf = (authUser != null) && (authUser.getUid().equals(targetUserId));
 
         deleteOrganizedEvents(user, task -> {
             if (task.isSuccessful()){
-                Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
+                Log.d("Database", "Successfully deleted all organized events from user with userID: " + targetUserId);
             } else {
-                Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
+                Log.e("Database", "Couldn't delete all organized events from user with userID: " + targetUserId);
                 listener.onComplete(task);
             }
         });
@@ -299,7 +300,7 @@ public class Database {
             for (DocumentSnapshot eventDoc : allEventsSnapshot.getDocuments()) {
                 DocumentReference regDocRef = eventDoc.getReference()
                         .collection("Registration")
-                        .document(userId);
+                        .document(targetUserId);
                 Task<Void> deleteTask = regDocRef.get()
                         .continueWithTask(regDocTask -> {
                             if (regDocTask.isSuccessful() && regDocTask.getResult().exists()) {
@@ -313,8 +314,19 @@ public class Database {
 
             Tasks.whenAllComplete(regDeleteTasks).addOnCompleteListener(regDone -> {
                 // Deletes user document
-                userRef.document(userId).delete().addOnCompleteListener(userDocDone -> {
-                    // Deletes Firebase auth account
+                userRef.document(targetUserId).delete().addOnCompleteListener(userDocDone -> {
+
+                    if (!deletingSelf) {
+                        // Admin deleting another user
+                        Log.d("Database", "User deleted by an admin");
+                        listener.onComplete(Tasks.forResult(null));
+                        return;
+                    } else {
+                        Log.e("Database", "User deletion by admin failed");
+                        listener.onComplete(Tasks.forException(userDocDone.getException()));
+                    }
+
+                    // Deletes Firebase auth account (self-delete)
                     authUser.delete().addOnCompleteListener(done -> {
                         if (done.isSuccessful()) {
                             Log.d("Database", "User fully deleted");

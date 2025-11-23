@@ -19,6 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLotterySystemApplication">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+          android:value="AIzaSyC8_6AhPVJRqUAeEY5xkhcxdZX7GX2EBT8" />
         <activity
             android:name=".Controller.AdminActivity"
             android:exported="false" />
@@ -61,7 +64,4 @@
             </intent-filter>
         </service>
     </application>
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyC8_6AhPVJRqUAeEY5xkhcxdZX7GX2EBT8" />
 </manifest>

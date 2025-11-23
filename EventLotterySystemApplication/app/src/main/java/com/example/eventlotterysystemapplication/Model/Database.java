@@ -802,7 +802,7 @@ public class Database {
             data.put("status", entrant.getStatus());
             Double latitude = null;
             Double longitude = null;
-            Location entrantLocation = entrant.getLocation();
+            EntrantLocation entrantLocation = entrant.getLocation();
             if(entrantLocation !=null) {
                 latitude = entrantLocation.getLatitude();
                 longitude = entrantLocation.getLongitude();
@@ -847,9 +847,9 @@ public class Database {
                         Double latitude = entrantDoc.getDouble("latitude");
                         Double longitude = entrantDoc.getDouble("longitude");
 
-                        Location entrantLocation = null;
+                        EntrantLocation entrantLocation = null;
                         if(latitude!=null && longitude !=null) {
-                            entrantLocation = new Location();
+                            entrantLocation = new EntrantLocation();
                             entrantLocation.setLatitude(latitude);
                             entrantLocation.setLongitude(longitude);
                         }
@@ -865,7 +865,7 @@ public class Database {
                         entrant.setStatus(entrantStatus);
                         event.addToEntrantList(entrant);
                         tcs.setResult(event);
-                        
+
                         Log.d("Test Database 1", "Success");
 
                     } else {

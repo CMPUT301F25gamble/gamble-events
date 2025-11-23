@@ -33,7 +33,7 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
-import com.example.eventlotterysystemapplication.Model.Location;
+import com.example.eventlotterysystemapplication.Model.EntrantLocation;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
@@ -41,6 +41,7 @@ import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventDetailScreenBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.installations.FirebaseInstallations;
 
@@ -96,7 +97,9 @@ public class EventDetailScreenFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
-        if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+
+        // TODO implement checking event geolocation requirements
+        if ( ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -237,7 +240,8 @@ public class EventDetailScreenFragment extends Fragment {
                                 if (entrant == null) {
                                     //Get geo entrantLocation
                                     Context context = v.getContext();
-                                    if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    //If Event Geo location requirement is off or device is not allowing geo location, save null as locationa
+                                    if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
                                         Entrant newEntrant = new Entrant();
                                         newEntrant.setLocation(null);
                                         newEntrant.setStatus(EntrantStatus.WAITING);
@@ -247,11 +251,11 @@ public class EventDetailScreenFragment extends Fragment {
                                     } else {
                                         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
                                         // Make entrant effectively final by using a final variable
-                                        fusedLocationClient.getLastLocation()
-                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                                    Location entrantLocation = null;
-                                                    if (location != null) {
-                                                        entrantLocation = new Location();
+                                       fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                               .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                   EntrantLocation entrantLocation = null;
+                                                   if (location != null) {
+                                                       entrantLocation = new EntrantLocation();
                                                         entrantLocation.setLatitude(location.getLatitude());
                                                         entrantLocation.setLongitude(location.getLongitude());
                                                     }

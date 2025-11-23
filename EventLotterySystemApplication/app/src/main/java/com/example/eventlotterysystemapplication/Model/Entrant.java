@@ -4,26 +4,23 @@ import java.util.Objects;
 
 public class Entrant {
     private User user;
-    private Location entrantLocation;
+    private EntrantLocation entrantLocation;
 
     private EntrantStatus status;
 
-    private Event event;
+
 
     public Entrant(){}
 
-    public Entrant(User user, Location entrantLocation, EntrantStatus entrantStatus, Event event){
+    public Entrant(User user, EntrantLocation entrantLocation, EntrantStatus entrantStatus){
         this.user = user;
         this.entrantLocation = entrantLocation;
         this.status = entrantStatus;
-        this.event = event;
     }
 
-    public Entrant(User user, EntrantStatus entrantStatus, Event event){
+    public Entrant(User user, EntrantStatus entrantStatus){
         this.user = user;
-        this.entrantLocation = entrantLocation;
         this.status = entrantStatus;
-        this.event = event;
     }
 
     public User getUser() {
@@ -34,11 +31,11 @@ public class Entrant {
         this.user = user;
     }
 
-    public Location getLocation() {
+    public EntrantLocation getLocation() {
         return entrantLocation;
     }
 
-    public void setLocation(Location entrantLocation) {
+    public void setLocation(EntrantLocation entrantLocation) {
         this.entrantLocation = entrantLocation;
     }
 
@@ -50,14 +47,6 @@ public class Entrant {
         this.status = status;
     }
 
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Entrant)) {
@@ -66,7 +55,7 @@ public class Entrant {
             return true;
         } else {
             Entrant entrant2 = (Entrant) o;
-            return this.user.equals(entrant2.getUser()) && Objects.equals(this.event.getEventID(), entrant2.event.getEventID());
+            return this.user.equals(entrant2.getUser());
         }
     }
 }

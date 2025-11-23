@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="32dp"
+    android:paddingBottom="56dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:background="@drawable/popup_background">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/FilterEventsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="12dp"
+        android:gravity="center"
+        android:text="Filter Events"
+        android:textStyle="bold"
+        android:textSize="24sp" />
+
+    <!-- Keyword search (filtering by interests) -->
+    <TextView
+        android:id="@+id/dialogKewordSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp"
+        android:text="Search keywords (separated by commas)"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/keywordSearchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_list_item"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:drawableEnd="@drawable/edit_icon"
+        android:layout_marginBottom="14dp" />
+
+    <!-- Availability (by event start) -->
+    <TextView
+        android:id="@+id/dialogAvailability"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp"
+        android:text="Filter events starting after this date/time:"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/availabilityEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_list_item"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:hint="@string/date_time_format_text"
+        android:drawableEnd="@drawable/edit_icon"
+        android:layout_marginBottom="14dp" />
+
+    <!-- Buttons -->
+    <Button
+        android:id="@+id/dialogSearchButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/app_beige"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="SEARCH" />
+
+    <Button
+        android:id="@+id/dialogBackButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/app_grey"
+        android:text="@string/back_button_text" />
+
+</LinearLayout>

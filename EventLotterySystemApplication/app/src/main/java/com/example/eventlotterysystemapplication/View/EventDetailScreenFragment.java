@@ -277,6 +277,8 @@ public class EventDetailScreenFragment extends Fragment {
                                         newEntrant.setUser(user);
                                         event.addToEntrantList(newEntrant);
                                         updateEventDB(event);
+                                        changeWaitlistBtn(true);
+                                        Log.d("EventDetailScreen", "User successfully joins waiting list");
                                     } else {
                                         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
                                         // Make entrant effectively final by using a final variable
@@ -304,6 +306,7 @@ public class EventDetailScreenFragment extends Fragment {
                                     event.removeEntrant(entrant);
                                     updateEventDB(event);
                                     changeWaitlistBtn(false);
+                                    Log.d("EventDetailScreen", "User successfully left waiting list");
                                 }
                                 Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
                             } else {
@@ -327,11 +330,7 @@ public class EventDetailScreenFragment extends Fragment {
 
     private void updateEventDB(Event event){
         Database db = Database.getDatabase();
-        db.updateEvent(event, task -> {
-            if (task.isSuccessful()) {
-                Log.d("Event", "User successfully joins waiting list");
-            }
-        });
+        db.updateEvent(event, task -> {});
     }
 
     /**

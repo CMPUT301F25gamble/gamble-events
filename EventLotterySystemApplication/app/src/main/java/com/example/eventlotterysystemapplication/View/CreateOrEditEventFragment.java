@@ -222,6 +222,30 @@ public class CreateOrEditEventFragment extends Fragment {
             }
             int numOfSelectedEntrantsValue = Integer.parseInt(numOfSelectedEntrantsStr);
 
+            // Check chronological order for datetime such that
+            // now < registration start time < registration end time < invitation acceptance deadline < event start time < event end time
+            LocalDateTime now = LocalDateTime.now();
+            if (!now.isBefore(regStartTime)) {
+                Toast.makeText(getContext(), "Registration start must be after current time", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!regStartTime.isBefore(regEndTime)) {
+                Toast.makeText(getContext(), "Registration start must be before registration end", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!regEndTime.isBefore(invitationAcceptanceDeadline)) {
+                Toast.makeText(getContext(), "Registration end must be before invitation acceptance deadline", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!invitationAcceptanceDeadline.isBefore(eventStartTime)) {
+                Toast.makeText(getContext(), "Invitation acceptance deadline must be before event start", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!eventStartTime.isBefore(eventEndTime)) {
+                Toast.makeText(getContext(), "Event start must be before event end", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Parse tags; split by commas
             ArrayList<String> tagsList = new ArrayList<>();
             if (!tagsStr.isEmpty()) {

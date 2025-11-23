@@ -294,10 +294,11 @@ public class EventsUIFragment extends Fragment {
             String location = event.getPlace();
             String tags = String.join(" ", event.getEventTags());
 
-            if (name.toLowerCase().contains(keyword.toLowerCase()) ||
-                description.toLowerCase().contains(keyword.toLowerCase()) ||
-                location.toLowerCase().contains(keyword.toLowerCase()) ||
-                tags.toLowerCase().contains(keyword.toLowerCase())) {
+            String lowercaseKeyword = keyword.toLowerCase();
+            if (name.toLowerCase().contains(lowercaseKeyword) ||
+                description.toLowerCase().contains(lowercaseKeyword) ||
+                location.toLowerCase().contains(lowercaseKeyword) ||
+                tags.toLowerCase().contains(lowercaseKeyword)) {
 
                 eventNames.add(name);
                 docIds.add(event.getEventID());
@@ -379,10 +380,11 @@ public class EventsUIFragment extends Fragment {
             String location = event.getPlace();
             String tags = String.join(" ", event.getEventTags());
 
-            if (name.toLowerCase().contains(keyword.toLowerCase()) ||
-                    description.toLowerCase().contains(keyword.toLowerCase()) ||
-                    location.toLowerCase().contains(keyword.toLowerCase()) ||
-                    tags.toLowerCase().contains(keyword.toLowerCase())) {
+            String lowercaseKeyword = keyword.toLowerCase();
+            if (name.toLowerCase().contains(lowercaseKeyword) ||
+                    description.toLowerCase().contains(lowercaseKeyword) ||
+                    location.toLowerCase().contains(lowercaseKeyword) ||
+                    tags.toLowerCase().contains(lowercaseKeyword)) {
                 if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
                     eventNames.add(event.getName());
                     docIds.add(event.getEventID());

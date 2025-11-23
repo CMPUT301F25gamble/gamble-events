@@ -69,6 +69,7 @@ public class EventDetailScreenFragment extends Fragment {
 
     // Used for ADMIN control
     private String userId;
+    private String organizerID;
     private boolean isAdminMode;
     private Event event;
 
@@ -143,6 +144,7 @@ public class EventDetailScreenFragment extends Fragment {
                 if (task.isSuccessful()) {
                     // Grab event and bind it
                     event = task.getResult();
+                    organizerID = event.getOrganizerID(); // Used for admin control
                     Log.d(TAG, "Event retrieved is: " + event);
                     bindEvent(event);
 
@@ -191,49 +193,18 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Remove Event Button (Only in admin mode)
             binding.removeEventButton.setOnClickListener(v -> {
-                // Inflate the layout
-                LayoutInflater inflater = LayoutInflater.from(requireContext());
-                View dialogAdminRemoveAction = inflater
-                        .inflate(R.layout.dialog_admin_remove_action, null);
-                Button dialogConfirmRemoveButton = dialogAdminRemoveAction
-                        .findViewById(R.id.dialogConfirmRemoveButton);
-                Button dialogBackButton = dialogAdminRemoveAction
-                        .findViewById(R.id.dialogBackButton);
-                TextView dialogTextView1 = dialogAdminRemoveAction
-                        .findViewById(R.id.dialogTextView1);
+                removeAction("event");
+            });
 
-                // Set text of dialog
-                dialogTextView1.setText(R.string.dialog_remove_event_text);
+            // Remove Image Button (Only in admin mode)
+            binding.removeImageButton.setOnClickListener(v -> {
+                // TODO: add functionality for image remove
+                //removeAction("image");
+            });
 
-                // Setup dialog for removing event
-                AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                        .setView(dialogAdminRemoveAction)
-                        .setCancelable(true)
-                        .create();
-
-                // Strengthen background dimness (to emphasize the dialog)
-                dialog.getWindow().setDimAmount(.7f);
-                // Set the background to transparent so we can show the rounded corners
-                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-                // Return to event details screen
-                dialogBackButton.setOnClickListener(dialogView -> dialog.dismiss());
-
-                // Remove event from DB
-                dialogConfirmRemoveButton.setOnClickListener(dialogView -> {
-                    // Admin confirms remove event from DB
-                    Admin.removeEvent(event);
-
-                    // Dismiss the dialog and return to event details screen
-                    dialog.dismiss();
-                    NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                            .navigateUp();
-                    // Show toast that event has been removed
-                    Toast.makeText(requireContext(), "Event removed",
-                            Toast.LENGTH_SHORT).show();
-                });
-                // Show the dialog (i.e., confirm remove dialog)
-                dialog.show();
+            // Remove Organizer Button (Only in admin mode)
+            binding.removeOrganizerButton.setOnClickListener(v -> {
+                removeAction("organizer");
             });
 
             // Generate QR Code when the GenerateQRCode Button is pressed
@@ -343,6 +314,88 @@ public class EventDetailScreenFragment extends Fragment {
         else {
             binding.generateQRCodeButton.setVisibility(View.GONE); // make generate QR Code button gone if not owner of the event
         }
+    }
+
+    /**
+     * Removes an action from the database (action could be: event, image, or organizer)
+     * @param action
+     */
+    private void removeAction(String action) {
+        // Inflate the layout
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogAdminRemoveAction = inflater
+                .inflate(R.layout.dialog_admin_remove_action, null);
+        Button dialogConfirmRemoveButton = dialogAdminRemoveAction
+                .findViewById(R.id.dialogConfirmRemoveButton);
+        Button dialogBackButton = dialogAdminRemoveAction
+                .findViewById(R.id.dialogBackButton);
+        TextView dialogTextView1 = dialogAdminRemoveAction
+                .findViewById(R.id.dialogTextView1);
+
+        // Set text of dialog
+        switch (action) {
+            case "event":
+                dialogTextView1.setText(R.string.dialog_remove_event_text);
+                break;
+
+            case "image":
+                dialogTextView1.setText(R.string.dialog_remove_image_text);
+                break;
+
+            case "organizer":
+                dialogTextView1.setText(R.string.dialog_remove_organizer_text);
+                break;
+        }
+
+        // Setup dialog for removing event
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setView(dialogAdminRemoveAction)
+                .setCancelable(true)
+                .create();
+
+        // Strengthen background dimness (to emphasize the dialog)
+        dialog.getWindow().setDimAmount(.7f);
+        // Set the background to transparent so we can show the rounded corners
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        // Return to event details screen
+        dialogBackButton.setOnClickListener(dialogView -> dialog.dismiss());
+
+        // ConfirmRemove button
+        dialogConfirmRemoveButton.setOnClickListener(dialogView -> {
+            switch (action) {
+                case "event":
+                    // Admin confirms remove event from DB
+                    Admin.removeEvent(event);
+                    // Show toast that event has been removed
+                    Toast.makeText(requireContext(), "Event removed",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+
+                case "image":
+                    // TODO: add functionality for image remove
+                    break;
+
+                case "organizer":
+                    // Fetch Organizer by organizerID
+                    Database.getDatabase().getUser(organizerID, taskOrganizer -> {
+                        User organizer = taskOrganizer.getResult();
+                        // Admin confirms remove organizer from DB
+                        Admin.removeOrganizer(organizer);
+                    });
+                    // Show toast that organizer has been removed
+                    Toast.makeText(requireContext(), "Organizer removed",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            // Dismiss dialog
+            dialog.dismiss();
+            // Return to event details screen
+            NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                    .navigateUp();
+        });
+        // Show the dialog (i.e., confirm action dialog)
+        dialog.show();
     }
 
     /**

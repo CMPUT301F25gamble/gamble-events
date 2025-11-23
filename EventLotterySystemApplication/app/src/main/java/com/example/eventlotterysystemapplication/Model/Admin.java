@@ -152,8 +152,20 @@ public class Admin extends User{
         });
     }
 
-    public static void reviewNotificationLogs() {
-        // TODO
+    /**
+     * Browses logs of all notifications sent to entrants by organizers
+     * @param listener An OnCompleteListener used to retrieve a list of notifications
+     */
+    public static void reviewNotificationLogs(OnCompleteListener<List<Notification>> listener) {
+        db.getAllNotifications(task -> {
+            if (task.isSuccessful()) {
+                List<Notification> notifications = task.getResult();
+                listener.onComplete(Tasks.forResult(notifications));
+            } else {
+                listener.onComplete(Tasks.forException(task.getException()));
+                Log.e("Admin", "Cannot browse notification logs");
+            }
+        });
     }
 
 }

@@ -92,6 +92,7 @@ public class EventDetailScreenFragment extends Fragment {
         Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

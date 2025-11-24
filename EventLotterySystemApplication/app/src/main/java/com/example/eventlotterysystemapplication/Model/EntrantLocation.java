@@ -4,6 +4,14 @@ public class EntrantLocation {
 
     private Double longitude;
     private Double latitude;
+
+    public EntrantLocation(Double latitude, Double longitude){
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+    public EntrantLocation(){
+
+    }
     public Double getLongitude() {
         return longitude;
     }

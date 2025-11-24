@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStructure;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -64,11 +63,11 @@ public class EventDetailScreenFragment extends Fragment {
 
     private FragmentEventDetailScreenBinding binding;
     private String eventId;
+    private String userId;
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
 
     // Used for ADMIN control
-    private String userId;
     private String organizerID;
     private boolean isAdminMode;
     private Event event;
@@ -198,7 +197,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Remove Image Button (Only in admin mode)
             binding.removeImageButton.setOnClickListener(v -> {
                 // TODO: add functionality for image remove
-                //removeAction("image");
+                removeAction("image");
             });
 
             // Remove Organizer Button (Only in admin mode)
@@ -372,7 +371,26 @@ public class EventDetailScreenFragment extends Fragment {
                     break;
 
                 case "image":
-                    // TODO: add functionality for image remove
+                    String eventImageURL = event.getEventPosterUrl();
+                    Admin.removeImage(eventImageURL, task -> {
+                        if (task.isSuccessful()) {
+                            // Show toast that image has been removed
+                            Toast.makeText(requireContext(), "Image removed",
+                                    Toast.LENGTH_SHORT).show();
+
+                            // re-fetch the updated event from Firestore
+                            Database.getDatabase().getEvent(event.getEventID(), refreshedEventTask -> {
+                                if (refreshedEventTask.isSuccessful()) {
+                                    event = refreshedEventTask.getResult();  // update local event instance
+                                    bindEvent(event);                        // refresh the UI
+                                }
+                            });
+                        } else {
+                            // Show toast on image removal fail
+                            Toast.makeText(requireContext(), "Failed to remove Image",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     break;
 
                 case "organizer":

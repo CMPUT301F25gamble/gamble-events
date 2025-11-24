@@ -16,6 +16,9 @@
             android:name="eventId"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_create_or_edit_event_fragment_to_my_events_fragment"
+            app:destination="@id/my_events_fragment" />
     </fragment>
     <fragment
         android:id="@+id/entrantListSelectionFragment"

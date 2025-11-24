@@ -377,14 +377,9 @@ public class EventDetailScreenFragment extends Fragment {
                             // Show toast that image has been removed
                             Toast.makeText(requireContext(), "Image removed",
                                     Toast.LENGTH_SHORT).show();
-
-                            // re-fetch the updated event from Firestore
-                            Database.getDatabase().getEvent(event.getEventID(), refreshedEventTask -> {
-                                if (refreshedEventTask.isSuccessful()) {
-                                    event = refreshedEventTask.getResult();  // update local event instance
-                                    bindEvent(event);                        // refresh the UI
-                                }
-                            });
+                            // Update event in DB and bind
+                            updateEventDB(event);
+                            bindEvent(event);
                         } else {
                             // Show toast on image removal fail
                             Toast.makeText(requireContext(), "Failed to remove Image",
@@ -405,11 +400,16 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     break;
             }
-            // Dismiss dialog
-            dialog.dismiss();
-            // Return to event details screen
-            NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                    .navigateUp();
+            if (action.equals("event") || action.equals("organizer")) {
+                // Dismiss dialog
+                dialog.dismiss();
+                // Return to event details screen
+                NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                        .navigateUp();
+            } else if (action.equals("image")) {
+                // Dismiss dialog
+                dialog.dismiss();
+            }
         });
         // Show the dialog (i.e., confirm action dialog)
         dialog.show();
@@ -512,6 +512,9 @@ public class EventDetailScreenFragment extends Fragment {
                     .load(eventPosterUrl)
                     .placeholder(R.drawable.image_template)
                     .into(binding.eventImage);
+        } else {
+            binding.eventImage.setImageResource(R.drawable.image_template);
+            //binding.eventImage.setVisibility(View.GONE);
         }
 
         // Debugging

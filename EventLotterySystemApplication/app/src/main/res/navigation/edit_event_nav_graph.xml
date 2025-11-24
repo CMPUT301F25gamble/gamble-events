@@ -165,6 +165,17 @@
                 app:argType="boolean"
                 android:defaultValue="false"/>
         </action>
-
+    </fragment>
+    <fragment
+        android:id="@+id/my_events_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
+        android:label="my_events_fragment"
+        tools:layout="@layout/fragment_my_events" >
+        <action
+            android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
+            app:destination="@id/my_event_detail_screen" />
     </fragment>
 </navigation>

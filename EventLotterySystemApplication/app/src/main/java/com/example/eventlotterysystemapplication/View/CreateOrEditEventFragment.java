@@ -171,9 +171,6 @@ public class CreateOrEditEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         database = Database.getDatabase();
-
-
-
         // Change title/button text depending on if the user is editing the event or creating one
         if (eventId != null) {
             binding.createOrEditEventTitle.setText(R.string.edit_event_title_text);
@@ -405,14 +402,14 @@ public class CreateOrEditEventFragment extends Fragment {
                                             if (posterFile != null) {
                                                 Log.d(TAG, "Adding poster image to event...");
                                                 uploadEventPosterToStorage(event);
-                                                LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
-                                                lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
                                             } else {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
                                                 NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                                         .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                                             }
+                                            LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
+                                            lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
                                         } else {
                                             Log.d(TAG, "Failed to add event");
                                         }
@@ -427,14 +424,14 @@ public class CreateOrEditEventFragment extends Fragment {
                                         if (posterFile != null) {
                                             Log.d(TAG, "Adding poster image to event...");
                                             uploadEventPosterToStorage(event);
-                                            LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
-                                            lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");
                                             NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                                     .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                                         }
+                                        LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
+                                        lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
                                     } else {
                                         Log.d(TAG, "Failed to add event");
                                     }

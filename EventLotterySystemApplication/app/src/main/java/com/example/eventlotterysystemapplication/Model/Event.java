@@ -39,7 +39,7 @@ public class Event {
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
     private boolean isRecurring;
-    private Boolean geolocationRequirement;
+    private Boolean geolocationRequirement = true;
     private int recurringFrequency;
     private String eventPosterUrl;
 
@@ -59,7 +59,7 @@ public class Event {
     private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
     private transient LocalDateTime recurringEndDate;
-    private static DateTimeFormatter formatter;
+    private static DateTimeFormatter formatter= DateTimeFormatter.ISO_LOCAL_DATE_TIME;;
 
     @Exclude
     private Bitmap QRCodeBitmap;
@@ -109,7 +109,6 @@ public class Event {
         this.eventTags = eventTags;
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.registrationStartTime = registrationStartTime;
@@ -160,7 +159,6 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
         this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
         this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
@@ -488,10 +486,12 @@ public class Event {
     }
 
 
+    @PropertyName("geolocationRequirement")
     public Boolean isGeolocationRequirement() {
         return Objects.requireNonNullElse(geolocationRequirement, false);
     }
 
+    @PropertyName("geolocationRequirement")
     public void setGeolocationRequirement(Boolean geolocationRequirement) {
         this.geolocationRequirement = geolocationRequirement;
     }

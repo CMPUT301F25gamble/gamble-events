@@ -506,6 +506,13 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
+
+        // USED TO ADMIN DON'T DELETE!!
+        // Updates the event poster URL if the poster URL is not null
+        if (event.getEventPosterUrl() == null) {
+            eventDocRef.update("eventPosterUrl", null);
+        }
+
         eventDocRef.set(event, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

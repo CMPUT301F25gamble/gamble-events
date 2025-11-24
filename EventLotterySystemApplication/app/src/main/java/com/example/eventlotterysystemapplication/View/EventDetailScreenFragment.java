@@ -377,6 +377,8 @@ public class EventDetailScreenFragment extends Fragment {
                             // Show toast that image has been removed
                             Toast.makeText(requireContext(), "Image removed",
                                     Toast.LENGTH_SHORT).show();
+                            // Set the event poster url to null in the DB
+                            event.setEventPosterUrl(null);
                             // Update event in DB and bind
                             updateEventDB(event);
                             bindEvent(event);

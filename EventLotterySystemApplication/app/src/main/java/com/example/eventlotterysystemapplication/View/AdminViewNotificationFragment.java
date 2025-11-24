@@ -18,6 +18,7 @@ import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminNotificationsBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class AdminViewNotificationFragment extends Fragment {
 
     private FragmentAdminViewNotificationBinding binding;
+    private String notificationId;
     private Notification notification;
     private final Database database = Database.getDatabase();
     private final String TAG = this.getClass().getSimpleName();
@@ -47,19 +49,8 @@ public class AdminViewNotificationFragment extends Fragment {
         // Get notification id from arguments
         assert getArguments() != null;
         AdminViewNotificationFragmentArgs args = AdminViewNotificationFragmentArgs.fromBundle(getArguments());
-        String notificationId = args.getNotificationId();
-        Log.d(TAG, "Notification Id: " + notificationId);
+        notificationId = args.getNotificationId();
 
-        // Get notification from database
-        database.getNotification(notificationId, notificationTask -> {
-            if (notificationTask.isSuccessful()) {
-                Log.d(TAG, "Notification retrieved");
-                notification = notificationTask.getResult();
-            } else {
-                // Handle error
-                Log.d(TAG, "Error getting notification");
-            }
-        });
     }
 
     @Override
@@ -85,9 +76,26 @@ public class AdminViewNotificationFragment extends Fragment {
                     .navigateUp();
         });
 
+        // Get notification from database
+        FirebaseFirestore.getInstance().collection("Notification")
+                .document(notificationId).get()
+                .addOnCompleteListener( task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        DocumentSnapshot document = task.getResult();
+                        String retrievedSenderId = document.getString("SenderID");
+                        String retrievedMessageTitle = document.getString("MessageTitle");
+                        String retrievedMessageContent = document.getString("MessageContent");
+
+                        Log.d(TAG, retrievedSenderId);
+                        Log.d(TAG, retrievedMessageTitle);
+                        Log.d(TAG, retrievedMessageContent);
+
+
+                    } else {
+                        Log.d(TAG, "Error getting notification");
+                    }
+                });
+
         // Change placeholder texts to reflect notification information
-        notificationSenderId.setText(notification.getSenderID());
-        messageTitle.setText(notification.getTitle());
-        messageContent.setText(notification.getMessage());
     }
 }

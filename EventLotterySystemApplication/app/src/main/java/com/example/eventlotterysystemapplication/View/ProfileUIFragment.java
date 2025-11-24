@@ -79,7 +79,7 @@ public class ProfileUIFragment extends Fragment {
                         // User Profile Events Button
                         binding.userProfileEvents.setOnClickListener(v -> {
                            NavHostFragment.findNavController(ProfileUIFragment.this)
-                                   .navigate(R.id.action_allProfilesFragment_to_myEventsFragment);
+                                   .navigate(R.id.action_profileUIFragment_to_myEventsFragment);
                         });
 
                         // Delete Button

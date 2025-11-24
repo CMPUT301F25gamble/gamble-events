@@ -175,7 +175,7 @@ public class EventsUIFragment extends Fragment {
             Bundle args = new Bundle();
             args.putString("eventId", docIds.get(position));
             args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
-            Log.d("EventsUIFragmentsss", "isOwnedEvent = " + ownedFlags.get(position));
+            Log.d("EventsUIFragment", "isOwnedEvent = " + ownedFlags.get(position));
             Log.d("EventsUIFragment", "eventId = " + docIds.get(position));
 
 

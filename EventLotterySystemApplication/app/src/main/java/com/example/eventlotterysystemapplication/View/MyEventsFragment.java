@@ -91,7 +91,6 @@ public class MyEventsFragment extends Fragment {
             }
         });
 
-
         // Show loading and hide content until it is fetched
         binding.loadingMyEvents.setVisibility(View.VISIBLE);
         binding.contentGroupMyEvents.setVisibility(View.GONE);

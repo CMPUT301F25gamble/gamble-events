@@ -4,14 +4,21 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminNotificationsBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,7 +28,9 @@ import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNo
 public class AdminViewNotificationFragment extends Fragment {
 
     private FragmentAdminViewNotificationBinding binding;
-    private String notificationId;
+    private Notification notification;
+    private final Database database = Database.getDatabase();
+    private final String TAG = this.getClass().getSimpleName();
 
     public AdminViewNotificationFragment() {
         // Required empty public constructor
@@ -37,7 +46,17 @@ public class AdminViewNotificationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Get notification id from arguments
         AdminViewNotificationFragmentArgs args = AdminViewNotificationFragmentArgs.fromBundle(getArguments());
-        notificationId = args.getNotificationId();
+        String notificationId = args.getNotificationId();
+
+        // Get notification from database
+        database.getNotification(notificationId, notificationTask -> {
+            if (notificationTask.isSuccessful()) {
+                notification = notificationTask.getResult();
+            } else {
+                // Handle error
+                Log.d(TAG, "Error getting notification");
+            }
+        });
     }
 
     @Override
@@ -52,5 +71,20 @@ public class AdminViewNotificationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // get views
+        ImageButton viewNotificationBackButton = binding.viewNotificationBackButton;
+        TextView notificationSenderId = binding.notificationSenderId;
+        TextView messageTitle = binding.messageTitle;
+        TextView messageContent = binding.messageContent;
+
+        // set up back Button
+        viewNotificationBackButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this)
+                    .navigateUp();
+        });
+
+        // Change placeholder texts to reflect notification information
+        notificationSenderId.setText(notification.getSenderID());
+        messageTitle.setText(notification.getTitle());
+        messageContent.setText(notification.getMessage());
     }
 }

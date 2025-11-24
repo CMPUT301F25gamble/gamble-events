@@ -626,7 +626,7 @@ public class Database {
      * @param listener An OnCompleteListener used to retrieve a list of users
      */
     public void getAllNotifications(OnCompleteListener<List<Notification>> listener) {
-        userRef.get().addOnCompleteListener(task -> {
+        notificationRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Notification> notifications = new ArrayList<>();
                 for (QueryDocumentSnapshot doc: task.getResult()) {

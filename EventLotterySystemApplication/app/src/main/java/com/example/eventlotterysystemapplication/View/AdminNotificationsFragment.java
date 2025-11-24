@@ -63,6 +63,7 @@ public class AdminNotificationsFragment extends Fragment {
         Button updateNotificationsButton = binding.updateNotificationsButton;
 
         // set adapter
+        notificationTitlesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationTitlesList);
         notificationsListView.setAdapter(notificationTitlesAdapter);
 
         // get notifications from database
@@ -88,10 +89,11 @@ public class AdminNotificationsFragment extends Fragment {
 
         // handle when admin taps a notification
         notificationsListView.setOnItemClickListener((parent, v, position, id) -> {
+            Log.d(TAG, "Notification tapped: " + notificationTitlesList.get(position));
             Bundle notificationArgs = new Bundle();
             notificationArgs.putString("notificationId", notificationIdList.get(position));
 
-            // Navigate to viwe notification fragment
+            // Navigate to view notification fragment
             NavHostFragment.findNavController(this)
                     .navigate(R.id.action_adminNotifications_to_adminViewNotificationFragment, notificationArgs);
         });

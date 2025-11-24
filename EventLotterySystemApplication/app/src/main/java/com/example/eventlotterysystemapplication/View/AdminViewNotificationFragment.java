@@ -45,12 +45,15 @@ public class AdminViewNotificationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Get notification id from arguments
+        assert getArguments() != null;
         AdminViewNotificationFragmentArgs args = AdminViewNotificationFragmentArgs.fromBundle(getArguments());
         String notificationId = args.getNotificationId();
+        Log.d(TAG, "Notification Id: " + notificationId);
 
         // Get notification from database
         database.getNotification(notificationId, notificationTask -> {
             if (notificationTask.isSuccessful()) {
+                Log.d(TAG, "Notification retrieved");
                 notification = notificationTask.getResult();
             } else {
                 // Handle error

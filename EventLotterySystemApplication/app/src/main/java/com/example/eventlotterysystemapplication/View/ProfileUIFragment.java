@@ -74,7 +74,8 @@ public class ProfileUIFragment extends Fragment {
                             // Reset the selected user ID
                             AdminSession.setSelectedUserId(null);
                             // Navigate back to the previous fragment
-                            NavHostFragment.findNavController(ProfileUIFragment.this).navigateUp();
+                            NavHostFragment.findNavController(ProfileUIFragment.this)
+                                    .navigate(R.id.action_profileUIFragment_to_allProfilesFragment);
                         });
 
                         // User Profile Events Button

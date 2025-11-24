@@ -66,17 +66,31 @@ public class MyEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Back button navigates to events page
+        // Source: ChatGPT (I didn't know how to fix this bug)
         binding.myEventsBackButton.setOnClickListener(v -> {
-            // Nav changes based on admin mode
+            int hostId = isAdminMode
+                    ? R.id.admin_nav_host_fragment
+                    : R.id.content_nav_host_fragment;
+
+            NavHostFragment navHostFragment =
+                    (NavHostFragment) requireActivity()
+                            .getSupportFragmentManager()
+                            .findFragmentById(hostId);
+
+            if (navHostFragment == null) {
+                Log.e("NAV", "NavHostFragment is NULL for hostId=" + hostId);
+                return; // prevents crash
+            }
+
+            NavController navController = navHostFragment.getNavController();
+
             if (isAdminMode) {
-                AdminSession.setSelectedUserId(null);
-                NavHostFragment.findNavController(MyEventsFragment.this)
-                        .navigate(R.id.profileUIFragment);
+                navController.navigate(R.id.profileUIFragment);
             } else {
-                NavHostFragment.findNavController(MyEventsFragment.this)
-                        .navigate(R.id.action_my_events_fragment_to_events_ui_fragment);
+                navController.navigate(R.id.events_ui_fragment);
             }
         });
+
 
         // Show loading and hide content until it is fetched
         binding.loadingMyEvents.setVisibility(View.VISIBLE);
@@ -140,7 +154,8 @@ public class MyEventsFragment extends Fragment {
                 // Bundle to indicate that we are coming from MyEventsFragment
                 Bundle args = new Bundle();
                 args.putString("eventId", myEventDocIds.get(position));
-                args.putBoolean("isOwnedEvent", true); // Does not matter since you're admin
+                // DEFAULT VALUE
+                args.putBoolean("isOwnedEvent", false); // Does not matter since you're admin
 
                 if (isAdminMode) {
                     NavHostFragment.findNavController(MyEventsFragment.this)

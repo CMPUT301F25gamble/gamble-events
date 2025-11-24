@@ -69,7 +69,7 @@ public class MyEventsFragment extends Fragment {
         binding.myEventsBackButton.setOnClickListener(v -> {
             // Nav changes based on admin mode
             if (isAdminMode) {
-                //AdminSession.setSelectedUserId(null);
+                AdminSession.setSelectedUserId(null);
                 NavHostFragment.findNavController(MyEventsFragment.this)
                         .navigate(R.id.profileUIFragment);
             } else {

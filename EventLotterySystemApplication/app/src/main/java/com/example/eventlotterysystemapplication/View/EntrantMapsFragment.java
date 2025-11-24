@@ -60,7 +60,8 @@ public class EntrantMapsFragment extends Fragment {
                     List<Entrant> waitingEntrants = event.getEntrantListByStatus(EntrantStatus.valueOf(entrantStatus));
 
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                    if (waitingEntrants != null && waitingEntrants.size() > 0) {
+                    if (waitingEntrants != null && !waitingEntrants.isEmpty()) {
+                        boolean atLeastOnePoint = false;
                         for (Entrant entrant : waitingEntrants) {
                             EntrantLocation entrantLocation = entrant.getLocation();
                             if (entrantLocation != null) {
@@ -70,8 +71,11 @@ public class EntrantMapsFragment extends Fragment {
                                     LatLng latLng = new LatLng(latitude, longitude);
                                     builder.include(latLng);
                                     googleMap.addMarker(new MarkerOptions().position(latLng).title(entrant.getUser().getName()));
+                                    atLeastOnePoint = true;
                                 }
                             }
+                        }
+                        if (atLeastOnePoint) {
                             int padding = 100; // offset from edges in pixels
                             LatLngBounds bounds = builder.build();
                             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);

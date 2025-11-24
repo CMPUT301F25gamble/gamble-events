@@ -16,6 +16,9 @@
             android:name="eventId"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_create_or_edit_event_fragment_to_my_events_fragment"
+            app:destination="@id/my_events_fragment" />
     </fragment>
     <fragment
         android:id="@+id/entrantListSelectionFragment"
@@ -37,6 +40,9 @@
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_finalEntrantList"
             app:destination="@id/finalEntrantList" />
+        <action
+            android:id="@+id/action_entrantListSelectionFragment_to_my_event_enterants_map"
+            app:destination="@id/my_event_enterants_map" />
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -46,9 +52,6 @@
         <action
             android:id="@+id/action_organiserNotificationsUIFragment_to_organiserSendNotificationUIFragment"
             app:destination="@id/organiserSendNotificationUIFragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/organiserSendNotificationUIFragment"
@@ -61,9 +64,6 @@
         <action
             android:id="@+id/action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment"
             app:destination="@id/organiserNotificationsUIFragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/my_event_detail_screen"
@@ -82,6 +82,25 @@
             android:id="@+id/action_my_event_detail_screen_to_create_or_edit_event_fragment"
             app:destination="@id/create_or_edit_event_fragment" />
     </fragment>
+     <fragment
+         android:id="@+id/my_event_enterants_map"
+         android:name="com.example.eventlotterysystemapplication.View.EntrantMapsFragment"
+         android:label="fragment_event_enterants_map"
+         tools:layout="@layout/fragment_entrant_maps">
+         <argument
+             android:name="eventId"
+             app:argType="string"
+             android:defaultValue="error"/>
+         <argument
+             android:name="entrantStatus"
+             app:argType="string"
+             android:defaultValue="WAITING"/>
+
+     <action
+         android:id="@+id/action_my_event_enterants_map_to_entrantListSelectionFragment"
+         app:destination="@id/entrantListSelectionFragment" />
+
+	</fragment>
     <fragment
         android:id="@+id/allEntrantsListFragment"
         android:name="com.example.eventlotterysystemapplication.View.AllEntrantsListFragment"
@@ -102,9 +121,9 @@
     </fragment>
     <fragment
         android:id="@+id/pendingEntrantList"
-        android:name="com.example.eventlotterysystemapplication.View.PendingEntrantListFragment"
+        android:name="com.example.eventlotterysystemapplication.View.WaitingEntrantListFragment"
         android:label="fragment_pending_entrant_list"
-        tools:layout="@layout/fragment_pending_entrant_list" >
+        tools:layout="@layout/fragment_waiting_entrant_list" >
         <action
             android:id="@+id/action_pendingEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
@@ -127,5 +146,36 @@
             android:id="@+id/action_finalEntrantList_to_entrantListSelectionFragment"
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
-
+    <fragment
+        android:id="@+id/events_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" >
+        <action
+            android:id="@+id/action_events_ui_fragment_to_create_or_edit_event_fragment"
+            app:destination="@id/create_or_edit_event_fragment" />
+        <action
+            android:id="@+id/action_events_ui_fragment_to_my_events_fragment"
+            app:destination="@id/my_events_fragment" />
+        <action
+            android:id="@+id/action_events_ui_fragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen">
+            <argument
+                android:name="isOwnedEvent"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/my_events_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
+        android:label="my_events_fragment"
+        tools:layout="@layout/fragment_my_events" >
+        <action
+            android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
+            app:destination="@id/my_event_detail_screen" />
+    </fragment>
 </navigation>

@@ -1,8 +1,6 @@
 package com.example.eventlotterysystemapplication.Controller;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,49 +21,31 @@ import com.example.eventlotterysystemapplication.databinding.ActivityContentBind
 
 public class ContentActivity extends AppCompatActivity {
 
-    ActivityContentBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        binding = ActivityContentBinding.inflate(getLayoutInflater());
+        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                    return insets;
+                });
 
-        handleIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.contentNavHostFragment.getId());
 
         assert navHostFragment != null;
 
-        Bundle startArgs = new Bundle();
-        if (intent != null && intent.hasExtra("eventId")) {
-            startArgs.putString("eventId", intent.getStringExtra("eventId"));
-            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
-        }
-
         // Get NavController
         NavController navController = navHostFragment.getNavController();
-        navController.setGraph(R.navigation.content_nav_graph, startArgs);
 
         // Start navigation on second tab (events page) and display it
         binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
+        navController.navigate(R.id.events_ui_fragment);
 
         /*
          * Nav logic for BottomNavigationView
@@ -75,16 +55,13 @@ public class ContentActivity extends AppCompatActivity {
             int destinationId = item.getItemId();
 
             NavOptions navOptions = new NavOptions.Builder()
-                // Main fix here
-                .setPopUpTo(R.id.content_nav_graph, true)
-                .build();
+                    // Main fix here
+                    .setPopUpTo(R.id.content_nav_graph, true)
+                    .build();
 
+            // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
-        // Test
-//        startArgs.putString("eventId", "2jKXO77SjVanAOxAcdBd");
     }
 }
-
-

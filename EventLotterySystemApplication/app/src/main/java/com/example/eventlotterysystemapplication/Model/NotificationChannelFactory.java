@@ -8,13 +8,14 @@ import android.os.Build;
 
 public class NotificationChannelFactory {
     public static void createNotificationChannels(Context context){
-        checkAndCreateNotificationChannel(context,"lotteryWinNotification");
+        checkAndCreateNotificationChannel(context, "lotteryWinNotification");
         checkAndCreateNotificationChannel(context,"lotteryLoseNotification");
         checkAndCreateNotificationChannel(context,"lotteryRedrawNotification");
         checkAndCreateNotificationChannel(context,"waitingListNotification");
         checkAndCreateNotificationChannel(context,"chosenListNotification");
         checkAndCreateNotificationChannel(context,"cancelledListNotification");
-        checkAndCreateNotificationChannel(context,"finalizedListNotification");
+        checkAndCreateNotificationChannel(context, "finalizedListNotification");
+        // TODO notification deleteEvent
     }
 
     /**
@@ -35,12 +36,13 @@ public class NotificationChannelFactory {
             description = "This notification channel is used to notify entrants that they lost lottery selection";
         } else if (channelName.equals("lotteryRedrawNotification")) {
             description = "This notification channel is used to notify entrants if they have won lottery redrawing";
-        } else if (channelName.equals("waitingListNotification")) {
+        }
+        if (channelName.equals("waitingListNotification")) {
             description = "This notification channel is used to notify entrants in the waiting list";
         } else if (channelName.equals("chosenListNotification")) {
             description = "This notification channel is used to notify entrants in the chosen list";
         } else if (channelName.equals("cancelledListNotification")) {
-            description = "This notification channel is used to notify entrants in the cancelled list";
+            description = "This notification channel is used to notify entrants in the chosen list";
         } else {
             description = "This notification channel is used to notify entrants in the finalized list";
         }

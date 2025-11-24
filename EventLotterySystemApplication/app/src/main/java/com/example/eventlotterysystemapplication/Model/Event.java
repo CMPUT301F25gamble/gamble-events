@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
@@ -18,6 +20,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * An instance of this object represents a single instance of an event
@@ -30,9 +35,12 @@ public class Event {
     private ArrayList<String> eventTags;
     private User organizer;
     private String organizerID;
-    private EntrantList entrantList;
+    private List<Entrant> entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
+    private boolean isRecurring;
+    private Boolean geolocationRequirement = true;
+    private int recurringFrequency;
     private String eventPosterUrl;
 
 
@@ -50,19 +58,14 @@ public class Event {
     private transient LocalDateTime registrationStartTime;
     private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
-    private static DateTimeFormatter formatter;
-
+    private transient LocalDateTime recurringEndDate;
+    private static DateTimeFormatter formatter= DateTimeFormatter.ISO_LOCAL_DATE_TIME;;
 
     @Exclude
     private Bitmap QRCodeBitmap;
 
     @Exclude
     private ArrayList<Bitmap> posters;
-
-    /*
-    Include code to have some attributes that points to an event poster, I wouldn't know how to
-    declare attributes of that type yet
-     */
 
     /*
     Geolocation requirement
@@ -94,18 +97,18 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
+     * @param geolocationRequirement
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
         this.name = name;
         this.description = description;
         this.place = place;
         this.eventTags = eventTags;
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.registrationStartTime = registrationStartTime;
@@ -119,19 +122,12 @@ public class Event {
         this.registrationEndTimeTS = new Timestamp(registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
         this.invitationAcceptanceDeadlineTS = new Timestamp(invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
 
-        this.entrantList = new EntrantList();
+        this.entrantList = new ArrayList<Entrant>();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
-        this.posters = posters;
-
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
+        this.geolocationRequirement = geolocationRequirement;
     }
 
     /**
@@ -142,7 +138,7 @@ public class Event {
      * @param place The event's location
      * @param eventTags The event's tags
      * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
+     * @param eventStartTime The start time of the event
      * @param eventEndTime The ending time of the event
      * @param registrationStartTime The time when the registration for the event opens
      * @param registrationEndTime The time when the registration for the event closes
@@ -155,7 +151,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
 
         this.name = name;
         this.description = description;
@@ -163,7 +159,6 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
         this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
         this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
@@ -179,9 +174,10 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.place = place;
 
-        this.entrantList = new EntrantList();
+        this.entrantList = new ArrayList<Entrant>();
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
+        this.geolocationRequirement = geolocationRequirement;
 
         Database db = Database.getDatabase();
         db.getUser(organizerID, task -> {
@@ -194,57 +190,7 @@ public class Event {
 
     }
 
-    /**
-     * This constructor can also allow for the instantiation of the event object from the program,
-     * but the main purpose here is to help with mock testing
-     * @param name The event's name
-     * @param description The event's description
-     * @param place The event's location
-     * @param eventTags The event's tags
-     * @param organizerID The ID of the user who organizes the event
-     *@param eventStartTime The start time of the event
-     * @param eventEndTime The ending time of the event
-     * @param registrationStartTime The time when the registration for the event opens
-     * @param registrationEndTime The time when the registration for the event closes
-     * @param invitationAcceptanceDeadline The deadline for accepting the invitation for the event,
-     *                                     assuming that you were selected by the lottery
-     * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
-     * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
-     *                             the lottery system
-     */
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
-                 String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean mock){
-        // Used for mock test
 
-        this.name = name;
-        this.description = description;
-        this.place = place;
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.organizerID = organizerID;
-
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
-        this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
-        this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
-        this.registrationEndTime = LocalDateTime.parse(registrationEndTime, formatter);
-        this.invitationAcceptanceDeadline = LocalDateTime.parse(invitationAcceptanceDeadline, formatter);
-
-        this.eventStartTimeTS = new Timestamp(this.eventStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.eventEndTimeTS = new Timestamp(this.eventEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationStartTimeTS = new Timestamp(this.registrationStartTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.registrationEndTimeTS = new Timestamp(this.registrationEndTime.atZone(ZoneId.systemDefault()).toInstant());
-        this.invitationAcceptanceDeadlineTS = new Timestamp(this.invitationAcceptanceDeadline.atZone(ZoneId.systemDefault()).toInstant());
-
-        this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
-        this.place = place;
-
-        this.entrantList = new EntrantList();
-        this.maxFinalListCapacity = maxFinalListCapacity;
-        this.maxWaitingListCapacity = -1; // Default as no limit
-
-    }
 
 
     /**
@@ -262,6 +208,8 @@ public class Event {
             registrationEndTime = registrationEndTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (invitationAcceptanceDeadlineTS != null)
             invitationAcceptanceDeadline = invitationAcceptanceDeadlineTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        this.isRecurring = false; // Default as non-recurring
+        this.recurringFrequency = -1; // Default as non-recurring
     }
 
     /**
@@ -483,6 +431,72 @@ public class Event {
     }
 
     /**
+     * Returns the event poster download url
+     * @return Download url of the event poster
+     */
+    public String getEventPosterUrl() {
+        return eventPosterUrl;
+    }
+
+    /**
+     * Sets the event poster download url (to be stored on Firebase Storage) of the event
+     * @param eventPosterUrl the download url of the event poster image
+     */
+    public void setEventPosterUrl(String eventPosterUrl) {
+        this.eventPosterUrl = eventPosterUrl;
+    }
+
+    /**
+     * Gets if the event is an recurring event
+     * @return true if event recurring, false otherwise
+     */
+    @Exclude
+    public boolean getIsRecurring() {
+        return this.isRecurring;
+    }
+
+    /**
+     * Sets an event recurring status
+     * @param isRecurring boolean indicating whether or not an event is recurring
+     */
+    @Exclude
+    public void setIsRecurring(boolean isRecurring) {
+        this.isRecurring = isRecurring;
+    }
+
+    /**
+     * Gets recurring frequency of an event
+     * @return recurring frequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public int getRecurringFrequency() {
+        return this.recurringFrequency;
+    }
+
+    /**
+     * Sets recurring frequency of an event
+     * @param recurringFrequency: 1 means daily, 2 means weekly, 3 means monthly, 4 means yearly, -1 means no recurrence
+     */
+    @Exclude
+    public void setRecurringFrequency(int recurringFrequency) {
+        if (recurringFrequency != -1 && (recurringFrequency < 1 || recurringFrequency > 4)) {
+            throw new IllegalArgumentException("Invalid recurring frequency");
+        }
+        this.recurringFrequency = recurringFrequency;
+    }
+
+
+    @PropertyName("geolocationRequirement")
+    public Boolean isGeolocationRequirement() {
+        return Objects.requireNonNullElse(geolocationRequirement, false);
+    }
+
+    @PropertyName("geolocationRequirement")
+    public void setGeolocationRequirement(Boolean geolocationRequirement) {
+        this.geolocationRequirement = geolocationRequirement;
+    }
+
+    /**
      * Gets the event's start time
      * @return The event's start time
      */
@@ -540,6 +554,24 @@ public class Event {
     @Exclude
     public void setEventEndTime(LocalDateTime eventEndTime) {
         this.eventEndTime = eventEndTime;
+    }
+
+    /**
+     * Gets an event's recurring end date
+     * @return The event's recurring end date
+     */
+    @Exclude
+    public LocalDateTime getRecurringEndDate() {
+        return this.recurringEndDate;
+    }
+
+    /**
+     * Sets an event's recurring end date
+     * @param recurringEndDate The event's recurring end date
+     */
+    @Exclude
+    public void setRecurringEndDate(LocalDateTime recurringEndDate) {
+        this.recurringEndDate = recurringEndDate;
     }
 
     /**
@@ -693,11 +725,50 @@ public class Event {
         }
     }
 
+    @Exclude
+    public List<Entrant> getEntrantList() {
+        if(entrantList==null){
+            entrantList = new ArrayList<Entrant>();
+        }
+        return entrantList;
+    }
+
+    /**
+     * A getter for the entrant list
+     * @param entrantStatus
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<Entrant> getEntrantListByStatus(EntrantStatus entrantStatus) {
+        return getEntrantList().stream()
+                .filter(e -> e.getStatus() == entrantStatus)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves an event's recurrence frequency in String
+     * @return The event's recurrence frequency in String
+     */
+    public String displayRecurrenceFrequency() {
+        if (this.getRecurringFrequency() == 1) {
+            return "Daily";
+        }
+        if (this.getRecurringFrequency() == 2) {
+            return "Weekly";
+        }
+        if (this.getRecurringFrequency() == 3) {
+            return "Monthly";
+        }
+        if (this.getRecurringFrequency() == 4) {
+            return "Yearly";
+        }
+        return "Not a recurring event";
+    }
+
     /**
      * Adds a new tag to the list of event tags
      * @param tag The tag to be added
      */
-    @Exclude
     public void addEventTag(String tag){
         this.eventTags.add(tag);
     }
@@ -706,12 +777,14 @@ public class Event {
      * Remove a tag from the list of event tags
      * @param tag The tag to be removed
      */
-    @Exclude
     public void deleteEventTag(String tag){
         this.eventTags.remove(tag);
     }
 
-    @Exclude
+    /**
+     * Remove a tag from the list of event tags based on index
+     * @param position The index of the tag
+     */
     public void deleteEventTag(int position){
         if (0 <= position && position < this.eventTags.size()){
             this.eventTags.remove(position);
@@ -721,295 +794,166 @@ public class Event {
     }
 
     /**
-     * A getter for the user object that represents the user who is organizing the event
-     * @return The user object of the organizer
-     */
-    @Exclude
-    public User getOrganizer() {
-        return organizer;
-    }
-
-    /**
-     * A setter for the user object that represents the user who is organizing the event
-     * @param organizer The user object of the organizer
-     */
-    @Exclude
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
-    }
-
-    /**
-     * A getter for the entrant list
+     * A getter for the entrant waiting list
      * @return The entrant list object
      */
     @Exclude
-    public EntrantList getEntrantList() {
-        return entrantList;
+    public List<Entrant> getEntrantWaitingList() {
+        return getEntrantListByStatus(EntrantStatus.WAITING);
     }
 
     /**
-     * A setter for the entrant list
-     * @param entrantList The entrant list object
+     * A getter for the entrant chosen list
+     * @return The entrant list object
      */
     @Exclude
-    public void setEntrantList(EntrantList entrantList) {
-        this.entrantList = entrantList;
+    public List<Entrant> getEntrantChosenList() {
+        return getEntrantListByStatus(EntrantStatus.CHOSEN);
     }
 
     /**
-     * Sets a single entrant list, based on the ArrayList that is passed into it and the integer
-     * parameter specifying which list to set. 0 means to set waiting list to the input ArrayList, 1
-     * means to set the chosen list, 2 means to set the cancelled list, 3 means to set the finalized
-     * list
-     * @param entrantListValues The ArrayList of users to set one of the entrant lists to
-     * @param list An integer specifying which list you want to set to be equal to the input
-     *             ArrayList, where:
-     *             0: waiting list
-     *             1: chosen list
-     *             2: cancelled list
-     *             3: finalized list
-     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
+     * A getter for the entrant cancelled list
+     * @return The entrant list object
      */
     @Exclude
-    public void setEntrantListValues(ArrayList<User> entrantListValues, int list) throws IllegalArgumentException{
-        switch (list) {
-            case 0:
-                this.entrantList.setWaiting(entrantListValues);
-                break;
-            case 1:
-                this.entrantList.setChosen(entrantListValues);
-                break;
-            case 2:
-                this.entrantList.setCancelled(entrantListValues);
-                break;
-            case 3:
-                this.entrantList.setFinalized(entrantListValues);
-                break;
-            default:
-                throw new IllegalArgumentException("List number out of range");
-        }
+    public List<Entrant> getEntrantCancelledList() {
+        return getEntrantListByStatus(EntrantStatus.CANCELLED);
     }
 
+    /**
+     * A getter for the entrant finalized list
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<Entrant> getEntrantFinalizedList() {
+        return getEntrantListByStatus(EntrantStatus.FINALIZED);
+    }
+
+
+    /**
+     * A getter for the user list
+     * @param entrantStatus
+     * @return The user list object
+     */
+    @Exclude
+    public List<User> getUserListByStatus(EntrantStatus entrantStatus) {
+        return getEntrantList().stream()
+                .filter(e -> e.getStatus() == entrantStatus)
+                .map(Entrant::getUser)   // transform Entrant ? User
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * A getter for the user waiting list
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<User> getUserWaitingList() {
+        return getUserListByStatus(EntrantStatus.WAITING);
+    }
+
+    /**
+     * A getter for the user chosen list
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<User> getUserChosenList() {
+        return getUserListByStatus(EntrantStatus.CHOSEN);
+    }
+
+    /**
+     * A getter for the user cancelled list
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<User> getUserCancelledList() {
+        return getUserListByStatus(EntrantStatus.CANCELLED);
+    }
+
+    /**
+     * A getter for the entrant finalized list
+     * @return The entrant list object
+     */
+    @Exclude
+    public List<User> getUserFinalizedList() {
+        return getUserListByStatus(EntrantStatus.FINALIZED);
+    }
+
+
+    @Exclude
+    public void addToEntrantList(User user, EntrantLocation entrantLocation) throws IllegalArgumentException {
+        Entrant entrant = new Entrant();
+        entrant.setUser(user);
+        entrant.setStatus(EntrantStatus.WAITING);
+        entrant.setLocation(entrantLocation);
+        addToEntrantList(entrant);
+    }
     /**
      * Adds a user to one of the entrant lists, based on which list is specified in the list
      * argument.
-     * @param user The user to be added to one of the entrant lists
-     * @param list An integer specifying which list you want to set to be equal to the input
-     *             ArrayList, where:
-     *             0: waiting list
-     *             1: chosen list
-     *             2: cancelled list
-     *             3: finalized list
-     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
+     * @param entrant The user to be added to one of the entrant lists
      */
-    public void addToEntrantList(User user, int list) throws IllegalArgumentException {
-        switch (list) {
-            case 0:
-                this.entrantList.addToWaiting(user);
-//                Log.d("Event", "Waiting list size now: " + entrantList.getWaiting().size());
-                break;
-            case 1:
-                this.entrantList.addToChosen(user);
-//                Log.d("Event", "Chosen list size now: " + entrantList.getChosen().size());
-                break;
-            case 2:
-                this.entrantList.addToCancelled(user);
-//                Log.d("Event", "Cancelled list size now: " + entrantList.getCancelled().size());
-                break;
-            case 3:
-                this.entrantList.addToFinalized(user);
-//                Log.d("Event", "Finalized list size nFow: " + entrantList.getFinalized().size());
-                break;
-            default:
-                throw new IllegalArgumentException("List number out of range");
+    @Exclude
+    public void addToEntrantList(Entrant entrant) throws IllegalArgumentException {
+        if(!isEntrantExists(entrant)){
+            getEntrantList().add(entrant);
         }
     }
 
-    /**
-     * Deletes a user from one of the entrant lists, based on which list is specified in the list
-     * argument.
-     * @param user The user to be deleted from one of the entrant lists
-     * @param list An integer specifying which list you want to set to be equal to the input
-     *             ArrayList, where:
-     *             0: waiting list
-     *             1: chosen list
-     *             2: cancelled list
-     *             3: finalized list
-     * @throws IllegalArgumentException If the input list is not one of 0, 1, 2, 3
-     */
-    public void removeFromEntrantList(User user, int list) throws IllegalArgumentException{
-        switch (list) {
-            case 0:
-                this.entrantList.removeFromWaiting(user);
-                break;
-            case 1:
-                this.entrantList.removeFromChosen(user);
-                break;
-            case 2:
-                this.entrantList.removeFromCancelled(user);
-                break;
-            case 3:
-                this.entrantList.removeFromFinalized(user);
-                break;
-            default:
-                throw new IllegalArgumentException("List number out of range");
+    public void addEntrantToChosenList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.WAITING) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.CHOSEN);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the waiting list");
         }
     }
 
-    /**
-     * Allows a user to join the waiting list for the event, given that they are not already a part
-     * of this or some other entrant list for this event
-     * @param user The user who wants to join the waiting list for the event
-     */
-    public void joinWaitingList(User user){
-        if (!(entrantList.getChosen().contains(user) || entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))){
-            if (!entrantList.getWaiting().contains(user)){
-                addToEntrantList(user, 0);
-                Database db = Database.getDatabase();
-                db.updateEvent(this, task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Event", "User successfully joins waiting list");
-                    }
-                });
-            } else {
-                Log.e("Event", "User is already in the waiting list");
+    public void addEntrantToCancelledList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.CANCELLED);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the chosen list");
+        }
+    }
+
+    public void addEntrantToFinalizedList(Entrant entrant){
+        if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
+            entrant.setStatus(EntrantStatus.FINALIZED);
+        } else {
+            Log.e ("Event", "Cannot add user to the chosen list they are not in the chosen list");
+        }
+    }
+
+    @Exclude
+    public boolean isEntrantExists(Entrant entrant){
+        for(Entrant entrant1:getEntrantList()){
+            if(entrant1.equals(entrant)){
+                return true;
             }
-        } else {
-            Log.e("Event","User has already been selected from the waiting list");
         }
+        return false;
     }
 
-    /**
-     * Allow a user to leave the waiting list for the event, given that they are already in the
-     * waiting list for the event
-     * @param user The user to be removed from the event waiting list
-     */
-    public void leaveWaitingList(User user){
-        if (entrantList.getWaiting().contains(user)){
-            removeFromEntrantList(user, 0);
-            Database db = Database.getDatabase();
-            db.updateEvent(this, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Event", "User successfully leaves waiting list");
-                }
-            });
-        } else {
-            Log.e("Event", "User is not in the waiting list");
-        }
-    }
-
-    /**
-     * Allows the user to join the chosen list, given that they already are in the waiting list, and
-     * are not in the cancelled and finalized lists
-     * @param user The user that is chosen to accept the invitation
-     */
-    public void joinChosenList(User user) throws IllegalArgumentException{
-        if (entrantList.getWaiting().contains(user)) {
-            if (!(entrantList.getCancelled().contains(user) || entrantList.getFinalized().contains(user))) {
-                if (!entrantList.getChosen().contains(user)) {
-                    removeFromEntrantList(user, 0);
-                    addToEntrantList(user, 1);
-                    Database db = Database.getDatabase();
-                    db.updateEvent(this, task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("Event", "User successfully joins chosen list");
-                        }
-                    });
-                } else {
-                    Log.e("Event", "User is already in the chosen list");
-                }
-            } else {
-                Log.e("Event", "User has already been confirmed/rejected");
+    @Exclude
+    public Entrant genEntrantIfExists(User user){
+        for(Entrant entrant:getEntrantList()){
+            if(entrant.getUser().getUserID().equals(user.getUserID())){
+                return entrant;
             }
-        } else {
-            Log.e("Event", "User is not in the waiting list");
         }
+        return null;
     }
 
-    /**
-     * Allows a user to leave the chosen list, given that they are already in the chosen list
-     * @param user The user who wants to leave the chosen list
-     */
-    public void leaveChosenList(User user) throws IllegalArgumentException{
-        if (entrantList.getChosen().contains(user)){
-            removeFromEntrantList(user, 1);
-            Database db = Database.getDatabase();
-            db.updateEvent(this, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Database", "User successfully leaves chosen list");
-                }
-            });
-        } else {
-            Log.e("Event", "User is not in the chosen list");
-        }
-    }
 
-    /**
-     * Allows a user to join the cancelled list, unlike other joins, this one has almost no
-     * conditions, as a user can enter the cancelled list from any entrant list, or even from just
-     * not being in the registration at all
-     * @param user The user that is to be put into the cancelled list
-     */
-    public void joinCancelledList(User user){
-        if (!entrantList.getCancelled().contains(user)){
-            removeFromEntrantList(user, 0);
-            removeFromEntrantList(user, 1);
-            removeFromEntrantList(user, 3);
-            addToEntrantList(user, 2);
-            Database db = Database.getDatabase();
-            db.updateEvent(this, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Event", "User successfully joins cancelled list");
-                }
-            });
-        } else {
-            Log.e("Event", "User is already in the cancelled list");
-        }
-    }
-
-    /**
-     * Allows the user to join the finalized entrant list, given that they are already chosen by the
-     * lottery and are in the chosen list
-     * @param user The user
-     */
-    public void joinFinalizedList(User user){
-        if(entrantList.getChosen().contains(user)) {
-            if (!entrantList.getWaiting().contains(user) && !entrantList.getCancelled().contains(user)) {
-                if (!entrantList.getFinalized().contains(user)) {
-                    addToEntrantList(user, 3);
-                    Database db = Database.getDatabase();
-                    db.updateEvent(this, task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("Database", "User successfully joins finalized list");
-                        }
-                    });
-                } else {
-                    Log.e("Event", "User is already in the finalized list");
-                }
-            } else {
-                Log.e("Event", "User cannot join the finalized list for the event");
+    @Exclude
+    public boolean removeEntrant(Entrant entrant){
+        for(Entrant entrant1:getEntrantList()){
+            if(entrant1.getUser().getUserID().equals(entrant.getUser().getUserID())){
+                getEntrantList().remove(entrant1);
+                return true;
             }
-        } else {
-            Log.e("Event", "User has not been chosen");
         }
-    }
-
-    /**
-     * Allows the user to leave the finalized list, given that they are already in the list
-     * @param user The user who wants to leave the finalized list
-     */
-    public void leaveFinalizedList(User user){
-        if (entrantList.getFinalized().contains(user)){
-            removeFromEntrantList(user, 3);
-            Database db = Database.getDatabase();
-            db.updateEvent(this, task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Event", "User successfully leaves finalized list");
-                }
-            });
-        } else {
-            Log.e("Event", "User is not in the finalized list");
-        }
+        return false;
     }
 
     /**
@@ -1036,6 +980,7 @@ public class Event {
             }
         });
     }
+
 
     /**
      * Adds a new poster to the posters list
@@ -1087,17 +1032,11 @@ public class Event {
     }
 
     /**
-     * Using the eventID, and the hardcoded scheme and activity/host, we can create a QR code that,
-     * when scanned by a phone with this app installed, will open up the app with the event
-     * description page
+     * Sets the QR code bitmap to a specific bitmap
+     * @param QRCodeBitmap The bitmap to set the QR code to
      */
-    public void generateQRCode(){
-        try {
-            String data = "cmput301gamblers://gamble/" + eventID;
-            QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
-        } catch (WriterException e){
-            e.printStackTrace();
-        }
+    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
+        this.QRCodeBitmap = QRCodeBitmap;
     }
 
     /**
@@ -1114,27 +1053,17 @@ public class Event {
     }
 
     /**
-     * Sets the QR code bitmap to a specific bitmap
-     * @param QRCodeBitmap The bitmap to set the QR code to
+     * Using the eventID, and the hardcoded scheme and activity/host, we can create a QR code that,
+     * when scanned by a phone with this app installed, will open up the app with the event
+     * description page
      */
-    @Exclude
-    public void setQRCodeBitmap(Bitmap QRCodeBitmap) {
-        this.QRCodeBitmap = QRCodeBitmap;
+    public void generateQRCode(){
+        try {
+            String data = "cmput301gamblers://gamble/" + eventID;
+            QRCodeBitmap = new BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, 400, 400);
+        } catch (WriterException e){
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Sets the event poster download url (to be stored on Firebase Storage) of the event
-     * @param eventPosterUrl the download url of the event poster image
-     */
-    public void setEventPosterUrl(String eventPosterUrl) {
-        this.eventPosterUrl = eventPosterUrl;
-    }
-
-    /**
-     * Returns the event poster download url
-     * @return Download url of the event poster
-     */
-    public String getEventPosterUrl() {
-        return eventPosterUrl;
-    }
 }

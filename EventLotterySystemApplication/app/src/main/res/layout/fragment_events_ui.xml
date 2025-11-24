@@ -22,7 +22,15 @@
         app:constraint_referenced_ids="
             eventsScreenText,
             eventsScreenFilterButton,
-            eventsList,
+            eventsList"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
+    <!-- Admin Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_admin_events_ui"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
             myEventsButton,
             createEventButton"
         android:layout_height="match_parent"

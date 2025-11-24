@@ -1,6 +1,5 @@
 package com.example.eventlotterysystemapplication.View;
 
-
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -105,7 +104,7 @@ public class CancelledEntrantListFragment extends Fragment {
                 data
         );
 
-        for (User u : event.getEntrantList().getCancelled()) {
+        for (User u : event.getUserCancelledList()) {
             String name = u.getName();
             data.add(name);
         }

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; // For debugging
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1001;
     Database database = Database.getDatabase();
+    private boolean isAdmin = false;
 
     /**
      * Checks if user is registered via device
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Log.e("MyApp", "Uncaught exception", throwable);
+        });
 
         super.onCreate(savedInstanceState);
 

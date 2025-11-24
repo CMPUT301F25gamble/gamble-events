@@ -256,6 +256,17 @@ public class Database {
     }
 
     /**
+     * Given a user, ADMIN can update or create their record in the database
+     * @param userId ID of the user
+     * @param user The user profile
+     * @param listener An OnCompleteListener that will be called when the modify operation finishes
+     */
+    public void modifyUserById(String userId, User user, OnCompleteListener<Void> listener) {
+        DocumentReference userDoc = userRef.document(userId);
+        userDoc.set(user, SetOptions.merge()).addOnCompleteListener(listener);
+    }
+
+    /**
      * Given a user, delete their record from the database
      * @param user The user profile
      * @param listener An OnCompleteListener that will be called when the delete operation finishes
@@ -269,13 +280,14 @@ public class Database {
             return;
         }
 
-        String userId = authUser.getUid();
+        String targetUserId = user.getUserID();
+        boolean deletingSelf = (authUser != null) && (authUser.getUid().equals(targetUserId));
 
         deleteOrganizedEvents(user, task -> {
             if (task.isSuccessful()){
-                Log.d("Database", "Successfully deleted all organized events from user with userID: " + userId);
+                Log.d("Database", "Successfully deleted all organized events from user with userID: " + targetUserId);
             } else {
-                Log.e("Database", "Couldn't delete all organized events from user with userID: " + userId);
+                Log.e("Database", "Couldn't delete all organized events from user with userID: " + targetUserId);
                 listener.onComplete(task);
             }
         });
@@ -288,7 +300,7 @@ public class Database {
             for (DocumentSnapshot eventDoc : allEventsSnapshot.getDocuments()) {
                 DocumentReference regDocRef = eventDoc.getReference()
                         .collection("Registration")
-                        .document(userId);
+                        .document(targetUserId);
                 Task<Void> deleteTask = regDocRef.get()
                         .continueWithTask(regDocTask -> {
                             if (regDocTask.isSuccessful() && regDocTask.getResult().exists()) {
@@ -302,8 +314,19 @@ public class Database {
 
             Tasks.whenAllComplete(regDeleteTasks).addOnCompleteListener(regDone -> {
                 // Deletes user document
-                userRef.document(userId).delete().addOnCompleteListener(userDocDone -> {
-                    // Deletes Firebase auth account
+                userRef.document(targetUserId).delete().addOnCompleteListener(userDocDone -> {
+
+                    if (!deletingSelf) {
+                        // Admin deleting another user
+                        Log.d("Database", "User deleted by an admin");
+                        listener.onComplete(Tasks.forResult(null));
+                        return;
+                    } else {
+                        Log.e("Database", "User deletion by admin failed");
+                        listener.onComplete(Tasks.forException(userDocDone.getException()));
+                    }
+
+                    // Deletes Firebase auth account (self-delete)
                     authUser.delete().addOnCompleteListener(done -> {
                         if (done.isSuccessful()) {
                             Log.d("Database", "User fully deleted");
@@ -444,27 +467,27 @@ public class Database {
         event.setEventID(eventDocRef.getId());
 
         eventDocRef.set(event)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
-                        Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
+                    Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
 
-                        updateEventRegistration(event, eventDocRef, task1 -> {
-                            if (task1.isSuccessful()){
-                                Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
-                                listener.onComplete(task);
-                            } else {
-                                Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(Tasks.forException(
-                                        Objects.requireNonNull(task.getException())
-                                ));
-                            }
-                        });
-                    } else {
-                        Log.e("Database", "Failed to add event: " + task.getException());
-                        listener.onComplete(task);
-                    }
-                });
+                    updateEventRegistration(event, eventDocRef, task1 -> {
+                        if (task1.isSuccessful()){
+                            Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                            listener.onComplete(task);
+                        } else {
+                            Log.e("Database", "Failed to add registration: " + task.getException());
+                            listener.onComplete(Tasks.forException(
+                                    Objects.requireNonNull(task.getException())
+                            ));
+                        }
+                    });
+                } else {
+                    Log.e("Database", "Failed to add event: " + task.getException());
+                    listener.onComplete(task);
+                }
+            });
     }
 
 
@@ -505,11 +528,11 @@ public class Database {
                                 updateEventRegistration(event, eventDocRef, task1 -> {
                                     if (task1.isSuccessful()) {
                                         Log.d("Database", "Event registration updated successfully with Event ID: " + event.getEventID());
-                                        listener.onComplete(task);
+                                        listener.onComplete(task1);
                                     } else {
                                         Log.e("Database", "Failed to update registration: " + task.getException());
                                         listener.onComplete(Tasks.forException(
-                                                Objects.requireNonNull(task.getException())
+                                                Objects.requireNonNull(task1.getException())
                                         ));
                                     }
                                 });
@@ -599,6 +622,26 @@ public class Database {
     }
 
     /**
+     * Retrieves all notifications in the notification collection
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void getAllNotifications(OnCompleteListener<List<Notification>> listener) {
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Notification> notifications = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    Notification notification = doc.toObject(Notification.class);
+                    notifications.add(notification);
+                }
+                listener.onComplete(Tasks.forResult(notifications));
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
+            }
+        });
+    }
+
+    /**
      * This method is specific for allowing us to add to the recipient collection of the redraw of a
      * particular event, here check if the event already has a redraw notification, and if it does
      * we return that object, otherwise we return an exception indicating that a new redraw
@@ -678,11 +721,11 @@ public class Database {
                             HashMap<String, Object> data = new HashMap<String, Object>();
                             data.put("userID", user.getUserID());
                             recipientDocRef.set(data).addOnCompleteListener(task2 -> {
-                                        if (task2.isSuccessful()) {
-                                            Log.d("Database", "Successfully added the recipient to the recipient subcollection");
-                                        }
-                                        listener.onComplete(task2);
-                                    });
+                                if (task2.isSuccessful()) {
+                                    Log.d("Database", "Successfully added the recipient to the recipient subcollection");
+                                }
+                                listener.onComplete(task2);
+                            });
                         }
                     });
                 } else {
@@ -702,6 +745,13 @@ public class Database {
             }
         });
     }
+
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
+//        Query notificationHistory = notificationRef.g
+    }
+
+    // TODO Add get events from userID
 
     /**
      * Given some DocumentSnapshot from the "Event" collection, this method takes the fields from
@@ -743,20 +793,13 @@ public class Database {
         if (doc.getLong("maxFinalListCapacity").intValue() > 0) {
             event.setMaxFinalListCapacity(doc.getLong("maxFinalListCapacity").intValue());
         }
-        if (event.getEntrantList() == null) {
-            event.setEntrantList(new EntrantList());
-            Log.d("ParseEvent", "entrantList initialized");
-
-            parseEventRegistration(event, doc, task -> {
-                if (task.isSuccessful()){
-                    listener.onComplete(task);
-                } else {
-                    Log.e("Database", "Unable to parse event registration" + task.getException());
-                }
-            });
-
-
-        }
+        parseEventRegistration(event, doc, task -> {
+            if (task.isSuccessful()){
+                listener.onComplete(task);
+            } else {
+                Log.e("Database", "Unable to parse event registration" + task.getException());
+            }
+        });
     }
 
     /**
@@ -773,38 +816,21 @@ public class Database {
 
         List<Task<Void>> regTasks = new ArrayList<>();
 
-        // Add waiting users
-        for (User user : event.getEntrantList().getWaiting()) {
+        for (Entrant entrant : event.getEntrantList()) {
             Map<String, Object> data = new HashMap<>();
-            data.put("status", "waiting");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
+            data.put("userID", entrant.getUser().getUserID());
+            data.put("status", entrant.getStatus());
+            Double latitude = null;
+            Double longitude = null;
+            EntrantLocation entrantLocation = entrant.getLocation();
+            if(entrantLocation !=null) {
+                latitude = entrantLocation.getLatitude();
+                longitude = entrantLocation.getLongitude();
+            }
+            data.put("latitude",latitude);
+            data.put("longitude", longitude);
+            regTasks.add(registration.document(entrant.getUser().getUserID()).set(data));
         }
-
-        // Add chosen users
-        for (User user : event.getEntrantList().getChosen()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "chosen");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
-        // Add cancelled users
-        for (User user : event.getEntrantList().getCancelled()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "cancelled");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
-        // Add finalized users
-        for (User user : event.getEntrantList().getFinalized()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "finalized");
-            data.put("organizerID", event.getOrganizerID());
-            regTasks.add(registration.document(user.getUserID()).set(data));
-        }
-
         Tasks.whenAllComplete(regTasks).addOnCompleteListener(done -> {
             listener.onComplete(Tasks.forResult(null));
         });
@@ -834,66 +860,39 @@ public class Database {
             for (DocumentSnapshot entrantDoc : regTask.getResult()) {
                 TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
 
-                String status = entrantDoc.getString("status");
-                switch (status) {
-                    case "waiting":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 0);
+                getUser(entrantDoc.getId(), task -> {
+                    if (task.isSuccessful()) {
+                        User user = task.getResult();
+                        String status = entrantDoc.getString("status");
+                        Double latitude = entrantDoc.getDouble("latitude");
+                        Double longitude = entrantDoc.getDouble("longitude");
 
-                                tcs.setResult(event);
+                        EntrantLocation entrantLocation = null;
+                        if(latitude!=null && longitude !=null) {
+                            entrantLocation = new EntrantLocation();
+                            entrantLocation.setLatitude(latitude);
+                            entrantLocation.setLongitude(longitude);
+                        }
+                        EntrantStatus entrantStatus = null;
+                        if(status!=null){
+                            entrantStatus = EntrantStatus.valueOf(status.toUpperCase());
+                        }else{
+                            entrantStatus = EntrantStatus.WAITING;
+                        }
+                        Entrant entrant = new Entrant();
+                        entrant.setUser(user);
+                        entrant.setLocation(entrantLocation);
+                        entrant.setStatus(entrantStatus);
+                        event.addToEntrantList(entrant);
+                        tcs.setResult(event);
 
+                        Log.d("Test Database 1", "Success");
 
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                            }
-                        });
-                        break;
-
-                    case "chosen":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 1);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                            }
-                        });
-                        break;
-                    case "cancelled":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 2);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                            }
-                        });
-                        break;
-                    case "finalized":
-                        getUser(entrantDoc.getId(), task -> {
-                            if (task.isSuccessful()) {
-                                User user = task.getResult();
-                                event.addToEntrantList(user, 3);
-
-                                tcs.setResult(event);
-
-                            } else {
-                                Log.e("Error", "Failed to get user", task.getException());
-                            }
-                        });
-                        break;
-
-                    default:
-                        Log.e("Database", "Registration parsed illegal status");
-                }
+                    } else {
+                        Log.e("Error", "Failed to get user", task.getException());
+                        tcs.setException(task.getException());
+                    }
+                });
                 parseEventRegistrationTasks.add(tcs.getTask());
 
             }

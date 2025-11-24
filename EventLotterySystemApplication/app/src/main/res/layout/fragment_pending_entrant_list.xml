@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.PendingEntrantListFragment">
+    tools:context=".View.WaitingEntrantListFragment">
 
     <ProgressBar
         android:id="@+id/loading_pending_entrants_list"
@@ -22,8 +22,7 @@
         app:constraint_referenced_ids="
             pendingEntrantListBackButton,
             pendingListOfEntrantsText,
-            pendingListOfEntrantsListView,
-            selectEntrantsButton"
+            pendingListOfEntrantsListView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -48,7 +47,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/all_pending_entrants_text"
+        android:text="@string/all_waiting_entrants_text"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/pendingEntrantListBackButton"
@@ -66,18 +65,5 @@
         app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pendingListOfEntrantsText" />
-
-    <Button
-        android:id="@+id/selectEntrantsButton"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/app_beige"
-        android:layout_marginTop="16dp"
-        android:text="Randomly Select Entrants for Event"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pendingListOfEntrantsListView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

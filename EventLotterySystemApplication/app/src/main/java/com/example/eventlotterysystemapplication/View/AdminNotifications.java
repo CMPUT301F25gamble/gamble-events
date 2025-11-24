@@ -9,11 +9,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminNotificationsBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -22,6 +25,10 @@ import java.util.Objects;
  * create an instance of this fragment.
  */
 public class AdminNotifications extends Fragment {
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ArrayList<String> notificationNamesList = new ArrayList<>();
+    ArrayAdapter<String> notificationNameAdapter;
 
     private FragmentAdminNotificationsBinding binding;
 
@@ -49,4 +56,6 @@ public class AdminNotifications extends Fragment {
 
 
     }
+
+
 }

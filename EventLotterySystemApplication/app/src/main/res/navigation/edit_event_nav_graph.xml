@@ -144,13 +144,24 @@
             app:destination="@id/entrantListSelectionFragment" />
     </fragment>
     <fragment
-        android:id="@+id/mapsFragment"
-        android:name="com.example.eventlotterysystemapplication.View.MapsFragment"
-        android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" >
+        android:id="@+id/events_ui_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
+        android:label="fragment_events_ui"
+        tools:layout="@layout/fragment_events_ui" >
         <action
-            android:id="@+id/action_mapsFragment_to_entrantListSelectionFragment"
-            app:destination="@id/entrantListSelectionFragment" />
-    </fragment>
+            android:id="@+id/action_events_ui_fragment_to_create_or_edit_event_fragment"
+            app:destination="@id/create_or_edit_event_fragment" />
+        <action
+            android:id="@+id/action_events_ui_fragment_to_my_events_fragment"
+            app:destination="@id/my_events_fragment" />
+        <action
+            android:id="@+id/action_events_ui_fragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen">
+            <argument
+                android:name="isOwnedEvent"
+                app:argType="boolean"
+                android:defaultValue="false"/>
+        </action>
 
+    </fragment>
 </navigation>

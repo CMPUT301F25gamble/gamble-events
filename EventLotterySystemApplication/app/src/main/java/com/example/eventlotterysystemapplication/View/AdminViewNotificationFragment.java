@@ -17,14 +17,10 @@ import android.widget.TextView;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.databinding.FragmentAdminNotificationsBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -107,17 +103,18 @@ public class AdminViewNotificationFragment extends Fragment {
 
                 // Set up button to go to event
                 goToEventButton.setOnClickListener(v -> {
+                    Log.d(TAG, "Go to event button clicked");
                     // Set selected bottom navigation menu item to events
 //                    BottomNavigationView adminBottomNavMenu = requireActivity()
 //                            .findViewById(R.id.admin_bottom_nav_menu);
 //                    adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
-//
-//                    Bundle args = new Bundle();
-//                    args.putString("eventId", notification.getEventID());
-//
-//                    // Navigate to the appropriate event
-//                    NavHostFragment.findNavController(this)
-//                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+
+                    Bundle args = new Bundle();
+                    args.putString("eventId", notification.getEventID());
+                    Log.d(TAG, "Navigating");
+
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
                 });
 
             } else {

@@ -318,12 +318,15 @@ public class Database {
 
                     if (!deletingSelf) {
                         // Admin deleting another user
-                        Log.d("Database", "User deleted by an admin");
-                        listener.onComplete(Tasks.forResult(null));
+                        if (userDocDone.isSuccessful()) {
+                            Log.d("Database", "User deleted by an admin");
+                            listener.onComplete(Tasks.forResult(null));
+                            return;
+                        } else {
+                            Log.e("Database", "User deletion by admin failed");
+                            listener.onComplete(Tasks.forException(userDocDone.getException()));
+                        }
                         return;
-                    } else {
-                        Log.e("Database", "User deletion by admin failed");
-                        listener.onComplete(Tasks.forException(userDocDone.getException()));
                     }
 
                     // Deletes Firebase auth account (self-delete)

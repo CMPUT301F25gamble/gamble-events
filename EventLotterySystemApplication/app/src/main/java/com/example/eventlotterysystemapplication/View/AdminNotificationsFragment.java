@@ -100,26 +100,34 @@ public class AdminNotificationsFragment extends Fragment {
 
         // handle updating notifications
         updateNotificationsButton.setOnClickListener(v -> {
-            db.collection("Notification").get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
+            // clear all data first
 
-                        // Iterate through document snapshots
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                            String title = documentSnapshot.getString("title");
-                            String notificationId = documentSnapshot.getString("notificationID");
-
-                            // add to arrays
-                            notificationTitlesList.add(title);
-                            notificationIdList.add(notificationId);
-                        }
-
-                        // notify adapter dataset has changed
-                        notificationTitlesAdapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.d(TAG, "Failed to load notification");
-                    });
         });
     }
 
+    private void updateNotificationList() {
+        notificationTitlesList.clear();
+        notificationIdList.clear();
+        notificationTitlesAdapter.clear();
+
+        db.collection("Notification").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    // Iterate through document snapshots
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                        String title = documentSnapshot.getString("title");
+                        String notificationId = documentSnapshot.getString("notificationID");
+
+                        // add to arrays
+                        notificationTitlesList.add(title);
+                        notificationIdList.add(notificationId);
+                    }
+
+                    // notify adapter dataset has changed
+                    notificationTitlesAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "Failed to load notification");
+                });
+    }
 }

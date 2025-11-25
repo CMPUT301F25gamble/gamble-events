@@ -287,26 +287,14 @@ public class CreateOrEditEventFragment extends Fragment {
                 return; // stop here, let user fix inputs
             }
 
-            if(!validateDateCompare(eventStartTime,eventEndTime)){
-                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time should be after Event Start Date and Time.");
-                binding.createOrEditEventEventEndDateAndTimeEditText.requestFocus();
-                return;
-            }
-
             if(!validateDateCompare(regStartTime,regEndTime)){
                 binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be after Registration Start Date and Time.");
                 binding.createOrEditEventRegistrationEndEditText.requestFocus();
                 return;
             }
 
-            if(!validateDateCompare(regStartTime,eventEndTime)){
-                binding.createOrEditEventRegistrationStartEditText.setError("Registration Start Date and Time should be before Event End Date and Time.");
-                binding.createOrEditEventRegistrationStartEditText.requestFocus();
-                return;
-            }
-
-            if(!validateDateCompare(regEndTime,eventEndTime)){
-                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be before Event End Date and Time.");
+            if(!validateDateCompare(regEndTime,invitationAcceptanceDeadline)){
+                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be before Event Acceptance Deadline.");
                 binding.createOrEditEventRegistrationEndEditText.requestFocus();
                 return;
             }
@@ -314,6 +302,12 @@ public class CreateOrEditEventFragment extends Fragment {
             if(!validateDateCompare(invitationAcceptanceDeadline,eventStartTime)){
                 binding.createOrEditEventInvitationEditText.setError("Invitation Acceptance Date and Time should be before Event Start Date and Time.");
                 binding.createOrEditEventInvitationEditText.requestFocus();
+                return;
+            }
+
+            if(!validateDateCompare(eventStartTime,eventEndTime)){
+                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time should be after Event Start Date and Time.");
+                binding.createOrEditEventEventEndDateAndTimeEditText.requestFocus();
                 return;
             }
 

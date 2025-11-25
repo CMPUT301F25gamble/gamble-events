@@ -24,7 +24,8 @@
             app:destination="@id/eventDetailScreenFragment" />
         <argument
             android:name="eventId"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue="none" />
     </fragment>
     <fragment
         android:id="@+id/settingsUIFragment"
@@ -83,6 +84,10 @@
             android:name="isOwnedEvent"
             app:argType="boolean"
             android:defaultValue="false"/>
+        <action
+            android:id="@+id/action_eventDetailScreenFragment_to_eventsUIFragment"
+            app:destination="@id/eventsUIFragment" />
+    </fragment>
     <fragment
         android:id="@+id/adminViewNotificationFragment"
         android:name="com.example.eventlotterysystemapplication.View.AdminViewNotificationFragment"

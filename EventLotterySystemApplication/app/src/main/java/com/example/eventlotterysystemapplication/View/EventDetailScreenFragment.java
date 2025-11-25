@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
@@ -121,9 +122,14 @@ public class EventDetailScreenFragment extends Fragment {
             backButton.setOnClickListener(v -> {
                getActivity().finish();
             });
+        } else if (getActivity() instanceof AdminActivity) {
+            backButton.setOnClickListener(v -> {
+                NavHostFragment.findNavController(this)
+                        .popBackStack();
+            });
         } else {
             backButton.setOnClickListener(v -> {
-               NavHostFragment.findNavController(EventDetailScreenFragment.this)
+               NavHostFragment.findNavController(this)
                        .navigateUp();
             });
         }

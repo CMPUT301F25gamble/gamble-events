@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -18,8 +19,13 @@ import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminNotificationsBinding;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,6 +75,10 @@ public class AdminViewNotificationFragment extends Fragment {
         TextView notificationSenderId = binding.notificationSenderId;
         TextView messageTitle = binding.messageTitle;
         TextView messageContent = binding.messageContent;
+        TextView notificationEventId = binding.notificationEventId;
+        TextView notificationSendTime = binding.notificationSendTime;
+        TextView notificationChannelName = binding.notificationChannelName;
+        Button goToEventButton = binding.goToEventButton;
 
         // set up back Button
         viewNotificationBackButton.setOnClickListener(v -> {
@@ -77,25 +87,42 @@ public class AdminViewNotificationFragment extends Fragment {
         });
 
         // Get notification from database
-        FirebaseFirestore.getInstance().collection("Notification")
-                .document(notificationId).get()
-                .addOnCompleteListener( task -> {
-                    if (task.isSuccessful() && task.getResult().exists()) {
-                        DocumentSnapshot document = task.getResult();
-                        String retrievedSenderId = document.getString("SenderID");
-                        String retrievedMessageTitle = document.getString("MessageTitle");
-                        String retrievedMessageContent = document.getString("MessageContent");
+        database.getNotification(notificationId, task -> {
+            if (task.isSuccessful()) {
+                notification = task.getResult();
+                Log.d(TAG, "Retrieved notification");
 
-                        Log.d(TAG, retrievedSenderId);
-                        Log.d(TAG, retrievedMessageTitle);
-                        Log.d(TAG, retrievedMessageContent);
+                // Set notification information in views
+                notificationSenderId.setText("Sender Id: " + notification.getSenderID());
+                messageTitle.setText(notification.getTitle());
+                messageContent.setText(notification.getMessage());
+                notificationEventId.setText("Event Id: " + notification.getEventID());
 
+                // Process notification send time
+                Timestamp timestamp = notification.getNotificationSendTime();
+                Date date = timestamp.toDate();
 
-                    } else {
-                        Log.d(TAG, "Error getting notification");
-                    }
+                notificationSendTime.setText("Send Time: " + date);
+                notificationChannelName.setText("Channel Name: " + notification.getChannelName());
+
+                // Set up button to go to event
+                goToEventButton.setOnClickListener(v -> {
+                    // Set selected bottom navigation menu item to events
+                    BottomNavigationView adminBottomNavMenu = requireActivity()
+                            .findViewById(R.id.admin_bottom_nav_menu);
+                    adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
+
+                    Bundle args = new Bundle();
+                    args.putString("eventId", notification.getEventID());
+
+                    // Navigate to the appropriate event
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
                 });
 
-        // Change placeholder texts to reflect notification information
+            } else {
+                Log.d(TAG, "Error getting notification");
+            }
+        });
     }
 }

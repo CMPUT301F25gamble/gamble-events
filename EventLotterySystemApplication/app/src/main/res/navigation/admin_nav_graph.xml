@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/settingsUIFragment"
@@ -81,5 +84,8 @@
         <argument
             android:name="notificationId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_adminViewNotificationFragment_to_eventsUIFragment"
+            app:destination="@id/eventsUIFragment" />
     </fragment>
 </navigation>

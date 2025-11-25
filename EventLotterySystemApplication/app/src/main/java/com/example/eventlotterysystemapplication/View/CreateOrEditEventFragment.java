@@ -287,6 +287,12 @@ public class CreateOrEditEventFragment extends Fragment {
                 return; // stop here, let user fix inputs
             }
 
+            if(!validateDateCompare(LocalDateTime.now(),regStartTime)){
+                binding.createOrEditEventRegistrationEndEditText.setError("Registration Start Date and Time should be after now.");
+                binding.createOrEditEventRegistrationEndEditText.requestFocus();
+                return;
+            }
+
             if(!validateDateCompare(regStartTime,regEndTime)){
                 binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be after Registration Start Date and Time.");
                 binding.createOrEditEventRegistrationEndEditText.requestFocus();

@@ -108,16 +108,16 @@ public class AdminViewNotificationFragment extends Fragment {
                 // Set up button to go to event
                 goToEventButton.setOnClickListener(v -> {
                     // Set selected bottom navigation menu item to events
-                    BottomNavigationView adminBottomNavMenu = requireActivity()
-                            .findViewById(R.id.admin_bottom_nav_menu);
-                    adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
-
-                    Bundle args = new Bundle();
-                    args.putString("eventId", notification.getEventID());
-
-                    // Navigate to the appropriate event
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+//                    BottomNavigationView adminBottomNavMenu = requireActivity()
+//                            .findViewById(R.id.admin_bottom_nav_menu);
+//                    adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
+//
+//                    Bundle args = new Bundle();
+//                    args.putString("eventId", notification.getEventID());
+//
+//                    // Navigate to the appropriate event
+//                    NavHostFragment.findNavController(this)
+//                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
                 });
 
             } else {

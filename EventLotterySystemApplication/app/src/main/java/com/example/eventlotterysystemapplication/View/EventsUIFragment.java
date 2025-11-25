@@ -66,6 +66,8 @@ public class EventsUIFragment extends Fragment {
 
     private List<Event> eventList;
 
+    private String eventId = null;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -101,6 +103,9 @@ public class EventsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
+        eventId = args.getEventId();
+        Log.d("EventsUIFragment", "Event Id: " + eventId);
     }
 
     @Override
@@ -129,6 +134,14 @@ public class EventsUIFragment extends Fragment {
         userId = AdminSession.getSelectedUserId();
         // Log global user ID and admin mode from the AdminSession class for debugging
         Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
+
+        // If an event id was passed in from admin notifications, navigate to selected event
+//        if (eventId != null) {
+//            Bundle args = new Bundle();
+//            args.putString("eventId", eventId);
+//            NavHostFragment.findNavController(EventsUIFragment.this)
+//                    .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, args);
+//        }
 
         if (isAdminMode) {
             // Show loading and hide content until data is fetched from db

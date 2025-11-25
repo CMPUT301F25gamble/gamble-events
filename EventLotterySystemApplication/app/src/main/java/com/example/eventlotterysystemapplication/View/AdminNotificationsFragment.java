@@ -67,6 +67,30 @@ public class AdminNotificationsFragment extends Fragment {
         notificationsListView.setAdapter(notificationTitlesAdapter);
 
         // get notifications from database
+        updateNotificationList();
+
+        // handle when admin taps a notification
+        notificationsListView.setOnItemClickListener((parent, v, position, id) -> {
+            Log.d(TAG, "Notification tapped: " + notificationTitlesList.get(position));
+            Bundle notificationArgs = new Bundle();
+            notificationArgs.putString("notificationId", notificationIdList.get(position));
+
+            // Navigate to view notification fragment
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_adminNotifications_to_adminViewNotificationFragment, notificationArgs);
+        });
+
+        // handle updating notifications
+        updateNotificationsButton.setOnClickListener(v -> {
+            updateNotificationList();
+        });
+    }
+
+    private void updateNotificationList() {
+        notificationTitlesList.clear();
+        notificationIdList.clear();
+        notificationTitlesAdapter.clear();
+
         db.collection("Notification").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
@@ -86,40 +110,5 @@ public class AdminNotificationsFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Log.d(TAG, "Failed to load notification");
                 });
-
-        // handle when admin taps a notification
-        notificationsListView.setOnItemClickListener((parent, v, position, id) -> {
-            Log.d(TAG, "Notification tapped: " + notificationTitlesList.get(position));
-            Bundle notificationArgs = new Bundle();
-            notificationArgs.putString("notificationId", notificationIdList.get(position));
-
-            // Navigate to view notification fragment
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_adminNotifications_to_adminViewNotificationFragment, notificationArgs);
-        });
-
-        // handle updating notifications
-        updateNotificationsButton.setOnClickListener(v -> {
-            db.collection("Notification").get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-
-                        // Iterate through document snapshots
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                            String title = documentSnapshot.getString("title");
-                            String notificationId = documentSnapshot.getString("notificationID");
-
-                            // add to arrays
-                            notificationTitlesList.add(title);
-                            notificationIdList.add(notificationId);
-                        }
-
-                        // notify adapter dataset has changed
-                        notificationTitlesAdapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.d(TAG, "Failed to load notification");
-                    });
-        });
     }
-
 }

@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_organiserNotificationsUIFragment_to_organiserSendNotificationUIFragment"
             app:destination="@id/organiserSendNotificationUIFragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/organiserSendNotificationUIFragment"
@@ -60,6 +63,9 @@
         tools:layout="@layout/fragment_organiser_send_notification_ui" >
         <argument
             android:name="notificationType"
+            app:argType="string" />
+        <argument
+            android:name="eventId"
             app:argType="string" />
         <action
             android:id="@+id/action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment"

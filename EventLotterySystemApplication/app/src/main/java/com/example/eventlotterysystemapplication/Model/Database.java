@@ -506,6 +506,13 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
+
+        // USED TO ADMIN DON'T DELETE!!
+        // Updates the event poster URL if the poster URL is not null
+        if (event.getEventPosterUrl() == null) {
+            eventDocRef.update("eventPosterUrl", null);
+        }
+
         eventDocRef.set(event, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -626,7 +633,7 @@ public class Database {
      * @param listener An OnCompleteListener used to retrieve a list of users
      */
     public void getAllNotifications(OnCompleteListener<List<Notification>> listener) {
-        userRef.get().addOnCompleteListener(task -> {
+        notificationRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Notification> notifications = new ArrayList<>();
                 for (QueryDocumentSnapshot doc: task.getResult()) {

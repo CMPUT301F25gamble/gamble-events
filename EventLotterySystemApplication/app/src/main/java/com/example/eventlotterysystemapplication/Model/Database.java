@@ -467,27 +467,27 @@ public class Database {
         event.setEventID(eventDocRef.getId());
 
         eventDocRef.set(event)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
-                        Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Database", "Event added successfully with Event ID: " + event.getEventID());
+                    Log.d("Database", "Event added successfully with timestamp: " + event.getRegistrationEndTimeTS());
 
-                        updateEventRegistration(event, eventDocRef, task1 -> {
-                            if (task1.isSuccessful()){
-                                Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
-                                listener.onComplete(task);
-                            } else {
-                                Log.e("Database", "Failed to add registration: " + task.getException());
-                                listener.onComplete(Tasks.forException(
-                                        Objects.requireNonNull(task.getException())
-                                ));
-                            }
-                        });
-                    } else {
-                        Log.e("Database", "Failed to add event: " + task.getException());
-                        listener.onComplete(task);
-                    }
-                });
+                    updateEventRegistration(event, eventDocRef, task1 -> {
+                        if (task1.isSuccessful()){
+                            Log.d("Database", "Event registration added successfully with Event ID: " + event.getEventID());
+                            listener.onComplete(task);
+                        } else {
+                            Log.e("Database", "Failed to add registration: " + task.getException());
+                            listener.onComplete(Tasks.forException(
+                                    Objects.requireNonNull(task.getException())
+                            ));
+                        }
+                    });
+                } else {
+                    Log.e("Database", "Failed to add event: " + task.getException());
+                    listener.onComplete(task);
+                }
+            });
     }
 
 
@@ -506,6 +506,13 @@ public class Database {
         }
 
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
+
+        // USED TO ADMIN DON'T DELETE!!
+        // Updates the event poster URL if the poster URL is not null
+        if (event.getEventPosterUrl() == null) {
+            eventDocRef.update("eventPosterUrl", null);
+        }
+
         eventDocRef.set(event, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -617,6 +624,26 @@ public class Database {
                 Log.e("Database", "Document does not exist");
             } else {
                 Log.e("Database", "Could not execute query");
+            }
+        });
+    }
+
+    /**
+     * Retrieves all notifications in the notification collection
+     * @param listener An OnCompleteListener used to retrieve a list of users
+     */
+    public void getAllNotifications(OnCompleteListener<List<Notification>> listener) {
+        notificationRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Notification> notifications = new ArrayList<>();
+                for (QueryDocumentSnapshot doc: task.getResult()) {
+                    Notification notification = doc.toObject(Notification.class);
+                    notifications.add(notification);
+                }
+                listener.onComplete(Tasks.forResult(notifications));
+            } else {
+                Log.e("Database", "Fetch failed");
+                listener.onComplete(Tasks.forException(task.getException()));
             }
         });
     }

@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStructure;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -64,11 +63,11 @@ public class EventDetailScreenFragment extends Fragment {
 
     private FragmentEventDetailScreenBinding binding;
     private String eventId;
+    private String userId;
     private boolean isOwnedEvent = false;
     private final String TAG = "EventDetailScreen";
 
     // Used for ADMIN control
-    private String userId;
     private String organizerID;
     private boolean isAdminMode;
     private Event event;
@@ -198,7 +197,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Remove Image Button (Only in admin mode)
             binding.removeImageButton.setOnClickListener(v -> {
                 // TODO: add functionality for image remove
-                //removeAction("image");
+                removeAction("image");
             });
 
             // Remove Organizer Button (Only in admin mode)
@@ -239,7 +238,7 @@ public class EventDetailScreenFragment extends Fragment {
                                 if (entrant == null) {
                                     //Get geo entrantLocation
                                     Context context = v.getContext();
-                                    //If Event Geo location requirement is off or device is not allowing geo location, save null as locationa
+                                    //If Event Geo location requirement is off or device is not allowing geo location, save null as location
                                     if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
                                         Entrant newEntrant = new Entrant();
                                         newEntrant.setLocation(null);
@@ -372,7 +371,23 @@ public class EventDetailScreenFragment extends Fragment {
                     break;
 
                 case "image":
-                    // TODO: add functionality for image remove
+                    String eventImageURL = event.getEventPosterUrl();
+                    Admin.removeImage(eventImageURL, task -> {
+                        if (task.isSuccessful()) {
+                            // Show toast that image has been removed
+                            Toast.makeText(requireContext(), "Image removed",
+                                    Toast.LENGTH_SHORT).show();
+                            // Set the event poster url to null in the DB
+                            event.setEventPosterUrl(null);
+                            // Update event in DB and bind
+                            updateEventDB(event);
+                            bindEvent(event);
+                        } else {
+                            // Show toast on image removal fail
+                            Toast.makeText(requireContext(), "Failed to remove Image",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     break;
 
                 case "organizer":
@@ -387,11 +402,16 @@ public class EventDetailScreenFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     break;
             }
-            // Dismiss dialog
-            dialog.dismiss();
-            // Return to event details screen
-            NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                    .navigateUp();
+            if (action.equals("event") || action.equals("organizer")) {
+                // Dismiss dialog
+                dialog.dismiss();
+                // Return to event details screen
+                NavHostFragment.findNavController(EventDetailScreenFragment.this)
+                        .navigateUp();
+            } else if (action.equals("image")) {
+                // Dismiss dialog
+                dialog.dismiss();
+            }
         });
         // Show the dialog (i.e., confirm action dialog)
         dialog.show();
@@ -494,6 +514,9 @@ public class EventDetailScreenFragment extends Fragment {
                     .load(eventPosterUrl)
                     .placeholder(R.drawable.image_template)
                     .into(binding.eventImage);
+        } else {
+            binding.eventImage.setImageResource(R.drawable.image_template);
+            //binding.eventImage.setVisibility(View.GONE);
         }
 
         // Debugging

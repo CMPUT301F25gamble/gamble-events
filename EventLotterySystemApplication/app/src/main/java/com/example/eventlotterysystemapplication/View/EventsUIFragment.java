@@ -19,11 +19,13 @@ import android.widget.Toast;
 
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.EventAdapter;
+import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,7 +48,9 @@ import java.util.Objects;
  */
 
 public class EventsUIFragment extends Fragment {
-
+    /* Don't change the char 'i' in the name, Android Studio never generated
+     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
+     */
     private FragmentEventsUiBinding binding;
 
     // Adapter and filtered list for displaying events
@@ -83,9 +87,10 @@ public class EventsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if (getActivity() instanceof AdminActivity) {
+            EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
+            eventId = args.getEventId();
+            Log.d("EventsUIFragment", "Event Id: " + eventId);
         }
     }
 
@@ -109,6 +114,18 @@ public class EventsUIFragment extends Fragment {
         isAdminMode = AdminSession.getAdminMode();
         userId = AdminSession.getSelectedUserId();
         Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
+
+        // If an event id was passed in from admin notifications, navigate to selected event
+        if (isAdminMode && !eventId.equals("none")) {
+            Log.d("EventsUIFragment", "Navigating to event detail screen");
+            BottomNavigationView adminBottomNavigationView = requireActivity()
+                    .findViewById(R.id.admin_bottom_nav_menu);
+            adminBottomNavigationView.setSelectedItemId(R.id.eventsUIFragment);
+            Bundle args = new Bundle();
+            args.putString("eventId", eventId);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
+        }
 
         if (isAdminMode) {
             binding.loadingEventUi.setVisibility(View.VISIBLE);

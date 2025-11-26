@@ -74,13 +74,14 @@ public class ProfileUIFragment extends Fragment {
                             // Reset the selected user ID
                             AdminSession.setSelectedUserId(null);
                             // Navigate back to the previous fragment
-                            NavHostFragment.findNavController(ProfileUIFragment.this).navigateUp();
+                            NavHostFragment.findNavController(ProfileUIFragment.this)
+                                    .navigate(R.id.action_profileUIFragment_to_allProfilesFragment);
                         });
 
                         // User Profile Events Button
                         binding.userProfileEvents.setOnClickListener(v -> {
-                           NavHostFragment.findNavController(ProfileUIFragment.this)
-                                   .navigate(R.id.action_profileUIFragment_to_myEventsFragment);
+                            NavHostFragment.findNavController(ProfileUIFragment.this)
+                                    .navigate(R.id.action_profileUIFragment_to_myEventsFragment);
                         });
 
                         // Delete Button
@@ -100,7 +101,7 @@ public class ProfileUIFragment extends Fragment {
                                 Log.d("ProfileUIFragment", "userName = " + userName);
 
 
-                                // Warn users to not leave name and email empty
+                                // Warn users to not leave name and email empty, as well as invalid email and phone input
                                 if (userName.isEmpty()) {
                                     binding.profileName.setError("Name is required");
                                     return;
@@ -108,6 +109,17 @@ public class ProfileUIFragment extends Fragment {
                                 if (userEmail.isEmpty()) {
                                     binding.profileEmail.setError("Email is required");
                                     return;
+                                } else {
+                                    if (!Verification.validEmail(userEmail)) {
+                                        binding.profileEmail.setError("Invalid email address");
+                                        return;
+                                    }
+                                }
+                                if(!userPhone.isEmpty()) {
+                                    if (!Verification.validPhoneNumber(userPhone)) {
+                                        binding.profilePhone.setError("Invalid phone number");
+                                        return;
+                                    }
                                 }
 
                                 // Update the user's params
@@ -172,7 +184,7 @@ public class ProfileUIFragment extends Fragment {
                                     String userEmail = binding.profileEmail.getText().toString().trim();
                                     String userPhone = binding.profilePhone.getText().toString().trim();
 
-                                    // Warn users to not leave name and email empty
+                                    // Warn users to not leave name and email empty, as well as invalid email and phone input
                                     if (userName.isEmpty()) {
                                         binding.profileName.setError("Name is required");
                                         return;

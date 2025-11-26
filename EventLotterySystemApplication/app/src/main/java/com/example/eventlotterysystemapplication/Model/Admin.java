@@ -55,14 +55,17 @@ public class Admin extends User{
     /**
      * Removes an image based on its URL
      * @param imageUrl the URL of the image
+     * @param listener An OnCompleteListener that will be called when the update operation finishes
      */
-    public static void removeImage(String imageUrl) {
+    public static void removeImage(String imageUrl, OnCompleteListener<Void> listener) {
+        // DO NOT REMOVE LISTENER, ITS USED FOR ADMIN
         imageStorage.deleteEventPoster(imageUrl, task -> {
             if (task.isSuccessful()) {
                 Log.d("Admin", "Removed image");
             } else {
                 Log.e("Admin", "Cannot remove image");
             }
+            listener.onComplete(task); // Notify caller
         });
     }
 
@@ -152,8 +155,20 @@ public class Admin extends User{
         });
     }
 
-    public static void reviewNotificationLogs() {
-        // TODO
+    /**
+     * Browses logs of all notifications sent to entrants by organizers
+     * @param listener An OnCompleteListener used to retrieve a list of notifications
+     */
+    public static void reviewNotificationLogs(OnCompleteListener<List<Notification>> listener) {
+        db.getAllNotifications(task -> {
+            if (task.isSuccessful()) {
+                List<Notification> notifications = task.getResult();
+                listener.onComplete(Tasks.forResult(notifications));
+            } else {
+                listener.onComplete(Tasks.forException(task.getException()));
+                Log.e("Admin", "Cannot browse notification logs");
+            }
+        });
     }
 
 }

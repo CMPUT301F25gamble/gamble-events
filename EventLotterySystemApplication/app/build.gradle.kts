@@ -49,7 +49,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:5.0.5") // Glide for image loading
     implementation(libs.firebase.installations) // auth service
     implementation(libs.firebase.messaging)
-    implementation(libs.volley) // auth service
+    implementation(libs.volley)
+    implementation(libs.places) // auth service
 
     //Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.20.0")

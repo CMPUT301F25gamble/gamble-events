@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -72,6 +73,8 @@ public class EventDetailScreenFragment extends Fragment {
     private String organizerID;
     private boolean isAdminMode;
     private Event event;
+    private Entrant entrant;
+
 
     public EventDetailScreenFragment() {
         // Required empty public constructor
@@ -109,6 +112,7 @@ public class EventDetailScreenFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -120,7 +124,7 @@ public class EventDetailScreenFragment extends Fragment {
 
         if (getActivity() instanceof EditEventActivity) {
             backButton.setOnClickListener(v -> {
-               getActivity().finish();
+                getActivity().finish();
             });
         } else if (getActivity() instanceof AdminActivity) {
             backButton.setOnClickListener(v -> {
@@ -129,8 +133,8 @@ public class EventDetailScreenFragment extends Fragment {
             });
         } else {
             backButton.setOnClickListener(v -> {
-               NavHostFragment.findNavController(this)
-                       .navigateUp();
+                NavHostFragment.findNavController(this)
+                        .navigateUp();
             });
         }
 
@@ -167,8 +171,16 @@ public class EventDetailScreenFragment extends Fragment {
                                 showGenerateQRCodeButton();
                             }
 
-                            Entrant entrant = event.genEntrantIfExists(user);
-                            changeWaitlistBtn(entrant != null);
+                            entrant = event.genEntrantIfExists(user);
+
+                            // If the user is in the chosen list, show the chosen button
+                            if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
+                                showChosenEntrantButtons(entrant.getStatus());
+                            }
+
+                            // Update the waitlist button colors and text based on if the user is in the waitlist
+                            changeWaitlistBtn(entrant != null &&
+                                    entrant.getStatus() == EntrantStatus.WAITING);
                         } else {
                             // Failed to load user; hide loading and show error
                             binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -180,6 +192,8 @@ public class EventDetailScreenFragment extends Fragment {
                     if (isAdminMode) {
                         binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
                         binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                        // Hide accept/decline chosen entrant buttons
+                        binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                         // Hide join waitlist/edit event button
                         binding.navigationBarButton.setVisibility(View.GONE);
                         // Hide generate QR Code button logic is done when db called (line 152)
@@ -196,6 +210,32 @@ public class EventDetailScreenFragment extends Fragment {
                 }
             });
 
+            // Chosen Entrant Buttons //
+            // Accept Button
+            binding.acceptChosenEntrantButton.setOnClickListener(v -> {
+                // Accept invitation
+                entrant.setStatus(EntrantStatus.FINALIZED);
+                binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+
+
+                // TODO: DANIEL CAN FIX
+                binding.navigationBarButton.setVisibility(View.VISIBLE);
+                binding.navigationBarButton.setEnabled(false);
+                binding.navigationBarButton.setText("FINALIZED");
+                binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
+                binding.navigationBarButton.setTextColor(R.color.black);
+                // Thx Daniel, end video
+
+                updateEventDB(event);
+            });
+            // Decline Button
+            binding.declineChosenEntrantButton.setOnClickListener(v -> {
+                // Decline invitation
+                entrant.setStatus(EntrantStatus.CANCELLED);
+                binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+                updateEventDB(event);
+            });
+
             // Remove Event Button (Only in admin mode)
             binding.removeEventButton.setOnClickListener(v -> {
                 removeAction("event");
@@ -203,7 +243,6 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Remove Image Button (Only in admin mode)
             binding.removeImageButton.setOnClickListener(v -> {
-                // TODO: add functionality for image remove
                 removeAction("image");
             });
 
@@ -258,11 +297,11 @@ public class EventDetailScreenFragment extends Fragment {
                                     } else {
                                         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
                                         // Make entrant effectively final by using a final variable
-                                       fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                               .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                                   EntrantLocation entrantLocation = null;
-                                                   if (location != null) {
-                                                       entrantLocation = new EntrantLocation();
+                                        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                    EntrantLocation entrantLocation = null;
+                                                    if (location != null) {
+                                                        entrantLocation = new EntrantLocation();
                                                         entrantLocation.setLatitude(location.getLatitude());
                                                         entrantLocation.setLongitude(location.getLongitude());
                                                     }
@@ -323,7 +362,7 @@ public class EventDetailScreenFragment extends Fragment {
 
     /**
      * Removes an action from the database (action could be: event, image, or organizer)
-     * @param action
+     * @param action the action to remove from the database
      */
     private void removeAction(String action) {
         // Inflate the layout
@@ -465,6 +504,13 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    private void showChosenEntrantButtons(EntrantStatus status) {
+        if (status.equals(EntrantStatus.CHOSEN)) {
+            binding.ChosenEntrantButtonContainer.setVisibility(View.VISIBLE);
+            binding.navigationBarButton.setVisibility(View.GONE);
+        }
+    }
+
     /**
      * Wrapper function for calling getUserFromDeviceID on the database
      * @param deviceID the user's device ID
@@ -522,8 +568,8 @@ public class EventDetailScreenFragment extends Fragment {
                     .placeholder(R.drawable.image_template)
                     .into(binding.eventImage);
         } else {
+            // Set the image template to default image
             binding.eventImage.setImageResource(R.drawable.image_template);
-            //binding.eventImage.setVisibility(View.GONE);
         }
 
         // Debugging

@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_profileUIFragment_to_deleteProfileFragment"
             app:destination="@id/deleteProfileFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/deleteProfileFragment"
@@ -64,12 +67,21 @@
         <action
             android:id="@+id/action_deleteProfileFragment_to_allProfilesFragment"
             app:destination="@id/allProfilesFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailScreenFragment"
         android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
         android:label="fragment_event_detail_screen"
-        tools:layout="@layout/fragment_event_detail_screen" />
+        tools:layout="@layout/fragment_event_detail_screen" >
+        <action
+            android:id="@+id/action_eventDetailScreenFragment_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string" />
         <argument
             android:name="isOwnedEvent"
             app:argType="boolean"
@@ -105,4 +117,4 @@
             android:id="@+id/action_myEventsFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
     </fragment>
-</navigation>
+    </navigation>

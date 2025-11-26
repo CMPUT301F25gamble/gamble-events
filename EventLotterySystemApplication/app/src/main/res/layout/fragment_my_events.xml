@@ -21,7 +21,8 @@
         android:visibility="gone"
         app:constraint_referenced_ids="
             myEventsText,
-            myEventsListView"
+            myEventsListView,
+            myEventsBackButton"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 

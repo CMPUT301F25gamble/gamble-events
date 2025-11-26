@@ -446,51 +446,60 @@ public class Database {
      * @param user The user profile
      * @param listener An OnCompleteListener used to retrieve a list of Events
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
         Timestamp now = Timestamp.now();
+
         // Queries events that are open for registration
         Query query = eventRef.whereLessThanOrEqualTo("registrationStartTime", now)
                 .whereGreaterThanOrEqualTo("registrationEndTime", now);
 
         query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("Database", "Fetch successful");
-                List<Event> availableEvents = new ArrayList<>();
-                List<Task<QuerySnapshot>> subTasks = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    if (!doc.getString("organizerID").equals(user.getUserID())) {
-                        DocumentReference eventRef = doc.getReference();
-                        CollectionReference regDocRef = eventRef.collection("Registration");
-                        int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Fetch failed", task.getException());
+                listener.onComplete(Tasks.forException(task.getException()));
+                return;
+            }
 
-                        // Checks if wait list is not full
-                        Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
-                            int count = regCount.size();
-                            if (count < waitListCapacity) {
-                                if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
-                                    parseEvent(doc, task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            Event event = task1.getResult();
-                                            availableEvents.add(event);
-                                        } else {
-                                            Log.e("Database", "Unable to parse event " + task1.getException());
-                                        }
-                                    });
-                                }
+            List<Event> availableEvents = new ArrayList<>();
+            List<Task<?>> allTasks = new ArrayList<>();
+
+            for (QueryDocumentSnapshot doc : task.getResult()) {
+                if (doc.getString("organizerID").equals(user.getUserID())) continue;
+
+                DocumentReference eventRef = doc.getReference();
+                CollectionReference regDocRef = eventRef.collection("Registration");
+                int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
+
+                // Checks if wait list is not full
+                Task<Event> regTask = regDocRef.get().continueWithTask(regCountTask -> {
+                    int count = regCountTask.getResult().size();
+
+                    if (waitListCapacity == -1 || count < waitListCapacity) {
+                        TaskCompletionSource<Event> parseTaskSource = new TaskCompletionSource<>();
+                        parseEvent(doc, parseTask -> {
+                            if (parseTask.isSuccessful()) {
+                                parseTaskSource.setResult(parseTask.getResult());
+                            } else {
+                                parseTaskSource.setException(parseTask.getException());
                             }
                         });
-                        subTasks.add(regTask);
+                        return parseTaskSource.getTask();
+                    } else {
+                        return Tasks.forResult(null);
                     }
-                    Tasks.whenAllComplete(subTasks).addOnCompleteListener(done -> {
-                        listener.onComplete(Tasks.forResult(availableEvents));
-                    });
-                }
-            } else {
-                Log.e("Database", "Fetch failed");
+                }).addOnSuccessListener(event -> {
+                    if (event != null) availableEvents.add(event);
+                });
+
+                allTasks.add(regTask);
             }
+
+            Tasks.whenAllComplete(allTasks).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(availableEvents));
+            });
         });
     }
+
 
     /**
      * Given some event object, we add its data to the database

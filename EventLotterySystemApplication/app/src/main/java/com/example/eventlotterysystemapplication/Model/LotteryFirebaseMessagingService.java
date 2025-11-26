@@ -78,6 +78,25 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
                 this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
+        // add accept intent
+        Intent acceptIntent = new Intent(this, ContentActivity.class);
+        acceptIntent.putExtra("eventId", remoteMessage.getData().get("eventID"));
+        acceptIntent.putExtra("accept", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingAcceptIntent = PendingIntent.getActivity(
+                this, 0, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // add decline intent
+        Intent declineIntent = new Intent(this, ContentActivity.class);
+        declineIntent.putExtra("eventId", remoteMessage.getData().get("eventID"));
+        declineIntent.putExtra("accept", false);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingDeclineIntent = PendingIntent.getActivity(
+                this, 0, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+
         // Build the notification
         NotificationCompat.Builder builder;
 
@@ -93,8 +112,8 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
                     .setContentIntent(pendingIntent) // Pending intent triggered when tapped
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .addAction(0, "Accept", pendingIntent)
-                    .addAction(1, "Decline", pendingIntent);
+                    .addAction(0, "Accept", pendingAcceptIntent)
+                    .addAction(1, "Decline", pendingDeclineIntent);
         } else {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon

@@ -16,6 +16,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentMyEventsBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,6 +110,15 @@ public class MyEventsFragment extends Fragment {
         // Admin flow: use the selected user ID
         if (isAdminMode) {
             uid = userId;
+            // Display the organizer's name + "'s Events" under admin control
+            Database.getDatabase().getUser(uid, task -> {
+                if (task.isSuccessful()) {
+                    User organizer = task.getResult();
+                    String organizerName = organizer.getName();
+                    binding.myEventsText.setText(organizerName + "'s Events");
+                    Log.d("MyEvents", "Organizer name = " + organizerName);
+                }
+            });
         }
 
         Log.d("MyEventsFragment", "User ID: " + uid);
@@ -118,9 +129,6 @@ public class MyEventsFragment extends Fragment {
             .whereEqualTo("organizerID", uid)
             .get()
             .addOnSuccessListener(qs -> {
-                // Hide loading and show content
-                binding.loadingMyEvents.setVisibility(View.GONE);
-                binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
                 myEventNames.clear();
                 myEventDocIds.clear();
 
@@ -140,6 +148,10 @@ public class MyEventsFragment extends Fragment {
                 }
                 // Notify the adapter that the data set has changed
                 myEventNamesAdapter.notifyDataSetChanged();
+
+                // Hide loading and show content
+                binding.loadingMyEvents.setVisibility(View.GONE);
+                binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
             })
                 // Hide loading and add a listener to handle errors
             .addOnFailureListener(e -> {

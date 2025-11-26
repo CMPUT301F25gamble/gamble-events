@@ -182,7 +182,7 @@ public class CreateOrEditEventFragment extends Fragment {
             }
         } else {
             binding.createOrEditEventTitle.setText(R.string.create_event_title_text);
-            binding.createOrEditEventDoneButton.setText(R.string.done_creating_event_text);
+            binding.createOrEditEventDoneButton.setText(R.string.create_event_title_text);
         }
 
         // Create Event

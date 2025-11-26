@@ -196,7 +196,6 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Remove Image Button (Only in admin mode)
             binding.removeImageButton.setOnClickListener(v -> {
-                // TODO: add functionality for image remove
                 removeAction("image");
             });
 
@@ -515,8 +514,8 @@ public class EventDetailScreenFragment extends Fragment {
                     .placeholder(R.drawable.image_template)
                     .into(binding.eventImage);
         } else {
+            // Set the image template to default image
             binding.eventImage.setImageResource(R.drawable.image_template);
-            //binding.eventImage.setVisibility(View.GONE);
         }
 
         // Debugging

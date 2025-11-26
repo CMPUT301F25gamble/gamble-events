@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Model;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 
@@ -318,12 +319,15 @@ public class Database {
 
                     if (!deletingSelf) {
                         // Admin deleting another user
-                        Log.d("Database", "User deleted by an admin");
-                        listener.onComplete(Tasks.forResult(null));
+                        if (userDocDone.isSuccessful()) {
+                            Log.d("Database", "User deleted by an admin");
+                            listener.onComplete(Tasks.forResult(null));
+                            return;
+                        } else {
+                            Log.e("Database", "User deletion by admin failed");
+                            listener.onComplete(Tasks.forException(userDocDone.getException()));
+                        }
                         return;
-                    } else {
-                        Log.e("Database", "User deletion by admin failed");
-                        listener.onComplete(Tasks.forException(userDocDone.getException()));
                     }
 
                     // Deletes Firebase auth account (self-delete)
@@ -405,6 +409,37 @@ public class Database {
         });
     }
 
+    public void getUserEventsHistory(String userId, OnCompleteListener<List<Event>> listener){
+        eventRef.get().addOnSuccessListener(eventSnapshot -> {
+            List<Task<Event>> getUserEventsHistoryList = new ArrayList<>();
+            List<Event> userEventsHistory = new ArrayList<>();
+
+            for (DocumentSnapshot eventDocSnapshot : eventSnapshot.getDocuments()){
+                TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+
+                CollectionReference registration = eventDocSnapshot.getReference().collection("Registration");
+                registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        getEvent(eventDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                userEventsHistory.add(task.getResult());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
+
+                getUserEventsHistoryList.add(tcs.getTask());
+            }
+
+            Tasks.whenAllComplete(getUserEventsHistoryList).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(userEventsHistory));
+            });
+        });
+    }
 
     /**
      * Retrieves all events that the user can join
@@ -648,6 +683,39 @@ public class Database {
         });
     }
 
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userId, OnCompleteListener<List<Notification>> listener){
+        notificationRef.get().addOnSuccessListener(notificationSnapshot -> {
+            List<Task<Notification>> getUserNotificationHistoryList = new ArrayList<>();
+            List<Notification> userNotificationHistory = new ArrayList<>();
+
+            for (DocumentSnapshot notificationDocSnapshot : notificationSnapshot.getDocuments()){
+                TaskCompletionSource<Notification> tcs = new TaskCompletionSource<>();
+
+                CollectionReference recipients = notificationDocSnapshot.getReference().collection("Recipients");
+                recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        getNotification(notificationDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                userNotificationHistory.add(task.getResult());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
+
+                getUserNotificationHistoryList.add(tcs.getTask());
+            }
+
+            Tasks.whenAllComplete(getUserNotificationHistoryList).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(userNotificationHistory));
+            });
+        });
+    }
+
     /**
      * This method is specific for allowing us to add to the recipient collection of the redraw of a
      * particular event, here check if the event already has a redraw notification, and if it does
@@ -751,11 +819,6 @@ public class Database {
                 }
             }
         });
-    }
-
-    // TODO Add get notifications from a given recipient
-    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
-//        Query notificationHistory = notificationRef.g
     }
 
     // TODO Add get events from userID

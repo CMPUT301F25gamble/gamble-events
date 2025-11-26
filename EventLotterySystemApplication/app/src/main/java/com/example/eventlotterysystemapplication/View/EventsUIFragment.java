@@ -13,20 +13,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Controller.EventAdapter;
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentEventsUiBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -47,32 +46,24 @@ import java.util.Objects;
  */
 
 public class EventsUIFragment extends Fragment {
-    /* Don't change the char 'i' in the name, Android Studio never generated
-    * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
-    */
+
     private FragmentEventsUiBinding binding;
-    // Holds event names to display in the ListView
-    private ArrayAdapter<String> eventNamesAdapter;
-    private final ArrayList<String> eventNames = new ArrayList<>();
 
-    // Parallel list to keep Firestore document IDs (to then pass onto event details screen)
-    private final ArrayList<String> docIds = new ArrayList<>();
+    // Adapter and filtered list for displaying events
+    private EventAdapter eventAdapter;
+    private final List<Event> filteredEventList = new ArrayList<>();
 
-    // For the owned vs not owned event (used to all events on events UI)
-    private final ArrayList<Boolean> ownedFlags = new ArrayList<>();
+    // Master event list fetched from database
+    private List<Event> eventList = new ArrayList<>();
+
     // Used for ADMIN control
     private String userId;
     private boolean isAdminMode;
 
-    private List<Event> eventList;
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // Fragment parameters (not used heavily here)
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -80,15 +71,6 @@ public class EventsUIFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EventsUIFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static EventsUIFragment newInstance(String param1, String param2) {
         EventsUIFragment fragment = new EventsUIFragment();
         Bundle args = new Bundle();
@@ -110,16 +92,11 @@ public class EventsUIFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentEventsUiBinding.inflate(inflater, container, false);
 
-        // Simple built-in row layout
-        eventNamesAdapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_list_item_1,
-                eventNames
-        );
-        binding.eventsList.setAdapter(eventNamesAdapter);
+        // Initialize EventAdapter with empty filtered list
+        eventAdapter = new EventAdapter(requireContext(), filteredEventList);
+        binding.eventsList.setAdapter(eventAdapter);
 
         return binding.getRoot();
     }
@@ -128,26 +105,20 @@ public class EventsUIFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Get the global user ID and admin mode from the AdminSession class
+        // Get global user ID and admin mode
         isAdminMode = AdminSession.getAdminMode();
         userId = AdminSession.getSelectedUserId();
-        // Log global user ID and admin mode from the AdminSession class for debugging
         Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
 
         if (isAdminMode) {
-            // Show loading and hide content until data is fetched from db
             binding.loadingEventUi.setVisibility(View.VISIBLE);
             binding.contentGroupEventsUi.setVisibility(View.GONE);
-            /* Separate content group for admin related buttons so Create Event button and
-             * My Events button are not visible to the admin
-             */
-
-            // TODO: Add logic for my events
+            // TODO: Admin-specific logic here
 
             binding.loadingEventUi.setVisibility(View.GONE);
             binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
         } else {
-            // Create Event button navigates to event creation page
+            // Non-admin buttons
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
                 args.putString("eventId", null);
@@ -155,39 +126,37 @@ public class EventsUIFragment extends Fragment {
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
 
-            // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
                 NavHostFragment.findNavController(EventsUIFragment.this)
                         .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
             });
 
-            // Show loading and hide content until it is fetched
             binding.loadingEventUi.setVisibility(View.VISIBLE);
             binding.contentGroupEventsUi.setVisibility(View.GONE);
             binding.contentGroupAdminEventsUi.setVisibility(View.GONE);
         }
 
+        // Fetch all events
         fetchAllEvents();
 
-        // This method is a lot slower so will keep the current method of fetching events as well
+        // Older database call (kept if needed)
         Database.getDatabase().getAllEvents(task -> {
             if (!task.isSuccessful()) {
                 binding.loadingEventUi.setVisibility(View.GONE);
                 Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             eventList = task.getResult();
         });
 
-        // Switched from NavHostFragment to a bundle to pass data between fragments
+        // Handle item clicks
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
+            Event event = filteredEventList.get(position);
             Bundle args = new Bundle();
-            args.putString("eventId", docIds.get(position));
-            args.putBoolean("isOwnedEvent", ownedFlags.get(position)); // true/false per event
-            Log.d("EventsUIFragment", "isOwnedEvent = " + ownedFlags.get(position));
-            Log.d("EventsUIFragment", "eventId = " + docIds.get(position));
-
+            args.putString("eventId", event.getEventID());
+            args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
+            Log.d("EventsUIFragment", "isOwnedEvent = " + event.getOrganizerID().equals(userId));
+            Log.d("EventsUIFragment", "eventId = " + event.getEventID());
 
             if (isAdminMode) {
                 NavHostFragment.findNavController(this)
@@ -198,45 +167,30 @@ public class EventsUIFragment extends Fragment {
             }
         });
 
-        // Auto-navigate if eventID was passed from MainActivity
+        // Auto-navigate if eventID passed from MainActivity
         String eventID = null;
         if (getActivity() != null && getActivity().getIntent() != null) {
             eventID = getActivity().getIntent().getStringExtra("eventID");
         }
 
         if (eventID != null) {
-            // Find the document index to set isOwnedEvent flag
-            int index = docIds.indexOf(eventID);
-            boolean isOwnedEvent = (index != -1) ? ownedFlags.get(index) : false;
-
-            Bundle args = new Bundle();
-            args.putString("eventId", eventID);
-            args.putBoolean("isOwnedEvent", isOwnedEvent);
-
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.event_detail_screen, args);
+            for (Event event : filteredEventList) {
+                if (event.getEventID().equals(eventID)) {
+                    Bundle args = new Bundle();
+                    args.putString("eventId", eventID);
+                    args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.event_detail_screen, args);
+                    break;
+                }
+            }
         }
 
-
-        // Show pop-up when filter button pressed
-        binding.eventsScreenFilterButton.setOnClickListener(v->{
-
-            showFilterEventDialog(binding);
-        });
-
-
-
-
+        // Filter dialog
+        binding.eventsScreenFilterButton.setOnClickListener(v -> showFilterEventDialog(binding));
     }
 
-    /**
-     * Displays a dialog containing interests and availability fields
-     * for the user to input optionally such that upon clicking the
-     * confirm button, the events ui page will update based on what
-     * the user inputted.
-     */
     private void showFilterEventDialog(FragmentEventsUiBinding binding) {
-
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View dialogFilterEventsView = inflater.inflate(R.layout.dialog_filter_events, null);
 
@@ -246,76 +200,47 @@ public class EventsUIFragment extends Fragment {
         Button searchButton = dialogFilterEventsView.findViewById(R.id.dialogSearchButton);
         Button backButton1 = dialogFilterEventsView.findViewById(R.id.dialogBackButton);
 
-
-        // Setup first dialog for displaying user info
         AlertDialog dialog1 = new AlertDialog.Builder(requireContext())
                 .setView(dialogFilterEventsView)
                 .setCancelable(true)
                 .create();
 
-        // Set the background to transparent so we can show the rounded corners
         Objects.requireNonNull(dialog1.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
 
-        // Return to list view
         backButton1.setOnClickListener(v -> dialog1.dismiss());
 
-        // Move to a new dialog
         searchButton.setOnClickListener(v -> {
-            // fetch edit text fields
             String keywordsStr = keywordEditText.getText().toString().trim();
             String availabilityStr = availabilityEditText.getText().toString().trim();
 
-            // TODO: split keywords
-            // Parse tags; split by commas
             ArrayList<String> keywordsList = new ArrayList<>();
             if (!keywordsStr.isEmpty()) {
                 String[] keywordsArray = keywordsStr.split(",");
                 for (String keyword : keywordsArray) {
                     String trimmedKeyword = keyword.trim();
-                    if (!trimmedKeyword.isEmpty()) {
-                        keywordsList.add(trimmedKeyword);
-                    }
+                    if (!trimmedKeyword.isEmpty()) keywordsList.add(trimmedKeyword);
                 }
             }
 
-            // Format availability input
             LocalDateTime availability = null;
             if (!availabilityStr.isEmpty()) {
                 availability = DateTimeFormatter(availabilityStr);
             }
 
+            if (keywordsList.isEmpty() && availability == null) fetchAllEvents();
+            else if (!keywordsList.isEmpty() && availability == null) filterEventsByKeyword(keywordsList);
+            else if (keywordsList.isEmpty()) filterEventsByStartDate(availability);
+            else filterEventsByKeywordAndStartDate(keywordsList, availability);
 
-            if (keywordsList.isEmpty() && availability == null) {
-                // Both empty, so reset list
-                fetchAllEvents();
-            }
-            else if (!keywordsList.isEmpty() && availability == null) {
-                // Only keyword
-                filterEventsByKeyword(keywordsList);
-            }
-            else if (keywordsList.isEmpty()) {
-                // Only date
-                filterEventsByStartDate(availability);
-            }
-            else {
-                // Both fields filled
-                filterEventsByKeywordAndStartDate(keywordsList, availability);
-            }
             dialog1.dismiss();
-
         });
+
         dialog1.show();
     }
 
-    /**
-     * Converts the user inputted string into a LocalDateTime object
-     * @param dateTimeStr The user inputted datetime string
-     * @return A LocalDateTime object
-     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public LocalDateTime DateTimeFormatter(String dateTimeStr) {
-        DateTimeFormatter formatter = null;
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime eventDateTime = null;
         try {
             eventDateTime = LocalDateTime.parse(dateTimeStr, formatter);
@@ -326,58 +251,88 @@ public class EventsUIFragment extends Fragment {
         return eventDateTime;
     }
 
-
-    /**
-     * Fetch all events from Firebase and set the event names, docIDs, and owned arraylists
-     */
-    private void fetchAllEvents() {
-        // Fetch all Event docs and display their "name" field in the listView
+    private void fetchAllEventsAdmin() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser() != null
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
+
         db.collection("Event")
                 .get()
                 .addOnSuccessListener(qs -> {
-                    // Hide loading and show content
                     binding.loadingEventUi.setVisibility(View.GONE);
                     binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
-                    // If the user is not an admin, show the non-admin-specific content group
-                    if (!isAdminMode) {
-                        binding.contentGroupAdminEventsUi.setVisibility(View.VISIBLE);
-                    }
-                    eventNames.clear();
-                    docIds.clear();
-                    ownedFlags.clear();
+                    if (!isAdminMode) binding.contentGroupAdminEventsUi.setVisibility(View.VISIBLE);
 
+                    eventList.clear();
+
+                    // Use parseEvent instead of doc.toObject()
                     for (DocumentSnapshot doc : qs.getDocuments()) {
-                        String eventName = doc.getString("name");
-                        String organizerId = doc.getString("organizerID");
-                        boolean owned = (uid != null && organizerId != null && organizerId.equals(uid));
+                        Database.getDatabase().parseEvent(doc, task -> {
+                            if (task.isSuccessful()) {
+                                Event event = task.getResult();
+                                if (event != null) {
+                                    eventList.add(event);
 
-                        // Fallback on the doc ID if event name is missing
-                        if (eventName == null) {
-                            eventName = doc.getId();
-                            eventNames.add(eventName);
-                        } else {
-                            eventNames.add(eventName);
-                        }
-
-                        // Add docId in parallel list
-                        docIds.add(doc.getId());
-
-                        // Add owned flag in parallel list
-                        ownedFlags.add(owned);
+                                    // After adding all events, update filtered list and UI
+                                    if (eventList.size() == qs.getDocuments().size()) {
+                                        filteredEventList.clear();
+                                        filteredEventList.addAll(eventList);
+                                        eventAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            } else {
+                                Log.e("EventsUIFragment", "Failed to parse event: " + task.getException());
+                            }
+                        });
                     }
-                    // Notify the adapter that the data set has changed
-                    eventNamesAdapter.notifyDataSetChanged();
                 })
-                // Hide loading and add a listener to handle errors
                 .addOnFailureListener(e -> {
                     binding.loadingEventUi.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void fetchAllEvents() {
+        if(isAdminMode) {
+            fetchAllEventsAdmin();
+            return;
+        }
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        binding.loadingEventUi.setVisibility(View.VISIBLE);
+        binding.contentGroupEventsUi.setVisibility(View.GONE);
+
+        User user = new User();
+        user.setUserID(currentUser.getUid());
+
+        Database.getDatabase().viewAvailableEvents(user, task -> {
+            binding.loadingEventUi.setVisibility(View.GONE);
+            binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+            if (!isAdminMode) binding.contentGroupAdminEventsUi.setVisibility(View.VISIBLE);
+
+            if (task.isSuccessful()) {
+                List<Event> availableEvents = task.getResult();
+                Log.d("Database", String.valueOf(availableEvents.size()));
+                eventList.clear();
+                if (availableEvents != null) {
+                    eventList.addAll(availableEvents);
+                }
+
+                filteredEventList.clear();
+                filteredEventList.addAll(eventList);
+                eventAdapter.notifyDataSetChanged();
+            } else {
+                Log.e("EventsUIFragment", "Failed to load events: " + task.getException());
+                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
 
     /**
@@ -394,7 +349,9 @@ public class EventsUIFragment extends Fragment {
 
         // If keyword is empty then fetch all events again
         if (keywordsList == null || keywordsList.isEmpty()) {
-            fetchAllEvents();
+            filteredEventList.clear();
+            filteredEventList.addAll(eventList);
+            eventAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -402,9 +359,7 @@ public class EventsUIFragment extends Fragment {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
 
-        eventNames.clear();
-        docIds.clear();
-        ownedFlags.clear();
+        filteredEventList.clear();
 
         // Filter events by keyword (CASE-INSENSITIVE)
         eventList.forEach(event -> {
@@ -421,20 +376,18 @@ public class EventsUIFragment extends Fragment {
                         description.toLowerCase().contains(lowercaseKeyword) ||
                         location.toLowerCase().contains(lowercaseKeyword) ||
                         tags.toLowerCase().contains(lowercaseKeyword)) {
-                        matched = true;
-                        break; // prevent duplicate matches with OR semantics
+                    matched = true;
+                    break; // prevent duplicate matches with OR semantics
                 }
             }
 
             if (matched) {
-                eventNames.add(name);
-                docIds.add(event.getEventID());
-                ownedFlags.add(event.getOrganizerID().equals(uid));
+                filteredEventList.add(event);
             }
         });
 
         // Update UI
-        eventNamesAdapter.notifyDataSetChanged();
+        eventAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -449,7 +402,9 @@ public class EventsUIFragment extends Fragment {
 
         // If date is empty then fetch all events again
         if (date == null) {
-            fetchAllEvents();
+            filteredEventList.clear();
+            filteredEventList.addAll(eventList);
+            eventAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -457,21 +412,17 @@ public class EventsUIFragment extends Fragment {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
 
-        eventNames.clear();
-        docIds.clear();
-        ownedFlags.clear();
+        filteredEventList.clear();
 
         // Filter events by start date being after the date provided
         eventList.forEach(event -> {
             if (event.getEventStartTime() != null && event.getEventStartTime().isAfter(date)) {
-                eventNames.add(event.getName());
-                docIds.add(event.getEventID());
-                ownedFlags.add(event.getOrganizerID().equals(uid));
+                filteredEventList.add(event);
             }
         });
 
         // Update UI
-        eventNamesAdapter.notifyDataSetChanged();
+        eventAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -488,7 +439,9 @@ public class EventsUIFragment extends Fragment {
 
         // If date is empty then fetch all events again
         if (date == null || keywordsList == null || keywordsList.isEmpty()) {
-            fetchAllEvents();
+            filteredEventList.clear();
+            filteredEventList.addAll(eventList);
+            eventAdapter.notifyDataSetChanged();
             return;
         }
 
@@ -496,9 +449,7 @@ public class EventsUIFragment extends Fragment {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
 
-        eventNames.clear();
-        docIds.clear();
-        ownedFlags.clear();
+        filteredEventList.clear();
 
         // Filter events by start date being after the date provided
         eventList.forEach(event -> {
@@ -523,14 +474,12 @@ public class EventsUIFragment extends Fragment {
             }
 
             if (matched) {
-                eventNames.add(event.getName());
-                docIds.add(event.getEventID());
-                ownedFlags.add(event.getOrganizerID().equals(uid));
+                filteredEventList.add(event);
             }
 
         });
 
         // Update UI
-        eventNamesAdapter.notifyDataSetChanged();
+        eventAdapter.notifyDataSetChanged();
     }
 }

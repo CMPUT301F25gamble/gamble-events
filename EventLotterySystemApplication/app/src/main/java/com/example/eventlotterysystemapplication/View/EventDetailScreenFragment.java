@@ -120,7 +120,7 @@ public class EventDetailScreenFragment extends Fragment {
 
         if (getActivity() instanceof EditEventActivity) {
             backButton.setOnClickListener(v -> {
-               getActivity().finish();
+                getActivity().finish();
             });
         } else if (getActivity() instanceof AdminActivity) {
             backButton.setOnClickListener(v -> {
@@ -129,8 +129,8 @@ public class EventDetailScreenFragment extends Fragment {
             });
         } else {
             backButton.setOnClickListener(v -> {
-               NavHostFragment.findNavController(this)
-                       .navigateUp();
+                NavHostFragment.findNavController(this)
+                        .navigateUp();
             });
         }
 
@@ -258,11 +258,11 @@ public class EventDetailScreenFragment extends Fragment {
                                     } else {
                                         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
                                         // Make entrant effectively final by using a final variable
-                                       fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                               .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                                   EntrantLocation entrantLocation = null;
-                                                   if (location != null) {
-                                                       entrantLocation = new EntrantLocation();
+                                        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                    EntrantLocation entrantLocation = null;
+                                                    if (location != null) {
+                                                        entrantLocation = new EntrantLocation();
                                                         entrantLocation.setLatitude(location.getLatitude());
                                                         entrantLocation.setLongitude(location.getLongitude());
                                                     }

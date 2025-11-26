@@ -182,7 +182,7 @@ public class CreateOrEditEventFragment extends Fragment {
             }
         } else {
             binding.createOrEditEventTitle.setText(R.string.create_event_title_text);
-            binding.createOrEditEventDoneButton.setText(R.string.done_creating_event_text);
+            binding.createOrEditEventDoneButton.setText(R.string.create_event_title_text);
         }
 
         // Create Event
@@ -287,12 +287,6 @@ public class CreateOrEditEventFragment extends Fragment {
                 return; // stop here, let user fix inputs
             }
 
-            if(!validateDateCompare(LocalDateTime.now(),regStartTime)){
-                binding.createOrEditEventRegistrationEndEditText.setError("Registration Start Date and Time should be after now.");
-                binding.createOrEditEventRegistrationEndEditText.requestFocus();
-                return;
-            }
-
             if(!validateDateCompare(regStartTime,regEndTime)){
                 binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be after Registration Start Date and Time.");
                 binding.createOrEditEventRegistrationEndEditText.requestFocus();
@@ -321,10 +315,20 @@ public class CreateOrEditEventFragment extends Fragment {
             int limitWaitlistValue;
             if (!limitWaitlistStr.isEmpty()) {
                 limitWaitlistValue = Integer.parseInt(limitWaitlistStr);
+                if (limitWaitlistValue <= 0) {
+                    binding.createOrEditEventLimitWaitlistText.setError("Invalid wait list capacity");
+                    binding.createOrEditEventLimitWaitlistText.requestFocus();
+                    return;
+                }
             } else {
                 limitWaitlistValue = -1; // means no limit
             }
             int numOfSelectedEntrantsValue = Integer.parseInt(numOfSelectedEntrantsStr);
+            if (numOfSelectedEntrantsValue <= 0) {
+                binding.createOrEditEventSelectedEntrantsNumEditText.setError("Invalid number of selected entrants");
+                binding.createOrEditEventSelectedEntrantsNumEditText.requestFocus();
+                return;
+            }
 
             // Parse tags; split by commas
             ArrayList<String> tagsList = new ArrayList<>();
@@ -384,6 +388,9 @@ public class CreateOrEditEventFragment extends Fragment {
                                     } else {
                                         event.setMaxWaitingListCapacity(fetchedEvent.getMaxWaitingListCapacity());
                                     }
+                                }
+                                if (limitWaitlistValue == -1) {
+                                    event.setMaxWaitingListCapacity(limitWaitlistValue); // Set default
                                 }
                                 event.setMaxFinalListCapacity(numOfSelectedEntrantsValue);
 

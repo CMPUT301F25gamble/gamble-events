@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
@@ -22,6 +24,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -104,17 +108,27 @@ public class AdminViewNotificationFragment extends Fragment {
                 // Set up button to go to event
                 goToEventButton.setOnClickListener(v -> {
                     Log.d(TAG, "Go to event button clicked");
-                    // Set selected bottom navigation menu item to events
-//                    BottomNavigationView adminBottomNavMenu = requireActivity()
-//                            .findViewById(R.id.admin_bottom_nav_menu);
-//                    adminBottomNavMenu.setSelectedItemId(R.id.eventsUIFragment);
+                    // Must first check that event exists
+                    database.getEvent(notification.getEventID(), eventTask -> {
+                        Log.d("Database", "Checking if event exists");
+                        try {
+                            if (task.isSuccessful() && eventTask.getResult() != null) {
+                                Log.d(TAG, String.valueOf(eventTask.getResult()));
+                                Log.d(TAG, "Event exists");
 
-                    Bundle args = new Bundle();
-                    args.putString("eventId", notification.getEventID());
-                    Log.d(TAG, "Navigating");
+                                Bundle args = new Bundle();
+                                args.putString("eventId", notification.getEventID());
+                                Log.d(TAG, "Navigating");
 
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+                                NavHostFragment.findNavController(this)
+                                        .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+                            Toast toast = Toast.makeText(getContext(), "Event does not exist", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
                 });
 
             } else {

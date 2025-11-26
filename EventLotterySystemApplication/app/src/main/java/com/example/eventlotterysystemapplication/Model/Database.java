@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Model;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 
@@ -318,12 +319,15 @@ public class Database {
 
                     if (!deletingSelf) {
                         // Admin deleting another user
-                        Log.d("Database", "User deleted by an admin");
-                        listener.onComplete(Tasks.forResult(null));
+                        if (userDocDone.isSuccessful()) {
+                            Log.d("Database", "User deleted by an admin");
+                            listener.onComplete(Tasks.forResult(null));
+                            return;
+                        } else {
+                            Log.e("Database", "User deletion by admin failed");
+                            listener.onComplete(Tasks.forException(userDocDone.getException()));
+                        }
                         return;
-                    } else {
-                        Log.e("Database", "User deletion by admin failed");
-                        listener.onComplete(Tasks.forException(userDocDone.getException()));
                     }
 
                     // Deletes Firebase auth account (self-delete)
@@ -405,6 +409,37 @@ public class Database {
         });
     }
 
+    public void getUserEventsHistory(String userId, OnCompleteListener<List<Event>> listener){
+        eventRef.get().addOnSuccessListener(eventSnapshot -> {
+            List<Task<Event>> getUserEventsHistoryList = new ArrayList<>();
+            List<Event> userEventsHistory = new ArrayList<>();
+
+            for (DocumentSnapshot eventDocSnapshot : eventSnapshot.getDocuments()){
+                TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+
+                CollectionReference registration = eventDocSnapshot.getReference().collection("Registration");
+                registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        getEvent(eventDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                userEventsHistory.add(task.getResult());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
+
+                getUserEventsHistoryList.add(tcs.getTask());
+            }
+
+            Tasks.whenAllComplete(getUserEventsHistoryList).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(userEventsHistory));
+            });
+        });
+    }
 
     /**
      * Retrieves all events that the user can join
@@ -613,6 +648,7 @@ public class Database {
      * @param listener An OnCompleteListener that will be called when the operation finishes
      */
     public void getNotification(String notificationID, OnCompleteListener<Notification> listener){
+
         DocumentReference notificationDocRef = notificationRef.document(notificationID);
 
         notificationDocRef.get().addOnCompleteListener(task -> {

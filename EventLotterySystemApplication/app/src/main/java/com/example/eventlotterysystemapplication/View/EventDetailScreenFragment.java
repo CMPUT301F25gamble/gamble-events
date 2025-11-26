@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Controller.AdminActivity;
 import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
@@ -93,6 +94,7 @@ public class EventDetailScreenFragment extends Fragment {
         Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -120,12 +122,17 @@ public class EventDetailScreenFragment extends Fragment {
 
         if (getActivity() instanceof EditEventActivity) {
             backButton.setOnClickListener(v -> {
-               getActivity().finish();
+                getActivity().finish();
+            });
+        } else if (getActivity() instanceof AdminActivity) {
+            backButton.setOnClickListener(v -> {
+                NavHostFragment.findNavController(this)
+                        .popBackStack();
             });
         } else {
             backButton.setOnClickListener(v -> {
-               NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigateUp();
+                NavHostFragment.findNavController(this)
+                        .navigateUp();
             });
         }
 
@@ -288,11 +295,11 @@ public class EventDetailScreenFragment extends Fragment {
                                     } else {
                                         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
                                         // Make entrant effectively final by using a final variable
-                                       fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                               .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                                   EntrantLocation entrantLocation = null;
-                                                   if (location != null) {
-                                                       entrantLocation = new EntrantLocation();
+                                        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                                    EntrantLocation entrantLocation = null;
+                                                    if (location != null) {
+                                                        entrantLocation = new EntrantLocation();
                                                         entrantLocation.setLatitude(location.getLatitude());
                                                         entrantLocation.setLongitude(location.getLongitude());
                                                     }

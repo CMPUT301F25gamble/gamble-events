@@ -48,7 +48,7 @@ public class DatabaseIntegrationTests {
 
     @Before
     public void setup() {
-        database = new Database();
+        database = Database.getDatabase();
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         userRef = db.collection("User");
@@ -57,7 +57,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testAddUser() throws InterruptedException {
-        User user = new User("John", "john@john.com", "19034623", "deviceID1");
+        User user = new User("John", "john@john.com", "19034623", "deviceID1", "none");
 
         // Adds user
         database.addUser(user, task -> {
@@ -81,7 +81,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserStartingPoint() throws Exception {
-        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2");
+        User user = new User("Wizard","wizard@wizard.com", "676767", "deviceID2", "none");
 
         // Adds user
         database.addUser(user, task -> {
@@ -150,7 +150,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testDeleteUserOrganizedEventsStartingPoint() throws Exception {
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID3", "none");
 
         // Adds user
         database.addUser(user, task -> {
@@ -181,34 +181,33 @@ public class DatabaseIntegrationTests {
 
                 // Creates events for the user
                 Event event1 = new Event(
-                        "Wizard Training",
-                        "Learn how to pass your midterms",
-                        "Online",
-                        new String[]{"magic", "training"},
-                        userID,
-                        "2025-11-15T14:00",
-                        "2025-11-15T16:00",
-                        "2025-11-01T23:59",
-                        "2025-11-10T23:59",
-                        "2025-11-12T23:59",
-                        new EntrantList(),
-                        50,
-                        20
+//                        "Wizard Training",
+//                        "Learn how to pass your midterms",
+//                        "Online",
+//                        new String[]{"magic", "training"},
+//                        userID,
+//                        "2025-11-15T14:00",
+//                        "2025-11-15T16:00",
+//                        "2025-11-01T23:59",
+//                        "2025-11-10T23:59",
+//                        "2025-11-12T23:59",
+//                        50,
+//                        20
                 );
 
                 Event event2 = new Event(
-                        "Skiing",
-                        "Everyone should go skiing at Kicking Horse",
-                        "Kicking Horse Resort",
-                        new String[]{"ski", "outdoors"},
-                        userID,
-                        "2025-12-20T09:00",
-                        "2025-12-20T12:00",
-                        "2025-11-15T23:59",
-                        "2025-11-30T23:59",
-                        "2025-12-05T23:59",
-                        30,
-                        10
+//                        "Skiing",
+//                        "Everyone should go skiing at Kicking Horse",
+//                        "Kicking Horse Resort",
+//                        new String[]{"ski", "outdoors"},
+//                        userID,
+//                        "2025-12-20T09:00",
+//                        "2025-12-20T12:00",
+//                        "2025-11-15T23:59",
+//                        "2025-11-30T23:59",
+//                        "2025-12-05T23:59",
+//                        30,
+//                        10
                 );
 
                 database.addEvent(event1, task1 -> {
@@ -275,7 +274,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testUpdateUser() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID4", "none");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){
@@ -304,7 +303,7 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testViewAvailableEvents() throws InterruptedException{
-        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5");
+        User user = new User("Wizard", "wizard@wizard.com", "676767", "deviceID5", "none");
 
         database.addUser(user, task -> {
             if (task.isSuccessful()){
@@ -328,6 +327,20 @@ public class DatabaseIntegrationTests {
     @Test
     public void testAddEvent(){
 
+    }
+
+    @Test
+    public void testUserHistory(){
+        String userId = "OgHnIwpuvcNM29Q3jPoii5fXSe33";
+
+        Database.getDatabase().getUserEventsHistory(userId,task -> {
+            if (task.isSuccessful()){
+                Log.e("TestUserHistory", Integer.toString(task.getResult().size()));
+                for (Event e : task.getResult()){
+                    Log.e("TestUserHistory", e.getName());
+                }
+            }
+        });
     }
 
     @After

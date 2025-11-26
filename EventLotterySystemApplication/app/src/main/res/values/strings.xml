@@ -106,4 +106,7 @@
         You are about to <em>PERMANENTLY REMOVE</em> this organizer from <em>ALL</em> events they have created.\n
         This action will also <em>PERMANENTLY DELETE</em> their profile from the app.\n\n
         These action are <em>IRREVERSIBLE</em>!</string>
+    <string name="notification_logs_header_text">Notification Logs</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

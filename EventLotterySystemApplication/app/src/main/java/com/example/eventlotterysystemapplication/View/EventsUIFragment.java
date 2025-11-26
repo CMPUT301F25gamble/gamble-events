@@ -50,8 +50,8 @@ import java.util.Objects;
 
 public class EventsUIFragment extends Fragment {
     /* Don't change the char 'i' in the name, Android Studio never generated
-    * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
-    */
+     * a class named FragmentEventsUIBinding, therefore we cannot capitalize it
+     */
     private FragmentEventsUiBinding binding;
     // Holds event names to display in the ListView
     private ArrayAdapter<String> eventNamesAdapter;
@@ -438,8 +438,8 @@ public class EventsUIFragment extends Fragment {
                         description.toLowerCase().contains(lowercaseKeyword) ||
                         location.toLowerCase().contains(lowercaseKeyword) ||
                         tags.toLowerCase().contains(lowercaseKeyword)) {
-                        matched = true;
-                        break; // prevent duplicate matches with OR semantics
+                    matched = true;
+                    break; // prevent duplicate matches with OR semantics
                 }
             }
 

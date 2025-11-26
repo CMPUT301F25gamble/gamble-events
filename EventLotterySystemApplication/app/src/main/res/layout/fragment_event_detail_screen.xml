@@ -24,6 +24,7 @@
             eventImage,
             eventDetailTagText,
             tagsHorizontalRv,
+            infoContainer,
             eventDetailsTitle,
             eventDetailsDescScrollView,
             generateQRCodeButton,
@@ -98,6 +99,92 @@
         app:layout_constraintTop_toBottomOf="@+id/eventNameText"
         tools:targetApi="31" />
 
+    <LinearLayout
+        android:id="@+id/infoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_list_item"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/eventImage">
+
+        <!-- Location Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location: "
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/eventLocationText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="temp location name"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Registration End Time Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration End Time: "
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/eventRegEndText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="temp datetime"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Waitlist Capacity Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waitlist Capacity: "
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/waitlistText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="temp waitlist capacity"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/eventDetailTagText"
         android:layout_width="match_parent"
@@ -108,7 +195,7 @@
         android:textSize="16sp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/eventImage"
+        app:layout_constraintTop_toBottomOf="@+id/infoContainer"
         tools:layout_editor_absoluteX="16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -130,7 +217,7 @@
         android:textSize="18sp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintTop_toBottomOf="@+id/tagsHorizontalRv"
         tools:layout_editor_absoluteX="32dp" />
@@ -138,7 +225,7 @@
     <ScrollView
         android:id="@+id/eventDetailsDescScrollView"
         android:layout_width="0dp"
-        android:layout_height="175dp"
+        android:layout_height="100dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:overScrollMode="always"

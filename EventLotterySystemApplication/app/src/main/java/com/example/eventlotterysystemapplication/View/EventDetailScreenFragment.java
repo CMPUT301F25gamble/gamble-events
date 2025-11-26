@@ -46,6 +46,8 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -542,16 +544,31 @@ public class EventDetailScreenFragment extends Fragment {
      * @param event details to fill the page with
      */
     private void bindEvent(Event event) {
-        // Event name & description
+        // Event name, description, location, registration end time, and waitlist capacity
         String eventName = event.getName();
         String eventDesc = event.getDescription();
-        // Error Checking for null name or desc. (Don't think we need, may remove later)
-        if (eventName == null || eventDesc == null) {
-            Toast.makeText(requireContext(), "Missing name or description", Toast.LENGTH_LONG).show();
+        String eventLoc = event.getPlace();
+        String eventRegEndTime = event.getRegistrationEndTimeString();
+        int eventCurrentWaitlist = event.getEntrantWaitingList().size();
+        int eventWaitlistCapacity = event.getMaxWaitingListCapacity();
+
+        // Error Checking for null name, desc, location, registration end time. (Don't think we need, may remove later)
+        if (eventName == null || eventDesc == null || eventLoc == null || eventRegEndTime == null) {
+            Toast.makeText(requireContext(), "Missing event detail(s)", Toast.LENGTH_LONG).show();
             return;
         }
         binding.eventNameText.setText(eventName);
         binding.eventDetailsDescText.setText(eventDesc);
+        binding.eventLocationText.setText(eventLoc);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        binding.eventRegEndText.setText(event.getRegistrationEndTime().format(formatter));
+
+        if (eventWaitlistCapacity <= 0) {
+            binding.waitlistText.setText("None");
+        } else {
+            binding.waitlistText.setText(eventCurrentWaitlist + "/" +eventWaitlistCapacity);
+        }
 
         // Fetch tags from event
         // Get tags

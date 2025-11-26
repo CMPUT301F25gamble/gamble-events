@@ -684,6 +684,39 @@ public class Database {
         });
     }
 
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userId, OnCompleteListener<List<Notification>> listener){
+        notificationRef.get().addOnSuccessListener(notificationSnapshot -> {
+            List<Task<Notification>> getUserNotificationHistoryList = new ArrayList<>();
+            List<Notification> userNotificationHistory = new ArrayList<>();
+
+            for (DocumentSnapshot notificationDocSnapshot : notificationSnapshot.getDocuments()){
+                TaskCompletionSource<Notification> tcs = new TaskCompletionSource<>();
+
+                CollectionReference recipients = notificationDocSnapshot.getReference().collection("Recipients");
+                recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        getNotification(notificationDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                userNotificationHistory.add(task.getResult());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
+
+                getUserNotificationHistoryList.add(tcs.getTask());
+            }
+
+            Tasks.whenAllComplete(getUserNotificationHistoryList).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(userNotificationHistory));
+            });
+        });
+    }
+
     /**
      * This method is specific for allowing us to add to the recipient collection of the redraw of a
      * particular event, here check if the event already has a redraw notification, and if it does
@@ -787,11 +820,6 @@ public class Database {
                 }
             }
         });
-    }
-
-    // TODO Add get notifications from a given recipient
-    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
-//        Query notificationHistory = notificationRef.g
     }
 
     // TODO Add get events from userID

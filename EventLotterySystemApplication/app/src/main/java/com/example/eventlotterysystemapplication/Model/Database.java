@@ -446,51 +446,60 @@ public class Database {
      * @param user The user profile
      * @param listener An OnCompleteListener used to retrieve a list of Events
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void viewAvailableEvents(User user, OnCompleteListener<List<Event>> listener) {
         Timestamp now = Timestamp.now();
+
         // Queries events that are open for registration
         Query query = eventRef.whereLessThanOrEqualTo("registrationStartTime", now)
                 .whereGreaterThanOrEqualTo("registrationEndTime", now);
 
         query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("Database", "Fetch successful");
-                List<Event> availableEvents = new ArrayList<>();
-                List<Task<QuerySnapshot>> subTasks = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    if (!doc.getString("organizerID").equals(user.getUserID())) {
-                        DocumentReference eventRef = doc.getReference();
-                        CollectionReference regDocRef = eventRef.collection("Registration");
-                        int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Fetch failed", task.getException());
+                listener.onComplete(Tasks.forException(task.getException()));
+                return;
+            }
 
-                        // Checks if wait list is not full
-                        Task<QuerySnapshot> regTask = regDocRef.get().addOnSuccessListener(regCount -> {
-                            int count = regCount.size();
-                            if (count < waitListCapacity) {
-                                if ((waitListCapacity == -1) || (waitListCapacity > 0 && count < waitListCapacity)) {
-                                    parseEvent(doc, task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            Event event = task1.getResult();
-                                            availableEvents.add(event);
-                                        } else {
-                                            Log.e("Database", "Unable to parse event " + task1.getException());
-                                        }
-                                    });
-                                }
+            List<Event> availableEvents = new ArrayList<>();
+            List<Task<?>> allTasks = new ArrayList<>();
+
+            for (QueryDocumentSnapshot doc : task.getResult()) {
+                if (doc.getString("organizerID").equals(user.getUserID())) continue;
+
+                DocumentReference eventRef = doc.getReference();
+                CollectionReference regDocRef = eventRef.collection("Registration");
+                int waitListCapacity = doc.getLong("maxWaitingListCapacity").intValue();
+
+                // Checks if wait list is not full
+                Task<Event> regTask = regDocRef.get().continueWithTask(regCountTask -> {
+                    int count = regCountTask.getResult().size();
+
+                    if (waitListCapacity == -1 || count < waitListCapacity) {
+                        TaskCompletionSource<Event> parseTaskSource = new TaskCompletionSource<>();
+                        parseEvent(doc, parseTask -> {
+                            if (parseTask.isSuccessful()) {
+                                parseTaskSource.setResult(parseTask.getResult());
+                            } else {
+                                parseTaskSource.setException(parseTask.getException());
                             }
                         });
-                        subTasks.add(regTask);
+                        return parseTaskSource.getTask();
+                    } else {
+                        return Tasks.forResult(null);
                     }
-                    Tasks.whenAllComplete(subTasks).addOnCompleteListener(done -> {
-                        listener.onComplete(Tasks.forResult(availableEvents));
-                    });
-                }
-            } else {
-                Log.e("Database", "Fetch failed");
+                }).addOnSuccessListener(event -> {
+                    if (event != null) availableEvents.add(event);
+                });
+
+                allTasks.add(regTask);
             }
+
+            Tasks.whenAllComplete(allTasks).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(availableEvents));
+            });
         });
     }
+
 
     /**
      * Given some event object, we add its data to the database
@@ -684,6 +693,39 @@ public class Database {
         });
     }
 
+    // TODO Add get notifications from a given recipient
+    public void getUserNotificationHistory(String userId, OnCompleteListener<List<Notification>> listener){
+        notificationRef.get().addOnSuccessListener(notificationSnapshot -> {
+            List<Task<Notification>> getUserNotificationHistoryList = new ArrayList<>();
+            List<Notification> userNotificationHistory = new ArrayList<>();
+
+            for (DocumentSnapshot notificationDocSnapshot : notificationSnapshot.getDocuments()){
+                TaskCompletionSource<Notification> tcs = new TaskCompletionSource<>();
+
+                CollectionReference recipients = notificationDocSnapshot.getReference().collection("Recipients");
+                recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()){
+                        getNotification(notificationDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                userNotificationHistory.add(task.getResult());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
+
+                getUserNotificationHistoryList.add(tcs.getTask());
+            }
+
+            Tasks.whenAllComplete(getUserNotificationHistoryList).addOnCompleteListener(done -> {
+                listener.onComplete(Tasks.forResult(userNotificationHistory));
+            });
+        });
+    }
+
     /**
      * This method is specific for allowing us to add to the recipient collection of the redraw of a
      * particular event, here check if the event already has a redraw notification, and if it does
@@ -787,11 +829,6 @@ public class Database {
                 }
             }
         });
-    }
-
-    // TODO Add get notifications from a given recipient
-    public void getUserNotificationHistory(String userID, OnCompleteListener<ArrayList<Notification>> listener){
-//        Query notificationHistory = notificationRef.g
     }
 
     // TODO Add get events from userID

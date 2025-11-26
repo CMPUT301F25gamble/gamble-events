@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -74,16 +75,40 @@ public class SettingsNotificationsFragment extends Fragment {
             database.getUserFromDeviceID(deviceId, userTask -> {
                 if (userTask.isSuccessful()) {
                     User user = userTask.getResult();
-                    boolean lotteryOptIn = user.isOptOutLotteryStatusNotifications();
-                    boolean organiserOptIn = user.isOptOutSpecificNotifications();
+                    boolean lotteryOptOut = user.isOptOutLotteryStatusNotifications();
+                    boolean organiserOptOut = user.isOptOutSpecificNotifications();
 
                     // Set checkbox states
-                    lotteryNotifications.setChecked(lotteryOptIn);
-                    organiserNotifications.setChecked(organiserOptIn);
+                    lotteryNotifications.setChecked(lotteryOptOut);
+                    organiserNotifications.setChecked(organiserOptOut);
 
                     // On click listeners for checkboxes
                     lotteryNotifications.setOnClickListener(v -> {
-                        boolean lotteryOptOut = lotteryNotifications.isChecked();
+                        boolean lotteryOptOutStatus = lotteryNotifications.isChecked();
+                        user.setOptOutLotteryStatusNotifications(lotteryOptOutStatus);
+                        database.modifyUser(user, task -> {
+                            if (task.isSuccessful()) {
+                                Toast successToast = Toast.makeText(requireContext(), "Lottery notifications updated", Toast.LENGTH_SHORT);
+                                successToast.show();
+                            } else {
+                                Toast failureToast = Toast.makeText(requireContext(), "Failed to update lottery notifications", Toast.LENGTH_SHORT);
+                                failureToast.show();
+                            }
+                        });
+                    });
+
+                    organiserNotifications.setOnClickListener(v -> {
+                        boolean organiserOptOutStatus = organiserNotifications.isChecked();
+                        user.setOptOutSpecificNotifications(organiserOptOutStatus);
+                        database.modifyUser(user, task -> {
+                            if (task.isSuccessful()) {
+                                Toast successToast = Toast.makeText(requireContext(), "Organiser notifications updated", Toast.LENGTH_SHORT);
+                                successToast.show();
+                            } else {
+                                Toast failureToast = Toast.makeText(requireContext(), "Failed to update organiser notifications", Toast.LENGTH_SHORT);
+                                failureToast.show();
+                            }
+                        });
                     });
                 }
             });

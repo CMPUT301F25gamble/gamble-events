@@ -408,7 +408,7 @@ public class Database {
             }
         });
     }
-
+    // TODO: Add java doc for this function
     public void getUserEventsHistory(String userId, OnCompleteListener<List<Event>> listener){
         eventRef.get().addOnSuccessListener(eventSnapshot -> {
             List<Task<Event>> getUserEventsHistoryList = new ArrayList<>();

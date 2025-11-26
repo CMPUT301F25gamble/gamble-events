@@ -413,7 +413,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
                                                 NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                                        .navigateUp();
                                             }
                                             LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                             lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);

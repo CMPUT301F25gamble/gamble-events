@@ -119,12 +119,14 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 notificationMessage.setError("Message is required");
             }
 
+            Log.d("OrganiserSendNotificationUIFragment", "Sent notification button clicked");
+
             if (!messageTitle.isEmpty() && !messageContent.isEmpty()) {
 
                 Log.d(TAG, "Sent notification button clicked");
 
                 Database.getDatabase().getEvent(eventId, task -> {
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         Log.d(TAG, "EventRetrieved");
                         Log.d(TAG, messageTitle);
                         Log.d(TAG, messageContent);

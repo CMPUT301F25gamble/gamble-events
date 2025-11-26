@@ -154,30 +154,30 @@ public class MyEventsFragment extends Fragment {
                 binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
             })
                 // Hide loading and add a listener to handle errors
-            .addOnFailureListener(e -> {
-                binding.loadingMyEvents.setVisibility(View.GONE);
-                Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
-            });
+                .addOnFailureListener(e -> {
+                    binding.loadingMyEvents.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                });
 
-            // Handle the on click event for each list item
-            binding.myEventsListView.setOnItemClickListener((parent, v, position, id) -> {
-                String eventId = myEventDocIds.get(position); // docIds parallel list we built
-                // Bundle to indicate that we are coming from MyEventsFragment
-                Bundle args = new Bundle();
-                args.putString("eventId", myEventDocIds.get(position));
-                // DEFAULT VALUE
-                args.putBoolean("isOwnedEvent", false); // Does not matter since you're admin
+        // Handle the on click event for each list item
+        binding.myEventsListView.setOnItemClickListener((parent, v, position, id) -> {
+            String eventId = myEventDocIds.get(position); // docIds parallel list we built
+            // Bundle to indicate that we are coming from MyEventsFragment
+            Bundle args = new Bundle();
+            args.putString("eventId", myEventDocIds.get(position));
+            // DEFAULT VALUE
+            args.putBoolean("isOwnedEvent", false); // Does not matter since you're admin
 
-                if (isAdminMode) {
-                    NavHostFragment.findNavController(MyEventsFragment.this)
-                            .navigate(R.id.action_myEventsFragment_to_eventDetailScreenFragment, args);
-                } else {
-                    // Launch RegisterActivity as a fresh task and clear the old one
-                    Intent intent = new Intent(requireContext(), EditEventActivity.class);
-                    intent.putExtra("eventId", eventId);
-                    intent.putExtra("isOwnedEvent", true);
-                    startActivity(intent);
-                }
-            });
+            if (isAdminMode) {
+                NavHostFragment.findNavController(MyEventsFragment.this)
+                        .navigate(R.id.action_myEventsFragment_to_eventDetailScreenFragment, args);
+            } else {
+                // Launch RegisterActivity as a fresh task and clear the old one
+                Intent intent = new Intent(requireContext(), EditEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                intent.putExtra("isOwnedEvent", true);
+                startActivity(intent);
+            }
+        });
     }
 }

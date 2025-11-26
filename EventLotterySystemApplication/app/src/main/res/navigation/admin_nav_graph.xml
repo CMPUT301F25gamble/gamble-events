@@ -61,7 +61,11 @@
         android:id="@+id/eventDetailScreenFragment"
         android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
         android:label="fragment_event_detail_screen"
-        tools:layout="@layout/fragment_event_detail_screen" />
+        tools:layout="@layout/fragment_event_detail_screen" >
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
         <argument
             android:name="isOwnedEvent"
             app:argType="boolean"

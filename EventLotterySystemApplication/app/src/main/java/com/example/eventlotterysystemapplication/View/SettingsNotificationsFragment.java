@@ -77,10 +77,13 @@ public class SettingsNotificationsFragment extends Fragment {
                     User user = userTask.getResult();
                     boolean lotteryOptOut = user.isOptOutLotteryStatusNotifications();
                     boolean organiserOptOut = user.isOptOutSpecificNotifications();
+                    boolean adminOptOut = user.isOptOutAdminNotifications();
 
                     // Set checkbox states
                     lotteryNotifications.setChecked(lotteryOptOut);
                     organiserNotifications.setChecked(organiserOptOut);
+                    adminNotifications.setChecked(adminOptOut);
+
 
                     // On click listeners for checkboxes
                     lotteryNotifications.setOnClickListener(v -> {
@@ -106,6 +109,20 @@ public class SettingsNotificationsFragment extends Fragment {
                                 successToast.show();
                             } else {
                                 Toast failureToast = Toast.makeText(requireContext(), "Failed to update organiser notifications", Toast.LENGTH_SHORT);
+                                failureToast.show();
+                            }
+                        });
+                    });
+
+                    adminNotifications.setOnClickListener(v -> {
+                        boolean adminOptOutStatus = adminNotifications.isChecked();
+                        user.setOptOutAdminNotifications(adminOptOutStatus);
+                        database.modifyUser(user, task ->{
+                            if (task.isSuccessful()) {
+                                Toast successToast = Toast.makeText(requireContext(), "Admin notifications updated", Toast.LENGTH_SHORT);
+                                successToast.show();
+                            } else {
+                                Toast failureToast = Toast.makeText(requireContext(), "Failed to update admin notifications", Toast.LENGTH_SHORT);
                                 failureToast.show();
                             }
                         });

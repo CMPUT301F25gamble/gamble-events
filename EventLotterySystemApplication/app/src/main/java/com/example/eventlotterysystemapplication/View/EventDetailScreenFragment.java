@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -111,6 +112,7 @@ public class EventDetailScreenFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -168,6 +168,7 @@ public class EventDetailScreenFragment extends Fragment {
                             if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
                                 showChosenEntrantButtons(entrant.getStatus());
                             }
+
                             // Update the waitlist button colors and text based on if the user is in the waitlist
                             changeWaitlistBtn(entrant != null &&
                                     entrant.getStatus() == EntrantStatus.WAITING);
@@ -205,12 +206,24 @@ public class EventDetailScreenFragment extends Fragment {
             binding.acceptChosenEntrantButton.setOnClickListener(v -> {
                 // Accept invitation
                 entrant.setStatus(EntrantStatus.FINALIZED);
+                binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+
+
+                // TODO: DANIEL CAN FIX
+                binding.navigationBarButton.setVisibility(View.VISIBLE);
+                binding.navigationBarButton.setEnabled(false);
+                binding.navigationBarButton.setText("FINALIZED");
+                binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
+                binding.navigationBarButton.setTextColor(R.color.black);
+                // Thx Daniel, end video
+
                 updateEventDB(event);
             });
             // Decline Button
             binding.declineChosenEntrantButton.setOnClickListener(v -> {
                 // Decline invitation
                 entrant.setStatus(EntrantStatus.CANCELLED);
+                binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                 updateEventDB(event);
             });
 
@@ -340,7 +353,7 @@ public class EventDetailScreenFragment extends Fragment {
 
     /**
      * Removes an action from the database (action could be: event, image, or organizer)
-     * @param action
+     * @param action the action to remove from the database
      */
     private void removeAction(String action) {
         // Inflate the layout
@@ -460,9 +473,9 @@ public class EventDetailScreenFragment extends Fragment {
 
     /**
      * Updates the waitlist button colors and text based on if the user is in the waitlist
-     * @param status status is an EntrantStatus type such that it can be checked whether user is in waitlist of event or not
+     * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
-    private void changeWaitlistBtn(EntrantStatus status) {
+    private void changeWaitlistBtn(boolean userInWaitlist) {
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
@@ -471,7 +484,7 @@ public class EventDetailScreenFragment extends Fragment {
             return;
         }
 
-        if (status.equals(EntrantStatus.WAITING)) {
+        if (userInWaitlist) {
             // User is in waiting list already so change button to leave waitlist
             binding.navigationBarButton.setText(R.string.leave_waitlist_text);
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red));
@@ -479,10 +492,6 @@ public class EventDetailScreenFragment extends Fragment {
             // User is not in waiting list
             binding.navigationBarButton.setText(R.string.join_waitlist_text);
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green));
-            if (status.equals(EntrantStatus.CHOSEN) || status.equals(EntrantStatus.CANCELLED) ||
-                    status.equals(EntrantStatus.FINALIZED)) {
-                        binding.navigationBarButton.setVisibility(View.GONE);
-            }
         }
     }
 

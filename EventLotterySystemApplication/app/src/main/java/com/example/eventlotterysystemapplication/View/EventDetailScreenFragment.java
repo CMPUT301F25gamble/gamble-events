@@ -214,7 +214,7 @@ public class EventDetailScreenFragment extends Fragment {
                 binding.navigationBarButton.setEnabled(false);
                 binding.navigationBarButton.setText("FINALIZED");
                 binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
-                binding.navigationBarButton.setTextColor(R.color.black);
+                binding.navigationBarButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
                 // Thx Daniel, end video
 
                 updateEventDB(event);

@@ -18,6 +18,7 @@ public class User{
     private boolean admin;
     private boolean optOutLotteryStatusNotifications;
     private boolean optOutSpecificNotifications;
+    private boolean optOutAdminNotifications;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -44,9 +45,10 @@ public class User{
         admin = false;
         this.optOutLotteryStatusNotifications = false;
         this.optOutSpecificNotifications = false;
+        this.optOutAdminNotifications = false;
     }
 
-    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications) {
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications, boolean optOutAdminNotifications) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -55,6 +57,7 @@ public class User{
         admin = false;
         this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
         this.optOutSpecificNotifications = optOutSpecificNotifications;
+        this.optOutAdminNotifications = optOutAdminNotifications;
     }
     /**
      * Gets the userID of the current user object
@@ -218,5 +221,13 @@ public class User{
                 Log.e("Database", "Cannot modify user");
             }
         });
+    }
+
+    public boolean isOptOutAdminNotifications() {
+        return optOutAdminNotifications;
+    }
+
+    public void setOptOutAdminNotifications(boolean optOutAdminNotifications) {
+        this.optOutAdminNotifications = optOutAdminNotifications;
     }
 }

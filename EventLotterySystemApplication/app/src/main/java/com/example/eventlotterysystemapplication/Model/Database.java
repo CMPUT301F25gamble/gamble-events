@@ -648,6 +648,7 @@ public class Database {
      * @param listener An OnCompleteListener that will be called when the operation finishes
      */
     public void getNotification(String notificationID, OnCompleteListener<Notification> listener){
+
         DocumentReference notificationDocRef = notificationRef.document(notificationID);
 
         notificationDocRef.get().addOnCompleteListener(task -> {

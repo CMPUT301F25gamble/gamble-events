@@ -123,7 +123,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             backButton.setOnClickListener(v -> {
                NavHostFragment.findNavController(EventDetailScreenFragment.this)
-                       .navigateUp();
+                       .navigate(R.id.action_event_detail_screen_to_events_ui_fragment);
             });
         }
 

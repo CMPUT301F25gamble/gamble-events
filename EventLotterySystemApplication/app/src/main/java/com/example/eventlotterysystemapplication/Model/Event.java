@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
@@ -19,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,11 +35,11 @@ public class Event {
     private ArrayList<String> eventTags;
     private User organizer;
     private String organizerID;
-    private List<Entrant> entrantList=new ArrayList<Entrant>();
+    private List<Entrant> entrantList;
     private int maxWaitingListCapacity;
     private int maxFinalListCapacity;
     private boolean isRecurring;
-    private boolean geolocationRequirement;
+    private Boolean geolocationRequirement = true;
     private int recurringFrequency;
     private String eventPosterUrl;
 
@@ -56,8 +59,7 @@ public class Event {
     private transient LocalDateTime registrationEndTime;
     private transient LocalDateTime invitationAcceptanceDeadline;
     private transient LocalDateTime recurringEndDate;
-    private static DateTimeFormatter formatter;
-
+    private static DateTimeFormatter formatter= DateTimeFormatter.ISO_LOCAL_DATE_TIME;;
 
     @Exclude
     private Bitmap QRCodeBitmap;
@@ -100,14 +102,13 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean geolocationRequirement){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
         this.name = name;
         this.description = description;
         this.place = place;
         this.eventTags = eventTags;
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.registrationStartTime = registrationStartTime;
@@ -150,7 +151,7 @@ public class Event {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
-                 int maxWaitingListCapacity, int maxFinalListCapacity, boolean geolocationRequirement){
+                 int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
 
         this.name = name;
         this.description = description;
@@ -158,7 +159,6 @@ public class Event {
         this.eventTags = new ArrayList<>(Arrays.asList(eventTags));
         this.organizerID = organizerID;
 
-        formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         this.eventStartTime = LocalDateTime.parse(eventStartTime, formatter);
         this.eventEndTime = LocalDateTime.parse(eventEndTime, formatter);
         this.registrationStartTime = LocalDateTime.parse(registrationStartTime, formatter);
@@ -485,11 +485,14 @@ public class Event {
         this.recurringFrequency = recurringFrequency;
     }
 
-    public boolean isGeolocationRequirement() {
-        return geolocationRequirement;
+
+    @PropertyName("geolocationRequirement")
+    public Boolean isGeolocationRequirement() {
+        return Objects.requireNonNullElse(geolocationRequirement, false);
     }
 
-    public void setGeolocationRequirement(boolean geolocationRequirement) {
+    @PropertyName("geolocationRequirement")
+    public void setGeolocationRequirement(Boolean geolocationRequirement) {
         this.geolocationRequirement = geolocationRequirement;
     }
 
@@ -737,7 +740,7 @@ public class Event {
      */
     @Exclude
     public List<Entrant> getEntrantListByStatus(EntrantStatus entrantStatus) {
-        return entrantList.stream()
+        return getEntrantList().stream()
                 .filter(e -> e.getStatus() == entrantStatus)
                 .collect(Collectors.toList());
     }
@@ -834,7 +837,7 @@ public class Event {
      */
     @Exclude
     public List<User> getUserListByStatus(EntrantStatus entrantStatus) {
-        return entrantList.stream()
+        return getEntrantList().stream()
                 .filter(e -> e.getStatus() == entrantStatus)
                 .map(Entrant::getUser)   // transform Entrant ? User
                 .collect(Collectors.toList());
@@ -876,14 +879,6 @@ public class Event {
         return getUserListByStatus(EntrantStatus.FINALIZED);
     }
 
-    /**
-     * A setter for the entrant list
-     * @param entrantList The entrant list object
-     */
-    @Exclude
-    public void setEntrantList(List<Entrant> entrantList ) {
-        this.entrantList = entrantList;
-    }
 
     @Exclude
     public void addToEntrantList(User user, EntrantLocation entrantLocation) throws IllegalArgumentException {
@@ -900,11 +895,8 @@ public class Event {
      */
     @Exclude
     public void addToEntrantList(Entrant entrant) throws IllegalArgumentException {
-        if(entrantList==null){
-            entrantList = new ArrayList<Entrant>();
-        }
         if(!isEntrantExists(entrant)){
-            entrantList.add(entrant);
+            getEntrantList().add(entrant);
         }
     }
 
@@ -934,7 +926,7 @@ public class Event {
 
     @Exclude
     public boolean isEntrantExists(Entrant entrant){
-        for(Entrant entrant1:entrantList){
+        for(Entrant entrant1:getEntrantList()){
             if(entrant1.equals(entrant)){
                 return true;
             }
@@ -944,7 +936,7 @@ public class Event {
 
     @Exclude
     public Entrant genEntrantIfExists(User user){
-        for(Entrant entrant:entrantList){
+        for(Entrant entrant:getEntrantList()){
             if(entrant.getUser().getUserID().equals(user.getUserID())){
                 return entrant;
             }
@@ -955,9 +947,9 @@ public class Event {
 
     @Exclude
     public boolean removeEntrant(Entrant entrant){
-        for(Entrant entrant1:entrantList){
+        for(Entrant entrant1:getEntrantList()){
             if(entrant1.getUser().getUserID().equals(entrant.getUser().getUserID())){
-                entrantList.remove(entrant1);
+                getEntrantList().remove(entrant1);
                 return true;
             }
         }

@@ -7,9 +7,13 @@
 
     <fragment
         android:id="@+id/adminNotifications"
-        android:name="com.example.eventlotterysystemapplication.View.AdminNotifications"
+        android:name="com.example.eventlotterysystemapplication.View.AdminNotificationsFragment"
         android:label="fragment_admin_notifications"
-        tools:layout="@layout/fragment_admin_notifications" />
+        tools:layout="@layout/fragment_admin_notifications" >
+        <action
+            android:id="@+id/action_adminNotifications_to_adminViewNotificationFragment"
+            app:destination="@id/adminViewNotificationFragment" />
+    </fragment>
     <fragment
         android:id="@+id/eventsUIFragment"
         android:name="com.example.eventlotterysystemapplication.View.EventsUIFragment"
@@ -18,6 +22,10 @@
         <action
             android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="none" />
     </fragment>
     <fragment
         android:id="@+id/settingsUIFragment"
@@ -44,9 +52,6 @@
         <action
             android:id="@+id/action_profileUIFragment_to_deleteProfileFragment"
             app:destination="@id/deleteProfileFragment" />
-        <action
-            android:id="@+id/action_profileUIFragment_to_myEventsFragment"
-            app:destination="@id/myEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/deleteProfileFragment"
@@ -59,24 +64,40 @@
         <action
             android:id="@+id/action_deleteProfileFragment_to_allProfilesFragment"
             app:destination="@id/allProfilesFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailScreenFragment"
         android:name="com.example.eventlotterysystemapplication.View.EventDetailScreenFragment"
         android:label="fragment_event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen" >
-        <action
-            android:id="@+id/action_eventDetailScreenFragment_to_myEventsFragment"
-            app:destination="@id/myEventsFragment" />
         <argument
             android:name="eventId"
             app:argType="string" />
-
+    </fragment>
         <argument
             android:name="isOwnedEvent"
             app:argType="boolean"
-            android:defaultValue="false" />
-
+            android:defaultValue="false"/>
+        <action
+            android:id="@+id/action_eventDetailScreenFragment_to_eventsUIFragment"
+            app:destination="@id/eventsUIFragment" />
+    <fragment
+        android:id="@+id/adminViewNotificationFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AdminViewNotificationFragment"
+        android:label="fragment_admin_view_notification"
+        tools:layout="@layout/fragment_admin_view_notification" >
+        <action
+            android:id="@+id/action_adminViewNotificationFragment_to_adminNotifications"
+            app:destination="@id/adminNotifications" />
+        <argument
+            android:name="notificationId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_adminViewNotificationFragment_to_eventsUIFragment"
+            app:destination="@id/eventsUIFragment" />
     </fragment>
     <fragment
         android:id="@+id/myEventsFragment"
@@ -90,4 +111,4 @@
             android:id="@+id/action_myEventsFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
     </fragment>
-</navigation>
+    </navigation>

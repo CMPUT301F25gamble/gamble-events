@@ -116,13 +116,6 @@ public class EventDetailScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
 
-        // TODO implement checking event geolocation requirements
-        if ( ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1001);
-        }
         return binding.getRoot();
     }
 
@@ -163,6 +156,17 @@ public class EventDetailScreenFragment extends Fragment {
             if (task.isSuccessful()) {
                 // Grab event and bind it
                 event = task.getResult();
+
+                // Checking event geolocation requirements
+                if(event.isGeolocationRequirement()) {
+                    if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                1001);
+                    }
+                }
+
                 organizerID = event.getOrganizerID(); // Used for admin control
                 if(!isOwnedEvent && currentUser!=null) {
                     isOwnedEvent =  currentUser.getUserID().equals(organizerID);

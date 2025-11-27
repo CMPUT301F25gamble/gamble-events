@@ -659,7 +659,7 @@ public class EventDetailScreenFragment extends Fragment {
                     .into(binding.eventImage);
         } else {
             // Set the image template to default image
-            binding.eventImage.setImageResource(R.drawable.image_template);
+             binding.eventImage.setImageResource(R.drawable.image_template);
         }
 
         // Debugging

@@ -416,8 +416,8 @@ public class CreateOrEditEventFragment extends Fragment {
                                             } else {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
-                                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                                Bundle args = new Bundle();
+                                                navigateFromCreateEditEvent(event);
                                             }
                                             LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                             lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
@@ -438,8 +438,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");
-                                            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                            navigateFromCreateEditEvent(event);
                                         }
                                         LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                         lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
@@ -619,19 +618,30 @@ public class CreateOrEditEventFragment extends Fragment {
                         database.updateEvent(event, task -> {
                             if (task.isSuccessful()) {
                                 // Return to events page
-                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                navigateFromCreateEditEvent(event);
                             }
                         });
 
                     } else {
                         Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
                         // Return to events page anyways as event is created
-                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                        navigateFromCreateEditEvent(event);
                     }
                 }
         );
+    }
+
+    private void navigateFromCreateEditEvent(Event event){
+        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
+        if(argEventId!=null) {
+                        Bundle args = new Bundle();
+            args.putString("eventId", argEventId);
+                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
+        }else{
+            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
+                    }
     }
 
     /**

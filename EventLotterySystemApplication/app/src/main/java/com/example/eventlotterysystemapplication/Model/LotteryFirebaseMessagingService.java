@@ -92,9 +92,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
                     .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
                     .setContentIntent(pendingIntent) // Pending intent triggered when tapped
                     .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .addAction(0, "Accept", pendingIntent)
-                    .addAction(1, "Decline", pendingIntent);
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);
         } else {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon

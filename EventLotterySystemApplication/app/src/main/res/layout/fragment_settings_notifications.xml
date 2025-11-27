@@ -53,7 +53,7 @@
         android:layout_marginEnd="16dp"
         android:text="Opt-in for all notifications on lottery status"
         android:textSize="16sp"
- />
+        />
 
     <CheckBox
         android:layout_width="match_parent"
@@ -112,6 +112,15 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Opt in for specific notifications"
+        android:textSize="16sp"
+        />
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Enable Geolocation"
         android:textSize="16sp"
         />
     

@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.Model;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -414,13 +415,15 @@ public class Database {
      * @param userId The user's ID
      * @param listener An OnCompleteListener used to retrieve a list of Events
      */
-    public void getUserEventsHistory(String userId, OnCompleteListener<List<Event>> listener){
+    public void getUserEventsHistory(String userId, OnCompleteListener<Pair<List<Event>, List<EntrantStatus>>> listener){
         eventRef.get().addOnSuccessListener(eventSnapshot -> {
-            List<Task<Event>> getUserEventsHistoryList = new ArrayList<>();
+            List<Task<Void>> getUserEventsHistoryList = new ArrayList<>();
             List<Event> userEventsHistory = new ArrayList<>();
+            // For Entrant Status, DO NOT REMOVE
+            List<EntrantStatus> userStatuses = new ArrayList<>();
 
             for (DocumentSnapshot eventDocSnapshot : eventSnapshot.getDocuments()){
-                TaskCompletionSource<Event> tcs = new TaskCompletionSource<>();
+                TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
                 CollectionReference registration = eventDocSnapshot.getReference().collection("Registration");
                 registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
@@ -428,12 +431,30 @@ public class Database {
                         tcs.setResult(null);
                     }
 
+                    // Start Entrant Status Logic, DO NOT REMOVE
+                    String statusString = documentSnapshot.getString("status");
+                    EntrantStatus status = null;
+
+                    if (statusString != null) {
+                        try {
+                            status = EntrantStatus.valueOf(statusString);
+                        } catch (IllegalArgumentException e) {
+                            Log.e("Database", "Invalid status: " + statusString);
+                            status = null;
+                        }
+                    }
+
+                    EntrantStatus finalStatus = status;
+                    // End Entrant Status Logic, DO NOT REMOVE
+
                     if (documentSnapshot.exists()){
                         getEvent(eventDocSnapshot.getId(), task -> {
                             if (task.isSuccessful()){
                                 Log.d("Database", "Successfully retrieved event from reference");
-                                userEventsHistory.add(task.getResult());
-                                tcs.setResult(task.getResult());
+                                Event event = task.getResult();
+                                userEventsHistory.add(event);
+                                userStatuses.add(finalStatus);
+                                tcs.setResult(null);
                             } else {
                                 Log.e("Database", "Failed to retrieve event");
                                 tcs.setException(task.getException());
@@ -446,7 +467,7 @@ public class Database {
             }
 
             Tasks.whenAllComplete(getUserEventsHistoryList).addOnCompleteListener(done -> {
-                listener.onComplete(Tasks.forResult(userEventsHistory));
+                listener.onComplete(Tasks.forResult(new Pair<>(userEventsHistory, userStatuses)));
             });
         });
     }

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.R;
 
@@ -23,10 +24,21 @@ public class EventAdapter extends ArrayAdapter<Event> {
     private final Context context;
     private final List<Event> events;
 
+    // OPTIONAL: used for User events history screen
+    private List<EntrantStatus> statuses = null;
+
     public EventAdapter(Context context, List<Event> events) {
         super(context, R.layout.event_list_item, events);
         this.context = context;
         this.events = events;
+    }
+
+    // Used ONLY FOR user events history screen
+    public EventAdapter(Context context, List<Event> events, List<EntrantStatus> statuses) {
+        super(context, R.layout.event_list_item, events);
+        this.context = context;
+        this.events = events;
+        this.statuses = statuses;
     }
 
     @NonNull
@@ -42,10 +54,36 @@ public class EventAdapter extends ArrayAdapter<Event> {
         TextView title = view.findViewById(R.id.itemTitle);
         TextView deadline = view.findViewById(R.id.itemDeadline);
         RecyclerView tags = view.findViewById(R.id.itemTags);
+        // OPTIONAL: USED FOR User events history screen
+        TextView itemStatus = view.findViewById(R.id.itemStatus);
+
 
         title.setText(event.getName());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         deadline.setText("Registration End Time: " + event.getRegistrationEndTime().format(formatter));
+
+        // OPTIONAL: USED FOR User events history screen
+        if (statuses != null && position < statuses.size()) {
+            EntrantStatus status = statuses.get(position);
+            itemStatus.setVisibility(View.VISIBLE);
+            itemStatus.setText("Status: " + status);
+
+            // TODO: Switch case for different status color
+            switch (status) {
+                case CHOSEN:
+                    break;
+                case WAITING:
+                    break;
+                case CANCELLED:
+                    break;
+                case FINALIZED:
+                    break;
+            }
+
+        } else {
+            // Hide the status TextView if there is no corresponding status
+            itemStatus.setVisibility(View.GONE);
+        }
 
         // Setup tags RecyclerView
         tags.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));

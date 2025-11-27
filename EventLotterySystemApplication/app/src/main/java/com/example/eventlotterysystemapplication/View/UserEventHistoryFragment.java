@@ -2,6 +2,7 @@ package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.EventAdapter;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -102,7 +104,6 @@ public class UserEventHistoryFragment extends Fragment {
 
                     // Load event history of another user (ADMIN MODE)
                     loadEventHistoryForUser(currentUser.getUserID());
-
                 }
             });
         } else {
@@ -128,7 +129,6 @@ public class UserEventHistoryFragment extends Fragment {
 
                         // Load the event history for the user
                         loadEventHistoryForUser(currentUser.getUserID());
-
                     } else {
                         Log.e("UserEventHistoryFragment",
                                 "Failed to get user", task.getException());
@@ -147,12 +147,15 @@ public class UserEventHistoryFragment extends Fragment {
         database.getUserEventsHistory(userID, task -> {
             if (task.isSuccessful()) {
                 // Create new Array list
-                List<Event> userHistory = new ArrayList<>(task.getResult());
+                Pair<List<Event>, List<EntrantStatus>> result = task.getResult();
+                List<Event> events = result.first;
+                List<EntrantStatus> statuses = result.second;
+
                 Log.d("UserEventHistoryFragment", "User has "
-                        + userHistory.size() + " events");
+                        + events.size() + " events");
 
                 // Create + set new adapter
-                eventAdapter = new EventAdapter(requireContext(), userHistory);
+                eventAdapter = new EventAdapter(requireContext(), events, statuses);
                 binding.userEventHistoryListView.setAdapter(eventAdapter);
 
                 // Hide loading and show content after fetch completes

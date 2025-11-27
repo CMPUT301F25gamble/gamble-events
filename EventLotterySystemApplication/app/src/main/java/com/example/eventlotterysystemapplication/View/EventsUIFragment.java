@@ -159,7 +159,7 @@ public class EventsUIFragment extends Fragment {
                 args.putString("eventId", null);
                 NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.edit_event_nav_graph);
                 NavHostFragment.findNavController(EventsUIFragment.this)
-                        .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
+                        .navigate(R.id.create_or_edit_event_fragment, args);
             });
 
             // My Events button navigates to my events page

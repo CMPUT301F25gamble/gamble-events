@@ -164,10 +164,6 @@ public class EventDetailScreenFragment extends Fragment {
                         ActivityCompat.requestPermissions(requireActivity(),
                                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                 1001);
-                    } else if (!currentUser.isGeolocationPermissions()){
-                        ActivityCompat.requestPermissions(requireActivity(),
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                1001);
                     }
                 }
 

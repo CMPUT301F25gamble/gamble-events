@@ -19,7 +19,7 @@ public class User{
     private boolean optOutLotteryStatusNotifications;
     private boolean optOutSpecificNotifications;
     private boolean optOutAdminNotifications;
-    private boolean geolocationPermissions;
+    private boolean geolocationPermissions = false;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it

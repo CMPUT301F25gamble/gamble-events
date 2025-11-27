@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_profileUIFragment_to_myEventsFragment"
             app:destination="@id/myEventsFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_userEventHistoryFragment"
+            app:destination="@id/userEventHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/deleteProfileFragment"
@@ -117,4 +120,13 @@
             android:id="@+id/action_myEventsFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
     </fragment>
-    </navigation>
+    <fragment
+        android:id="@+id/userEventHistoryFragment"
+        android:name="com.example.eventlotterysystemapplication.View.UserEventHistoryFragment"
+        android:label="fragment_user_event_history"
+        tools:layout="@layout/fragment_user_event_history" >
+        <action
+            android:id="@+id/action_userEventHistoryFragment_to_profileUIFragment"
+            app:destination="@id/profileUIFragment" />
+    </fragment>
+</navigation>

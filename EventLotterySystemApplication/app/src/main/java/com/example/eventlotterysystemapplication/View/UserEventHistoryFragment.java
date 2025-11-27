@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.EventAdapter;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
@@ -32,11 +34,21 @@ public class UserEventHistoryFragment extends Fragment {
     private Database database;
     private User currentUser;
     private EventAdapter eventAdapter;
+    // Admin flow
+    private String userId;
+    private boolean isAdminMode;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentUserEventHistoryBinding.inflate(inflater, container, false);
+
+        // Fetch the global user ID and admin mode from the AdminSession class
+        userId = AdminSession.getSelectedUserId();
+        isAdminMode = AdminSession.getAdminMode();
+        Log.d("ProfileUIFragment",
+                "userId arg = " + userId + "; isAdminMode = " + isAdminMode);
+
         return binding.getRoot();
     }
 
@@ -50,8 +62,27 @@ public class UserEventHistoryFragment extends Fragment {
 
         // Back button navigates to user profile view
         binding.userEventHistoryBackButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(UserEventHistoryFragment.this)
-                    .navigate(R.id.action_user_event_history_fragment_to_profile_ui_fragment);
+            int hostId = isAdminMode
+                    ? R.id.admin_nav_host_fragment
+                    : R.id.content_nav_host_fragment;
+
+            NavHostFragment navHostFragment =
+                    (NavHostFragment) requireActivity()
+                            .getSupportFragmentManager()
+                            .findFragmentById(hostId);
+
+            if (navHostFragment == null) {
+                Log.e("NAV", "NavHostFragment is NULL for hostId=" + hostId);
+                return; // prevents crash
+            }
+
+            NavController navController = navHostFragment.getNavController();
+
+            if (isAdminMode) {
+                navController.navigate(R.id.action_userEventHistoryFragment_to_profileUIFragment);
+            } else {
+                navController.navigate(R.id.action_user_event_history_fragment_to_profile_ui_fragment);
+            }
         });
 
         // Create new instance of DB

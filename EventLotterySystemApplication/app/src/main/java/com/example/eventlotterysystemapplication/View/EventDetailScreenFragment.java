@@ -637,11 +637,11 @@ public class EventDetailScreenFragment extends Fragment {
 
         // set capacities
         if (eventWaitlistCapacity <= 0) {
-            binding.waitlistText.setText(eventCurrentWaitlist);
+            binding.waitlistText.setText(String.valueOf(eventCurrentWaitlist));
         } else {
             binding.waitlistText.setText(eventCurrentWaitlist + "/" + eventWaitlistCapacity);
         }
-        binding.chosenCapText.setText(eventChosenCapacity);
+        binding.chosenCapText.setText(String.valueOf(eventChosenCapacity));
 
         // Fetch tags from event
         // Get tags

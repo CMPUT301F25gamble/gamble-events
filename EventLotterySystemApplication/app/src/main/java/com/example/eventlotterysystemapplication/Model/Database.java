@@ -408,7 +408,12 @@ public class Database {
             }
         });
     }
-    // TODO: Add java doc for this function
+
+    /**
+     * Retrieves all events that the user has joined
+     * @param userId The user's ID
+     * @param listener An OnCompleteListener used to retrieve a list of Events
+     */
     public void getUserEventsHistory(String userId, OnCompleteListener<List<Event>> listener){
         eventRef.get().addOnSuccessListener(eventSnapshot -> {
             List<Task<Event>> getUserEventsHistoryList = new ArrayList<>();
@@ -419,9 +424,14 @@ public class Database {
 
                 CollectionReference registration = eventDocSnapshot.getReference().collection("Registration");
                 registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        tcs.setResult(null);
+                    }
+
                     if (documentSnapshot.exists()){
                         getEvent(eventDocSnapshot.getId(), task -> {
                             if (task.isSuccessful()){
+                                Log.d("Database", "Successfully retrieved event from reference");
                                 userEventsHistory.add(task.getResult());
                                 tcs.setResult(task.getResult());
                             } else {

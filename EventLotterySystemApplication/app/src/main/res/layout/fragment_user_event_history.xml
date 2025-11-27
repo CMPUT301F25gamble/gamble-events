@@ -6,25 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".View.UserEventHistoryFragment">
 
-<!--    <ProgressBar-->
-<!--        android:id="@+id/loading_user_event_history"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+    <ProgressBar
+        android:id="@+id/loading_user_event_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-<!--    &lt;!&ndash; Group referencing all content to HIDE while loading the DB info  &ndash;&gt;-->
-<!--    <androidx.constraintlayout.widget.Group-->
-<!--        android:id="@+id/content_group_events_ui"-->
-<!--        android:visibility="gone"-->
-<!--        app:constraint_referenced_ids="-->
-<!--            userEventHistoryBackButton,-->
-<!--            userEventHistoryTitle,-->
-<!--            userEventHistoryListView"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_width="match_parent"/>-->
+    <!-- Group referencing all content to HIDE while loading the DB info  -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_events_ui"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            userEventHistoryBackButton,
+            userEventHistoryTitle,
+            userEventHistoryListView"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
 
     <ImageButton
         android:id="@+id/userEventHistoryBackButton"

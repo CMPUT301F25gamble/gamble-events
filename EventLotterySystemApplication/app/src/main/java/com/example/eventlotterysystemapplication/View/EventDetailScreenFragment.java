@@ -228,17 +228,6 @@ public class EventDetailScreenFragment extends Fragment {
             entrant.setStatus(EntrantStatus.FINALIZED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-
-            // Generate QR Code when the GenerateQRCode Button is pressed
-            binding.generateQRCodeButton.setOnClickListener(v -> {
-                Database.getDatabase().getEvent(eventId, taskEvent -> {
-                    Event event = taskEvent.getResult();
-                    Bitmap qrBitmap = event.getQRCodeBitmap();
-                    showQRCodeDialog(qrBitmap);
-                    saveQRCodeToDownloads(qrBitmap, event.getName());  // Save QRCode to Downloads
-                    Toast.makeText(requireContext(), "QR Code Generated!",
-                            Toast.LENGTH_LONG).show();
-                });
             // TODO: DANIEL CAN FIX
             binding.navigationBarButton.setVisibility(View.VISIBLE);
             binding.navigationBarButton.setEnabled(false);
@@ -278,6 +267,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Event event = taskEvent.getResult();
                 Bitmap qrBitmap = event.getQRCodeBitmap();
                 showQRCodeDialog(qrBitmap);
+                saveQRCodeToDownloads(qrBitmap, event.getName());  // Save QRCode to Downloads
                 Toast.makeText(requireContext(), "QR Code Generated!",
                         Toast.LENGTH_LONG).show();
             });

@@ -599,31 +599,49 @@ public class EventDetailScreenFragment extends Fragment {
      * @param event details to fill the page with
      */
     private void bindEvent(Event event) {
-        // Event name, description, location, registration end time, and waitlist capacity
+        // Get event name, description, location, waitlist and chosen capacity
         String eventName = event.getName();
         String eventDesc = event.getDescription();
         String eventLoc = event.getPlace();
-        String eventRegEndTime = event.getRegistrationEndTimeString();
         int eventCurrentWaitlist = event.getEntrantWaitingList().size();
         int eventWaitlistCapacity = event.getMaxWaitingListCapacity();
+        int eventChosenCapacity = event.getMaxFinalListCapacity();
 
-        // Error Checking for null name, desc, location, registration end time. (Don't think we need, may remove later)
-        if (eventName == null || eventDesc == null || eventLoc == null || eventRegEndTime == null) {
-            Toast.makeText(requireContext(), "Missing event detail(s)", Toast.LENGTH_LONG).show();
+        // Error Checking for null name, desc, and location. (Don't think we need, may remove later)
+        if (eventName == null || eventDesc == null || eventLoc == null) {
+            Toast.makeText(requireContext(), "Missing event name or description", Toast.LENGTH_LONG).show();
             return;
         }
+        // Set UI event name, description, and location
         binding.eventNameText.setText(eventName);
         binding.eventDetailsDescText.setText(eventDesc);
         binding.eventLocationText.setText(eventLoc);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        binding.eventRegEndText.setText(event.getRegistrationEndTime().format(formatter));
+        // format times
+        String formattedEventStartTime = event.getEventStartTime().format(formatter);
+        String formattedEventEndTime = event.getEventEndTime().format(formatter);
+        String formattedRegEndTime = event.getRegistrationEndTime().format(formatter);
+        String formattedRegStartTime = event.getRegistrationStartTime().format(formatter);
+        String formattedInvAccTime = event.getInvitationAcceptanceDeadline().format(formatter);
 
-        if (eventWaitlistCapacity <= 0) {
-            binding.waitlistText.setText("None");
-        } else {
-            binding.waitlistText.setText(eventCurrentWaitlist + "/" +eventWaitlistCapacity);
+        // Error Checking for event and registration times. (Don't think we need, may remove later)
+        if (formattedEventStartTime == null || formattedEventEndTime == null || formattedRegEndTime == null || formattedRegStartTime == null || formattedInvAccTime == null) {
+            Toast.makeText(requireContext(), "Missing event registration time details", Toast.LENGTH_LONG).show();
+            return;
         }
+        // set periods
+        binding.eventPeriodText.setText(formattedEventStartTime + " to " + formattedEventEndTime);
+        binding.eventRegPeriodText.setText(formattedRegStartTime + " to " + formattedRegEndTime);
+        binding.eventInvitationDLText.setText(formattedInvAccTime);
+
+        // set capacities
+        if (eventWaitlistCapacity <= 0) {
+            binding.waitlistText.setText(eventCurrentWaitlist);
+        } else {
+            binding.waitlistText.setText(eventCurrentWaitlist + "/" + eventWaitlistCapacity);
+        }
+        binding.chosenCapText.setText(eventChosenCapacity);
 
         // Fetch tags from event
         // Get tags

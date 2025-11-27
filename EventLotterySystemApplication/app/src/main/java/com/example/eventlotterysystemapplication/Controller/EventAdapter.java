@@ -1,10 +1,17 @@
 package com.example.eventlotterysystemapplication.Controller;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -66,19 +73,28 @@ public class EventAdapter extends ArrayAdapter<Event> {
         if (statuses != null && position < statuses.size()) {
             EntrantStatus status = statuses.get(position);
             itemStatus.setVisibility(View.VISIBLE);
-            itemStatus.setText("Status: " + status);
 
-            // TODO: Switch case for different status color
-            switch (status) {
-                case CHOSEN:
-                    break;
-                case WAITING:
-                    break;
-                case CANCELLED:
-                    break;
-                case FINALIZED:
-                    break;
-            }
+            // Full String to display
+            String label = "Status: ";
+            String statusText = status.name();
+            String fullText = label + statusText;
+
+            SpannableString span = new SpannableString(fullText);
+
+            // Find start & end of the status
+            int start = fullText.indexOf(statusText);
+            int end = start + statusText.length();
+
+            // Apply bold to "Status: "
+            span.setSpan(new StyleSpan(Typeface.BOLD),
+                    start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Apply color to "[STATUS]"
+            span.setSpan(new ForegroundColorSpan(getStatusColor(status)),
+                    start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Set final styles
+            itemStatus.setText(span);
 
         } else {
             // Hide the status TextView if there is no corresponding status
@@ -91,5 +107,25 @@ public class EventAdapter extends ArrayAdapter<Event> {
         tags.setAdapter(tagAdapter);
 
         return view;
+    }
+
+    /**
+     * Helper function s.t.given an EntrantStatus, return the corresponding color associated with it
+     * @param status Either WAITING, CHOSEN, CANCELLED, or FINALIZED
+     * @return default color (black)
+     */
+    private int getStatusColor(EntrantStatus status) {
+        switch (status) {
+            case CHOSEN:
+                return Color.parseColor("#4CAF50"); // Green
+            case WAITING:
+                return Color.parseColor("#FF9800"); // Orange/Yellow
+            case CANCELLED:
+                return Color.parseColor("#F44336"); // Red
+            case FINALIZED:
+                return Color.parseColor("#4A4A4A"); // Dark Grey
+            default:
+                return Color.parseColor("#000000"); // Black
+        }
     }
 }

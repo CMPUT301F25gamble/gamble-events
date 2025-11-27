@@ -411,7 +411,7 @@ public class Database {
     }
 
     /**
-     * Retrieves all events that the user has joined
+     * Retrieves all events that the user has joined + their status
      * @param userId The user's ID
      * @param listener An OnCompleteListener used to retrieve a list of Events
      */

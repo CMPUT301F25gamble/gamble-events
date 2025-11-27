@@ -152,14 +152,16 @@ public class EventsUIFragment extends Fragment {
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
                 args.putString("eventId", null);
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.edit_event_nav_graph);
                 NavHostFragment.findNavController(EventsUIFragment.this)
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
 
             // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.edit_event_nav_graph);
                 NavHostFragment.findNavController(EventsUIFragment.this)
-                        .navigate(R.id.action_events_ui_fragment_to_my_events_fragment);
+                        .navigate(R.id.my_events_fragment);
             });
 
             // Show loading and hide content until it is fetched
@@ -191,9 +193,13 @@ public class EventsUIFragment extends Fragment {
             Log.d("EventsUIFragment", "eventId = " + event.getEventID());
 
             if (isAdminMode) {
+                // Now sets the graph before navigating
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.admin_nav_graph);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
             } else {
+                // Sets the graph before navigating, just to be safe
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.event_detail_screen, args);
             }

@@ -159,6 +159,7 @@ public class EventDetailScreenFragment extends Fragment {
 
                     // Update the "looks" of the button based on if the user is the organizer, in the waiting list, or not in the waiting list
                     Database.getDatabase().getUserFromDeviceID(deviceID, taskUser -> {
+
                         if (taskUser.isSuccessful()) {
                             User user = taskUser.getResult();
                             Log.d(TAG, "Grabbed user is: " + user);
@@ -570,6 +571,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             // Set the image template to default image
             binding.eventImage.setImageResource(R.drawable.image_template);
+            binding.eventImage.setVisibility(View.GONE);
         }
 
         // Debugging

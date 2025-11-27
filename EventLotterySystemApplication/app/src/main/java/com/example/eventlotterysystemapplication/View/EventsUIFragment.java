@@ -1,6 +1,9 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -31,11 +34,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -225,7 +230,7 @@ public class EventsUIFragment extends Fragment {
         }
 
         // Filter dialog
-        binding.eventsScreenFilterButton.setOnClickListener(v -> showFilterEventDialog(binding));
+        binding.eventsScreenFilterButton.setOnClickListener(v -> showFilterEventDialog(binding, view));
     }
 
     /**
@@ -234,12 +239,13 @@ public class EventsUIFragment extends Fragment {
      * confirm button, the events ui page will update based on what
      * the user inputted.
      */
-    private void showFilterEventDialog(FragmentEventsUiBinding binding) {
+    private void showFilterEventDialog(FragmentEventsUiBinding binding, View view) {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View dialogFilterEventsView = inflater.inflate(R.layout.dialog_filter_events, null);
 
         EditText keywordEditText = dialogFilterEventsView.findViewById(R.id.keywordSearchEditText);
         EditText availabilityEditText = dialogFilterEventsView.findViewById(R.id.availabilityEditText);
+        attachDateTimePicker(availabilityEditText, view);
 
         Button searchButton = dialogFilterEventsView.findViewById(R.id.dialogSearchButton);
         Button backButton1 = dialogFilterEventsView.findViewById(R.id.dialogBackButton);
@@ -289,6 +295,38 @@ public class EventsUIFragment extends Fragment {
         });
 
         dialog1.show();
+    }
+
+    private void attachDateTimePicker(EditText editText, View view) {
+        editText.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    view.getContext(),
+                    (view1, year, month, dayOfMonth) -> {
+                        calendar.set(year, month, dayOfMonth);
+
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                                getContext(),
+                                (timeView, hourOfDay, minute) -> {
+                                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                    calendar.set(Calendar.MINUTE, minute);
+
+                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                                    editText.setText(sdf.format(calendar.getTime()));
+                                },
+                                calendar.get(Calendar.HOUR_OF_DAY),
+                                calendar.get(Calendar.MINUTE),
+                                true
+                        );
+                        timePickerDialog.show();
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        });
     }
 
     /**

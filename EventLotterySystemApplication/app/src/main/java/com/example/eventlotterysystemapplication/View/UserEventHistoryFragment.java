@@ -88,50 +88,82 @@ public class UserEventHistoryFragment extends Fragment {
         // Create new instance of DB
         database = Database.getDatabase();
 
-        // Fetch user using Device ID
-        FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
-            database.getUserFromDeviceID(deviceId, task0 -> {
-                if (task0.isSuccessful()) {
-                    currentUser = task0.getResult();
+        if (isAdminMode) {
+            database.getUser(userId, task ->{
+                if (task.isSuccessful()) {
+                    currentUser = task.getResult();
+                    if (currentUser == null) {
+                        Log.e("UserEventHistoryFragment", "Admin: Couldn't fetch user");
+                    }
 
-                    // String resource for [USERNAME]’s Profile
+                    // Get a different user's profile
                     String profileTitle = currentUser.getName() + "'s Profile";
-                    // Get user ID
-                    String userID = currentUser.getUserID();
-                    Log.d("UserEventHistoryFragment", "User ID: " + userID);
-
-                    // Set the title
                     binding.userEventHistoryTitle.setText(profileTitle);
 
-                    // Populate userEventHistoryTitle
-                    binding.userEventHistoryTitle.setText(profileTitle);
+                    // Load event history of another user (ADMIN MODE)
+                    loadEventHistoryForUser(currentUser.getUserID());
 
-                    // Fetch the user's event history
-                    database.getUserEventsHistory(userID, task1 -> {
-                        if (task1.isSuccessful()) {
-
-                            // Create new Array list
-                            List<Event> userHistory = new ArrayList<>(task1.getResult());
-                            Log.d("UserEventHistoryFragment", "User has " +
-                                    userHistory.size() + " events");
-
-                            // Create + set new adapter
-                            eventAdapter = new EventAdapter(requireContext(), userHistory);
-                            binding.userEventHistoryListView.setAdapter(eventAdapter);
-
-                            // Hide loading and show content after fetch completes
-                            binding.loadingUserEventHistory.setVisibility(View.GONE);
-                            binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
-                        } else {
-                            Log.e("UserEventHistoryFragment",
-                                    "Failed to fetch user event history",
-                                    task1.getException());
-                        }
-                    });
-                } else {
-                    Log.e("UserEventHistoryFragment", "Failed to get user", task0.getException());
                 }
             });
+        } else {
+            // Fetch user using Device ID
+            FirebaseInstallations.getInstance().getId().addOnSuccessListener(deviceId -> {
+                database.getUserFromDeviceID(deviceId, task -> {
+                    if (task.isSuccessful()) {
+                        currentUser = task.getResult();
+                        if (currentUser == null) {
+                            Log.e("UserEventHistoryFragment", "Couldn't fetch user");
+                            return;
+                        }
+                        // String resource for [USERNAME]’s Profile
+                        String profileTitle = currentUser.getName() + "'s Profile";
+                        Log.d("UserEventHistoryFragment", "User ID: "
+                                + currentUser.getUserID());
+
+                        // Set the title
+                        binding.userEventHistoryTitle.setText(profileTitle);
+
+                        // Populate userEventHistoryTitle
+                        binding.userEventHistoryTitle.setText(profileTitle);
+
+                        // Load the event history for the user
+                        loadEventHistoryForUser(currentUser.getUserID());
+
+                    } else {
+                        Log.e("UserEventHistoryFragment",
+                                "Failed to get user", task.getException());
+                    }
+                });
+            });
+        }
+    }
+
+    /**
+     * Loads the event history for a user
+     * @param userID
+     */
+    private void loadEventHistoryForUser(String userID) {
+        // Fetch the user's event history
+        database.getUserEventsHistory(userID, task -> {
+            if (task.isSuccessful()) {
+                // Create new Array list
+                List<Event> userHistory = new ArrayList<>(task.getResult());
+                Log.d("UserEventHistoryFragment", "User has "
+                        + userHistory.size() + " events");
+
+                // Create + set new adapter
+                eventAdapter = new EventAdapter(requireContext(), userHistory);
+                binding.userEventHistoryListView.setAdapter(eventAdapter);
+
+                // Hide loading and show content after fetch completes
+                binding.loadingUserEventHistory.setVisibility(View.GONE);
+                binding.contentGroupEventsUi.setVisibility(View.VISIBLE);
+
+            } else {
+                Log.e("UserEventHistoryFragment",
+                        "Failed to fetch user event history", task.getException());
+            }
         });
     }
+
 }

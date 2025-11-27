@@ -86,8 +86,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
         Button sendNotificationButton = binding.sendNotificationButton;
 
         backButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putString("eventId", eventId);
             NavHostFragment.findNavController(OrganiserSendNotificationUIFragment.this)
-                    .navigate(R.id.action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment);
+                    .navigate(R.id.action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment, args);
 
         });
 

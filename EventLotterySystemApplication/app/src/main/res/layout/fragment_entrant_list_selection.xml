@@ -102,14 +102,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/allCancelledEntrantsButton" />
 
+    <TextView
+        android:id="@+id/mapTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="View map of entrants"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/pendingMapButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageButton
         android:id="@+id/pendingMapButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:src="@android:drawable/ic_dialog_map"
+        android:padding="12dp"
+        android:src="@drawable/map_icon"
+        android:background="@drawable/round_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/allPendingEntrantsButton"
+        app:layout_constraintLeft_toRightOf="@+id/mapTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/finalListOfEntrantsButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

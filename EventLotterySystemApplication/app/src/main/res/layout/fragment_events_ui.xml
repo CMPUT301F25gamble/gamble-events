@@ -64,6 +64,7 @@
 
     <ListView
         android:id="@+id/eventsList"
+        android:padding="8dp"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -71,6 +72,7 @@
         android:layout_marginEnd="16dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="12dp"
+        android:background="@drawable/rounded_list_item_v2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.65"
         app:layout_constraintStart_toStartOf="parent"

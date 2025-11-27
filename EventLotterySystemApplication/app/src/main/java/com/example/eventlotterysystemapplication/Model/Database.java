@@ -429,9 +429,10 @@ public class Database {
                                 tcs.setException(task.getException());
                             }
                         });
+                    } else {
+                        tcs.setResult(null);
                     }
                 });
-
                 getUserEventsHistoryList.add(tcs.getTask());
             }
 
@@ -714,6 +715,8 @@ public class Database {
                                 tcs.setException(task.getException());
                             }
                         });
+                    } else {
+                        tcs.setResult(null);
                     }
                 });
 
@@ -861,6 +864,9 @@ public class Database {
         event.setRegistrationStartTimeTS(doc.getTimestamp("registrationStartTime"));
         event.setRegistrationEndTimeTS(doc.getTimestamp("registrationEndTime"));
         event.setInvitationAcceptanceDeadlineTS(doc.getTimestamp("invitationAcceptanceDeadline"));
+
+        event.setGeolocationRequirement(doc.getBoolean("geolocationRequirement"));
+
         event.parseTimestamps();
 
         if (doc.get("eventPosterUrl") != null) {

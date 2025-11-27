@@ -4,11 +4,15 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +50,8 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -259,6 +265,7 @@ public class EventDetailScreenFragment extends Fragment {
                     Event event = taskEvent.getResult();
                     Bitmap qrBitmap = event.getQRCodeBitmap();
                     showQRCodeDialog(qrBitmap);
+                    saveQRCodeToDownloads(qrBitmap, event.getName());  // Save QRCode to Downloads
                     Toast.makeText(requireContext(), "QR Code Generated!",
                             Toast.LENGTH_LONG).show();
                 });
@@ -481,6 +488,54 @@ public class EventDetailScreenFragment extends Fragment {
         dialog.setCancelable(true); // Allow tapping outside to dismiss
         dialog.show();
     }
+
+    /**
+     * Saves a QR code Bitmap as a PNG file to the public Downloads folder.
+     *
+     * @param qrBitmap The QR bitmap to save
+     * @param eventName The name of the event used for the filename
+     */
+    private void saveQRCodeToDownloads(Bitmap qrBitmap, String eventName) {
+        if (qrBitmap == null) {
+            Toast.makeText(requireContext(), "QR Code is empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // File name that will appear in Downloads
+        String fileName = eventName + "_QRCode.png";
+
+        // Metadata for the file we are creating using the MediaStore API
+        ContentValues values = new ContentValues(); // key-value map container to hold metadata
+        values.put(MediaStore.Downloads.DISPLAY_NAME, fileName); // set name of file to appear in downloads
+        values.put(MediaStore.Downloads.MIME_TYPE, "image/png"); // indicate file type, which is png
+        values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);  // indicate path to store the file, which is downloads
+
+        Uri uri = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // create empty file in downloads using metadata provided
+            uri = requireContext().getContentResolver()
+                    .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+        }
+
+        if (uri == null) {
+            Toast.makeText(requireContext(), "Unable to create image file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create an OutputStream to write to the file we just created
+        try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri)) {
+            assert out != null;
+            qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Toast.makeText(requireContext(),
+                    "QR code saved to Downloads/" + fileName,
+                    Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(requireContext(),
+                    "Failed to save QR code: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     /**
      * Updates the waitlist button colors and text based on if the user is in the waitlist

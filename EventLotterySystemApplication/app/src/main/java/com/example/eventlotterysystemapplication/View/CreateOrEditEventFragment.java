@@ -203,7 +203,6 @@ public class CreateOrEditEventFragment extends Fragment {
 
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
-            v.setEnabled(false);
 
             // Get values from EditTexts
             // String userName = binding.nameEditText.getText().toString().trim();
@@ -333,6 +332,8 @@ public class CreateOrEditEventFragment extends Fragment {
                 binding.createOrEditEventSelectedEntrantsNumEditText.requestFocus();
                 return;
             }
+
+            v.setEnabled(false);
 
             // Parse tags; split by commas
             ArrayList<String> tagsList = new ArrayList<>();

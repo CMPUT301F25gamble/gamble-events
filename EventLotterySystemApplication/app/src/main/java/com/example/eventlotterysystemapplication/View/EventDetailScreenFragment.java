@@ -677,5 +677,20 @@ public class EventDetailScreenFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         binding.tagsHorizontalRv.setLayoutManager(layoutManager);
+
+        // Disable join waitlist button until registration starts
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime regStart = event.getRegistrationStartTime();
+
+        if (now.isBefore(regStart)) {
+            // Disable button until registration starts
+            binding.navigationBarButton.setEnabled(false);
+            binding.navigationBarButton.setText("Registration not open");
+            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
+        } else {
+            // Enable button
+            binding.navigationBarButton.setEnabled(true);
+            changeWaitlistBtn(false); // or update button based on user's waitlist status
+        }
     }
 }

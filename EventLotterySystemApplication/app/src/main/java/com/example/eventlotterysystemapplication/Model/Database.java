@@ -736,28 +736,23 @@ public class Database {
 
 
                 CollectionReference recipients = notificationDocSnapshot.getReference().collection("Recipients");
-//                try {
-                    recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Log.d("Database", "exists");
-                            getNotification(notificationDocSnapshot.getId(), task -> {
-                                if (task.isSuccessful()) {
-                                    userNotificationHistory.add(task.getResult());
-                                    Log.d("Database", "Notif id: " + task.getResult().getNotificationID());
-                                    tcs.setResult(task.getResult());
-                                } else {
-                                    Log.e("Database", "Failed to retrieve event");
-                                    tcs.setException(task.getException());
-                                }
-                            });
-                        } else {
-                            tcs.setResult(null);
-                        }
-                    });
-//                } catch (NullPointerException e) {
-//                    Log.d("Database", "Null pointer exception");
-//                    continue;
-//                }
+                recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Log.d("Database", "exists");
+                        getNotification(notificationDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()) {
+                                userNotificationHistory.add(task.getResult());
+                                Log.d("Database", "Notif id: " + task.getResult().getNotificationID());
+                                tcs.setResult(task.getResult());
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    } else {
+                        tcs.setResult(null);
+                    }
+                });
 
                 getUserNotificationHistoryList.add(tcs.getTask());
             }

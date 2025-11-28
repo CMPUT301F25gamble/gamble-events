@@ -163,7 +163,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
         <AutoCompleteTextView
-            android:id="@+id/createOrEditEventLocationTextVeiw"
+            android:id="@+id/createOrEditEventLocationTextView"
             android:hint="Enter Address"
             android:inputType="text"
             android:completionThreshold="1"

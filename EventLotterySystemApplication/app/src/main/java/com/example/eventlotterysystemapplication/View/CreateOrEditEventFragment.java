@@ -124,7 +124,7 @@ public class CreateOrEditEventFragment extends Fragment {
         }
         placesClient = Places.createClient(requireContext());
 
-        addressAutoComplete = root.findViewById(R.id.createOrEditEventLocationTextVeiw);
+        addressAutoComplete = root.findViewById(R.id.createOrEditEventLocationTextView);
 
         adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_dropdown_item_1line, new ArrayList<>());
@@ -205,7 +205,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String eventName = binding.createOrEditEventEventNameEditText.getText().toString().trim();
             String eventDesc = binding.createOrEditEventEventDescEditText.getText().toString().trim();
             String tagsStr = binding.createOrEditEventTagsEditText.getText().toString().trim();
-            String eventLocation = binding.createOrEditEventLocationTextVeiw.getText().toString().trim();
+            String eventLocation = binding.createOrEditEventLocationTextView.getText().toString().trim();
             String eventStartTimeStr = binding.createOrEditEventEventStartDateAndTimeEditText.getText().toString().trim();
             String eventEndTimeStr = binding.createOrEditEventEventEndDateAndTimeEditText.getText().toString().trim();
             String regStartTimeStr = binding.createOrEditEventRegistrationStartEditText.getText().toString().trim();
@@ -227,8 +227,8 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
             if (eventLocation.isEmpty()) {
-                binding.createOrEditEventLocationTextVeiw.setError("EntrantLocation is required");
-                binding.createOrEditEventLocationTextVeiw.requestFocus();
+                binding.createOrEditEventLocationTextView.setError("EntrantLocation is required");
+                binding.createOrEditEventLocationTextView.requestFocus();
                 return;
             }
             if (eventStartTimeStr.isEmpty()) {
@@ -520,7 +520,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String tagsStr = String.join(",", event.getEventTags());
             binding.createOrEditEventTagsEditText.setText(tagsStr);
         }
-        binding.createOrEditEventLocationTextVeiw.setText(event.getPlace());
+        binding.createOrEditEventLocationTextView.setText(event.getPlace());
 
         // Set dates
         binding.createOrEditEventEventStartDateAndTimeEditText.setText(

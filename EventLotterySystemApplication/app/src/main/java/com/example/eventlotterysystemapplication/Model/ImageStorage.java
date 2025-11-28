@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -14,7 +15,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -189,5 +192,76 @@ public class ImageStorage {
                 listener.onComplete(Tasks.forResult(downloadUrls));
             });
         });
+    }
+
+    /**
+     * Fetch all the poster images but group them by user ids. A hashmap will be used (key: user id string,
+     * value: list of all the poster image download urls created by the user)
+     * @param listener A OnCompleteListener that will be called upon fetch task completion, the task
+     *                 object will contain a hashmap of user id keys to list of poster download urls for the values
+     * @return An asynchronous hashmap task used ONLY for integration testing purposes. Please do not
+     * use the return result to access the task, use the OnCompleteListener instead :)
+     */
+    public Task<Map<String, List<String>>> fetchAllPosterImageUrlsByUserId(OnCompleteListener<Map<String, List<String>>> listener) {
+        Map<String, List<String>> userPosterImages = new HashMap<>();
+        TaskCompletionSource<Map<String, List<String>>> tcs = new TaskCompletionSource<>();
+
+        posterImagesRef.listAll().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e(TAG, "Could not fetch all events");
+                listener.onComplete(Tasks.forException(Objects.requireNonNull(task.getException())));
+                return;
+            }
+
+            List<StorageReference> posterRefList = task.getResult().getItems();
+            List<Task<Event>> eventTasks = new ArrayList<>();
+
+            for (StorageReference posterRef : posterRefList) {
+                // Get event id then get the associated organizer id (so that we know which user uploaded the poster)
+                String eventId = posterRef.getName().split("\\.")[0]; // event id will be the string before the extension
+                try {
+                    TaskCompletionSource<Event> eventTcs = new TaskCompletionSource<>();
+                    Database.getDatabase().getEvent(eventId, eventTask -> {
+                        eventTcs.setResult(eventTask.getResult());
+                        if (!eventTask.isSuccessful()) {
+                            listener.onComplete(Tasks.forException(new Exception("Could not fetch event")));
+                            return;
+                        }
+
+                        Event event = eventTask.getResult();
+                        String userId = event.getOrganizerID();
+                        // Event should always have the poster download url so will not double check
+                        String downloadUrl = event.getEventPosterUrl();
+                        List<String> downloadUrls = userPosterImages.get(userId);
+                        if (downloadUrls == null) {
+                            userPosterImages.put(userId, new ArrayList<>(List.of(downloadUrl)));
+                        } else {
+                            // Since list is a reference the add operation will reflect inside the map
+                            downloadUrls.add(downloadUrl);
+                        }
+                    });
+                    eventTasks.add(eventTcs.getTask());
+                } catch (IllegalArgumentException e) {
+                    // Skip this poster if the event could not be fetched
+                    Log.d(TAG, "Skipping poster for event id: " + eventId);
+                }
+            }
+
+            // Only once all the events have been looped through we know that the hashmap has been filled
+            Tasks.whenAllComplete(eventTasks).addOnCompleteListener(eventListTask -> {
+                if (!eventListTask.isSuccessful()) {
+                    Log.e(TAG, "Fetching poster download URLs unsuccessful");
+                    listener.onComplete(Tasks.forException(Objects.requireNonNull(eventListTask.getException())));
+                    return;
+                }
+
+                Log.d(TAG, "Successfully fetched all event poster download urls by user id");
+                Log.d(TAG, "userPosterImages: " + userPosterImages);
+                listener.onComplete(Tasks.forResult(userPosterImages));
+                tcs.setResult(userPosterImages);
+            });
+        });
+
+        return tcs.getTask();
     }
 }

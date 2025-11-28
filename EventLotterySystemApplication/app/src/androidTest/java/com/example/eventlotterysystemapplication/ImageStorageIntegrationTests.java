@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RunWith(AndroidJUnit4.class)
@@ -203,6 +204,21 @@ public class ImageStorageIntegrationTests {
             StorageReference storageReference = FirebaseStorage.getInstance().getReference("poster_images");
             Tasks.await(storageReference.child(imgName).delete());
         });
+    }
+
+    @Test
+    public void testFetchAllPostersByUserID() throws ExecutionException, InterruptedException {
+        // THIS TEST IS A MANUAL CHECK TEST (YOU WILL HAVE TO GO INTO THE LOGS AND VERIFY THE HASHMAP IS CORRECT)
+        // As of November 26, 2025 @ 12:10 AM it works
+        // The reason I'm doing this is 1. i'm lazy 2. we don't have separate test event table or test poster images folders
+
+        // Empty listener because AWAIT doesn't want to wait for the listener to finish so we gotta
+        // wait for the return value instead of using the listener :(
+        Map<String, List<String>> posterImagesUrls = Tasks.await(imgStore.fetchAllPosterImageUrlsByUserId(task -> {}));
+        Log.d("ImgStorageTestFetchAllPostersByUserId", "posterImagesUrls: " + posterImagesUrls);
+        for (Map.Entry<String, List<String>> entry : posterImagesUrls.entrySet()) {
+            Log.d("ImgStorageTestFetchAllPostersByUserId", "user id: " + entry.getKey() + " , posters: " + entry.getValue());
+        }
     }
 
     @After

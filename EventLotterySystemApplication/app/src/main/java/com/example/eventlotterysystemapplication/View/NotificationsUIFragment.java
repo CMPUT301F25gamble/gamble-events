@@ -2,13 +2,26 @@ package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
+import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.databinding.FragmentNotificationsUiBinding;
+import com.google.firebase.installations.FirebaseInstallations;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays a the user's notifications from all sources according to the user's notification
@@ -17,50 +30,77 @@ import com.example.eventlotterysystemapplication.R;
  */
 public class NotificationsUIFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FragmentNotificationsUiBinding binding;
+    private final Database database = Database.getDatabase();
+    private ArrayList<Notification> notifications;
+    private ArrayAdapter<Notification> notificationArrayAdapter;
+    private final String TAG = "NotificationsUIFragment";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String userId;
 
     public NotificationsUIFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NotifcationsUIFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NotificationsUIFragment newInstance(String param1, String param2) {
-        NotificationsUIFragment fragment = new NotificationsUIFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static NotificationsUIFragment newInstance() {
+        return new NotificationsUIFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        // Get user id
+        FirebaseInstallations.getInstance().getId()
+                .addOnSuccessListener(deviceId -> {
+                    database.getUserFromDeviceID(deviceId, userTask -> {
+                        if (!userTask.isSuccessful()) {
+                            Log.d(TAG, "Error getting user");
+                            NavHostFragment.findNavController(this)
+                                    .navigateUp();
+                        }
+                        // Get userid
+                        userId = userTask.getResult().getUserID();
+                        updateNotifications(userId);
+                    });
+                });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications_ui, container, false);
+        binding = FragmentNotificationsUiBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Get views
+        ListView notificationsListView = binding.notificationsListView;
+        Button updateNotificationsButton = binding.updateNotificationsButton;
+
+        // Set adapter
+        notificationsListView.setAdapter(notificationArrayAdapter);
+
+        updateNotifications(userId);
+    }
+
+    private void updateNotifications(String userId) {
+        // Clear previous notifications
+        notifications.clear();
+        notificationArrayAdapter.clear();
+        // Get notifications
+        database.getUserNotificationHistory(userId, notificationTask -> {
+            if (!notificationTask.isSuccessful()) {
+                Log.d(TAG, "Error getting notifications");
+                NavHostFragment.findNavController(this)
+                        .navigateUp();
+            }
+            notifications = new ArrayList<>(notificationTask.getResult());
+            notificationArrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notifications);
+        });
+
+        notificationArrayAdapter.notifyDataSetChanged();
     }
 }

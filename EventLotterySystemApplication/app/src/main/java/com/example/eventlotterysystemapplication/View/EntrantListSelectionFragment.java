@@ -1,6 +1,7 @@
 package com.example.eventlotterysystemapplication.View;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,16 +101,17 @@ public class EntrantListSelectionFragment extends Fragment {
             bundle3.putString("entrantStatus", String.valueOf(EntrantStatus.WAITING));
             NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
         });
+        binding.pendingMapButton.setVisibility(View.GONE);
 
         // TODO figure out some way to check if geolocation requirement is enabled
 
-//        Database.getDatabase().getEvent(eventId, task -> {
-//            if (task.isSuccessful()){
-//                if (task.getResult().isGeolocationRequirement()) {
-                    // View all pending entrants Button to access list of all entrants
-
-//                }
-//            }
-//        });
+        Database.getDatabase().getEvent(eventId, task -> {
+            if (task.isSuccessful()){
+                if (task.getResult().isGeolocationRequirement()) {
+                    Log.d("Geolocation", "Enabled");
+                    binding.pendingMapButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 }

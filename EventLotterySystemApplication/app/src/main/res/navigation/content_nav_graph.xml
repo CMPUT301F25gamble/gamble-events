@@ -56,34 +56,6 @@
         android:label="fragment_first_time_input"
         tools:layout="@layout/fragment_first_time_input" />
     <fragment
-        android:id="@+id/create_or_edit_event_fragment"
-        android:name="com.example.eventlotterysystemapplication.View.CreateOrEditEventFragment"
-        android:label="create_or_edit_event_fragment"
-        tools:layout="@layout/fragment_create_or_edit_event" >
-        <action
-            android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
-            app:destination="@id/events_ui_fragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_create_or_edit_event_fragment_to_my_events_fragment"
-            app:destination="@id/my_events_fragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/my_events_fragment"
-        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
-        android:label="my_events_fragment"
-        tools:layout="@layout/fragment_my_events" >
-        <action
-            android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
-            app:destination="@id/events_ui_fragment" />
-        <action
-            android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
-            app:destination="@id/my_event_detail_screen" />
-    </fragment>
-    <fragment
         android:id="@+id/delete_profile_fragment"
         android:name="com.example.eventlotterysystemapplication.View.DeleteProfileFragment"
         android:label="fragment_delete_profile"

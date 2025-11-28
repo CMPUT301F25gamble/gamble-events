@@ -163,7 +163,7 @@ public class FinalEntrantListFragment extends Fragment {
 
         // Metadata for the file we are creating using the MediaStore API
         ContentValues values = new ContentValues(); // key-value map container to hold metadata
-        values.put(MediaStore.Downloads.DISPLAY_NAME, fileName); // set name of file to appear in do
+        values.put(MediaStore.Downloads.DISPLAY_NAME, fileName); // set name of file to appear in downloads
         values.put(MediaStore.Downloads.MIME_TYPE, "text/csv"); // indicate file type, which is csv
         values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS); // indicate path to store the file, which is downloads
         Uri uri = null;

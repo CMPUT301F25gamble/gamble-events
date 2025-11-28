@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.View;
 import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,10 +120,11 @@ public class ChosenEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadChosenEntrantsIntoList(Event event) {
-        for (User u : event.getUserChosenList()) {
-            String name = u.getName();
-            data.add(name);             // Add ONLY user's name to the list
+        for (Entrant entrant : event.getEntrantChosenList()) {
+            chosenEntrants.add(entrant);
+            data.add(entrant.getUser().getName());
         }
+
         // Notify the adapter
         adapter.notifyDataSetChanged();
 
@@ -208,7 +210,8 @@ public class ChosenEntrantListFragment extends Fragment {
                 // Dismiss dialog1 first for a clean transition
                 dialog1.dismiss();
                 // Remove user from event's chosen list DB
-                currentEvent.addEntrantToChosenList(entrant);
+                currentEvent.addEntrantToCancelledList(entrant);
+                updateEventDB(currentEvent);
 
                 // Remove user from LOCAL chosen list
                 chosenEntrants.remove(entrant.getUser());
@@ -228,4 +231,16 @@ public class ChosenEntrantListFragment extends Fragment {
         // Show the dialog 1 (i.e., the user info dialog)
         dialog1.show();
     }
+
+    /**
+     * Updates the event in the database
+     * @param event
+     */
+    private void updateEventDB(Event event){
+        Database db = Database.getDatabase();
+        db.updateEvent(event, task -> {});
+    }
+
 }
+
+

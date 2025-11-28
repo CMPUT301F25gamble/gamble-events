@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.LotteryDrawScheduler;
@@ -124,7 +125,7 @@ public class CreateOrEditEventFragment extends Fragment {
         }
         placesClient = Places.createClient(requireContext());
 
-        addressAutoComplete = root.findViewById(R.id.createOrEditEventLocationTextVeiw);
+        addressAutoComplete = root.findViewById(R.id.createOrEditEventLocationTextView);
 
         adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_dropdown_item_1line, new ArrayList<>());
@@ -174,6 +175,7 @@ public class CreateOrEditEventFragment extends Fragment {
         // Change title/button text depending on if the user is editing the event or creating one
         if (eventId != null) {
             binding.createOrEditEventTitle.setText(R.string.edit_event_title_text);
+            binding.createOrEditEventDoneButton.setEnabled(true);
             binding.createOrEditEventDoneButton.setText(R.string.done_editing_event_text);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -198,14 +200,17 @@ public class CreateOrEditEventFragment extends Fragment {
         // Upload Poster Button Listener
         binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
+
+
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
+
             // Get values from EditTexts
             // String userName = binding.nameEditText.getText().toString().trim();
             String eventName = binding.createOrEditEventEventNameEditText.getText().toString().trim();
             String eventDesc = binding.createOrEditEventEventDescEditText.getText().toString().trim();
             String tagsStr = binding.createOrEditEventTagsEditText.getText().toString().trim();
-            String eventLocation = binding.createOrEditEventLocationTextVeiw.getText().toString().trim();
+            String eventLocation = binding.createOrEditEventLocationTextView.getText().toString().trim();
             String eventStartTimeStr = binding.createOrEditEventEventStartDateAndTimeEditText.getText().toString().trim();
             String eventEndTimeStr = binding.createOrEditEventEventEndDateAndTimeEditText.getText().toString().trim();
             String regStartTimeStr = binding.createOrEditEventRegistrationStartEditText.getText().toString().trim();
@@ -213,7 +218,6 @@ public class CreateOrEditEventFragment extends Fragment {
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
-            // TODO: Handle notifs
 
            // Check that mandatory fields are filled
             if (eventName.isEmpty()) {
@@ -227,8 +231,8 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
             if (eventLocation.isEmpty()) {
-                binding.createOrEditEventLocationTextVeiw.setError("EntrantLocation is required");
-                binding.createOrEditEventLocationTextVeiw.requestFocus();
+                binding.createOrEditEventLocationTextView.setError("EntrantLocation is required");
+                binding.createOrEditEventLocationTextView.requestFocus();
                 return;
             }
             if (eventStartTimeStr.isEmpty()) {
@@ -330,6 +334,8 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
 
+            v.setEnabled(false);
+
             // Parse tags; split by commas
             ArrayList<String> tagsList = new ArrayList<>();
             if (!tagsStr.isEmpty()) {
@@ -412,8 +418,10 @@ public class CreateOrEditEventFragment extends Fragment {
                                             } else {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
+                                                Bundle args = new Bundle();
+//                                                navigateFromCreateEditEvent(event);
                                                 NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                                        .navigateUp();
                                             }
                                             LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                             lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
@@ -434,6 +442,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");
+//                                            navigateFromCreateEditEvent(event);
                                             NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                                     .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                                         }
@@ -520,7 +529,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String tagsStr = String.join(",", event.getEventTags());
             binding.createOrEditEventTagsEditText.setText(tagsStr);
         }
-        binding.createOrEditEventLocationTextVeiw.setText(event.getPlace());
+        binding.createOrEditEventLocationTextView.setText(event.getPlace());
 
         // Set dates
         binding.createOrEditEventEventStartDateAndTimeEditText.setText(
@@ -553,8 +562,8 @@ public class CreateOrEditEventFragment extends Fragment {
             binding.createOrEditLimitWaitlistEditText.setText(String.valueOf(event.getMaxWaitingListCapacity()));
         }
         binding.createOrEditEventSelectedEntrantsNumEditText.setText(String.valueOf(event.getMaxFinalListCapacity()));
-
-        binding.checkboxEnableGeolocation.setChecked (event.isGeolocationRequirement());
+        Log.d("Geolocation Req", Boolean.toString(event.isGeolocationRequirement()));
+        binding.checkboxEnableGeolocation.setChecked(event.isGeolocationRequirement());
 
     }
 
@@ -615,6 +624,7 @@ public class CreateOrEditEventFragment extends Fragment {
                         database.updateEvent(event, task -> {
                             if (task.isSuccessful()) {
                                 // Return to events page
+//                                navigateFromCreateEditEvent(event);
                                 NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                         .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                             }
@@ -623,12 +633,26 @@ public class CreateOrEditEventFragment extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
                         // Return to events page anyways as event is created
+//                        navigateFromCreateEditEvent(event);
                         NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                 .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                     }
                 }
         );
     }
+
+//    private void navigateFromCreateEditEvent(Event event){
+//        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
+//        if(argEventId!=null) {
+//                        Bundle args = new Bundle();
+//            args.putString("eventId", argEventId);
+//                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+//                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
+//        }else{
+//            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+//                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
+//                    }
+//    }
 
     /**
      * Creates a file from the given uri

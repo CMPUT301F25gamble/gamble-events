@@ -82,6 +82,9 @@
         <action
             android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
             app:destination="@id/my_event_detail_screen" />
+        <action
+            android:id="@+id/action_my_events_fragment_to_notifications_ui_fragment"
+            app:destination="@id/notifications_ui_fragment" />
     </fragment>
     <fragment
         android:id="@+id/delete_profile_fragment"

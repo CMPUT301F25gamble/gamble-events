@@ -7,21 +7,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.View.EventsUIFragment;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
  * Activity that displays the main
  */
 
 public class ContentActivity extends AppCompatActivity {
+
+    ActivityContentBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,26 +46,28 @@ public class ContentActivity extends AppCompatActivity {
         // Get NavController
         NavController navController = navHostFragment.getNavController();
 
-        // Start navigation on second tab (events page) and display it
-        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
-        navController.navigate(R.id.events_ui_fragment);
+//        // Start navigation on second tab (events page) and display it
+//        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
+//        navController.navigate(R.id.events_ui_fragment);
+//
+//        /*
+//         * Nav logic for BottomNavigationView
+//         * -> Fixes the issue withe the back stack on the bottom menu
+//         */
+//        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
+//            int destinationId = item.getItemId();
+//
+//            NavOptions navOptions = new NavOptions.Builder()
+//                    // Main fix here
+//                    .setPopUpTo(R.id.content_nav_graph, true)
+//                    .build();
+//
+//            // Second arg is null because there is no start args
+//            navController.navigate(destinationId, null, navOptions);
+//            return true;
+//        });
 
-        /*
-         * Nav logic for BottomNavigationView
-         * -> Fixes the issue withe the back stack on the bottom menu
-         */
-        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
-            int destinationId = item.getItemId();
-
-//            NavHostFragment.findNavController(FragmentManager.findFragment(findViewById(R.id.bottom_nav_menu))).setGraph(R.navigation.content_nav_graph);
-            NavOptions navOptions = new NavOptions.Builder()
-                    // Main fix here
-                    .setPopUpTo(R.id.content_nav_graph, true)
-                    .build();
-
-            // Second arg is null because there is no start args
-            navController.navigate(destinationId, null, navOptions);
-            return true;
-        });
+        BottomNavigationView bottomNavigationView = binding.bottomNavMenu;
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 }

@@ -87,7 +87,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
 
         backButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(OrganiserSendNotificationUIFragment.this)
-                    .navigate(R.id.action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment);
+                    .navigateUp();
 
         });
 

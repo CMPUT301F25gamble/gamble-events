@@ -4,11 +4,15 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +53,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -224,7 +232,6 @@ public class EventDetailScreenFragment extends Fragment {
             entrant.setStatus(EntrantStatus.FINALIZED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-
             // TODO: DANIEL CAN FIX
             binding.navigationBarButton.setVisibility(View.VISIBLE);
             binding.navigationBarButton.setEnabled(false);
@@ -264,6 +271,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Event event = taskEvent.getResult();
                 Bitmap qrBitmap = event.getQRCodeBitmap();
                 showQRCodeDialog(qrBitmap);
+                saveQRCodeToDownloads(qrBitmap, event.getName());  // Save QRCode to Downloads
                 Toast.makeText(requireContext(), "QR Code Generated!",
                         Toast.LENGTH_LONG).show();
             });
@@ -484,6 +492,54 @@ public class EventDetailScreenFragment extends Fragment {
     }
 
     /**
+     * Saves a QR code Bitmap as a PNG file to the public Downloads folder.
+     *
+     * @param qrBitmap The QR bitmap to save
+     * @param eventName The name of the event used for the filename
+     */
+    private void saveQRCodeToDownloads(Bitmap qrBitmap, String eventName) {
+        if (qrBitmap == null) {
+            Toast.makeText(requireContext(), "QR Code is empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // File name that will appear in Downloads
+        String fileName = eventName + "_QRCode.png";
+
+        // Metadata for the file we are creating using the MediaStore API
+        ContentValues values = new ContentValues(); // key-value map container to hold metadata
+        values.put(MediaStore.Downloads.DISPLAY_NAME, fileName); // set name of file to appear in downloads
+        values.put(MediaStore.Downloads.MIME_TYPE, "image/png"); // indicate file type, which is png
+        values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);  // indicate path to store the file, which is downloads
+
+        Uri uri = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // create empty file in downloads using metadata provided
+            uri = requireContext().getContentResolver()
+                    .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+        }
+
+        if (uri == null) {
+            Toast.makeText(requireContext(), "Unable to create image file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create an OutputStream to write to the file we just created
+        try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri)) {
+            assert out != null;
+            qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Toast.makeText(requireContext(),
+                    "QR code saved to Downloads/" + fileName,
+                    Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(requireContext(),
+                    "Failed to save QR code: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    /**
      * Updates the waitlist button colors and text based on if the user is in the waitlist
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
@@ -550,16 +606,49 @@ public class EventDetailScreenFragment extends Fragment {
      * @param event details to fill the page with
      */
     private void bindEvent(Event event) {
-        // Event name & description
+        // Get event name, description, location, waitlist and chosen capacity
         String eventName = event.getName();
         String eventDesc = event.getDescription();
-        // Error Checking for null name or desc. (Don't think we need, may remove later)
-        if (eventName == null || eventDesc == null) {
-            Toast.makeText(requireContext(), "Missing name or description", Toast.LENGTH_LONG).show();
+        String eventLoc = event.getPlace();
+        int eventCurrentWaitlist = event.getEntrantWaitingList().size();
+        int eventWaitlistCapacity = event.getMaxWaitingListCapacity();
+        int eventChosenCapacity = event.getMaxFinalListCapacity();
+
+        // Error Checking for null name, desc, and location. (Don't think we need, may remove later)
+        if (eventName == null || eventDesc == null || eventLoc == null) {
+            Toast.makeText(requireContext(), "Missing event name or description", Toast.LENGTH_LONG).show();
             return;
         }
+        // Set UI event name, description, and location
         binding.eventNameText.setText(eventName);
         binding.eventDetailsDescText.setText(eventDesc);
+        binding.eventLocationText.setText(eventLoc);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        // format times
+        String formattedEventStartTime = event.getEventStartTime().format(formatter);
+        String formattedEventEndTime = event.getEventEndTime().format(formatter);
+        String formattedRegEndTime = event.getRegistrationEndTime().format(formatter);
+        String formattedRegStartTime = event.getRegistrationStartTime().format(formatter);
+        String formattedInvAccTime = event.getInvitationAcceptanceDeadline().format(formatter);
+
+        // Error Checking for event and registration times. (Don't think we need, may remove later)
+        if (formattedEventStartTime == null || formattedEventEndTime == null || formattedRegEndTime == null || formattedRegStartTime == null || formattedInvAccTime == null) {
+            Toast.makeText(requireContext(), "Missing event registration time details", Toast.LENGTH_LONG).show();
+            return;
+        }
+        // set periods
+        binding.eventPeriodText.setText(formattedEventStartTime + " to " + formattedEventEndTime);
+        binding.eventRegPeriodText.setText(formattedRegStartTime + " to " + formattedRegEndTime);
+        binding.eventInvitationDLText.setText(formattedInvAccTime);
+
+        // set capacities
+        if (eventWaitlistCapacity <= 0) {
+            binding.waitlistText.setText(String.valueOf(eventCurrentWaitlist));
+        } else {
+            binding.waitlistText.setText(eventCurrentWaitlist + "/" + eventWaitlistCapacity);
+        }
+        binding.chosenCapText.setText(String.valueOf(eventChosenCapacity));
 
         // Fetch tags from event
         // Get tags
@@ -577,8 +666,7 @@ public class EventDetailScreenFragment extends Fragment {
                     .into(binding.eventImage);
         } else {
             // Set the image template to default image
-            binding.eventImage.setImageResource(R.drawable.image_template);
-            binding.eventImage.setVisibility(View.GONE);
+             binding.eventImage.setImageResource(R.drawable.image_template);
         }
 
         // Debugging
@@ -596,5 +684,20 @@ public class EventDetailScreenFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         binding.tagsHorizontalRv.setLayoutManager(layoutManager);
+
+        // Disable join waitlist button until registration starts
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime regStart = event.getRegistrationStartTime();
+
+        if (now.isBefore(regStart)) {
+            // Disable button until registration starts
+            binding.navigationBarButton.setEnabled(false);
+            binding.navigationBarButton.setText("Registration not open");
+            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
+        } else {
+            // Enable button
+            binding.navigationBarButton.setEnabled(true);
+            changeWaitlistBtn(false); // or update button based on user's waitlist status
+        }
     }
 }

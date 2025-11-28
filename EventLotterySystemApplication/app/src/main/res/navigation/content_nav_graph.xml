@@ -32,7 +32,11 @@
         android:id="@+id/notifications_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.View.NotificationsUIFragment"
         android:label="fragment_notifications_ui"
-        tools:layout="@layout/fragment_notifications_ui" />
+        tools:layout="@layout/fragment_notifications_ui" >
+        <action
+            android:id="@+id/action_notifications_ui_fragment_to_viewNotificationUIFragment"
+            app:destination="@id/viewNotificationUIFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profile_ui_fragment"
         android:name="com.example.eventlotterysystemapplication.View.ProfileUIFragment"
@@ -138,5 +142,14 @@
         <action
             android:id="@+id/action_settingsUIFragment_to_settingsTOSFragment"
             app:destination="@id/settingsTOSFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewNotificationUIFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ViewNotificationUIFragment"
+        android:label="fragment_view_notification_ui"
+        tools:layout="@layout/fragment_view_notification_ui" >
+        <action
+            android:id="@+id/action_viewNotificationUIFragment_to_notifications_ui_fragment"
+            app:destination="@id/notifications_ui_fragment" />
     </fragment>
 </navigation>

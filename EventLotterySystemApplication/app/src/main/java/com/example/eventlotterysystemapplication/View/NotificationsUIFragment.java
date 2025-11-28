@@ -32,8 +32,9 @@ public class NotificationsUIFragment extends Fragment {
 
     private FragmentNotificationsUiBinding binding;
     private final Database database = Database.getDatabase();
-    private ArrayList<Notification> notifications;
-    private ArrayAdapter<Notification> notificationArrayAdapter;
+    private ArrayList<String> notificationIds = new ArrayList<>();
+    private ArrayList<String> notificationTitles = new ArrayList<>();
+    private ArrayAdapter<String> notificationTitlesAdapter;
     private final String TAG = "NotificationsUIFragment";
 
     private String userId;
@@ -60,7 +61,18 @@ public class NotificationsUIFragment extends Fragment {
                         }
                         // Get userid
                         userId = userTask.getResult().getUserID();
-                        updateNotifications(userId);
+                        database.getUserNotificationHistory(userId, notificationTask -> {
+                            if (!notificationTask.isSuccessful()) {
+                                Log.d(TAG, "Error getting notifications");
+                                NavHostFragment.findNavController(this)
+                                        .navigateUp();
+                            }
+                            for (Notification notification : notificationTask.getResult()) {
+                                notificationIds.add(notification.getNotificationID());
+                                notificationTitles.add(notification.getTitle());
+                            }
+
+                        });
                     });
                 });
     }
@@ -81,15 +93,29 @@ public class NotificationsUIFragment extends Fragment {
         Button updateNotificationsButton = binding.updateNotificationsButton;
 
         // Set adapter
-        notificationsListView.setAdapter(notificationArrayAdapter);
+        notificationTitlesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationTitles);
+        notificationsListView.setAdapter(notificationTitlesAdapter);
 
         updateNotifications(userId);
+
+        // Handle when a notification is tapped
+        notificationsListView.setOnItemClickListener((parent, v, position, id) -> {
+            Log.d(TAG, "Notification tapped: " + notificationIds.get(position));
+            Bundle notificationArgs = new Bundle();
+            notificationArgs.putString("notificationId", notificationIds.get(position));
+
+            // Navigate to view notification fragment
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_notifications_ui_fragment_to_viewNotificationUIFragment, notificationArgs);
+        });
+
+
     }
 
     private void updateNotifications(String userId) {
         // Clear previous notifications
-        notifications.clear();
-        notificationArrayAdapter.clear();
+        notificationIds.clear();
+        notificationTitlesAdapter.clear();
         // Get notifications
         database.getUserNotificationHistory(userId, notificationTask -> {
             if (!notificationTask.isSuccessful()) {
@@ -97,10 +123,13 @@ public class NotificationsUIFragment extends Fragment {
                 NavHostFragment.findNavController(this)
                         .navigateUp();
             }
-            notifications = new ArrayList<>(notificationTask.getResult());
-            notificationArrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notifications);
+
+            for (Notification notification : notificationTask.getResult()) {
+                notificationIds.add(notification.getNotificationID());
+                notificationTitlesAdapter.add(notification.getTitle());
+            }
         });
 
-        notificationArrayAdapter.notifyDataSetChanged();
+        notificationTitlesAdapter.notifyDataSetChanged();
     }
 }

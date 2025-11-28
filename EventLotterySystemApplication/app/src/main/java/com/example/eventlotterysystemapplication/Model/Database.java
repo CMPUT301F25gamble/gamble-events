@@ -705,7 +705,7 @@ public class Database {
 
 
                 CollectionReference recipients = notificationDocSnapshot.getReference().collection("Recipients");
-                try {
+//                try {
                     recipients.document(userId).get().addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             Log.d("Database", "exists");
@@ -723,10 +723,10 @@ public class Database {
                             tcs.setResult(null);
                         }
                     });
-                } catch (NullPointerException e) {
-                    Log.d("Database", "Null pointer exception");
-                    continue;
-                }
+//                } catch (NullPointerException e) {
+//                    Log.d("Database", "Null pointer exception");
+//                    continue;
+//                }
 
                 getUserNotificationHistoryList.add(tcs.getTask());
             }

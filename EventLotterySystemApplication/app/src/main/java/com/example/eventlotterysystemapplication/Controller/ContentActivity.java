@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.R;
+import com.example.eventlotterysystemapplication.View.EventsUIFragment;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
 
 /**
@@ -54,6 +56,7 @@ public class ContentActivity extends AppCompatActivity {
         binding.bottomNavMenu.setOnItemSelectedListener(item -> {
             int destinationId = item.getItemId();
 
+//            NavHostFragment.findNavController(FragmentManager.findFragment(findViewById(R.id.bottom_nav_menu))).setGraph(R.navigation.content_nav_graph);
             NavOptions navOptions = new NavOptions.Builder()
                     // Main fix here
                     .setPopUpTo(R.id.content_nav_graph, true)

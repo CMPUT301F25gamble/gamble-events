@@ -19,7 +19,6 @@ public class User{
     private boolean optOutLotteryStatusNotifications;
     private boolean optOutSpecificNotifications;
     private boolean optOutAdminNotifications;
-    private boolean geolocationPermissions = false;
 
     /**
      * A blank constructor, useful for when we want to create our user object by manually parsing it
@@ -47,12 +46,11 @@ public class User{
         this.optOutLotteryStatusNotifications = false;
         this.optOutSpecificNotifications = false;
         this.optOutAdminNotifications = false;
-        this.geolocationPermissions = false;
     }
 
     public User(String name, String email, String phoneNumber , String deviceID, String deviceToken,
                 boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications,
-                boolean optOutAdminNotifications, boolean geolocationPermissions) {
+                boolean optOutAdminNotifications) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -62,7 +60,6 @@ public class User{
         this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
         this.optOutSpecificNotifications = optOutSpecificNotifications;
         this.optOutAdminNotifications = optOutAdminNotifications;
-        this.geolocationPermissions = geolocationPermissions;
     }
     /**
      * Gets the userID of the current user object
@@ -182,14 +179,6 @@ public class User{
 
     public void setOptOutSpecificNotifications(boolean optOutSpecificNotifications) {
         this.optOutSpecificNotifications = optOutSpecificNotifications;
-    }
-
-    public boolean isGeolocationPermissions() {
-        return geolocationPermissions;
-    }
-
-    public void setGeolocationPermissions(boolean geolocationPermissions) {
-        this.geolocationPermissions = geolocationPermissions;
     }
 
     /**

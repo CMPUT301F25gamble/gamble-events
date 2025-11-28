@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
@@ -87,6 +88,13 @@ public class ChosenEntrantListFragment extends Fragment {
         binding.chosenEntrantListBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(ChosenEntrantListFragment.this)
                     .navigateUp();
+        });
+
+        binding.sendNotifButton.setOnClickListener(v -> {
+            EventNotificationManager.notifyChosenList(currentEvent, "Reminder to Sign Up for "
+                    + currentEvent.getName(), "A reminder that you have been selected for "
+                    + currentEvent.getName() + ". Please make sure to accept or decline your invitation by "
+                    + currentEvent.getInvitationAcceptanceDeadlineString());
         });
 
         // Display the loading screen while the data is being fetched

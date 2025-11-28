@@ -91,6 +91,12 @@ public class ProfileUIFragment extends Fragment {
                                     .navigate(R.id.action_profileUIFragment_to_deleteProfileFragment);
                         });
 
+                        // Go to profile history fragment (ADMIN MODE)
+                        binding.profileHistoryButton.setOnClickListener(v -> {
+                            NavHostFragment.findNavController(ProfileUIFragment.this)
+                                    .navigate(R.id.action_profileUIFragment_to_userEventHistoryFragment);
+                        });
+
                         // When update profile button is clicked update user's data
                         binding.updateProfileButton.setOnClickListener(v -> {
                             if (currentUser != null) {

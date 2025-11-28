@@ -95,6 +95,8 @@ public class EntrantListSelectionFragment extends Fragment {
                     .navigate(R.id.action_entrantListSelectionFragment_to_finalEntrantList, bundle);
         });
 
+        binding.mapTextView.setVisibility(View.GONE);
+
         binding.pendingMapButton.setOnClickListener(v -> {
             Bundle bundle3 = new Bundle();
             bundle3.putString("eventID", eventId);
@@ -110,6 +112,7 @@ public class EntrantListSelectionFragment extends Fragment {
                 if (task.getResult().isGeolocationRequirement()) {
                     Log.d("Geolocation", "Enabled");
                     binding.pendingMapButton.setVisibility(View.VISIBLE);
+                    binding.mapTextView.setVisibility(View.VISIBLE);
                 }
             }
         });

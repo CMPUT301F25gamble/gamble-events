@@ -89,7 +89,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
             Bundle args = new Bundle();
             args.putString("eventId", eventId);
             NavHostFragment.findNavController(OrganiserSendNotificationUIFragment.this)
-                    .navigate(R.id.action_organiserSendNotificationUIFragment_to_organiserNotificationsUIFragment, args);
+                    .navigateUp();
 
         });
 

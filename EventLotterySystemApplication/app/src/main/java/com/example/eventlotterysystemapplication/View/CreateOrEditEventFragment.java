@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavHost;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.LotteryDrawScheduler;
@@ -199,11 +200,8 @@ public class CreateOrEditEventFragment extends Fragment {
         // Upload Poster Button Listener
         binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
-
-
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
-
             // Get values from EditTexts
             // String userName = binding.nameEditText.getText().toString().trim();
             String eventName = binding.createOrEditEventEventNameEditText.getText().toString().trim();
@@ -217,6 +215,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
+            // TODO: Handle notifs
 
            // Check that mandatory fields are filled
             if (eventName.isEmpty()) {
@@ -418,7 +417,9 @@ public class CreateOrEditEventFragment extends Fragment {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
                                                 Bundle args = new Bundle();
-                                                navigateFromCreateEditEvent(event);
+//                                                navigateFromCreateEditEvent(event);
+                                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                        .navigateUp();
                                             }
                                             LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                             lotteryDrawScheduler.scheduleUpdateLotteryDraw(v.getContext(),event);
@@ -439,7 +440,9 @@ public class CreateOrEditEventFragment extends Fragment {
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");
-                                            navigateFromCreateEditEvent(event);
+//                                            navigateFromCreateEditEvent(event);
+                                            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                                         }
                                         LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                         lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
@@ -619,31 +622,35 @@ public class CreateOrEditEventFragment extends Fragment {
                         database.updateEvent(event, task -> {
                             if (task.isSuccessful()) {
                                 // Return to events page
-                                navigateFromCreateEditEvent(event);
+//                                navigateFromCreateEditEvent(event);
+                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                             }
                         });
 
                     } else {
                         Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
                         // Return to events page anyways as event is created
-                        navigateFromCreateEditEvent(event);
+//                        navigateFromCreateEditEvent(event);
+                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
                     }
                 }
         );
     }
 
-    private void navigateFromCreateEditEvent(Event event){
-        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
-        if(argEventId!=null) {
-                        Bundle args = new Bundle();
-            args.putString("eventId", argEventId);
-                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
-        }else{
-            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
-                    }
-    }
+//    private void navigateFromCreateEditEvent(Event event){
+//        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
+//        if(argEventId!=null) {
+//                        Bundle args = new Bundle();
+//            args.putString("eventId", argEventId);
+//                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+//                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
+//        }else{
+//            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+//                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
+//                    }
+//    }
 
     /**
      * Creates a file from the given uri

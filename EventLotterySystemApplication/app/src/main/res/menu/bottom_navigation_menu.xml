@@ -16,11 +16,6 @@
 <!--        android:id="@+id/create_or_edit_event_fragment">-->
 <!--    </item>-->
 
-    <item android:title="@string/bottom_menu_notifications_text"
-        android:icon="@drawable/notifications_icon"
-        android:id="@+id/notifications_ui_fragment">
-    </item>
-
     <item android:title="@string/bottom_menu_settings_text"
         android:icon="@drawable/settings_icon"
         android:id="@+id/settings_ui_fragment">

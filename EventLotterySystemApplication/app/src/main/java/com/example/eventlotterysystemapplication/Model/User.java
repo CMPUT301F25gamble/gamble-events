@@ -48,7 +48,9 @@ public class User{
         this.optOutAdminNotifications = false;
     }
 
-    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken, boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications, boolean optOutAdminNotifications) {
+    public User(String name, String email, String phoneNumber , String deviceID, String deviceToken,
+                boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications,
+                boolean optOutAdminNotifications) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;

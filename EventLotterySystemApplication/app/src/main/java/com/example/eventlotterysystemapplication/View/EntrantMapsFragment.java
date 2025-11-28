@@ -120,7 +120,7 @@ public class EntrantMapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.my_event_enterants_map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.my_event_entrants_map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }

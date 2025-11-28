@@ -54,7 +54,7 @@
             app:destination="@id/finalEntrantList" />
         <action
             android:id="@+id/action_entrantListSelectionFragment_to_my_event_enterants_map"
-            app:destination="@id/my_event_enterants_map" />
+            app:destination="@id/my_event_entrants_map" />
     </fragment>
     <fragment
         android:id="@+id/organiserNotificationsUIFragment"
@@ -101,9 +101,9 @@
             app:destination="@id/create_or_edit_event_fragment" />
     </fragment>
      <fragment
-         android:id="@+id/my_event_enterants_map"
+         android:id="@+id/my_event_entrants_map"
          android:name="com.example.eventlotterysystemapplication.View.EntrantMapsFragment"
-         android:label="fragment_event_enterants_map"
+         android:label="fragment_event_entrants_map"
          tools:layout="@layout/fragment_entrant_maps">
          <argument
              android:name="eventId"
@@ -115,7 +115,7 @@
              android:defaultValue="WAITING"/>
 
      <action
-         android:id="@+id/action_my_event_enterants_map_to_entrantListSelectionFragment"
+         android:id="@+id/action_my_event_entrants_map_to_entrantListSelectionFragment"
          app:destination="@id/entrantListSelectionFragment" />
 
 	</fragment>

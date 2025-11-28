@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.AdminActivity;
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
@@ -51,6 +52,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.installations.FirebaseInstallations;
 
 import java.io.IOException;
@@ -124,13 +126,6 @@ public class EventDetailScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
 
-        // TODO implement checking event geolocation requirements
-        if ( ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1001);
-        }
         return binding.getRoot();
     }
 
@@ -151,7 +146,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else if (getActivity() instanceof AdminActivity) {
             backButton.setOnClickListener(v -> {
                 NavHostFragment.findNavController(this)
-                        .popBackStack();
+                        .navigateUp();
             });
         } else {
             backButton.setOnClickListener(v -> {
@@ -171,6 +166,17 @@ public class EventDetailScreenFragment extends Fragment {
             if (task.isSuccessful()) {
                 // Grab event and bind it
                 event = task.getResult();
+
+                // Checking event geolocation requirements
+                if(event.isGeolocationRequirement()) {
+                    if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                1001);
+                    }
+                }
+
                 organizerID = event.getOrganizerID(); // Used for admin control
                 if(!isOwnedEvent && currentUser!=null) {
                     isOwnedEvent =  currentUser.getUserID().equals(organizerID);
@@ -293,7 +299,7 @@ public class EventDetailScreenFragment extends Fragment {
                         //Get geo entrantLocation
                         Context context = v.getContext();
                         //If Event Geo location requirement is off or device is not allowing geo location, save null as location
-                        if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                        if (!event.isGeolocationRequirement()) {
                             Entrant newEntrant = new Entrant();
                             newEntrant.setLocation(null);
                             newEntrant.setStatus(EntrantStatus.WAITING);
@@ -303,25 +309,30 @@ public class EventDetailScreenFragment extends Fragment {
                             changeWaitlistBtn(true);
                             Log.d("EventDetailScreen", "User successfully joins waiting list");
                         } else {
-                            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                            // Make entrant effectively final by using a final variable
-                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                    .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                        EntrantLocation entrantLocation = null;
-                                        if (location != null) {
-                                            entrantLocation = new EntrantLocation();
-                                            entrantLocation.setLatitude(location.getLatitude());
-                                            entrantLocation.setLongitude(location.getLongitude());
-                                        }
-                                        Entrant newEntrant = new Entrant();
-                                        newEntrant.setLocation(entrantLocation);
-                                        newEntrant.setStatus(EntrantStatus.WAITING);
-                                        newEntrant.setUser(currentUser);
-                                        event.addToEntrantList(newEntrant);
-                                        updateEventDB(event);
-                                        changeWaitlistBtn(true);
+                            if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                                // Make entrant effectively final by using a final variable
+                                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                        .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                            EntrantLocation entrantLocation = null;
+                                            if (location != null) {
+                                                entrantLocation = new EntrantLocation();
+                                                entrantLocation.setLatitude(location.getLatitude());
+                                                entrantLocation.setLongitude(location.getLongitude());
+                                            }
+                                            Entrant newEntrant = new Entrant();
+                                            newEntrant.setLocation(entrantLocation);
+                                            newEntrant.setStatus(EntrantStatus.WAITING);
+                                            newEntrant.setUser(currentUser);
 
-                                    });
+                                            event.addToEntrantList(newEntrant);
+                                            updateEventDB(event);
+                                            changeWaitlistBtn(true);
+                                        });
+                            } else {
+                                Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
+                                        Toast.LENGTH_LONG).show();
+                            }
                             // User is not in waiting list, so join the waitlist
                         }
                     } else {

@@ -460,8 +460,6 @@ public class Database {
                                 tcs.setException(task.getException());
                             }
                         });
-                    } else {
-                        tcs.setResult(null);
                     }
                 });
                 getUserEventsHistoryList.add(tcs.getTask());

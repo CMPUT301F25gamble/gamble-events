@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.AdminActivity;
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
@@ -51,6 +52,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.installations.FirebaseInstallations;
 
 import java.io.IOException;
@@ -151,7 +153,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else if (getActivity() instanceof AdminActivity) {
             backButton.setOnClickListener(v -> {
                 NavHostFragment.findNavController(this)
-                        .popBackStack();
+                        .navigateUp();
             });
         } else {
             backButton.setOnClickListener(v -> {

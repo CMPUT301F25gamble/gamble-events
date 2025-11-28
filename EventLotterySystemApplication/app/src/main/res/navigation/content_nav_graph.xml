@@ -27,6 +27,10 @@
                 app:argType="boolean"
                 android:defaultValue="false"/>
         </action>
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="none" />
     </fragment>
     <fragment
         android:id="@+id/notifications_ui_fragment"
@@ -34,8 +38,8 @@
         android:label="fragment_notifications_ui"
         tools:layout="@layout/fragment_notifications_ui" >
         <action
-            android:id="@+id/action_notifications_ui_fragment_to_viewNotificationUIFragment"
-            app:destination="@id/viewNotificationUIFragment" />
+            android:id="@+id/action_notifications_ui_fragment_to_adminViewNotificationFragment2"
+            app:destination="@id/viewNotificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/profile_ui_fragment"
@@ -144,12 +148,15 @@
             app:destination="@id/settingsTOSFragment" />
     </fragment>
     <fragment
-        android:id="@+id/viewNotificationUIFragment"
-        android:name="com.example.eventlotterysystemapplication.View.ViewNotificationUIFragment"
-        android:label="fragment_view_notification_ui"
-        tools:layout="@layout/fragment_view_notification_ui" >
+        android:id="@+id/viewNotificationFragment"
+        android:name="com.example.eventlotterysystemapplication.View.ViewNotificationFragment"
+        android:label="fragment_admin_view_notification"
+        tools:layout="@layout/fragment_view_notification" >
         <action
-            android:id="@+id/action_viewNotificationUIFragment_to_notifications_ui_fragment"
+            android:id="@+id/action_adminViewNotificationFragment2_to_notifications_ui_fragment"
             app:destination="@id/notifications_ui_fragment" />
+        <action
+            android:id="@+id/action_viewNotificationFragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
     </fragment>
 </navigation>

@@ -37,8 +37,6 @@ public class NotificationsUIFragment extends Fragment {
     private ArrayAdapter<String> notificationTitlesAdapter;
     private final String TAG = "NotificationsUIFragment";
 
-    private String userId;
-
     public NotificationsUIFragment() {
         // Required empty public constructor
     }
@@ -50,31 +48,6 @@ public class NotificationsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get user id
-        FirebaseInstallations.getInstance().getId()
-                .addOnSuccessListener(deviceId -> {
-                    database.getUserFromDeviceID(deviceId, userTask -> {
-                        if (!userTask.isSuccessful()) {
-                            Log.d(TAG, "Error getting user");
-                            NavHostFragment.findNavController(this)
-                                    .navigateUp();
-                        }
-                        // Get userid
-                        userId = userTask.getResult().getUserID();
-                        database.getUserNotificationHistory(userId, notificationTask -> {
-                            if (!notificationTask.isSuccessful()) {
-                                Log.d(TAG, "Error getting notifications");
-                                NavHostFragment.findNavController(this)
-                                        .navigateUp();
-                            }
-                            for (Notification notification : notificationTask.getResult()) {
-                                notificationIds.add(notification.getNotificationID());
-                                notificationTitles.add(notification.getTitle());
-                            }
-
-                        });
-                    });
-                });
     }
 
     @Override
@@ -96,7 +69,7 @@ public class NotificationsUIFragment extends Fragment {
         notificationTitlesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationTitles);
         notificationsListView.setAdapter(notificationTitlesAdapter);
 
-        updateNotifications(userId);
+        updateNotifications();
 
         // Handle when a notification is tapped
         notificationsListView.setOnItemClickListener((parent, v, position, id) -> {
@@ -106,30 +79,49 @@ public class NotificationsUIFragment extends Fragment {
 
             // Navigate to view notification fragment
             NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_notifications_ui_fragment_to_viewNotificationUIFragment, notificationArgs);
+                    .navigate(R.id.action_notifications_ui_fragment_to_adminViewNotificationFragment2, notificationArgs);
         });
 
-
+        // Refresh button
+        updateNotificationsButton.setOnClickListener(v -> {
+            updateNotifications();
+        });
     }
 
-    private void updateNotifications(String userId) {
+    private void updateNotifications() {
         // Clear previous notifications
         notificationIds.clear();
+        notificationTitles.clear();
         notificationTitlesAdapter.clear();
         // Get notifications
-        database.getUserNotificationHistory(userId, notificationTask -> {
-            if (!notificationTask.isSuccessful()) {
-                Log.d(TAG, "Error getting notifications");
-                NavHostFragment.findNavController(this)
-                        .navigateUp();
-            }
+        // Get user id
+        FirebaseInstallations.getInstance().getId()
+                .addOnSuccessListener(deviceId -> {
+                    database.getUserFromDeviceID(deviceId, userTask -> {
+                        if (!userTask.isSuccessful()) {
+                            Log.d(TAG, "Error getting user");
+                            NavHostFragment.findNavController(this)
+                                    .navigateUp();
+                        }
+                        // Get userid
+                        String userId = userTask.getResult().getUserID();
 
-            for (Notification notification : notificationTask.getResult()) {
-                notificationIds.add(notification.getNotificationID());
-                notificationTitlesAdapter.add(notification.getTitle());
-            }
-        });
+                        database.getUserNotificationHistory(userId, notificationTask -> {
+                            if (!notificationTask.isSuccessful()) {
+                                Log.d(TAG, "Error getting notifications");
+                                NavHostFragment.findNavController(this)
+                                        .navigateUp();
+                            }
 
-        notificationTitlesAdapter.notifyDataSetChanged();
+                            for (Notification notification : notificationTask.getResult()) {
+                                notificationIds.add(notification.getNotificationID());
+                                notificationTitles.add(notification.getTitle());
+                            }
+
+                            notificationTitlesAdapter.notifyDataSetChanged();
+                        });
+
+                    });
+                });
     }
 }

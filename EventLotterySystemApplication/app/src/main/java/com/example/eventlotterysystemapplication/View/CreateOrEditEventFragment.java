@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -460,6 +461,37 @@ public class CreateOrEditEventFragment extends Fragment {
         attachDateTimePicker(regEndDateTime,view);
         EditText invitationDateTime = view.findViewById(R.id.createOrEditEventInvitationEditText);
         attachDateTimePicker(invitationDateTime,view);
+        EditText recurrenceEndEditText = view.findViewById(R.id.recurrenceEndEditText);
+        attachDateTimePicker(recurrenceEndEditText, view);
+
+
+        // --- Recurring event logic ---
+        CheckBox recurringCheckBox = binding.checkboxSetRecurring;
+        TextView recurrenceEndText = binding.recurrenceEndText;
+        TextView recurrenceFreqText = binding.recurrenceFreqText;
+        EditText recurrenceFreqEditText = binding.recurrenceFreqEditText;
+
+        // Initially hide recurrence fields
+        recurrenceFreqText.setVisibility(View.GONE);
+        recurrenceEndText.setVisibility(View.GONE);
+        recurrenceFreqEditText.setVisibility(View.GONE);
+        recurrenceEndEditText.setVisibility(View.GONE);
+
+        // Checkbox listener
+        recurringCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Toggle the fields visibility for both creating and editing
+            int visibility = isChecked ? View.VISIBLE : View.GONE;
+            recurrenceFreqText.setVisibility(visibility);
+            recurrenceEndText.setVisibility(visibility);
+            recurrenceFreqEditText.setVisibility(visibility);
+            recurrenceEndEditText.setVisibility(visibility);
+
+            // Clear fields if unchecked
+            if (!isChecked) {
+                recurrenceFreqEditText.setText("");
+                recurrenceEndEditText.setText("");
+            }
+        });
     }
 
     /**
@@ -478,7 +510,7 @@ public class CreateOrEditEventFragment extends Fragment {
         } catch (DateTimeParseException e) {
             dateField.setError("Invalid date/time format. Use yyyy-MM-dd HH:mm");
             dateField.requestFocus();
-            //Toast.makeText(getContext(), "Invalid date/time format. Use yyyy-MM-dd HH:mm", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Invalid date/time format. Use yyyy-MM-dd HH:mm", Toast.LENGTH_SHORT).show();
             return null;
         }
         return eventDateTime;
@@ -555,7 +587,6 @@ public class CreateOrEditEventFragment extends Fragment {
         binding.createOrEditEventSelectedEntrantsNumEditText.setText(String.valueOf(event.getMaxFinalListCapacity()));
 
         binding.checkboxEnableGeolocation.setChecked (event.isGeolocationRequirement());
-
     }
 
     /**

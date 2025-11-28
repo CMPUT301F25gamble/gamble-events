@@ -157,14 +157,14 @@ public class EventsUIFragment extends Fragment {
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
                 args.putString("eventId", null);
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.edit_event_nav_graph);
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
                 NavHostFragment.findNavController(EventsUIFragment.this)
                         .navigate(R.id.create_or_edit_event_fragment, args);
             });
 
             // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.edit_event_nav_graph);
+                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
                 NavHostFragment.findNavController(EventsUIFragment.this)
                         .navigate(R.id.my_events_fragment);
             });

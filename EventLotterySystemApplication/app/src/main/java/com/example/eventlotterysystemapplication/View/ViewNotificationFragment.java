@@ -117,7 +117,7 @@ public class ViewNotificationFragment extends Fragment {
                                 Log.d(TAG, "Event exists");
 
                                 Bundle args = new Bundle();
-                                args.putString("eventId", notification.getEventID());
+                                args.putString("eventID", notification.getEventID());
                                 Log.d(TAG, "Navigating");
 
                                 if (requireActivity() instanceof AdminActivity) {

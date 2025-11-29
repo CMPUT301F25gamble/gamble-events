@@ -180,7 +180,7 @@ public class UserEventHistoryFragment extends Fragment {
                     // ---- NAVIGATION ----
                     // Use the correct action depending on admin mode
                     Bundle args = new Bundle();
-                    args.putString("eventId", selectedEvent.getEventID());
+                    args.putString("eventID", selectedEvent.getEventID());
 
                     if (isAdminMode) {
                         navController.navigate(R.id.action_userEventHistoryFragment_to_eventDetailScreenFragment, args);

@@ -164,7 +164,7 @@ public class MyEventsFragment extends Fragment {
             String eventId = myEventDocIds.get(position); // docIds parallel list we built
             // Bundle to indicate that we are coming from MyEventsFragment
             Bundle args = new Bundle();
-            args.putString("eventId", myEventDocIds.get(position));
+            args.putString("eventID", myEventDocIds.get(position));
             // DEFAULT VALUE
             args.putBoolean("isOwnedEvent", false); // Does not matter since you're admin
 
@@ -174,7 +174,7 @@ public class MyEventsFragment extends Fragment {
             } else {
                 // Launch RegisterActivity as a fresh task and clear the old one
                 Intent intent = new Intent(requireContext(), EditEventActivity.class);
-                intent.putExtra("eventId", eventId);
+                intent.putExtra("eventID", eventId);
                 intent.putExtra("isOwnedEvent", true);
                 startActivity(intent);
             }

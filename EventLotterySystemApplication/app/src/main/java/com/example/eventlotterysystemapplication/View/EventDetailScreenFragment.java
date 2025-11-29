@@ -324,7 +324,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Navigate to edit event page if the user is the organizer of the event
             if (isOwnedEvent) {
                 Bundle args = new Bundle();
-                args.putString("eventId", eventId);
+                args.putString("eventID", eventId);
                 NavHostFragment.findNavController(EventDetailScreenFragment.this)
                         .navigate(R.id.create_or_edit_event_fragment, args);
                 return;

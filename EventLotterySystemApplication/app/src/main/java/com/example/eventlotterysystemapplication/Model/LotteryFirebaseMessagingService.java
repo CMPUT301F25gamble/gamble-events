@@ -71,7 +71,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, ContentActivity.class);
 
         // add eventId to the intent
-        intent.putExtra("eventId", remoteMessage.getData().get("eventID"));
+        intent.putExtra("eventID", remoteMessage.getData().get("eventID"));
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(

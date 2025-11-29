@@ -25,12 +25,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
+/**
+ * Fragment that displays the specified user's uploaded event poster images in a simple ListView
+ * along with a delete button to its right
+ */
 public class UserEventPostersFragment extends Fragment {
    private FragmentUserEventPostersBinding binding;
    private String username;
    private ArrayList<String> posterUrls = new ArrayList<>();
    private PosterAdapter adapter;
 
+    /**
+     * Poster image + delete button listview array adapter
+     */
     private class PosterAdapter extends ArrayAdapter<String> {
         public PosterAdapter(@NonNull Context context, ArrayList<String> urls) {
             super(context, 0, urls);
@@ -47,12 +54,8 @@ public class UserEventPostersFragment extends Fragment {
             ImageView imageView = convertView.findViewById(R.id.posterImage);
             ImageButton deleteBtn = convertView.findViewById(R.id.deletePosterButton);
 
+            // Loads the image from the poster image download url
             Glide.with(getContext()).load(url).into(imageView);
-
-            // Poster image loaded so now we can show content and hide loading screen
-            binding.loadingAllProfiles.setVisibility(View.GONE);
-            binding.contentGroupAllProfiles.setVisibility(View.VISIBLE);
-
 
             deleteBtn.setOnClickListener(v -> showDeleteConfirmation(url, position));
 
@@ -60,6 +63,11 @@ public class UserEventPostersFragment extends Fragment {
         }
     }
 
+    /**
+     * Displays a confirmation dialog to delete the specified poster
+     * @param url poster image download url
+     * @param position index of the url in the arraylist
+     */
     private void showDeleteConfirmation(String url, int position) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Poster")
@@ -69,6 +77,12 @@ public class UserEventPostersFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Deletes the image from the storage bucket and removes the url pointed to by the event in the database
+     * Updates the list view after it's done
+     * @param url poster image download url
+     * @param position index of the url in the arraylist
+     */
     private void deletePoster(String url, int position) {
         // Display loading screen as it's deleting
         binding.loadingAllProfiles.setVisibility(View.VISIBLE);
@@ -115,7 +129,7 @@ public class UserEventPostersFragment extends Fragment {
             if (posterUrlsArray != null) posterUrls = new ArrayList<>(Arrays.asList(posterUrlsArray));
         }
 
-        binding.userTitle.setText(username + "'s uploaded event posters");
+        binding.userTitle.setText(username + "'s images");
         binding.userEventHistoryBackButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(UserEventPostersFragment.this).navigateUp();
         });
@@ -123,7 +137,7 @@ public class UserEventPostersFragment extends Fragment {
         adapter = new PosterAdapter(requireContext(), posterUrls);
         binding.allPostersList.setAdapter(adapter);
 
-        // Poster image loaded so now we can show content and hide loading screen
+        // Poster image loaded so now we can show content and hide loading screen (tbh idt it finished loading)
         binding.loadingAllProfiles.setVisibility(View.GONE);
         binding.contentGroupAllProfiles.setVisibility(View.VISIBLE);
     }

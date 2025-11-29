@@ -50,12 +50,21 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
-    <!-- CHOSEN ENTRANT Group referencing all content to HIDE while loading the DB info -->
+    <!-- CANCELLED OR FINALIZED TEXT Group referencing all content to HIDE while loading the DB info -->
     <androidx.constraintlayout.widget.Group
         android:id="@+id/content_group_cancelled_or_finalized"
         android:visibility="gone"
         app:constraint_referenced_ids="
             cancelledOrFinalizedText"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
+    <!-- REGISTRATION CLOSED TEXT Group referencing all content to HIDE while loading the DB info -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_registration_closed"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            registrationClosedText"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -349,8 +358,17 @@
         android:backgroundTint="@color/light_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/registrationClosedText"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/registration_closed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.559"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/navigationBarButton"

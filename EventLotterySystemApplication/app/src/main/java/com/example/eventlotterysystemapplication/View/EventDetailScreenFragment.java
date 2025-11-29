@@ -167,6 +167,11 @@ public class EventDetailScreenFragment extends Fragment {
                 // Grab event and bind it
                 event = task.getResult();
 
+                // Hide image remove button if poster URL is null
+                if (event.getEventPosterUrl() == null) {
+                    binding.removeImageButton.setVisibility(View.GONE);
+                }
+
                 // Checking event geolocation requirements
                 if(event.isGeolocationRequirement()) {
                     if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -216,6 +221,14 @@ public class EventDetailScreenFragment extends Fragment {
                     // If user status == cancelled, display cancelled text
                     else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
                         showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+
+                    // Check if registration has ended
+                    LocalDateTime timeNow =  LocalDateTime.now();
+                    LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                    if (timeNow.isAfter(registrationEndTime)) {
+                        binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        binding.navigationBarButton.setVisibility(View.GONE);
                     }
                 }
             } else {

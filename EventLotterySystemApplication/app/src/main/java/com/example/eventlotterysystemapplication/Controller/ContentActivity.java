@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -11,6 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import android.util.Log;
 
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
@@ -36,6 +38,8 @@ public class ContentActivity extends AppCompatActivity {
                     v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                     return insets;
                 });
+
+        handleIntent(getIntent());
 
         // Get NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -66,5 +70,33 @@ public class ContentActivity extends AppCompatActivity {
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        // Get NavHostFragment
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(binding.contentNavHostFragment.getId());
+
+        assert navHostFragment != null;
+
+        // Get NavController
+        NavController navController = navHostFragment.getNavController();
+
+        Bundle startArgs = new Bundle();
+        if (intent != null && intent.hasExtra("eventId")) {
+            startArgs.putString("eventId", intent.getStringExtra("eventId"));
+            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
+        }
+
+
+        navController.setGraph(R.navigation.content_nav_graph, startArgs);
+
+        NavigationUI.setupWithNavController(binding.bottomNavMenu, navController);
     }
 }

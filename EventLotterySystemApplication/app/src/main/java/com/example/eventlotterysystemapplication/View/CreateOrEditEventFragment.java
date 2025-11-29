@@ -332,6 +332,12 @@ public class CreateOrEditEventFragment extends Fragment {
                 return;
             }
 
+            if (numOfSelectedEntrantsValue > limitWaitlistValue && limitWaitlistValue != -1){
+                binding.createOrEditEventSelectedEntrantsNumEditText.setError("Number of selected entrants cannot be greater than number of waitlisted entrants");
+                binding.createOrEditEventSelectedEntrantsNumEditText.requestFocus();
+                return;
+            }
+
             v.setEnabled(false);
 
             // Parse tags; split by commas

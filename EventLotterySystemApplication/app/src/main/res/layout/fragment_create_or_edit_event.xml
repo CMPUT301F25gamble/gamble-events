@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -201,18 +202,44 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/createOrEditEventRegistrationStartEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="datetime"
-            android:inputType="datetime"
-            android:hint="@string/date_time_format_text"
-            android:background="@drawable/rounded_list_item"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:drawableEnd="@drawable/ic_calendar"
-            android:layout_marginBottom="14dp" />
+<!--        <EditText-->
+<!--            android:id="@+id/createOrEditEventRegistrationStartEditText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:autofillHints="datetime"-->
+<!--            android:inputType="datetime"-->
+<!--            android:hint="@string/date_time_format_text"-->
+<!--            android:background="@drawable/rounded_list_item"-->
+<!--            android:paddingStart="14dp"-->
+<!--            android:paddingEnd="14dp"-->
+<!--            android:drawableEnd="@drawable/ic_calendar"-->
+<!--            android:layout_marginBottom="14dp" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/createOrEditEventRegistrationStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="100"
+            android:layout_marginEnd="4dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createOrEditEventRegistrationStartDatePickerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:src="@drawable/ic_calendar" />
+
+    </LinearLayout>
 
         <!-- Registration End Date and Time -->
         <LinearLayout
@@ -240,18 +267,44 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/createOrEditEventRegistrationEndEditText"
+<!--        <EditText-->
+<!--            android:id="@+id/createOrEditEventRegistrationEndEditText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:autofillHints="datetime"-->
+<!--            android:inputType="datetime"-->
+<!--            android:hint="@string/date_time_format_text"-->
+<!--            android:background="@drawable/rounded_list_item"-->
+<!--            android:paddingStart="14dp"-->
+<!--            android:paddingEnd="14dp"-->
+<!--            android:drawableEnd="@drawable/ic_calendar"-->
+<!--            android:layout_marginBottom="14dp" />-->
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="datetime"
-            android:inputType="datetime"
-            android:hint="@string/date_time_format_text"
-            android:background="@drawable/rounded_list_item"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:drawableEnd="@drawable/ic_calendar"
-            android:layout_marginBottom="14dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventRegistrationEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="100"
+                android:layout_marginEnd="4dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/createOrEditEventRegistrationEndDatePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:src="@drawable/ic_calendar" />
+
+        </LinearLayout>
 
         <!-- Invitation Acceptance Deadline -->
         <LinearLayout
@@ -279,18 +332,44 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/createOrEditEventInvitationEditText"
+<!--        <EditText-->
+<!--            android:id="@+id/createOrEditEventInvitationEditText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:autofillHints="datetime"-->
+<!--            android:inputType="datetime"-->
+<!--            android:hint="@string/date_time_format_text"-->
+<!--            android:background="@drawable/rounded_list_item"-->
+<!--            android:paddingStart="14dp"-->
+<!--            android:paddingEnd="14dp"-->
+<!--            android:drawableEnd="@drawable/ic_calendar"-->
+<!--            android:layout_marginBottom="14dp" />-->
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="datetime"
-            android:inputType="datetime"
-            android:hint="@string/date_time_format_text"
-            android:background="@drawable/rounded_list_item"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:drawableEnd="@drawable/ic_calendar"
-            android:layout_marginBottom="14dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventInvitation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="100"
+                android:layout_marginEnd="4dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/createOrEditEventInvitationPickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:src="@drawable/ic_calendar" />
+
+        </LinearLayout>
 
         <!-- Event Start Date and Time -->
         <LinearLayout
@@ -318,18 +397,44 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/createOrEditEventEventStartDateAndTimeEditText"
+<!--        <EditText-->
+<!--            android:id="@+id/createOrEditEventEventStartDateAndTimeEditText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:autofillHints="datetime"-->
+<!--            android:inputType="datetime"-->
+<!--            android:hint="@string/date_time_format_text"-->
+<!--            android:background="@drawable/rounded_list_item"-->
+<!--            android:paddingStart="14dp"-->
+<!--            android:paddingEnd="14dp"-->
+<!--            android:drawableEnd="@drawable/ic_calendar"-->
+<!--            android:layout_marginBottom="14dp" />-->
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="datetime"
-            android:inputType="datetime"
-            android:hint="@string/date_time_format_text"
-            android:background="@drawable/rounded_list_item"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:drawableEnd="@drawable/ic_calendar"
-            android:layout_marginBottom="14dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="100"
+                android:layout_marginEnd="4dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/createOrEditEventStartDatePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:src="@drawable/ic_calendar" />
+
+        </LinearLayout>
 
         <!-- Event End Date and Time -->
         <LinearLayout
@@ -357,18 +462,44 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/createOrEditEventEventEndDateAndTimeEditText"
+<!--        <EditText-->
+<!--            android:id="@+id/createOrEditEventEventEndDateAndTimeEditText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:autofillHints="datetime"-->
+<!--            android:inputType="datetime"-->
+<!--            android:hint="@string/date_time_format_text"-->
+<!--            android:background="@drawable/rounded_list_item"-->
+<!--            android:paddingStart="14dp"-->
+<!--            android:paddingEnd="14dp"-->
+<!--            android:drawableEnd="@drawable/ic_calendar"-->
+<!--            android:layout_marginBottom="14dp" />-->
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:autofillHints="datetime"
-            android:inputType="datetime"
-            android:hint="@string/date_time_format_text"
-            android:background="@drawable/rounded_list_item"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:drawableEnd="@drawable/ic_calendar"
-            android:layout_marginBottom="14dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/createOrEditEventEnd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="100"
+                android:layout_marginEnd="4dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/createOrEditEventEndDatePickerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:src="@drawable/ic_calendar" />
+
+        </LinearLayout>
 
         <!-- Upload Poster and Pictures -->
         <LinearLayout

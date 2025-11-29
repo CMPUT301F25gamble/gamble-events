@@ -104,11 +104,9 @@ public class EventsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getActivity() instanceof AdminActivity) {
-            EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
-            eventId = args.getEventId();
-            Log.d("EventsUIFragment", "Event Id: " + eventId);
-        }
+        EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
+        eventId = args.getEventId();
+        Log.d("EventsUIFragment", "Event Id: " + eventId);
     }
 
     @Override
@@ -133,15 +131,17 @@ public class EventsUIFragment extends Fragment {
         Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
 
         // If an event id was passed in from admin notifications, navigate to selected event
-        if (isAdminMode && !eventId.equals("none")) {
-            Log.d("EventsUIFragment", "Navigating to event detail screen");
-            BottomNavigationView adminBottomNavigationView = requireActivity()
-                    .findViewById(R.id.admin_bottom_nav_menu);
-            adminBottomNavigationView.setSelectedItemId(R.id.eventsUIFragment);
+        if (!eventId.equals("none")) {
             Bundle args = new Bundle();
             args.putString("eventId", eventId);
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
+            if (isAdminMode) {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
+            } else {
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, args);
+            }
+
         }
 
         if (isAdminMode) {
@@ -157,15 +157,13 @@ public class EventsUIFragment extends Fragment {
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
                 args.putString("eventId", null);
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
-                NavHostFragment.findNavController(EventsUIFragment.this)
+                NavHostFragment.findNavController(this)
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
 
             // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
-                NavHostFragment.findNavController(EventsUIFragment.this)
+                NavHostFragment.findNavController(this)
                         .navigate(R.id.my_events_fragment);
             });
 
@@ -199,12 +197,10 @@ public class EventsUIFragment extends Fragment {
 
             if (isAdminMode) {
                 // Now sets the graph before navigating
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.admin_nav_graph);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
             } else {
                 // Sets the graph before navigating, just to be safe
-                NavHostFragment.findNavController(EventsUIFragment.this).setGraph(R.navigation.content_nav_graph);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.event_detail_screen, args);
             }

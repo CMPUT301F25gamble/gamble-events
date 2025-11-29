@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.AdminActivity;
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
@@ -51,6 +52,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.installations.FirebaseInstallations;
 
 import java.io.IOException;
@@ -124,13 +126,6 @@ public class EventDetailScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
 
-        // TODO implement checking event geolocation requirements
-        if ( ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1001);
-        }
         return binding.getRoot();
     }
 
@@ -151,7 +146,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else if (getActivity() instanceof AdminActivity) {
             backButton.setOnClickListener(v -> {
                 NavHostFragment.findNavController(this)
-                        .popBackStack();
+                        .navigateUp();
             });
         } else {
             backButton.setOnClickListener(v -> {
@@ -171,6 +166,22 @@ public class EventDetailScreenFragment extends Fragment {
             if (task.isSuccessful()) {
                 // Grab event and bind it
                 event = task.getResult();
+
+                // Hide image remove button if poster URL is null
+                if (event.getEventPosterUrl() == null) {
+                    binding.removeImageButton.setVisibility(View.GONE);
+                }
+
+                // Checking event geolocation requirements
+                if(event.isGeolocationRequirement()) {
+                    if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                1001);
+                    }
+                }
+
                 organizerID = event.getOrganizerID(); // Used for admin control
                 if(!isOwnedEvent && currentUser!=null) {
                     isOwnedEvent =  currentUser.getUserID().equals(organizerID);
@@ -178,19 +189,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Log.d(TAG, "Event retrieved is: " + event);
                 bindEvent(event);
 
-                // If Admin mode, hide generateQR button, else show it
-                if (isAdminMode) {
-                    binding.generateQRCodeButton.setVisibility(View.GONE);
-                } else {
-                    showGenerateQRCodeButton();
-                }
-
                 entrant = event.genEntrantIfExists(currentUser);
-
-                // If the user is in the chosen list, show the chosen button
-                if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
-                    showChosenEntrantButtons(entrant.getStatus());
-                }
 
                 // Update the waitlist button colors and text based on if the user is in the waitlist
                 changeWaitlistBtn(entrant != null &&
@@ -205,10 +204,32 @@ public class EventDetailScreenFragment extends Fragment {
                     binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                     // Hide join waitlist/edit event button
                     binding.navigationBarButton.setVisibility(View.GONE);
-                    // Hide generate QR Code button logic is done when db called (line 152)
+                    // Hide generate QR Code button logic is done when db called
+                    binding.generateQRCodeButton.setVisibility(View.GONE);
                 } else {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    showGenerateQRCodeButton();
+                    // If the user is in the chosen list, show the chosen button
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
+                        showChosenEntrantButtons(entrant.getStatus());
+                    }
+                    // If user status == finalized, display finalized text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+                    // If user status == cancelled, display cancelled text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+
+                    // Check if registration has ended
+                    LocalDateTime timeNow =  LocalDateTime.now();
+                    LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                    if (timeNow.isAfter(registrationEndTime)) {
+                        binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                    }
                 }
             } else {
                 // Failed to load event; hide loading and show error
@@ -228,14 +249,10 @@ public class EventDetailScreenFragment extends Fragment {
             entrant.setStatus(EntrantStatus.FINALIZED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-            // TODO: DANIEL CAN FIX
-            binding.navigationBarButton.setVisibility(View.VISIBLE);
-            binding.navigationBarButton.setEnabled(false);
-            binding.navigationBarButton.setText("FINALIZED");
-            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
-            binding.navigationBarButton.setTextColor(R.color.black);
-            // Thx Daniel, end video
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
 
+            // Update DB
             updateEventDB(event);
         });
         // Decline Button
@@ -243,6 +260,11 @@ public class EventDetailScreenFragment extends Fragment {
             // Decline invitation
             entrant.setStatus(EntrantStatus.CANCELLED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.CANCELLED);
+
+            // Update DB
             updateEventDB(event);
         });
 
@@ -293,7 +315,7 @@ public class EventDetailScreenFragment extends Fragment {
                         //Get geo entrantLocation
                         Context context = v.getContext();
                         //If Event Geo location requirement is off or device is not allowing geo location, save null as location
-                        if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                        if (!event.isGeolocationRequirement()) {
                             Entrant newEntrant = new Entrant();
                             newEntrant.setLocation(null);
                             newEntrant.setStatus(EntrantStatus.WAITING);
@@ -303,25 +325,30 @@ public class EventDetailScreenFragment extends Fragment {
                             changeWaitlistBtn(true);
                             Log.d("EventDetailScreen", "User successfully joins waiting list");
                         } else {
-                            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                            // Make entrant effectively final by using a final variable
-                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                    .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                        EntrantLocation entrantLocation = null;
-                                        if (location != null) {
-                                            entrantLocation = new EntrantLocation();
-                                            entrantLocation.setLatitude(location.getLatitude());
-                                            entrantLocation.setLongitude(location.getLongitude());
-                                        }
-                                        Entrant newEntrant = new Entrant();
-                                        newEntrant.setLocation(entrantLocation);
-                                        newEntrant.setStatus(EntrantStatus.WAITING);
-                                        newEntrant.setUser(currentUser);
-                                        event.addToEntrantList(newEntrant);
-                                        updateEventDB(event);
-                                        changeWaitlistBtn(true);
+                            if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                                // Make entrant effectively final by using a final variable
+                                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                        .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                            EntrantLocation entrantLocation = null;
+                                            if (location != null) {
+                                                entrantLocation = new EntrantLocation();
+                                                entrantLocation.setLatitude(location.getLatitude());
+                                                entrantLocation.setLongitude(location.getLongitude());
+                                            }
+                                            Entrant newEntrant = new Entrant();
+                                            newEntrant.setLocation(entrantLocation);
+                                            newEntrant.setStatus(EntrantStatus.WAITING);
+                                            newEntrant.setUser(currentUser);
 
-                                    });
+                                            event.addToEntrantList(newEntrant);
+                                            updateEventDB(event);
+                                            changeWaitlistBtn(true);
+                                        });
+                            } else {
+                                Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
+                                        Toast.LENGTH_LONG).show();
+                            }
                             // User is not in waiting list, so join the waitlist
                         }
                     } else {
@@ -554,6 +581,37 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Shows the finalized or cancelled text based on the status of the entrant
+     * @param status the status of the entrant (either FINALIZED or CANCELLED)
+     */
+    private void showFinalizedOrCancelledText(EntrantStatus status) {
+        binding.contentGroupCancelledOrFinalized.setVisibility(View.VISIBLE);
+        // Hide join waitlist/edit event button
+        binding.navigationBarButton.setVisibility(View.GONE);
+
+        // Check which status it is (finalized or cancelled) and show the correct text respectively
+        if (status.equals(EntrantStatus.FINALIZED)) {
+            binding.cancelledOrFinalizedText.setText("FINALIZED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.dark_grey));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.light_grey));
+        } else if (status.equals(EntrantStatus.CANCELLED)) {
+            binding.cancelledOrFinalizedText.setText("CANCELLED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.black));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.important_field));
+        }
+    }
+
+    /**
+     * Updates the chosen entrant buttons based on the status of the entrant
+     * @param status the status of the entrant (CHOSEN)
+     */
     private void showChosenEntrantButtons(EntrantStatus status) {
         if (status.equals(EntrantStatus.CHOSEN)) {
             binding.ChosenEntrantButtonContainer.setVisibility(View.VISIBLE);

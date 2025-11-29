@@ -200,11 +200,8 @@ public class CreateOrEditEventFragment extends Fragment {
         // Upload Poster Button Listener
         binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
-
-
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
-
             // Get values from EditTexts
             // String userName = binding.nameEditText.getText().toString().trim();
             String eventName = binding.createOrEditEventEventNameEditText.getText().toString().trim();
@@ -218,6 +215,7 @@ public class CreateOrEditEventFragment extends Fragment {
             String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
+            // TODO: Handle notifs
 
            // Check that mandatory fields are filled
             if (eventName.isEmpty()) {

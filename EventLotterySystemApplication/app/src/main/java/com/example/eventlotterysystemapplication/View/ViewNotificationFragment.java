@@ -15,37 +15,37 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.eventlotterysystemapplication.Controller.AdminActivity;
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
-import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.Notification;
 import com.example.eventlotterysystemapplication.R;
-import com.example.eventlotterysystemapplication.databinding.FragmentAdminViewNotificationBinding;
+import com.example.eventlotterysystemapplication.databinding.FragmentViewNotificationBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 
 import java.util.Date;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminViewNotificationFragment#newInstance} factory method to
+ * Use the {@link ViewNotificationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminViewNotificationFragment extends Fragment {
+public class ViewNotificationFragment extends Fragment {
 
-    private FragmentAdminViewNotificationBinding binding;
+    private FragmentViewNotificationBinding binding;
     private String notificationId;
     private Notification notification;
     private final Database database = Database.getDatabase();
     private final String TAG = this.getClass().getSimpleName();
 
-    public AdminViewNotificationFragment() {
+    public ViewNotificationFragment() {
         // Required empty public constructor
     }
 
-    public static AdminViewNotificationFragment newInstance() {
-        AdminViewNotificationFragment fragment = new AdminViewNotificationFragment();
+    public static ViewNotificationFragment newInstance() {
+        ViewNotificationFragment fragment = new ViewNotificationFragment();
         return fragment;
     }
 
@@ -54,7 +54,7 @@ public class AdminViewNotificationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Get notification id from arguments
         assert getArguments() != null;
-        AdminViewNotificationFragmentArgs args = AdminViewNotificationFragmentArgs.fromBundle(getArguments());
+        ViewNotificationFragmentArgs args = ViewNotificationFragmentArgs.fromBundle(getArguments());
         notificationId = args.getNotificationId();
 
     }
@@ -63,7 +63,7 @@ public class AdminViewNotificationFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = FragmentAdminViewNotificationBinding.inflate(inflater, container, false);
+        binding = FragmentViewNotificationBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -120,8 +120,13 @@ public class AdminViewNotificationFragment extends Fragment {
                                 args.putString("eventId", notification.getEventID());
                                 Log.d(TAG, "Navigating");
 
-                                NavHostFragment.findNavController(this)
-                                        .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+                                if (requireActivity() instanceof AdminActivity) {
+                                    NavHostFragment.findNavController(this)
+                                            .navigate(R.id.action_adminViewNotificationFragment_to_eventDetailScreenFragment, args);
+                                } else if (requireActivity() instanceof ContentActivity) {
+                                    NavHostFragment.findNavController(this)
+                                            .navigate(R.id.action_viewNotificationFragment_to_event_detail_screen, args);
+                                }
                             }
                         } catch (Exception e) {
                             Log.d(TAG, Objects.requireNonNull(e.getMessage()));

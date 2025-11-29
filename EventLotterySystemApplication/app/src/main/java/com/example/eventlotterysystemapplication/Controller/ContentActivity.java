@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityContentBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
  * Activity that displays the main
@@ -21,11 +22,13 @@ import com.example.eventlotterysystemapplication.databinding.ActivityContentBind
 
 public class ContentActivity extends AppCompatActivity {
 
+    private ActivityContentBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        ActivityContentBinding binding = ActivityContentBinding.inflate(getLayoutInflater());
+        binding = ActivityContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentNavHostFragment,
                 (v, insets) -> {

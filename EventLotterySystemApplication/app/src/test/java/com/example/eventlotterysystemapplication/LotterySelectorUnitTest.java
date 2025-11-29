@@ -113,11 +113,12 @@ public class LotterySelectorUnitTest {
 
         // There are more people on waiting list than the final list capacity
         event.setMaxFinalListCapacity(maxFinalListCapacity);
-        event.setW(waitingList);
+//        event.setWa(waitingList);
 
         LotterySelector ls = new LotterySelector();
         List<Entrant> acceptedList;
-        acceptedList = ls.drawAcceptedUsers(event);
+        ls.drawAcceptedUsers(event);
+        acceptedList = event.getEntrantChosenList();
 
         // Check that length of acceptedList is equal to maxFinalListCapacity
         assertEquals(maxFinalListCapacity, acceptedList.size());
@@ -141,9 +142,10 @@ public class LotterySelectorUnitTest {
 
         LotterySelector ls = new LotterySelector();
         List<Entrant> acceptedList;
-        acceptedList = ls.drawAcceptedUsers(event);
+        ls.drawAcceptedUsers(event);
+        acceptedList = event.getEntrantChosenList();
 
-        // Check that length of acceptedList is equal to waitingList (everyone got accepted)
+                // Check that length of acceptedList is equal to waitingList (everyone got accepted)
         assertEquals(waitingList.size(), acceptedList.size());
         // Check each user in accepted list was on waiting list before
         for (Entrant entrant : acceptedList) {
@@ -167,7 +169,7 @@ public class LotterySelectorUnitTest {
         event.getEntrantList().setChosen(acceptedList);
 
         LotterySelector ls = new LotterySelector();
-        User replacementUser = ls.drawReplacementUser(event);
+        Entrant replacementUser = ls.drawReplacementUser(event);
 
         // Check that the replacement user was not in accepted list before
         assertFalse(acceptedList.contains(replacementUser));

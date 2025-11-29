@@ -41,6 +41,7 @@ import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
@@ -250,6 +251,8 @@ public class EventDetailScreenFragment extends Fragment {
             entrant.setStatus(EntrantStatus.CANCELLED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
             updateEventDB(event);
+            LotterySelector lotterySelector = new LotterySelector();
+            lotterySelector.drawReplacementUser(event);
         });
 
         // Remove Event Button (Only in admin mode)

@@ -429,6 +429,7 @@ public class Database {
                 registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         tcs.setResult(null);
+                        return;
                     }
 
                     // Start Entrant Status Logic, DO NOT REMOVE
@@ -447,23 +448,19 @@ public class Database {
                     EntrantStatus finalStatus = status;
                     // End Entrant Status Logic, DO NOT REMOVE
 
-                    if (documentSnapshot.exists()){
-                        getEvent(eventDocSnapshot.getId(), task -> {
-                            if (task.isSuccessful()){
-                                Log.d("Database", "Successfully retrieved event from reference");
-                                Event event = task.getResult();
-                                userEventsHistory.add(event);
-                                userStatuses.add(finalStatus);
-                                tcs.setResult(null);
-                            } else {
-                                Log.e("Database", "Failed to retrieve event");
-                                tcs.setException(task.getException());
-                            }
-                        });
-                    } else {
-                        tcs.setResult(null);
-                    }
-                });
+                    getEvent(eventDocSnapshot.getId(), task -> {
+                        if (task.isSuccessful()){
+                            Log.d("Database", "Successfully retrieved event from reference");
+                            Event event = task.getResult();
+                            userEventsHistory.add(event);
+                            userStatuses.add(finalStatus);
+                            tcs.setResult(null);
+                        } else {
+                            Log.e("Database", "Failed to retrieve event");
+                            tcs.setException(task.getException());
+                        }
+                    });
+                }).addOnFailureListener(e -> tcs.setException(e));
                 getUserEventsHistoryList.add(tcs.getTask());
             }
 

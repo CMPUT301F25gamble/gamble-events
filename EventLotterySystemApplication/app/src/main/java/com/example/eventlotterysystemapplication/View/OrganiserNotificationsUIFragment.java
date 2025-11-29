@@ -66,6 +66,7 @@ public class OrganiserNotificationsUIFragment extends Fragment {
         Button waitlistEntrantsButton = binding.waitlistEntrantsButton;
         Button chosenEntrantsButton = binding.chosenEntrantsButton;
         Button cancelledEntrantsButton = binding.cancelledEntrantsButton;
+        Button finalizedEntrantsButton = binding.finalizedEntrantsButton;
 
 
         // Set click listeners for buttons
@@ -85,6 +86,12 @@ public class OrganiserNotificationsUIFragment extends Fragment {
             NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
                     .navigate(OrganiserNotificationsUIFragmentDirections
                             .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("chosen", eventId));
+        });
+
+        finalizedEntrantsButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(OrganiserNotificationsUIFragment.this)
+                    .navigate(OrganiserNotificationsUIFragmentDirections
+                            .actionOrganiserNotificationsUIFragmentToOrganiserSendNotificationUIFragment("finalized", eventId));
         });
 
     }

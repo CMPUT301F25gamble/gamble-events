@@ -84,6 +84,7 @@
     <string name="waitlist_entrants_text">Waitlist Entrants</string>
     <string name="chosen_entrants_text">Chosen Entrants</string>
     <string name="cancelled_entrants_text">Cancelled Entrants</string>
+    <string name="finalized_entrants_text">Finalized Entrants</string>
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>

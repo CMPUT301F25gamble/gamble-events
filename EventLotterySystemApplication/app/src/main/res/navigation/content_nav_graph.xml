@@ -156,7 +156,7 @@
             android:id="@+id/action_adminViewNotificationFragment2_to_notifications_ui_fragment"
             app:destination="@id/notifications_ui_fragment" />
         <action
-            android:id="@+id/action_viewNotificationFragment_to_events_ui_fragment"
-            app:destination="@id/events_ui_fragment" />
+            android:id="@+id/action_viewNotificationFragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen" />
     </fragment>
 </navigation>

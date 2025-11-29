@@ -161,10 +161,20 @@ public class EventsUIFragment extends Fragment {
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
 
-            // My Events button navigates to my events page
+             // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
+                Bundle args = new Bundle();
+                args.putBoolean("registeredEvents", false);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.my_events_fragment);
+            });
+
+			// My Registered Events button navigates to my registered events page
+            binding.myRegisterEventsButton.setOnClickListener(v -> {
+                Bundle args = new Bundle();
+                args.putBoolean("registeredEvents", true);
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.my_registered_events_fragment,args);
             });
 
             // Show loading and hide content until it is fetched

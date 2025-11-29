@@ -108,7 +108,7 @@ public class EventDetailScreenFragment extends Fragment {
         super.onCreate(savedInstanceState);
         EventDetailScreenFragmentArgs args = EventDetailScreenFragmentArgs.fromBundle(getArguments());
         eventId = args.getEventId();
-        isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
+        //isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
         Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
         if(currentUser==null) {
             getCurrentUser(task -> {

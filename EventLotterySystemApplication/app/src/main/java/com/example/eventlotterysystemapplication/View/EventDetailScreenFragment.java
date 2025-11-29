@@ -209,6 +209,14 @@ public class EventDetailScreenFragment extends Fragment {
                     if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
                         showChosenEntrantButtons(entrant.getStatus());
                     }
+                    // If user status == finalized, display finalized text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+                    // If user status == cancelled, display cancelled text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
                 }
             } else {
                 // Failed to load event; hide loading and show error
@@ -228,14 +236,10 @@ public class EventDetailScreenFragment extends Fragment {
             entrant.setStatus(EntrantStatus.FINALIZED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-            // TODO: DANIEL CAN FIX
-            binding.navigationBarButton.setVisibility(View.VISIBLE);
-            binding.navigationBarButton.setEnabled(false);
-            binding.navigationBarButton.setText("FINALIZED");
-            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
-            binding.navigationBarButton.setTextColor(R.color.black);
-            // Thx Daniel, end video
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
 
+            // Update DB
             updateEventDB(event);
         });
         // Decline Button
@@ -243,6 +247,11 @@ public class EventDetailScreenFragment extends Fragment {
             // Decline invitation
             entrant.setStatus(EntrantStatus.CANCELLED);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.CANCELLED);
+
+            // Update DB
             updateEventDB(event);
         });
 
@@ -559,6 +568,37 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Shows the finalized or cancelled text based on the status of the entrant
+     * @param status the status of the entrant (either FINALIZED or CANCELLED)
+     */
+    private void showFinalizedOrCancelledText(EntrantStatus status) {
+        binding.contentGroupCancelledOrFinalized.setVisibility(View.VISIBLE);
+        // Hide join waitlist/edit event button
+        binding.navigationBarButton.setVisibility(View.GONE);
+
+        // Check which status it is (finalized or cancelled) and show the correct text respectively
+        if (status.equals(EntrantStatus.FINALIZED)) {
+            binding.cancelledOrFinalizedText.setText("FINALIZED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.dark_grey));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.light_grey));
+        } else if (status.equals(EntrantStatus.CANCELLED)) {
+            binding.cancelledOrFinalizedText.setText("CANCELLED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.black));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.important_field));
+        }
+    }
+
+    /**
+     * Updates the chosen entrant buttons based on the status of the entrant
+     * @param status the status of the entrant (CHOSEN)
+     */
     private void showChosenEntrantButtons(EntrantStatus status) {
         if (status.equals(EntrantStatus.CHOSEN)) {
             binding.ChosenEntrantButtonContainer.setVisibility(View.VISIBLE);

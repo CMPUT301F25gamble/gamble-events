@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
@@ -226,6 +227,12 @@ public class ImageStorage {
                 try {
                     TaskCompletionSource<Event> eventTcs = new TaskCompletionSource<>();
                     Database.getDatabase().getEvent(eventId, eventTask -> {
+                        if (eventTask.getException() != null) {
+                            // Error catching if event doesn't exist (an exception was thrown)
+                            eventTcs.setResult(null);
+                            return;
+                        }
+
                         eventTcs.setResult(eventTask.getResult());
                         if (!eventTask.isSuccessful()) {
                             listener.onComplete(Tasks.forException(new Exception("Could not fetch event")));

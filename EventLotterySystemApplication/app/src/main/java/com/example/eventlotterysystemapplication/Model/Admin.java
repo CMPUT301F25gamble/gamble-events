@@ -68,13 +68,13 @@ public class Admin extends User{
 
             // Also set the eventPosterUrl field to null after deleting the image
             db.removeEventPosterUrl(imageUrl, dbTask -> {
-                if (task.isSuccessful()) {
+                if (dbTask.isSuccessful()) {
                     Log.d("Admin", "Removed event poster url on database as well");
                 } else {
                     Log.e("Admin", "Cannot remove event poster url on database");
                 }
 
-                listener.onComplete(task); // Notify caller
+                listener.onComplete(dbTask); // Notify caller
             });
         });
     }

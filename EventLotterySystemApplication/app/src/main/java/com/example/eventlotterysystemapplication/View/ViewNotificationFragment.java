@@ -122,12 +122,11 @@ public class ViewNotificationFragment extends Fragment {
 
                                 if (requireActivity() instanceof AdminActivity) {
                                     NavHostFragment.findNavController(this)
-                                            .navigate(R.id.action_adminViewNotificationFragment_to_eventsUIFragment, args);
+                                            .navigate(R.id.action_adminViewNotificationFragment_to_eventDetailScreenFragment, args);
                                 } else if (requireActivity() instanceof ContentActivity) {
                                     NavHostFragment.findNavController(this)
-                                            .navigate(R.id.action_viewNotificationFragment_to_events_ui_fragment, args);
+                                            .navigate(R.id.action_viewNotificationFragment_to_event_detail_screen, args);
                                 }
-
                             }
                         } catch (Exception e) {
                             Log.d(TAG, Objects.requireNonNull(e.getMessage()));

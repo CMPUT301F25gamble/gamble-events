@@ -48,7 +48,7 @@ public class UserEventHistoryFragment extends Fragment {
         // Fetch the global user ID and admin mode from the AdminSession class
         userId = AdminSession.getSelectedUserId();
         isAdminMode = AdminSession.getAdminMode();
-        Log.d("ProfileUIFragment",
+        Log.d("UserEventHistoryFragment",
                 "userId arg = " + userId + "; isAdminMode = " + isAdminMode);
 
         return binding.getRoot();

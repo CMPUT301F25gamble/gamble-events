@@ -761,36 +761,36 @@ public class Database {
         });
     }
 
-    /**
-     * This method is specific for allowing us to add to the recipient collection of the redraw of a
-     * particular event, here check if the event already has a redraw notification, and if it does
-     * we return that object, otherwise we return an exception indicating that a new redraw
-     * notification object should be created
-     * @param eventID The event we want to check for redraws
-     * @param listener An OnCompleteListener that will be called when the operation finishes
-     */
-    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
-        Query redrawNotificationQuery = notificationRef.where(Filter.and(
-                Filter.equalTo("eventID", eventID),
-                Filter.equalTo("channelName", "lotteryRedrawNotification")
-        ));
-
-        redrawNotificationQuery.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
-                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
-                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
-
-                if (notifications.size() > 0){
-                    listener.onComplete(Tasks.forResult(notifications.get(0)));
-                } else {
-                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-                }
-            } else {
-                Log.e("Database", "Failed to query database");
-                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-            }
-        });
-    }
+//    /**
+//     * This method is specific for allowing us to add to the recipient collection of the redraw of a
+//     * particular event, here check if the event already has a redraw notification, and if it does
+//     * we return that object, otherwise we return an exception indicating that a new redraw
+//     * notification object should be created
+//     * @param eventID The event we want to check for redraws
+//     * @param listener An OnCompleteListener that will be called when the operation finishes
+//     */
+//    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
+//        Query redrawNotificationQuery = notificationRef.where(Filter.and(
+//                Filter.equalTo("eventID", eventID),
+//                Filter.equalTo("channelName", "lotteryRedrawNotification")
+//        ));
+//
+//        redrawNotificationQuery.get().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()){
+//                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
+//                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
+//
+//                if (notifications.size() > 0){
+//                    listener.onComplete(Tasks.forResult(notifications.get(0)));
+//                } else {
+//                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+//                }
+//            } else {
+//                Log.e("Database", "Failed to query database");
+//                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
+//            }
+//        });
+//    }
 
     /**
      * Adds a new notification object to the database

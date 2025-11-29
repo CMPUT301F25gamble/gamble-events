@@ -120,7 +120,11 @@ public class WaitingEntrantListFragment extends Fragment {
                     Event event = task.getResult();
 
                     // Use lottery selector to randomly select entrants
-                    lotterySelector.drawAcceptedUsers(event);
+
+                    while (event.getEntrantChosenList().size() + event.getEntrantFinalizedList().size() < event.getMaxFinalListCapacity()
+                    && !event.getEntrantWaitingList().isEmpty()){
+                        lotterySelector.drawReplacementUser(event, true);
+                    }
 
                     // Refresh the waiting list
                     // After updating the chosen list

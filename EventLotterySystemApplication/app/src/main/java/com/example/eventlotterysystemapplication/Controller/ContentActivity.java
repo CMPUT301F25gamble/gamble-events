@@ -46,28 +46,28 @@ public class ContentActivity extends AppCompatActivity {
         // Get NavController
         NavController navController = navHostFragment.getNavController();
 
-//        // Start navigation on second tab (events page) and display it
-//        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
-//        navController.navigate(R.id.events_ui_fragment);
-//
-//        /*
-//         * Nav logic for BottomNavigationView
-//         * -> Fixes the issue withe the back stack on the bottom menu
-//         */
-//        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
-//            int destinationId = item.getItemId();
-//
-//            NavOptions navOptions = new NavOptions.Builder()
-//                    // Main fix here
-//                    .setPopUpTo(R.id.content_nav_graph, true)
-//                    .build();
-//
-//            // Second arg is null because there is no start args
-//            navController.navigate(destinationId, null, navOptions);
-//            return true;
-//        });
+        // Start navigation on second tab (events page) and display it
+        binding.bottomNavMenu.setSelectedItemId(R.id.events_ui_fragment);
+        navController.navigate(R.id.events_ui_fragment);
 
-        BottomNavigationView bottomNavigationView = binding.bottomNavMenu;
-        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        /*
+         * Nav logic for BottomNavigationView
+         * -> Fixes the issue withe the back stack on the bottom menu
+         */
+        binding.bottomNavMenu.setOnItemSelectedListener(item -> {
+            int destinationId = item.getItemId();
+
+            NavOptions navOptions = new NavOptions.Builder()
+                    // Main fix here
+                    .setPopUpTo(R.id.content_nav_graph, true)
+                    .build();
+
+            // Second arg is null because there is no start args
+            navController.navigate(destinationId, null, navOptions);
+            return true;
+        });
+
+//        BottomNavigationView bottomNavigationView = binding.bottomNavMenu;
+//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 }

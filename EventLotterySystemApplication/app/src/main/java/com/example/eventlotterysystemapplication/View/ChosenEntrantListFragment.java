@@ -20,6 +20,7 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
@@ -224,6 +225,13 @@ public class ChosenEntrantListFragment extends Fragment {
                 // Remove user from LOCAL chosen list
                 chosenEntrants.remove(entrant.getUser());
                 data.remove(entrant.getUser().getName());
+
+                LotterySelector lotterySelector = new LotterySelector();
+                try {
+                    lotterySelector.drawReplacementUser(currentEvent, false);
+                } catch (IllegalStateException e){
+                    Log.d(e.getMessage(), "Could not draw new replacement");
+                }
 
                 // Refresh the ListView
                 adapter.notifyDataSetChanged();

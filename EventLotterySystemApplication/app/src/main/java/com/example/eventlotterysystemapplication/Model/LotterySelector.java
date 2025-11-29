@@ -112,7 +112,7 @@ public class LotterySelector {
      * @throws IllegalStateException When the accepted list is identical to the waiting list
      * (cannot draw a unique replacement user)
      */
-    public Entrant drawReplacementUser(Event event) throws IllegalStateException {
+    public Entrant drawReplacementUser(Event event, boolean manual) throws IllegalStateException {
         Set<User> waitingList = new HashSet<>(event.getUserWaitingList());
         Set<User> acceptedList = new HashSet<>(event.getUserChosenList());
         Set<User> cancelledList = new HashSet<>(event.getUserCancelledList());
@@ -140,7 +140,11 @@ public class LotterySelector {
         Entrant entrant = event.genEntrantIfExists(user);
         event.addEntrantToChosenList(entrant);
 
-        EventNotificationManager.notifyLotteryReselection(entrant, event);
+        if (manual){
+            EventNotificationManager.notifyLotteryManualDraw(entrant, event);
+        } else {
+            EventNotificationManager.notifyLotteryReselection(entrant, event);
+        }
 
         return entrant;
     }

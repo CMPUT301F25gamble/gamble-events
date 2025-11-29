@@ -33,6 +33,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.LotteryDrawScheduler;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.ImageStorage;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -76,6 +77,8 @@ public class CreateOrEditEventFragment extends Fragment {
     private PlacesClient placesClient;
     private AutoCompleteTextView addressAutoComplete;
     private ArrayAdapter<String> adapter;
+
+    private List<Entrant> entrants = new ArrayList<>();
 
     // Initialize registerForActivityResult before the fragment is created
     // Launcher that takes an image from the user
@@ -411,6 +414,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                 // update event if editing the event
                                 if (fetchedEvent != null) {
                                     event.setEventID(fetchedEvent.getEventID());
+                                    event.setEntrantList(entrants);
                                     event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
 
                                     database.updateEvent(event, updateEventTask ->{
@@ -568,6 +572,8 @@ public class CreateOrEditEventFragment extends Fragment {
         binding.createOrEditEventSelectedEntrantsNumEditText.setText(String.valueOf(event.getMaxFinalListCapacity()));
         Log.d("Geolocation Req", Boolean.toString(event.isGeolocationRequirement()));
         binding.checkboxEnableGeolocation.setChecked(event.isGeolocationRequirement());
+
+        entrants = event.getEntrantList();
 
     }
 

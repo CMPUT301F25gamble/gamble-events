@@ -232,7 +232,9 @@ public class EventDetailScreenFragment extends Fragment {
         // Accept Button
         binding.acceptChosenEntrantButton.setOnClickListener(v -> {
             // Accept invitation
-            entrant.setStatus(EntrantStatus.FINALIZED);
+//            entrant.setStatus(EntrantStatus.FINALIZED);
+
+            event.addEntrantToFinalizedList(entrant);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
             // TODO: DANIEL CAN FIX
@@ -248,11 +250,17 @@ public class EventDetailScreenFragment extends Fragment {
         // Decline Button
         binding.declineChosenEntrantButton.setOnClickListener(v -> {
             // Decline invitation
-            entrant.setStatus(EntrantStatus.CANCELLED);
+//            entrant.setStatus(EntrantStatus.CANCELLED);
+            event.addEntrantToCancelledList(entrant);
+
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
             updateEventDB(event);
             LotterySelector lotterySelector = new LotterySelector();
-            lotterySelector.drawReplacementUser(event);
+            try {
+                lotterySelector.drawReplacementUser(event, false);
+            } catch (IllegalStateException e){
+                Log.d(TAG, "Could not schedule a redraw");
+            }
         });
 
         // Remove Event Button (Only in admin mode)

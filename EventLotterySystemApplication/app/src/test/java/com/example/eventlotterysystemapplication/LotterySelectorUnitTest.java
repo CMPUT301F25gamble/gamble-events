@@ -169,7 +169,7 @@ public class LotterySelectorUnitTest {
         event.getEntrantList().setChosen(acceptedList);
 
         LotterySelector ls = new LotterySelector();
-        Entrant replacementUser = ls.drawReplacementUser(event);
+        Entrant replacementUser = ls.drawReplacementUser(event, false);
 
         // Check that the replacement user was not in accepted list before
         assertFalse(acceptedList.contains(replacementUser));
@@ -195,7 +195,7 @@ public class LotterySelectorUnitTest {
         event.getEntrantList().setChosen(acceptedList);
 
         LotterySelector ls = new LotterySelector();
-        assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event));
+        assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event, false));
     }
 
     @After

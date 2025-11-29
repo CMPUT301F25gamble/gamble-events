@@ -135,5 +135,23 @@
     <fragment
         android:id="@+id/allEventPostersUserFragment"
         android:name="com.example.eventlotterysystemapplication.View.AllEventPostersUserFragment"
-        android:label="AllEventPostersUserFragment" />
+        android:label="AllEventPostersUserFragment" >
+        <action
+            android:id="@+id/action_allEventPostersUserFragment_to_userEventPostersFragment"
+            app:destination="@id/userEventPostersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userEventPostersFragment"
+        android:name="com.example.eventlotterysystemapplication.View.UserEventPostersFragment"
+        android:label="fragment_user_event_posters"
+        tools:layout="@layout/fragment_user_event_posters" >
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="User" />
+        <argument
+            android:name="posterUrls"
+            app:argType="string[]" />
+    </fragment>
 </navigation>

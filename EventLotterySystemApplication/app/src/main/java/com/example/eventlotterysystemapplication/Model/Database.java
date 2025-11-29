@@ -360,7 +360,7 @@ public class Database {
         eventDocRef.get().addOnCompleteListener(eventTask -> {
             if (!eventTask.isSuccessful() || !eventTask.getResult().exists()) {
                 listener.onComplete(Tasks.forException(
-                        new IllegalStateException("Event not found or retrieval failed")
+                        new IllegalStateException("Event not found or retrieval failed: " + eventID)
                 ));
                 return;
             }

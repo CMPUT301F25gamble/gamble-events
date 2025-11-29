@@ -129,4 +129,8 @@
             android:id="@+id/action_userEventHistoryFragment_to_profileUIFragment"
             app:destination="@id/profileUIFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/allEventPostersUserFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AllEventPostersUserFragment"
+        android:label="AllEventPostersUserFragment" />
 </navigation>

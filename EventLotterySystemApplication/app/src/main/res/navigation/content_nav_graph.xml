@@ -129,6 +129,9 @@
         <action
             android:id="@+id/action_event_detail_screen_to_create_or_edit_event_fragment"
             app:destination="@id/create_or_edit_event_fragment" />
+        <action
+            android:id="@+id/action_event_detail_screen_to_viewNotificationFragment"
+            app:destination="@id/viewNotificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsTOSFragment"
@@ -158,5 +161,8 @@
         <action
             android:id="@+id/action_viewNotificationFragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_viewNotificationFragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen" />
     </fragment>
 </navigation>

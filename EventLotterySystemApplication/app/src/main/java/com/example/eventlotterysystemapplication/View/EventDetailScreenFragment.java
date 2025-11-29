@@ -168,6 +168,11 @@ public class EventDetailScreenFragment extends Fragment {
                 // Grab event and bind it
                 event = task.getResult();
 
+                // Hide image remove button if poster URL is null
+                if (event.getEventPosterUrl() == null) {
+                    binding.removeImageButton.setVisibility(View.GONE);
+                }
+
                 // Checking event geolocation requirements
                 if(event.isGeolocationRequirement()) {
                     if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -185,19 +190,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Log.d(TAG, "Event retrieved is: " + event);
                 bindEvent(event);
 
-                // If Admin mode, hide generateQR button, else show it
-                if (isAdminMode) {
-                    binding.generateQRCodeButton.setVisibility(View.GONE);
-                } else {
-                    showGenerateQRCodeButton();
-                }
-
                 entrant = event.genEntrantIfExists(currentUser);
-
-                // If the user is in the chosen list, show the chosen button
-                if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
-                    showChosenEntrantButtons(entrant.getStatus());
-                }
 
                 // Update the waitlist button colors and text based on if the user is in the waitlist
                 changeWaitlistBtn(entrant != null &&
@@ -212,10 +205,32 @@ public class EventDetailScreenFragment extends Fragment {
                     binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                     // Hide join waitlist/edit event button
                     binding.navigationBarButton.setVisibility(View.GONE);
-                    // Hide generate QR Code button logic is done when db called (line 152)
+                    // Hide generate QR Code button logic is done when db called
+                    binding.generateQRCodeButton.setVisibility(View.GONE);
                 } else {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    showGenerateQRCodeButton();
+                    // If the user is in the chosen list, show the chosen button
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
+                        showChosenEntrantButtons(entrant.getStatus());
+                    }
+                    // If user status == finalized, display finalized text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+                    // If user status == cancelled, display cancelled text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+
+                    // Check if registration has ended
+                    LocalDateTime timeNow =  LocalDateTime.now();
+                    LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                    if (timeNow.isAfter(registrationEndTime)) {
+                        binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                    }
                 }
             } else {
                 // Failed to load event; hide loading and show error
@@ -237,14 +252,10 @@ public class EventDetailScreenFragment extends Fragment {
             event.addEntrantToFinalizedList(entrant);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-            // TODO: DANIEL CAN FIX
-            binding.navigationBarButton.setVisibility(View.VISIBLE);
-            binding.navigationBarButton.setEnabled(false);
-            binding.navigationBarButton.setText("FINALIZED");
-            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
-            binding.navigationBarButton.setTextColor(R.color.black);
-            // Thx Daniel, end video
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
 
+            // Update DB
             updateEventDB(event);
         });
         // Decline Button
@@ -254,6 +265,11 @@ public class EventDetailScreenFragment extends Fragment {
             event.addEntrantToCancelledList(entrant);
 
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.CANCELLED);
+
+            // Update DB
             updateEventDB(event);
             LotterySelector lotterySelector = new LotterySelector();
             try {
@@ -576,6 +592,37 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Shows the finalized or cancelled text based on the status of the entrant
+     * @param status the status of the entrant (either FINALIZED or CANCELLED)
+     */
+    private void showFinalizedOrCancelledText(EntrantStatus status) {
+        binding.contentGroupCancelledOrFinalized.setVisibility(View.VISIBLE);
+        // Hide join waitlist/edit event button
+        binding.navigationBarButton.setVisibility(View.GONE);
+
+        // Check which status it is (finalized or cancelled) and show the correct text respectively
+        if (status.equals(EntrantStatus.FINALIZED)) {
+            binding.cancelledOrFinalizedText.setText("FINALIZED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.dark_grey));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.light_grey));
+        } else if (status.equals(EntrantStatus.CANCELLED)) {
+            binding.cancelledOrFinalizedText.setText("CANCELLED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.black));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.important_field));
+        }
+    }
+
+    /**
+     * Updates the chosen entrant buttons based on the status of the entrant
+     * @param status the status of the entrant (CHOSEN)
+     */
     private void showChosenEntrantButtons(EntrantStatus status) {
         if (status.equals(EntrantStatus.CHOSEN)) {
             binding.ChosenEntrantButtonContainer.setVisibility(View.VISIBLE);

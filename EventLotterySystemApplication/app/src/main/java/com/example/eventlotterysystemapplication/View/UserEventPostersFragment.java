@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
-import com.example.eventlotterysystemapplication.Model.ImageStorage;
+import com.example.eventlotterysystemapplication.Model.Admin;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentUserEventPostersBinding;
 
@@ -75,7 +75,7 @@ public class UserEventPostersFragment extends Fragment {
         binding.contentGroupAllProfiles.setVisibility(View.GONE);
 
         // Delete the event poster after confirmation has gone through
-        ImageStorage.getInstance().deleteEventPoster(url, task -> {
+        Admin.removeImage(url, task -> {
             if (!task.isSuccessful()) {
                 Toast.makeText(getContext(), "Failed to delete poster", Toast.LENGTH_SHORT).show();
                 return;

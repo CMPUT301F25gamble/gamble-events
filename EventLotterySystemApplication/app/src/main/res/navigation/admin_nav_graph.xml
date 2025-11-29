@@ -107,6 +107,9 @@
         <action
             android:id="@+id/action_adminViewNotificationFragment_to_eventsUIFragment"
             app:destination="@id/eventsUIFragment" />
+        <action
+            android:id="@+id/action_adminViewNotificationFragment_to_eventDetailScreenFragment"
+            app:destination="@id/eventDetailScreenFragment" />
     </fragment>
     <fragment
         android:id="@+id/myEventsFragment"

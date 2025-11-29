@@ -101,10 +101,22 @@ public class EventAdapter extends ArrayAdapter<Event> {
             itemStatus.setVisibility(View.GONE);
         }
 
-        // Setup tags RecyclerView
-        tags.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        EventTagsAdapter tagAdapter = new EventTagsAdapter(event.getEventTags()); // your existing adapter
-        tags.setAdapter(tagAdapter);
+        // Setup tags RecyclerView + fix no tags bug
+        List<String> eventTags = event.getEventTags();
+
+        if (eventTags == null || eventTags.isEmpty()) {
+            // Hide RecyclerView completely when no tags
+            tags.setVisibility(View.GONE);
+        } else {
+            // Show and populate tags
+            tags.setVisibility(View.VISIBLE);
+            tags.setLayoutManager(new LinearLayoutManager(
+                    context,
+                    LinearLayoutManager.HORIZONTAL,
+                    false));
+            EventTagsAdapter tagAdapter = new EventTagsAdapter(eventTags);
+            tags.setAdapter(tagAdapter);
+        }
 
         return view;
     }

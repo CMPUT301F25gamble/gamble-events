@@ -97,6 +97,10 @@ public class AllEventPostersUserFragment extends Fragment {
             Log.e(TAG, "All Users that have posters list is NULL!");
             return;
         }
+        if (getContext() == null) {
+            // Prevents crashing when repeatedly spamming the navbar
+            return;
+        }
 
         // Fetch each user from the database and add their names to the listview
         ArrayList<String> displayProfileNames = new ArrayList<>();

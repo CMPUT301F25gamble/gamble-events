@@ -106,8 +106,8 @@ public class AllEventPostersUserFragment extends Fragment {
             AdminSession.setSelectedUserId(selectedUser.getUserID());
 
             List<String> posterUrls = userPosters.get(selectedUser.getUserID());
-            Log.e(TAG, "user id: " + selectedUser.getUserID());
-            Log.e(TAG, "poster urls: " + posterUrls);
+            Log.d(TAG, "user id: " + selectedUser.getUserID());
+            Log.d(TAG, "poster urls: " + posterUrls);
             if (posterUrls == null || posterUrls.isEmpty()) {
                 Toast.makeText(getContext(), "No posters found for this user", Toast.LENGTH_SHORT).show();
                 return;

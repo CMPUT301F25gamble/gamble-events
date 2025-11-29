@@ -184,19 +184,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Log.d(TAG, "Event retrieved is: " + event);
                 bindEvent(event);
 
-                // If Admin mode, hide generateQR button, else show it
-                if (isAdminMode) {
-                    binding.generateQRCodeButton.setVisibility(View.GONE);
-                } else {
-                    showGenerateQRCodeButton();
-                }
-
                 entrant = event.genEntrantIfExists(currentUser);
-
-                // If the user is in the chosen list, show the chosen button
-                if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
-                    showChosenEntrantButtons(entrant.getStatus());
-                }
 
                 // Update the waitlist button colors and text based on if the user is in the waitlist
                 changeWaitlistBtn(entrant != null &&
@@ -211,10 +199,16 @@ public class EventDetailScreenFragment extends Fragment {
                     binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                     // Hide join waitlist/edit event button
                     binding.navigationBarButton.setVisibility(View.GONE);
-                    // Hide generate QR Code button logic is done when db called (line 152)
+                    // Hide generate QR Code button logic is done when db called
+                    binding.generateQRCodeButton.setVisibility(View.GONE);
                 } else {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    showGenerateQRCodeButton();
+                    // If the user is in the chosen list, show the chosen button
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
+                        showChosenEntrantButtons(entrant.getStatus());
+                    }
                 }
             } else {
                 // Failed to load event; hide loading and show error

@@ -210,9 +210,33 @@ public class EventDetailScreenFragment extends Fragment {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     showGenerateQRCodeButton();
+
+                    // If user == waiting && event registration is ended, hide join waitlist and display registration closed
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationStartTime = event.getRegistrationStartTime();
+                        if (timeNow.isAfter(registrationStartTime)) {
+                            binding.navigationBarButton.setVisibility(View.GONE);
+
+                            // Change registration closed to not selected image
+                            binding.registrationClosedText.setImageResource(R.drawable.not_selected);
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        }
+                    }
+
                     // If the user is in the chosen list, show the chosen button
                     if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
                         showChosenEntrantButtons(entrant.getStatus());
+
+                        // Check if registration has ended
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                        if (timeNow.isAfter(registrationEndTime)) {
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                            binding.ChosenEntrantButtonContainer.setVisibility(View.GONE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                        }
                     }
                     // If user status == finalized, display finalized text
                     else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {

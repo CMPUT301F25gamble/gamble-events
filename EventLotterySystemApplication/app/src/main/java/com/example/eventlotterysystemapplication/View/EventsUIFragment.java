@@ -133,7 +133,7 @@ public class EventsUIFragment extends Fragment {
         // If an event id was passed in from admin notifications, navigate to selected event
         if (!eventId.equals("none")) {
             Bundle args = new Bundle();
-            args.putString("eventId", eventId);
+            args.putString("eventID", eventId);
             if (isAdminMode) {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
@@ -156,7 +156,7 @@ public class EventsUIFragment extends Fragment {
             // Non-admin buttons
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
-                args.putString("eventId", null);
+                args.putString("eventID", null);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
@@ -200,7 +200,7 @@ public class EventsUIFragment extends Fragment {
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
             Event event = filteredEventList.get(position);
             Bundle args = new Bundle();
-            args.putString("eventId", event.getEventID());
+            args.putString("eventID", event.getEventID());
             args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
             Log.d("EventsUIFragment", "isOwnedEvent = " + event.getOrganizerID().equals(userId));
             Log.d("EventsUIFragment", "eventId = " + event.getEventID());
@@ -226,7 +226,7 @@ public class EventsUIFragment extends Fragment {
             for (Event event : filteredEventList) {
                 if (event.getEventID().equals(eventID)) {
                     Bundle args = new Bundle();
-                    args.putString("eventId", eventID);
+                    args.putString("eventID", eventID);
                     args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
                     NavHostFragment.findNavController(this)
                             .navigate(R.id.event_detail_screen, args);

@@ -1,6 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
-import android.Manifest;
+import  android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -211,9 +211,33 @@ public class EventDetailScreenFragment extends Fragment {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     showGenerateQRCodeButton();
+
+                    // If user == waiting && event registration is ended, hide join waitlist and display registration closed
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationStartTime = event.getRegistrationStartTime();
+                        if (timeNow.isAfter(registrationStartTime)) {
+                            binding.navigationBarButton.setVisibility(View.GONE);
+
+                            // Change registration closed to not selected image
+                            binding.registrationClosedText.setImageResource(R.drawable.not_selected);
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        }
+                    }
+
                     // If the user is in the chosen list, show the chosen button
                     if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
                         showChosenEntrantButtons(entrant.getStatus());
+
+                        // Check if registration has ended
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                        if (timeNow.isAfter(registrationEndTime)) {
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                            binding.ChosenEntrantButtonContainer.setVisibility(View.GONE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                        }
                     }
                     // If user status == finalized, display finalized text
                     else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
@@ -227,7 +251,7 @@ public class EventDetailScreenFragment extends Fragment {
                     // Check if registration has ended
                     LocalDateTime timeNow =  LocalDateTime.now();
                     LocalDateTime registrationEndTime = event.getRegistrationEndTime();
-                    if (timeNow.isAfter(registrationEndTime)) {
+                    if (timeNow.isAfter(registrationEndTime) && !isOwnedEvent) {
                         binding.registrationClosedText.setVisibility(View.VISIBLE);
                         binding.navigationBarButton.setVisibility(View.GONE);
                     }
@@ -311,7 +335,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Navigate to edit event page if the user is the organizer of the event
             if (isOwnedEvent) {
                 Bundle args = new Bundle();
-                args.putString("eventId", eventId);
+                args.putString("eventID", eventId);
                 NavHostFragment.findNavController(EventDetailScreenFragment.this)
                         .navigate(R.id.create_or_edit_event_fragment, args);
                 return;
@@ -686,11 +710,11 @@ public class EventDetailScreenFragment extends Fragment {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         // format times
-        String formattedEventStartTime = event.getEventStartTime().format(formatter);
-        String formattedEventEndTime = event.getEventEndTime().format(formatter);
-        String formattedRegEndTime = event.getRegistrationEndTime().format(formatter);
-        String formattedRegStartTime = event.getRegistrationStartTime().format(formatter);
-        String formattedInvAccTime = event.getInvitationAcceptanceDeadline().format(formatter);
+        String formattedEventStartTime = event.getEventStartTime()==null? "": event.getEventStartTime().format(formatter);
+        String formattedEventEndTime = event.getEventEndTime()==null? "":  event.getEventEndTime().format(formatter);
+        String formattedRegEndTime = event.getRegistrationEndTime()==null? "":  event.getRegistrationEndTime().format(formatter);
+        String formattedRegStartTime = event.getRegistrationStartTime()==null? "":  event.getRegistrationStartTime().format(formatter);
+        String formattedInvAccTime = event.getInvitationAcceptanceDeadline()==null? "":  event.getInvitationAcceptanceDeadline().format(formatter);
 
         // Error Checking for event and registration times. (Don't think we need, may remove later)
         if (formattedEventStartTime == null || formattedEventEndTime == null || formattedRegEndTime == null || formattedRegStartTime == null || formattedInvAccTime == null) {

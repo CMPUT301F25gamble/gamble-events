@@ -54,7 +54,7 @@ public class LotteryDrawScheduler {
         try{
             Intent intent = new Intent(context, LotteryAlarmReceiver.class);
             String eventId = event.getEventID();
-            intent.putExtra("eventId",eventId);
+            intent.putExtra("eventID",eventId);
             int requestCode = eventId.hashCode();
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);

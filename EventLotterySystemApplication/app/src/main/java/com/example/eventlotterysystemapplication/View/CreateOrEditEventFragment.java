@@ -657,7 +657,7 @@ public class CreateOrEditEventFragment extends Fragment {
 //        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
 //        if(argEventId!=null) {
 //                        Bundle args = new Bundle();
-//            args.putString("eventId", argEventId);
+//            args.putString("eventID", argEventId);
 //                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
 //                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
 //        }else{

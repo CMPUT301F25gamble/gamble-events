@@ -61,7 +61,7 @@ public class EntrantListSelectionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Get the eventID from the intent
-        String eventId = requireActivity().getIntent().getStringExtra("eventId");
+        String eventId = requireActivity().getIntent().getStringExtra("eventID");
         Bundle bundle = new Bundle();
         bundle.putString("eventID", eventId);
 

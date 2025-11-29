@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EventLotterySystemApplication</string>
+    <string name="app_name">Eventure</string>
     <string name="username">[USERNAME]\'s Profile</string>
     <string name="back_button">Back</string>
     <string name="name_prompt_text">Name:</string>
@@ -17,7 +17,7 @@
     <string name="navigation_bar_button">Navigation Bar</string>
     <string name="back_button_text">Back</string>
     <string name="event_detail_screen_name_text">Event Name</string>
-    <string name="my_events_button_text">My Events</string>
+    <string name="my_events_button_text">My Organized Events</string>
     <string name="my_registered_events_button_text">My Registered Events</string>
     <string name="lottery_guideline_title"><u>Lottery Section Guidelines:</u></string>
     <string name="lorem_ipsum_numbered">

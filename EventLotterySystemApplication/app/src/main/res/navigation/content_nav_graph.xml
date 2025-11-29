@@ -118,6 +118,9 @@
         <action
             android:id="@+id/action_user_event_history_fragment_to_profile_ui_fragment"
             app:destination="@id/profile_ui_fragment" />
+        <action
+            android:id="@+id/action_user_event_history_fragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen" />
     </fragment>
     <fragment
         android:id="@+id/event_detail_screen"
@@ -136,6 +139,9 @@
         <action
             android:id="@+id/action_event_detail_screen_to_viewNotificationFragment"
             app:destination="@id/viewNotificationFragment" />
+        <action
+            android:id="@+id/action_event_detail_screen_to_user_event_history_fragment"
+            app:destination="@id/user_event_history_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsTOSFragment"

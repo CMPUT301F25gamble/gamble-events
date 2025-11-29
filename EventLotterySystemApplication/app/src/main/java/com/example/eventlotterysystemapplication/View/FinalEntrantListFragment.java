@@ -189,8 +189,13 @@ public class FinalEntrantListFragment extends Fragment {
             // Write each user's name on their own line, numbered
             int i = 1;
             for (User u : users) {
-                writer.write(i + ". " + u.getName() + "\n");
-                ++i;
+                if (u.getPhoneNumber() != null) {
+                    writer.write(i + ". " + u.getName() + ", " + u.getEmail() + ", " + u.getPhoneNumber() + "\n");
+                    ++i;
+                } else {
+                    writer.write(i + ". " + u.getName() + ", " + u.getEmail() + "\n");
+                    ++i;
+                }
             }
         }
 

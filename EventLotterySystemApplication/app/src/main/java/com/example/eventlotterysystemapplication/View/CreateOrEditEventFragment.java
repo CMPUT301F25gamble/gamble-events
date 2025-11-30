@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
@@ -678,8 +679,11 @@ public class CreateOrEditEventFragment extends Fragment {
         }
 
         try {
+            String suffix = MimeTypeMap.getSingleton().getExtensionFromMimeType(getContext().getContentResolver().getType(uri));
+            Log.d(TAG, "file uri: " + uri);
+            Log.d(TAG, "image suffix: " + suffix);
             // Create temp image file for poster
-            File tempFile = File.createTempFile("temp_image", ".jpg");
+            File tempFile = File.createTempFile("temp_image", "." + suffix);
 
             InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
             if (inputStream == null) {

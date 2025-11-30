@@ -76,6 +76,11 @@ public class AllProfilesFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadProfilesIntoList(List<User> users) {
+        // Prevents crashing when repeatedly spamming the navbar if the fragment hasnt loaded in yet
+        if (getContext() == null) {
+            return;
+        }
+
         // List for all profiles
         ArrayList<String> displayProfileNames = new ArrayList<>();
         // Adapter for listview

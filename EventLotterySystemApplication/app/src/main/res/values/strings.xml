@@ -111,4 +111,7 @@
     <string name="notification_logs_header_text">Notification Logs</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="all_event_posters_user_text">All Users that Uploaded Posters</string>
+    <string name="event_poster_content_description">Event Poster</string>
+    <string name="delete_poster_content_description">Delete Poster</string>
 </resources>

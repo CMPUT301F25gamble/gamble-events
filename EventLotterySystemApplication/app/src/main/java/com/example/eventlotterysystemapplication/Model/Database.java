@@ -906,7 +906,7 @@ public class Database {
             event.setEventPosterUrl(doc.getString("eventPosterUrl"));
         }
 
-        if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
+        if (doc.getLong("maxWaitingListCapacity").intValue() > 0 || doc.getLong("maxWaitingListCapacity").intValue() == -1) {
             event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
         }
         if (doc.getLong("maxFinalListCapacity").intValue() > 0) {

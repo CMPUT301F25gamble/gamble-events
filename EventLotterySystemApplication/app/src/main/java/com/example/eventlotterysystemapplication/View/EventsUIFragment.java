@@ -104,9 +104,11 @@ public class EventsUIFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventID();
-        Log.d("EventsUIFragment", "Event Id: " + eventId);
+        if (getArguments() != null) {
+            EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
+            eventId = args.getEventID();
+            Log.d("EventsUIFragment", "Event Id: " + eventId);
+        }
     }
 
     @Override
@@ -131,7 +133,7 @@ public class EventsUIFragment extends Fragment {
         Log.d("EventsUIFragment", "userId = " + userId + "; isAdminMode = " + isAdminMode);
 
         // If an event id was passed in from admin notifications, navigate to selected event
-        if (!eventId.equals("none")) {
+        if (eventId != null && !eventId.equals("none")) {
             Bundle args = new Bundle();
             args.putString("eventID", eventId);
             if (isAdminMode) {
@@ -142,6 +144,7 @@ public class EventsUIFragment extends Fragment {
                         .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, args);
             }
 
+            eventId = null; // prevents back button from not being usable since it constantly navigates to event detail screen otherwise
         }
 
         if (isAdminMode) {

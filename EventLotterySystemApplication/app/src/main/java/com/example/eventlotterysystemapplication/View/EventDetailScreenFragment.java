@@ -374,6 +374,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param v View to obtain context from
      */
     private void joinOrLeaveWaitlist(Event event, View v) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         Entrant entrant = event.genEntrantIfExists(currentUser);
         if (entrant == null) {
             // User is not in waiting list, so join the waitlist
@@ -456,6 +459,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param action the action to remove from the database
      */
     private void removeAction(String action) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         // Inflate the layout
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View dialogAdminRemoveAction = inflater
@@ -559,6 +565,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param qrBitmap Bitmap to pass to ImageView to display
      */
     private void showQRCodeDialog(Bitmap qrBitmap) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         Dialog dialog = new Dialog(requireContext());
 
         // CreateImageView
@@ -578,6 +587,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param eventName The name of the event used for the filename
      */
     private void saveQRCodeToDownloads(Bitmap qrBitmap, String eventName) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         if (qrBitmap == null) {
             Toast.makeText(requireContext(), "QR Code is empty", Toast.LENGTH_SHORT).show();
             return;
@@ -624,6 +636,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
@@ -648,6 +663,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param status the status of the entrant (either FINALIZED or CANCELLED)
      */
     private void showFinalizedOrCancelledText(EntrantStatus status) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         binding.contentGroupCancelledOrFinalized.setVisibility(View.VISIBLE);
         // Hide join waitlist/edit event button
         binding.navigationBarButton.setVisibility(View.GONE);
@@ -717,6 +735,10 @@ public class EventDetailScreenFragment extends Fragment {
      * @param event details to fill the page with
      */
     private void bindEvent(Event event) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
+
         // Get event name, description, location, waitlist and chosen capacity
         String eventName = event.getName();
         String eventDesc = event.getDescription();

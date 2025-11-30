@@ -8,14 +8,19 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import android.util.Log;
 
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantList;
+import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +40,11 @@ public class LotterySelectorUnitTest {
     private MockedStatic<FirebaseFirestore> mockFirestoreStatic;
     private MockedStatic<Log> mockLogStatic;
     private final String userID = "mwahahahahah";
-    private EntrantList entrantList = mock(EntrantList.class);
+    private Entrant billyBob;
+    private Entrant alice;
+    private Entrant santa;
+    private Entrant wizard;
+    private Entrant elf67;
     private Event event = new Event(
             "Casino Paradise Gambling 18+",
             "Have lots of fun throwing your life savings away",
@@ -48,48 +57,17 @@ public class LotterySelectorUnitTest {
             "2025-11-10T23:59",
             "2025-11-12T23:59",
             10,
-            5
+            5,
+            false
     );
 
-    User billyBob = new User(
-            "Billy Bob <3",
-            "billybob@mymail.com",
-            "123-456-7890",
-            "billyBobDeviceID",
-            "new token"
-    );
+    private Entrant mockEntrant(String userID) {
+        User user = mock(User.class);
+        when(user.getUserID()).thenReturn(userID);
+        EntrantLocation location = mock(EntrantLocation.class);
+        return new Entrant(user, location, EntrantStatus.WAITING);
+    }
 
-    User alice = new User(
-            "Alice",
-            "alice@mymail.com",
-            "888-888-8888",
-            "AliceDeviceID",
-            "new token"
-    );
-
-    User santa = new User(
-            "Santa Claus",
-            "nick@north-pole.ca",
-            "505-050-5067",
-            "SAINT_NICK_DEVICE_ID",
-            "new token"
-    );
-
-    User elf10597120397 = new User(
-            "Elf #10597120397 @ North Pole",
-            "elf105971203970@north-pole.ca",
-            "505-048-3130",
-            "10597120397_elf_device_id",
-            "new token"
-    );
-
-    User elf7683989 = new User(
-            "Elf #7683989 @ North Pole",
-            "elf7683989@north-pole.ca",
-            "Elf #7683989 @ North Pole",
-            "7683989_elf_device_id",
-            "new token"
-    );
 
     // Note that I am not adding user ids to each user cuz i am lazy
 
@@ -105,97 +83,141 @@ public class LotterySelectorUnitTest {
 
     @Test
     public void testDrawUsersOverCapacity() {
-        ArrayList<User> waitingList = new ArrayList<>(
-                Arrays.asList(billyBob, alice, santa, elf7683989, elf10597120397)
-        );
+        billyBob = mockEntrant("billyBob");
+        alice = mockEntrant("alice");
+        santa = mockEntrant("santa");
+        wizard = mockEntrant("wizard");
+        elf67 = mockEntrant("elf67");
 
+        event.addToEntrantList(billyBob);
+        event.addToEntrantList(alice);
+        event.addToEntrantList(santa);
+        event.addToEntrantList(wizard);
+        event.addToEntrantList(elf67);
+
+        List<Entrant> waitList = event.getEntrantWaitingList();
         final int maxFinalListCapacity = 3;
 
         // There are more people on waiting list than the final list capacity
         event.setMaxFinalListCapacity(maxFinalListCapacity);
-//        event.setWa(waitingList);
 
-        LotterySelector ls = new LotterySelector();
-        List<Entrant> acceptedList;
-        ls.drawAcceptedUsers(event);
-        acceptedList = event.getEntrantChosenList();
+        try (MockedStatic<EventNotificationManager> mock = mockStatic(EventNotificationManager.class)) {
+            mock.when(() -> EventNotificationManager.notifyInitialLotterySelection(any()))
+                    .thenAnswer(invocation -> null);
+            LotterySelector ls = new LotterySelector();
+            List<Entrant> acceptedList;
+            ls.drawAcceptedUsers(event);
+            acceptedList = event.getEntrantChosenList();
 
-        // Check that length of acceptedList is equal to maxFinalListCapacity
-        assertEquals(maxFinalListCapacity, acceptedList.size());
-        // Check each user in accepted list was on waiting list before
-        for (Entrant entrant : acceptedList) {
-            assertTrue(waitingList.contains(entrant));
+            // Check that length of acceptedList is equal to maxFinalListCapacity
+            assertEquals(maxFinalListCapacity, acceptedList.size());
+            // Check each user in accepted list was on waiting list before
+            for (Entrant entrant : acceptedList) {
+                assertTrue(waitList.contains(entrant));
+            }
         }
     }
 
     @Test
     public void testDrawUsersUnderCapacity() {
-        ArrayList<User> waitingList = new ArrayList<>(
-                Arrays.asList(billyBob, alice, santa, elf7683989, elf10597120397)
-        );
+        billyBob = mockEntrant("billyBob");
+        alice = mockEntrant("alice");
+        santa = mockEntrant("santa");
+        wizard = mockEntrant("wizard");
+        elf67 = mockEntrant("elf67");
 
+        event.addToEntrantList(billyBob);
+        event.addToEntrantList(alice);
+        event.addToEntrantList(santa);
+        event.addToEntrantList(wizard);
+        event.addToEntrantList(elf67);
+
+        List<Entrant> waitList = event.getEntrantWaitingList();
         final int maxFinalListCapacity = 100;
 
         // There are less people on waiting list than the final list capacity
         event.setMaxFinalListCapacity(maxFinalListCapacity);
-        event.getEntrantList().setWaiting(waitingList);
 
-        LotterySelector ls = new LotterySelector();
-        List<Entrant> acceptedList;
-        ls.drawAcceptedUsers(event);
-        acceptedList = event.getEntrantChosenList();
+        try (MockedStatic<EventNotificationManager> mock = mockStatic(EventNotificationManager.class)) {
+            mock.when(() -> EventNotificationManager.notifyInitialLotterySelection(any()))
+                    .thenAnswer(invocation -> null);
 
-                // Check that length of acceptedList is equal to waitingList (everyone got accepted)
-        assertEquals(waitingList.size(), acceptedList.size());
-        // Check each user in accepted list was on waiting list before
-        for (Entrant entrant : acceptedList) {
-            assertTrue(waitingList.contains(entrant));
+            LotterySelector ls = new LotterySelector();
+            List<Entrant> acceptedList;
+            ls.drawAcceptedUsers(event);
+            acceptedList = event.getEntrantChosenList();
+
+            // Check that length of acceptedList is equal to waitingList (everyone got accepted)
+            assertEquals(waitList.size(), acceptedList.size());
+            // Check each user in accepted list was on waiting list before
+            for (Entrant entrant : acceptedList) {
+                assertTrue(waitList.contains(entrant));
+            }
         }
     }
 
     @Test
     public void testDrawReplacementUser() {
-        ArrayList<User> waitingList = new ArrayList<>(
-                Arrays.asList(billyBob, alice, santa, elf7683989, elf10597120397)
-        );
-        ArrayList<User> acceptedList = new ArrayList<>(
-                Arrays.asList(billyBob, santa)
-        );
+        billyBob = mockEntrant("billyBob");
+        alice = mockEntrant("alice");
+        santa = mockEntrant("santa");
+        wizard = mockEntrant("wizard");
+        elf67 = mockEntrant("elf67");
+        event.addToEntrantList(billyBob);
+        event.addToEntrantList(alice);
+        event.addToEntrantList(santa);
+        event.addToEntrantList(wizard);
+        event.addToEntrantList(elf67);
 
+        event.addEntrantToChosenList(wizard);
+        event.addEntrantToChosenList(billyBob);
+        event.addEntrantToChosenList(elf67);
+
+        event.addEntrantToCancelledList(elf67);
+
+        List<Entrant> waitList = event.getEntrantWaitingList();
+        List<Entrant> chosenList = event.getEntrantChosenList();
         final int maxFinalListCapacity = 3;
         event.setMaxFinalListCapacity(maxFinalListCapacity);
 
-        event.getEntrantList().setWaiting(waitingList);
-        event.getEntrantList().setChosen(acceptedList);
+        try (MockedStatic<EventNotificationManager> mock = mockStatic(EventNotificationManager.class)) {
+            mock.when(() -> EventNotificationManager.notifyLotteryReselection(any(), any()))
+                    .thenAnswer(invocation -> null);
 
-        LotterySelector ls = new LotterySelector();
-        Entrant replacementUser = ls.drawReplacementUser(event, false);
+            LotterySelector ls = new LotterySelector();
+            Entrant replacementUser = ls.drawReplacementUser(event, false);
 
-        // Check that the replacement user was not in accepted list before
-        assertFalse(acceptedList.contains(replacementUser));
-        // Check that the replacement user was in waiting list before
-        assertTrue(waitingList.contains(replacementUser));
+            // Check that the replacement user was not in accepted list before
+            assertFalse(chosenList.contains(replacementUser));
+            // Check that the replacement user was in waiting list before
+            assertTrue(waitList.contains(replacementUser));
+        }
     }
 
     @Test
     public void testDrawReplacementUserImpossible() {
         // Tests that an exception will be thrown if accepted list is identical to waiting list
         // basically it's impossible to draw a unique user from waiting list that is not already on accepted list
-        ArrayList<User> waitingList = new ArrayList<>(
-                Arrays.asList(billyBob, alice, santa)
-        );
-        ArrayList<User> acceptedList = new ArrayList<>(
-                Arrays.asList(billyBob, alice, santa)
-        );
+        billyBob = mockEntrant("billyBob");
+        alice = mockEntrant("alice");
+        santa = mockEntrant("santa");
+        event.addToEntrantList(billyBob);
+        event.addToEntrantList(alice);
+        event.addToEntrantList(santa);
+
+        event.addEntrantToChosenList(billyBob);
+        event.addEntrantToChosenList(alice);
+        event.addEntrantToChosenList(santa);
 
         final int maxFinalListCapacity = 3;
         event.setMaxFinalListCapacity(maxFinalListCapacity);
 
-        event.getEntrantList().setWaiting(waitingList);
-        event.getEntrantList().setChosen(acceptedList);
-
-        LotterySelector ls = new LotterySelector();
-        assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event, false));
+        try (MockedStatic<EventNotificationManager> mock = mockStatic(EventNotificationManager.class)) {
+            mock.when(() -> EventNotificationManager.notifyLotteryReselection(any(), any()))
+                    .thenAnswer(invocation -> null);
+            LotterySelector ls = new LotterySelector();
+            assertThrows(IllegalStateException.class, () -> ls.drawReplacementUser(event, false));
+        }
     }
 
     @After

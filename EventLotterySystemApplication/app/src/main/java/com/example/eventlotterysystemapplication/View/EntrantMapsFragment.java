@@ -57,7 +57,7 @@ public class EntrantMapsFragment extends Fragment {
                     Event event = task.getResult();
                     Log.d(TAG, "Event retrieved is: " + event);
 
-                    List<Entrant> waitingEntrants = event.getEntrantListByStatus(EntrantStatus.valueOf(entrantStatus));
+                    List<Entrant> waitingEntrants = event.getEntrantList();//event.getEntrantListByStatus(EntrantStatus.valueOf(entrantStatus));
 
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     if (waitingEntrants != null && !waitingEntrants.isEmpty()) {
@@ -70,7 +70,8 @@ public class EntrantMapsFragment extends Fragment {
                                 if (latitude != null && longitude != null) {
                                     LatLng latLng = new LatLng(latitude, longitude);
                                     builder.include(latLng);
-                                    googleMap.addMarker(new MarkerOptions().position(latLng).title(entrant.getUser().getName()));
+                                    googleMap.addMarker(new MarkerOptions().position(latLng).title(entrant.getUser().getName())
+                                            .snippet(entrant.getStatus().toString()));
                                     atLeastOnePoint = true;
                                 }
                             }
@@ -120,7 +121,7 @@ public class EntrantMapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.my_event_enterants_map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.my_event_entrants_map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }

@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.View;
 import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
+import com.example.eventlotterysystemapplication.Model.EventNotificationManager;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentChosenEntrantListBinding;
@@ -88,6 +91,13 @@ public class ChosenEntrantListFragment extends Fragment {
                     .navigateUp();
         });
 
+        binding.sendNotifButton.setOnClickListener(v -> {
+            EventNotificationManager.notifyChosenList(currentEvent, "Reminder to Sign Up for "
+                    + currentEvent.getName(), "A reminder that you have been selected for "
+                    + currentEvent.getName() + ". Please make sure to accept or decline your invitation by "
+                    + currentEvent.getInvitationAcceptanceDeadlineString());
+        });
+
         // Display the loading screen while the data is being fetched
         binding.loadingChosenEntrantsList.setVisibility(View.VISIBLE);
         binding.contentGroupChosenEntrantsList.setVisibility(View.GONE);
@@ -119,10 +129,11 @@ public class ChosenEntrantListFragment extends Fragment {
 
     // Private method to help with loading the data into the ListView
     private void loadChosenEntrantsIntoList(Event event) {
-        for (User u : event.getUserChosenList()) {
-            String name = u.getName();
-            data.add(name);             // Add ONLY user's name to the list
+        for (Entrant entrant : event.getEntrantChosenList()) {
+            chosenEntrants.add(entrant);
+            data.add(entrant.getUser().getName());
         }
+
         // Notify the adapter
         adapter.notifyDataSetChanged();
 
@@ -208,11 +219,19 @@ public class ChosenEntrantListFragment extends Fragment {
                 // Dismiss dialog1 first for a clean transition
                 dialog1.dismiss();
                 // Remove user from event's chosen list DB
-                currentEvent.addEntrantToChosenList(entrant);
+                currentEvent.addEntrantToCancelledList(entrant);
+                updateEventDB(currentEvent);
 
                 // Remove user from LOCAL chosen list
                 chosenEntrants.remove(entrant.getUser());
                 data.remove(entrant.getUser().getName());
+
+                LotterySelector lotterySelector = new LotterySelector();
+                try {
+                    lotterySelector.drawReplacementUser(currentEvent, false);
+                } catch (IllegalStateException e){
+                    Log.d(e.getMessage(), "Could not draw new replacement");
+                }
 
                 // Refresh the ListView
                 adapter.notifyDataSetChanged();
@@ -228,4 +247,16 @@ public class ChosenEntrantListFragment extends Fragment {
         // Show the dialog 1 (i.e., the user info dialog)
         dialog1.show();
     }
+
+    /**
+     * Updates the event in the database
+     * @param event
+     */
+    private void updateEventDB(Event event){
+        Database db = Database.getDatabase();
+        db.updateEvent(event, task -> {});
+    }
+
 }
+
+

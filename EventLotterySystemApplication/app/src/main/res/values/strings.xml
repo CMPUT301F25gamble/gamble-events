@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EventLotterySystemApplication</string>
+    <string name="app_name">Eventure</string>
     <string name="username">[USERNAME]\'s Profile</string>
     <string name="back_button">Back</string>
     <string name="name_prompt_text">Name:</string>
@@ -17,7 +17,8 @@
     <string name="navigation_bar_button">Navigation Bar</string>
     <string name="back_button_text">Back</string>
     <string name="event_detail_screen_name_text">Event Name</string>
-    <string name="my_events_button_text">My Events</string>
+    <string name="my_events_button_text">My Organized Events</string>
+    <string name="my_registered_events_button_text">Pending Event Invites</string>
     <string name="lottery_guideline_title"><u>Lottery Section Guidelines:</u></string>
     <string name="lorem_ipsum_numbered">
 1. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n2. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.\n\n3. Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
@@ -70,7 +71,7 @@
     <string name="admin">Admin</string>
     <string name="organizers">Organizers</string>
     <string name="delete_account_message">Deleting your account is a permanent action. Do you wish to continue?</string>
-    <string name="profile_history_button">Profile History</string>
+    <string name="profile_history_button">Event History</string>
     <string name="update_profile_button">Update Profile</string>
     <string name="lottery_selection_guidelines_actual_text">
     1. Upon joining the waitlist for an event, all entrants have an equal chance to be selected once registration closes.\n
@@ -84,6 +85,7 @@
     <string name="waitlist_entrants_text">Waitlist Entrants</string>
     <string name="chosen_entrants_text">Chosen Entrants</string>
     <string name="cancelled_entrants_text">Cancelled Entrants</string>
+    <string name="finalized_entrants_text">Finalized Entrants</string>
     <string name="notification_message_header_text">Notification Message:</string>
     <string name="send_notification_button_text">Send Notification</string>
     <string name="settings_text"><u>Settings</u></string>
@@ -109,4 +111,7 @@
     <string name="notification_logs_header_text">Notification Logs</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="all_event_posters_user_text">All Users that Uploaded Posters</string>
+    <string name="event_poster_content_description">Event Poster</string>
+    <string name="delete_poster_content_description">Delete Poster</string>
 </resources>

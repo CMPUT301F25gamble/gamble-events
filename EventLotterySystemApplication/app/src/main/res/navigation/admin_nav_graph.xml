@@ -23,7 +23,7 @@
             android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             android:defaultValue="none" />
     </fragment>
@@ -55,6 +55,9 @@
         <action
             android:id="@+id/action_profileUIFragment_to_myEventsFragment"
             app:destination="@id/myEventsFragment" />
+        <action
+            android:id="@+id/action_profileUIFragment_to_userEventHistoryFragment"
+            app:destination="@id/userEventHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/deleteProfileFragment"
@@ -80,7 +83,7 @@
             android:id="@+id/action_eventDetailScreenFragment_to_myEventsFragment"
             app:destination="@id/myEventsFragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string" />
         <argument
             android:name="isOwnedEvent"
@@ -89,6 +92,9 @@
         <action
             android:id="@+id/action_eventDetailScreenFragment_to_eventsUIFragment"
             app:destination="@id/eventsUIFragment" />
+        <action
+            android:id="@+id/action_eventDetailScreenFragment_to_userEventHistoryFragment"
+            app:destination="@id/userEventHistoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminViewNotificationFragment"
@@ -101,6 +107,9 @@
         <argument
             android:name="notificationId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_adminViewNotificationFragment_to_eventsUIFragment"
+            app:destination="@id/eventsUIFragment" />
         <action
             android:id="@+id/action_adminViewNotificationFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
@@ -117,4 +126,38 @@
             android:id="@+id/action_myEventsFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
     </fragment>
-    </navigation>
+    <fragment
+        android:id="@+id/userEventHistoryFragment"
+        android:name="com.example.eventlotterysystemapplication.View.UserEventHistoryFragment"
+        android:label="fragment_user_event_history"
+        tools:layout="@layout/fragment_user_event_history" >
+        <action
+            android:id="@+id/action_userEventHistoryFragment_to_profileUIFragment"
+            app:destination="@id/profileUIFragment" />
+        <action
+            android:id="@+id/action_userEventHistoryFragment_to_eventDetailScreenFragment"
+            app:destination="@id/eventDetailScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/allEventPostersUserFragment"
+        android:name="com.example.eventlotterysystemapplication.View.AllEventPostersUserFragment"
+        android:label="AllEventPostersUserFragment" >
+        <action
+            android:id="@+id/action_allEventPostersUserFragment_to_userEventPostersFragment"
+            app:destination="@id/userEventPostersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userEventPostersFragment"
+        android:name="com.example.eventlotterysystemapplication.View.UserEventPostersFragment"
+        android:label="fragment_user_event_posters"
+        tools:layout="@layout/fragment_user_event_posters" >
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="User" />
+        <argument
+            android:name="posterUrls"
+            app:argType="string[]" />
+    </fragment>
+</navigation>

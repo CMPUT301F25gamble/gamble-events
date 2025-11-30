@@ -16,10 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -33,6 +35,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.Controller.LotteryDrawScheduler;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.ImageStorage;
 import com.example.eventlotterysystemapplication.Model.User;
@@ -42,6 +45,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.installations.FirebaseInstallations;
 
@@ -77,6 +81,8 @@ public class CreateOrEditEventFragment extends Fragment {
     private AutoCompleteTextView addressAutoComplete;
     private ArrayAdapter<String> adapter;
 
+    private List<Entrant> entrants = new ArrayList<>();
+
     // Initialize registerForActivityResult before the fragment is created
     // Launcher that takes an image from the user
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
@@ -110,7 +116,7 @@ public class CreateOrEditEventFragment extends Fragment {
 
         // Get eventId if the organizer is editing the event
         if (getArguments() != null) {
-            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventId();
+            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventID();
         }
     }
 
@@ -200,24 +206,22 @@ public class CreateOrEditEventFragment extends Fragment {
         // Upload Poster Button Listener
         binding.uploadPhotoButton.setOnClickListener(v -> userUploadEventPoster());
 
-
-
         // Once done button pressed, update database
         binding.createOrEditEventDoneButton.setOnClickListener(v-> {
-
             // Get values from EditTexts
             // String userName = binding.nameEditText.getText().toString().trim();
             String eventName = binding.createOrEditEventEventNameEditText.getText().toString().trim();
             String eventDesc = binding.createOrEditEventEventDescEditText.getText().toString().trim();
             String tagsStr = binding.createOrEditEventTagsEditText.getText().toString().trim();
             String eventLocation = binding.createOrEditEventLocationTextView.getText().toString().trim();
-            String eventStartTimeStr = binding.createOrEditEventEventStartDateAndTimeEditText.getText().toString().trim();
-            String eventEndTimeStr = binding.createOrEditEventEventEndDateAndTimeEditText.getText().toString().trim();
-            String regStartTimeStr = binding.createOrEditEventRegistrationStartEditText.getText().toString().trim();
-            String regEndTimeStr = binding.createOrEditEventRegistrationEndEditText.getText().toString().trim();
-            String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitationEditText.getText().toString().trim();
+            String eventStartTimeStr = binding.createOrEditEventStart.getText().toString().trim();
+            String eventEndTimeStr = binding.createOrEditEventEnd.getText().toString().trim();
+            String regStartTimeStr = binding.createOrEditEventRegistrationStart.getText().toString().trim();
+            String regEndTimeStr = binding.createOrEditEventRegistrationEnd.getText().toString().trim();
+            String invitationAcceptanceDeadlineStr = binding.createOrEditEventInvitation.getText().toString().trim();
             String limitWaitlistStr = binding.createOrEditLimitWaitlistEditText.getText().toString().trim();
             String numOfSelectedEntrantsStr = binding.createOrEditEventSelectedEntrantsNumEditText.getText().toString().trim();
+            // TODO: Handle notifs
 
            // Check that mandatory fields are filled
             if (eventName.isEmpty()) {
@@ -235,29 +239,29 @@ public class CreateOrEditEventFragment extends Fragment {
                 binding.createOrEditEventLocationTextView.requestFocus();
                 return;
             }
-            if (eventStartTimeStr.isEmpty()) {
-                binding.createOrEditEventEventStartDateAndTimeEditText.setError("Event Start Date and Time is required");
-                binding.createOrEditEventEventStartDateAndTimeEditText.requestFocus();
-                return;
-            }
-            if (eventEndTimeStr.isEmpty()) {
-                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time is required");
-                binding.createOrEditEventEventEndDateAndTimeEditText.requestFocus();
-                return;
-            }
             if (regStartTimeStr.isEmpty()) {
-                binding.createOrEditEventRegistrationStartEditText.setError("Registration Start Date and Time is required");
-                binding.createOrEditEventRegistrationStartEditText.requestFocus();
+                binding.createOrEditEventRegistrationStart.setError("Registration Start Date and Time is required");
+                binding.createOrEditEventRegistrationStart.requestFocus();
                 return;
             }
             if (regEndTimeStr.isEmpty()) {
-                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time is required");
-                binding.createOrEditEventRegistrationEndEditText.requestFocus();
+                binding.createOrEditEventRegistrationEnd.setError("Registration End Date and Time is required");
+                binding.createOrEditEventRegistrationEnd.requestFocus();
                 return;
             }
             if (invitationAcceptanceDeadlineStr.isEmpty()) {
-                binding.createOrEditEventInvitationEditText.setError("Invitation Acceptance Deadline is required");
-                binding.createOrEditEventInvitationEditText.requestFocus();
+                binding.createOrEditEventInvitation.setError("Invitation Acceptance Deadline is required");
+                binding.createOrEditEventInvitation.requestFocus();
+                return;
+            }
+            if (eventStartTimeStr.isEmpty()) {
+                binding.createOrEditEventStart.setError("Event Start Date and Time is required");
+                binding.createOrEditEventStart.requestFocus();
+                return;
+            }
+            if (eventEndTimeStr.isEmpty()) {
+                binding.createOrEditEventEnd.setError("Event End Date and Time is required");
+                binding.createOrEditEventEnd.requestFocus();
                 return;
             }
             if (numOfSelectedEntrantsStr.isEmpty()) {
@@ -273,11 +277,11 @@ public class CreateOrEditEventFragment extends Fragment {
             LocalDateTime regEndTime;
             LocalDateTime invitationAcceptanceDeadline;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                eventStartTime = DateTimeFormatter(binding.createOrEditEventEventStartDateAndTimeEditText);
-                eventEndTime = DateTimeFormatter(binding.createOrEditEventEventEndDateAndTimeEditText);
-                regStartTime = DateTimeFormatter(binding.createOrEditEventRegistrationStartEditText);
-                regEndTime = DateTimeFormatter(binding.createOrEditEventRegistrationEndEditText);
-                invitationAcceptanceDeadline = DateTimeFormatter(binding.createOrEditEventInvitationEditText);
+                eventStartTime = DateTimeFormatter(binding.createOrEditEventStart);
+                eventEndTime = DateTimeFormatter(binding.createOrEditEventEnd);
+                regStartTime = DateTimeFormatter(binding.createOrEditEventRegistrationStart);
+                regEndTime = DateTimeFormatter(binding.createOrEditEventRegistrationEnd);
+                invitationAcceptanceDeadline = DateTimeFormatter(binding.createOrEditEventInvitation);
             } else {
                 invitationAcceptanceDeadline = null;
                 eventStartTime = null;
@@ -292,26 +296,26 @@ public class CreateOrEditEventFragment extends Fragment {
             }
 
             if(!validateDateCompare(regStartTime,regEndTime)){
-                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be after Registration Start Date and Time.");
-                binding.createOrEditEventRegistrationEndEditText.requestFocus();
+                binding.createOrEditEventRegistrationEnd.setError("Registration End Date and Time should be after Registration Start Date and Time.");
+                binding.createOrEditEventRegistrationEnd.requestFocus();
                 return;
             }
 
             if(!validateDateCompare(regEndTime,invitationAcceptanceDeadline)){
-                binding.createOrEditEventRegistrationEndEditText.setError("Registration End Date and Time should be before Event Acceptance Deadline.");
-                binding.createOrEditEventRegistrationEndEditText.requestFocus();
+                binding.createOrEditEventInvitation.setError("Registration End Date and Time should be before Event Acceptance Deadline.");
+                binding.createOrEditEventInvitation.requestFocus();
                 return;
             }
 
             if(!validateDateCompare(invitationAcceptanceDeadline,eventStartTime)){
-                binding.createOrEditEventInvitationEditText.setError("Invitation Acceptance Date and Time should be before Event Start Date and Time.");
-                binding.createOrEditEventInvitationEditText.requestFocus();
+                binding.createOrEditEventStart.setError("Invitation Acceptance Date and Time should be before Event Start Date and Time.");
+                binding.createOrEditEventStart.requestFocus();
                 return;
             }
 
             if(!validateDateCompare(eventStartTime,eventEndTime)){
-                binding.createOrEditEventEventEndDateAndTimeEditText.setError("Event End Date and Time should be after Event Start Date and Time.");
-                binding.createOrEditEventEventEndDateAndTimeEditText.requestFocus();
+                binding.createOrEditEventEnd.setError("Event End Date and Time should be after Event Start Date and Time.");
+                binding.createOrEditEventEnd.requestFocus();
                 return;
             }
 
@@ -330,6 +334,12 @@ public class CreateOrEditEventFragment extends Fragment {
             int numOfSelectedEntrantsValue = Integer.parseInt(numOfSelectedEntrantsStr);
             if (numOfSelectedEntrantsValue <= 0) {
                 binding.createOrEditEventSelectedEntrantsNumEditText.setError("Invalid number of selected entrants");
+                binding.createOrEditEventSelectedEntrantsNumEditText.requestFocus();
+                return;
+            }
+
+            if (numOfSelectedEntrantsValue > limitWaitlistValue && limitWaitlistValue != -1){
+                binding.createOrEditEventSelectedEntrantsNumEditText.setError("Number of selected entrants cannot be greater than number of waitlisted entrants");
                 binding.createOrEditEventSelectedEntrantsNumEditText.requestFocus();
                 return;
             }
@@ -407,6 +417,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                 // update event if editing the event
                                 if (fetchedEvent != null) {
                                     event.setEventID(fetchedEvent.getEventID());
+                                    event.setEntrantList(entrants);
                                     event.setEventPosterUrl(fetchedEvent.getEventPosterUrl());
 
                                     database.updateEvent(event, updateEventTask ->{
@@ -418,8 +429,6 @@ public class CreateOrEditEventFragment extends Fragment {
                                             } else {
                                                 // Return to events page if no poster was uploaded
                                                 Log.d(TAG, "No poster after adding event, going straight to event page...");
-                                                Bundle args = new Bundle();
-//                                                navigateFromCreateEditEvent(event);
                                                 NavHostFragment.findNavController(CreateOrEditEventFragment.this)
                                                         .navigateUp();
                                             }
@@ -442,9 +451,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                         } else {
                                             // Return to events page if no poster was uploaded
                                             Log.d(TAG, "No poster after adding event, going straight to event page...");
-//                                            navigateFromCreateEditEvent(event);
-                                            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                                    .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                            navigateFromCreateEditEvent(event);
                                         }
                                         LotteryDrawScheduler lotteryDrawScheduler = new LotteryDrawScheduler();
                                         lotteryDrawScheduler.scheduleNewLotteryDraw(v.getContext(),event);
@@ -459,16 +466,16 @@ public class CreateOrEditEventFragment extends Fragment {
                     });
         });
 
-        EditText startDateTime = view.findViewById(R.id.createOrEditEventEventStartDateAndTimeEditText);
-        attachDateTimePicker(startDateTime,view);
-        EditText endDateTime = view.findViewById(R.id.createOrEditEventEventEndDateAndTimeEditText);
-        attachDateTimePicker(endDateTime,view);
-        EditText regStartDateTime = view.findViewById(R.id.createOrEditEventRegistrationStartEditText);
-        attachDateTimePicker(regStartDateTime,view);
-        EditText regEndDateTime = view.findViewById(R.id.createOrEditEventRegistrationEndEditText);
-        attachDateTimePicker(regEndDateTime,view);
-        EditText invitationDateTime = view.findViewById(R.id.createOrEditEventInvitationEditText);
-        attachDateTimePicker(invitationDateTime,view);
+        TextView startDateTime = view.findViewById(R.id.createOrEditEventStart);
+        attachDateTimePicker(binding.createOrEditEventStartDatePickerButton, startDateTime, view);
+        TextView endDateTime = view.findViewById(R.id.createOrEditEventEnd);
+        attachDateTimePicker(binding.createOrEditEventEndDatePickerButton, endDateTime,view);
+        TextView regStartDateTime = view.findViewById(R.id.createOrEditEventRegistrationStart);
+        attachDateTimePicker(binding.createOrEditEventRegistrationStartDatePickerButton, regStartDateTime,view);
+        TextView regEndDateTime = view.findViewById(R.id.createOrEditEventRegistrationEnd);
+        attachDateTimePicker(binding.createOrEditEventRegistrationEndDatePickerButton, regEndDateTime,view);
+        TextView invitationDateTime = view.findViewById(R.id.createOrEditEventInvitation);
+        attachDateTimePicker(binding.createOrEditEventInvitationPickerButton, invitationDateTime,view);
     }
 
     /**
@@ -477,7 +484,7 @@ public class CreateOrEditEventFragment extends Fragment {
      * @return A LocalDateTime object
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public LocalDateTime DateTimeFormatter(EditText dateField) {
+    public LocalDateTime DateTimeFormatter(TextView dateField) {
         String dateTimeStr = dateField.getText().toString().trim();
         DateTimeFormatter formatter = null;
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -532,30 +539,30 @@ public class CreateOrEditEventFragment extends Fragment {
         binding.createOrEditEventLocationTextView.setText(event.getPlace());
 
         // Set dates
-        binding.createOrEditEventEventStartDateAndTimeEditText.setText(
+        binding.createOrEditEventStart.setText(
                 event.getEventStartTime() == null ? "" : event.getEventStartTime().toString().replace("T", " ")
         );
-        disableDateFieldIfPastDate(event.getEventStartTime(), binding.createOrEditEventEventStartDateAndTimeEditText);
+        disableDateFieldIfPastDate(event.getEventStartTime(), binding.createOrEditEventStartDatePickerButton);
 
-        binding.createOrEditEventEventEndDateAndTimeEditText.setText(
+        binding.createOrEditEventEnd.setText(
                 event.getEventEndTime() == null ? "" : event.getEventEndTime().toString().replace("T", " ")
         );
-        disableDateFieldIfPastDate(event.getEventEndTime(), binding.createOrEditEventEventEndDateAndTimeEditText);
+        disableDateFieldIfPastDate(event.getEventEndTime(), binding.createOrEditEventEndDatePickerButton);
 
-        binding.createOrEditEventRegistrationStartEditText.setText(
+        binding.createOrEditEventRegistrationStart.setText(
                 event.getRegistrationStartTime() == null ? "" : event.getRegistrationStartTime().toString().replace("T", " ")
         );
-        disableDateFieldIfPastDate(event.getRegistrationStartTime(), binding.createOrEditEventRegistrationStartEditText);
+        disableDateFieldIfPastDate(event.getRegistrationStartTime(), binding.createOrEditEventRegistrationStartDatePickerButton);
 
-        binding.createOrEditEventRegistrationEndEditText.setText(
+        binding.createOrEditEventRegistrationEnd.setText(
                 event.getRegistrationEndTime() == null ? "" : event.getRegistrationEndTime().toString().replace("T", " ")
         );
-        disableDateFieldIfPastDate(event.getRegistrationEndTime(), binding.createOrEditEventRegistrationEndEditText);
+        disableDateFieldIfPastDate(event.getRegistrationEndTime(), binding.createOrEditEventRegistrationEndDatePickerButton);
 
-        binding.createOrEditEventInvitationEditText.setText(
+        binding.createOrEditEventInvitation.setText(
                 event.getInvitationAcceptanceDeadline() == null ? "" : event.getInvitationAcceptanceDeadline().toString().replace("T", " ")
         );
-        disableDateFieldIfPastDate(event.getInvitationAcceptanceDeadline(), binding.createOrEditEventInvitationEditText);
+        disableDateFieldIfPastDate(event.getInvitationAcceptanceDeadline(), binding.createOrEditEventInvitationPickerButton);
 
         // Set waitlists
         if (event.getMaxWaitingListCapacity() > 0) {
@@ -565,24 +572,26 @@ public class CreateOrEditEventFragment extends Fragment {
         Log.d("Geolocation Req", Boolean.toString(event.isGeolocationRequirement()));
         binding.checkboxEnableGeolocation.setChecked(event.isGeolocationRequirement());
 
+        entrants = event.getEntrantList();
+
     }
 
     /**
      * Disables a datetime edit text field if current datetime (today) is past the given date time.
      * This function should only be used when the user is editing an event and not creating one.
      * @param dateTime The edit text's given datetime (e.g. registration end datetime)
-     * @param editText The edit text to be disabled
+     * @param floatingActionButton The edit text to be disabled
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void disableDateFieldIfPastDate(LocalDateTime dateTime, EditText editText) {
+    private void disableDateFieldIfPastDate(LocalDateTime dateTime, FloatingActionButton floatingActionButton) {
         // Disable editing a registration event's date field (e.g. registration start date)
         // if it is past that datetime
         if (dateTime == null) return;
 
         LocalDateTime currentTime = LocalDateTime.now();
         if (currentTime.isAfter(dateTime)) {
-            editText.setBackgroundColor(getColor(requireContext(), R.color.grey));
-            editText.setEnabled(false);
+            floatingActionButton.setBackgroundColor(getColor(requireContext(), R.color.grey));
+            floatingActionButton.setEnabled(false);
         }
     }
 
@@ -599,19 +608,60 @@ public class CreateOrEditEventFragment extends Fragment {
 
     /**
      * Uploads the event poster image file to the storage bucket
+     * Deletes the previous poster image file if there existed one
      * @param event Event object needed for eventId and setting downloadUrl
      */
     private void uploadEventPosterToStorage(Event event) {
         if (posterFile == null) {
             Toast.makeText(getContext(), "Failed to convert URI to image file for upload", Toast.LENGTH_SHORT).show();
             // Return to events page anyways as event is created
-            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
-            return;
+            navigateFromCreateEditEvent(event);
         }
 
         String eventID = event.getEventID();
         ImageStorage imageStorage = ImageStorage.getInstance();
+
+        // Delete old poster url if it existed (since if old image was .gif and new image is .png) then
+        // the old .gif will still exist (doesn't get overwritten)
+        String oldPosterDownloadUrl = event.getEventPosterUrl();
+        if (oldPosterDownloadUrl != null && !oldPosterDownloadUrl.isEmpty()) {
+            // Delete the previous event poster
+            imageStorage.deleteEventPoster(oldPosterDownloadUrl, deleteTask -> {
+                if (!deleteTask.isSuccessful()) {
+                    Log.e(TAG, "Failed to delete old image in bucket");
+                    return;
+                }
+
+                // Upload new poster
+                imageStorage.uploadEventPoster(
+                        eventID,
+                        posterFile,
+                        imageTask -> {
+                            if (imageTask.isSuccessful()) {
+                                Uri downloadUrl = imageTask.getResult();
+                                String posterDownloadUrl = downloadUrl.toString();
+                                event.setEventPosterUrl(posterDownloadUrl);
+
+                                database.updateEvent(event, task -> {
+                                    if (task.isSuccessful()) {
+                                        // Return to events page
+                                        navigateFromCreateEditEvent(event);
+                                    }
+                                });
+
+                            } else {
+                                Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
+                                // Return to events page anyways as event is created
+                                navigateFromCreateEditEvent(event);
+                            }
+                        }
+                );
+            });
+
+            return;
+        }
+
+        // Upload poster anyways if there wasn't an old image
         imageStorage.uploadEventPoster(
                 eventID,
                 posterFile,
@@ -624,35 +674,30 @@ public class CreateOrEditEventFragment extends Fragment {
                         database.updateEvent(event, task -> {
                             if (task.isSuccessful()) {
                                 // Return to events page
-//                                navigateFromCreateEditEvent(event);
-                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                navigateFromCreateEditEvent(event);
                             }
                         });
 
                     } else {
                         Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
                         // Return to events page anyways as event is created
-//                        navigateFromCreateEditEvent(event);
-                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                        navigateFromCreateEditEvent(event);
                     }
                 }
         );
     }
 
-//    private void navigateFromCreateEditEvent(Event event){
-//        String argEventId=eventId!=null? eventId:event!=null?event.getEventID():null;
-//        if(argEventId!=null) {
-//                        Bundle args = new Bundle();
-//            args.putString("eventId", argEventId);
-//                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-//                                .navigate(R.id.action_create_or_edit_event_fragment_to_my_event_detail_screen,args);
-//        }else{
-//            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
-//                    .navigate(R.id.action_create_or_edit_event_fragment_to_my_events_fragment);
-//                    }
-//    }
+    private void navigateFromCreateEditEvent(Event event){
+        if (fetchedEvent != null) {
+            NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                    .navigateUp();
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString("eventID", event.getEventID() != null ? event.getEventID() : "none");
+        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment, args);
+    }
 
     /**
      * Creates a file from the given uri
@@ -666,8 +711,11 @@ public class CreateOrEditEventFragment extends Fragment {
         }
 
         try {
+            String suffix = MimeTypeMap.getSingleton().getExtensionFromMimeType(getContext().getContentResolver().getType(uri));
+            Log.d(TAG, "file uri: " + uri);
+            Log.d(TAG, "image suffix: " + suffix);
             // Create temp image file for poster
-            File tempFile = File.createTempFile("temp_image", ".jpg");
+            File tempFile = File.createTempFile("temp_image", "." + suffix);
 
             InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
             if (inputStream == null) {
@@ -696,8 +744,8 @@ public class CreateOrEditEventFragment extends Fragment {
         }
     }
 
-    private void attachDateTimePicker(EditText editText, View view) {
-        editText.setOnClickListener(v -> {
+    private void attachDateTimePicker(FloatingActionButton button, TextView textView, View view) {
+        button.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -712,7 +760,7 @@ public class CreateOrEditEventFragment extends Fragment {
                                     calendar.set(Calendar.MINUTE, minute);
 
                                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-                                    editText.setText(sdf.format(calendar.getTime()));
+                                    textView.setText(sdf.format(calendar.getTime()));
                                 },
                                 calendar.get(Calendar.HOUR_OF_DAY),
                                 calendar.get(Calendar.MINUTE),

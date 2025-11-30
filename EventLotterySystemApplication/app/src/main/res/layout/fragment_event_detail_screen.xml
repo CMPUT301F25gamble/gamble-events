@@ -50,6 +50,24 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
+    <!-- CANCELLED OR FINALIZED TEXT Group referencing all content to HIDE while loading the DB info -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_cancelled_or_finalized"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            cancelledOrFinalizedText"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
+    <!-- REGISTRATION CLOSED TEXT Group referencing all content to HIDE while loading the DB info -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/content_group_registration_closed"
+        android:visibility="gone"
+        app:constraint_referenced_ids="
+            registrationClosedText"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
     <ImageButton
         android:id="@+id/eventDetailScreenBackButton"
         android:layout_width="wrap_content"
@@ -324,6 +342,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/cancelledOrFinalizedText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="Sample text"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_list_item_v2"
+        android:backgroundTint="@color/light_grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/registrationClosedText"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/registration_closed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.559"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/navigationBarButton"

@@ -53,7 +53,7 @@ public class ImageStorage {
     }
 
     /**
-     * Uploads or replaces an event poster image (.png, .jpg, .jpeg) into Firebase Storage
+     * Uploads or replaces an event poster image (.png, .jpg, .jpeg, .gif, .svg, .webp) into Firebase Storage
      * @param eventId The event ID (e.g. a png file will be stored as {eventId}.png)
      * @param eventPosterFile The local image file of the file
      * @param imageUrlListener An OnCompleteListener that obtains the download url link of the image (to be stored in Event object)
@@ -72,10 +72,13 @@ public class ImageStorage {
         String eventPosterName = eventPosterFile.getName().toLowerCase();
         if (!eventPosterName.endsWith(".png") &&
             !eventPosterName.endsWith(".jpg") &&
-            !eventPosterName.endsWith(".jpeg")
+            !eventPosterName.endsWith(".jpeg") &&
+            !eventPosterName.endsWith(".gif") &&
+            !eventPosterName.endsWith(".svg") &&
+            !eventPosterName.endsWith(".webp")
         ) {
             Log.d(TAG, "event poster file name: " + eventPosterName);
-            throw new IllegalArgumentException("File is not an accepted image type (.png, .jpg, or .jpeg)");
+            throw new IllegalArgumentException("File is not an accepted image type (.png, .jpg, .jpeg, .gif, .svg, or .webp)");
         }
 
         Uri eventPosterFileUri = Uri.fromFile(eventPosterFile);
@@ -128,6 +131,7 @@ public class ImageStorage {
      * Given an eventId, delete the associated event poster stored on the storage bucket
      * This function assumes that the eventId poster is stored as an .jpg file which may lead to errors.
      * Therefore, use the posterDownloadUrl deleteEventPoster function if possible.
+     * @deprecated Images can now be any file extension other than .jpg
      * @param listener A void OnCompleteListener that will be called upon delete task completion
      * @param eventId The eventId of the event image poster (may or may not have an associated image so beware)
      * @return An asynchronous void task used ONLY for integration testing purposes. Please do not
@@ -222,6 +226,12 @@ public class ImageStorage {
                 try {
                     TaskCompletionSource<Event> eventTcs = new TaskCompletionSource<>();
                     Database.getDatabase().getEvent(eventId, eventTask -> {
+                        if (eventTask.getException() != null) {
+                            // Error catching if event doesn't exist (an exception was thrown)
+                            eventTcs.setResult(null);
+                            return;
+                        }
+
                         eventTcs.setResult(eventTask.getResult());
                         if (!eventTask.isSuccessful()) {
                             listener.onComplete(Tasks.forException(new Exception("Could not fetch event")));

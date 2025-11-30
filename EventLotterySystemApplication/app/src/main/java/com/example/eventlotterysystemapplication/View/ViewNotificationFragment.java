@@ -117,7 +117,7 @@ public class ViewNotificationFragment extends Fragment {
                                 Log.d(TAG, "Event exists");
 
                                 Bundle args = new Bundle();
-                                args.putString("eventId", notification.getEventID());
+                                args.putString("eventID", notification.getEventID());
                                 Log.d(TAG, "Navigating");
 
                                 if (requireActivity() instanceof AdminActivity) {
@@ -127,7 +127,6 @@ public class ViewNotificationFragment extends Fragment {
                                     NavHostFragment.findNavController(this)
                                             .navigate(R.id.action_viewNotificationFragment_to_event_detail_screen, args);
                                 }
-
                             }
                         } catch (Exception e) {
                             Log.d(TAG, Objects.requireNonNull(e.getMessage()));

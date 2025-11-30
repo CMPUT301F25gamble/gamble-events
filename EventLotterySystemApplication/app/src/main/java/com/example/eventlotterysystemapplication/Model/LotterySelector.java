@@ -52,7 +52,9 @@ public class LotterySelector {
 
 
 
-            List<Entrant> acceptedUsers = drawAcceptedUsers(event);
+            drawAcceptedUsers(event);
+
+            List<Entrant> acceptedUsers = event.getEntrantChosenList();
 
             // This code automatically takes care of taking the users from the waiting list and
             // adding to the chosen list
@@ -68,29 +70,38 @@ public class LotterySelector {
                 }
             });
 
-            EventNotificationManager.notifyInitialLotterySelection(event);
-
             Toast.makeText(context, "Draw for event " + event.getName() + " is completed successfully.", Toast.LENGTH_LONG).show();
         });
     }
+
     /**
      * Draws N users from the waiting list where N is min(waitingListLength, maxFinalizedListCapacity)
      * @param event Event containing waiting list for users
      * @return The list of randomly accepted users to event
      */
-    public List<Entrant> drawAcceptedUsers(Event event) {
+    public void drawAcceptedUsers(Event event) {
         int finalListCapacity = event.getMaxFinalListCapacity();
         List<Entrant> waitingList = event.getEntrantWaitingList();
 
         if (waitingList.size() <= finalListCapacity) {
             // Don't need to draw randomly since under capacity so EVERYONE IS ACCEPTED WOOHOO
-            return waitingList;
-        }
+            for (Entrant e : waitingList) {
+                event.addEntrantToChosenList(e); // add entrants to chosen list
+            }
 
-        Random seed = new Random();
-        Collections.shuffle(waitingList, seed);
-        // subList returns a view (a reference) and not a copy
-        return waitingList.subList(0, finalListCapacity);
+            EventNotificationManager.notifyInitialLotterySelection(event);
+        } else {
+
+            Random seed = new Random();
+            Collections.shuffle(waitingList, seed);
+            // subList returns a view (a reference) and not a copy
+
+            for (Entrant e : waitingList.subList(0, finalListCapacity)) {
+                event.addEntrantToChosenList(e); // add entrants to chosen list
+            }
+
+            EventNotificationManager.notifyInitialLotterySelection(event);
+        }
     }
 
     /**
@@ -101,13 +112,20 @@ public class LotterySelector {
      * @throws IllegalStateException When the accepted list is identical to the waiting list
      * (cannot draw a unique replacement user)
      */
-    public User drawReplacementUser(Event event) {
+    public Entrant drawReplacementUser(Event event, boolean manual) throws IllegalStateException {
         Set<User> waitingList = new HashSet<>(event.getUserWaitingList());
         Set<User> acceptedList = new HashSet<>(event.getUserChosenList());
         Set<User> cancelledList = new HashSet<>(event.getUserCancelledList());
+        Set<User> finalizedList = new HashSet<>(event.getUserFinalizedList());
 
         if (waitingList.equals(acceptedList)) {
             throw new IllegalStateException("Cannot draw unique replacement user; accepted list and waiting list are identical");
+        }
+        if (waitingList.isEmpty()){
+            throw new IllegalStateException("Cannot redraw from an empty list");
+        }
+        if (acceptedList.size() + finalizedList.size() >= event.getMaxFinalListCapacity()){
+            throw new IllegalStateException("Event is at capacity, cannot redraw");
         }
 
         Random rnd = new Random();
@@ -119,6 +137,15 @@ public class LotterySelector {
             user = waitingListArray.get(rnd.nextInt(waitingList.size()));
         } while (acceptedList.contains(user) && !cancelledList.contains(user));
 
-        return user;
+        Entrant entrant = event.genEntrantIfExists(user);
+        event.addEntrantToChosenList(entrant);
+
+        if (manual){
+            EventNotificationManager.notifyLotteryManualDraw(entrant, event);
+        } else {
+            EventNotificationManager.notifyLotteryReselection(entrant, event);
+        }
+
+        return entrant;
     }
 }

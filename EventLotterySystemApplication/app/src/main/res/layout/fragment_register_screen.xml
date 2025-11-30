@@ -22,15 +22,14 @@
 
     <ImageView
         android:id="@+id/app_logo_image_view"
-        android:layout_width="match_parent"
-        android:layout_height="319dp"
+        android:layout_width="589dp"
+        android:layout_height="411dp"
         android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toTopOf="@+id/register_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.968"
-        app:srcCompat="@drawable/logo_v2" />
+        app:layout_constraintVertical_bias="0.872"
+        app:srcCompat="@drawable/app_logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

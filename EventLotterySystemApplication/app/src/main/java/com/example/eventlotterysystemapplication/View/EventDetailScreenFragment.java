@@ -1,6 +1,6 @@
 package com.example.eventlotterysystemapplication.View;
 
-import android.Manifest;
+import  android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -41,6 +41,7 @@ import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
@@ -106,8 +107,8 @@ public class EventDetailScreenFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventDetailScreenFragmentArgs args = EventDetailScreenFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventId();
-        isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
+        eventId = args.getEventID();
+        //isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
         Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
         if(currentUser==null) {
             getCurrentUser(task -> {
@@ -126,13 +127,6 @@ public class EventDetailScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentEventDetailScreenBinding.inflate(inflater, container, false);
 
-        // TODO implement checking event geolocation requirements
-        if ( ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1001);
-        }
         return binding.getRoot();
     }
 
@@ -168,6 +162,22 @@ public class EventDetailScreenFragment extends Fragment {
             if (task.isSuccessful()) {
                 // Grab event and bind it
                 event = task.getResult();
+
+                // Hide image remove button if poster URL is null
+                if (event.getEventPosterUrl() == null) {
+                    binding.removeImageButton.setVisibility(View.GONE);
+                }
+
+                // Checking event geolocation requirements
+                if(event.isGeolocationRequirement()) {
+                    if (ContextCompat.checkSelfPermission(binding.getRoot().getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(requireActivity(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                1001);
+                    }
+                }
+
                 organizerID = event.getOrganizerID(); // Used for admin control
                 if(!isOwnedEvent && currentUser!=null) {
                     isOwnedEvent =  currentUser.getUserID().equals(organizerID);
@@ -175,19 +185,7 @@ public class EventDetailScreenFragment extends Fragment {
                 Log.d(TAG, "Event retrieved is: " + event);
                 bindEvent(event);
 
-                // If Admin mode, hide generateQR button, else show it
-                if (isAdminMode) {
-                    binding.generateQRCodeButton.setVisibility(View.GONE);
-                } else {
-                    showGenerateQRCodeButton();
-                }
-
                 entrant = event.genEntrantIfExists(currentUser);
-
-                // If the user is in the chosen list, show the chosen button
-                if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
-                    showChosenEntrantButtons(entrant.getStatus());
-                }
 
                 // Update the waitlist button colors and text based on if the user is in the waitlist
                 changeWaitlistBtn(entrant != null &&
@@ -202,10 +200,56 @@ public class EventDetailScreenFragment extends Fragment {
                     binding.contentGroupChosenEntrant.setVisibility(View.GONE);
                     // Hide join waitlist/edit event button
                     binding.navigationBarButton.setVisibility(View.GONE);
-                    // Hide generate QR Code button logic is done when db called (line 152)
+                    // Hide generate QR Code button logic is done when db called
+                    binding.generateQRCodeButton.setVisibility(View.GONE);
                 } else {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
+                    showGenerateQRCodeButton();
+
+                    // If user == waiting && event registration is ended, hide join waitlist and display registration closed
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationStartTime = event.getRegistrationEndTime();
+                        if (timeNow.isAfter(registrationStartTime)) {
+                            binding.navigationBarButton.setVisibility(View.GONE);
+
+                            // Change registration closed to not selected image
+                            binding.registrationClosedText.setImageResource(R.drawable.not_selected);
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    // If the user is in the chosen list, show the chosen button
+                    if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
+                        showChosenEntrantButtons(entrant.getStatus());
+
+                        // Check if registration has ended
+                        LocalDateTime timeNow = LocalDateTime.now();
+                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                        if (timeNow.isAfter(registrationEndTime)) {
+                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                            binding.ChosenEntrantButtonContainer.setVisibility(View.GONE);
+                            binding.navigationBarButton.setVisibility(View.GONE);
+                        }
+                    }
+                    // If user status == finalized, display finalized text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+                    // If user status == cancelled, display cancelled text
+                    else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                    }
+
+                    // Check if registration has ended
+                    LocalDateTime timeNow =  LocalDateTime.now();
+                    LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                    if (timeNow.isAfter(registrationEndTime) && !isOwnedEvent) {
+                        binding.registrationClosedText.setVisibility(View.VISIBLE);
+                        binding.navigationBarButton.setVisibility(View.GONE);
+                    }
                 }
             } else {
                 // Failed to load event; hide loading and show error
@@ -222,25 +266,36 @@ public class EventDetailScreenFragment extends Fragment {
         // Accept Button
         binding.acceptChosenEntrantButton.setOnClickListener(v -> {
             // Accept invitation
-            entrant.setStatus(EntrantStatus.FINALIZED);
+//            entrant.setStatus(EntrantStatus.FINALIZED);
+
+            event.addEntrantToFinalizedList(entrant);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
-            // TODO: DANIEL CAN FIX
-            binding.navigationBarButton.setVisibility(View.VISIBLE);
-            binding.navigationBarButton.setEnabled(false);
-            binding.navigationBarButton.setText("FINALIZED");
-            binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
-            binding.navigationBarButton.setTextColor(R.color.black);
-            // Thx Daniel, end video
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
 
-            updateEventDB(event);
+            // Update DB
+            updateEventDB(event, task -> {});
         });
         // Decline Button
         binding.declineChosenEntrantButton.setOnClickListener(v -> {
             // Decline invitation
-            entrant.setStatus(EntrantStatus.CANCELLED);
+//            entrant.setStatus(EntrantStatus.CANCELLED);
+            event.addEntrantToCancelledList(entrant);
+
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
-            updateEventDB(event);
+
+            // Display status on screen
+            showFinalizedOrCancelledText(EntrantStatus.CANCELLED);
+
+            // Update DB
+            updateEventDB(event, task -> {});
+            LotterySelector lotterySelector = new LotterySelector();
+            try {
+                lotterySelector.drawReplacementUser(event, false);
+            } catch (IllegalStateException e){
+                Log.d(TAG, "Could not schedule a redraw");
+            }
         });
 
         // Remove Event Button (Only in admin mode)
@@ -275,62 +330,23 @@ public class EventDetailScreenFragment extends Fragment {
             // Navigate to edit event page if the user is the organizer of the event
             if (isOwnedEvent) {
                 Bundle args = new Bundle();
-                args.putString("eventId", eventId);
+                args.putString("eventID", eventId);
                 NavHostFragment.findNavController(EventDetailScreenFragment.this)
                         .navigate(R.id.create_or_edit_event_fragment, args);
                 return;
             }
 
+            // Use local event if there is one already
+            if (event != null) {
+                joinOrLeaveWaitlist(event, v);
+                return;
+            }
+
+            // Fetch event if there is no local event stored
             Database.getDatabase().getEvent(eventId, taskEvent -> {
                 if (taskEvent.isSuccessful()) {
                     Event event = taskEvent.getResult();
-
-                    Entrant entrant = event.genEntrantIfExists(currentUser);
-                    if (entrant == null) {
-                        //Get geo entrantLocation
-                        Context context = v.getContext();
-                        //If Event Geo location requirement is off or device is not allowing geo location, save null as location
-                        if (!event.isGeolocationRequirement() || (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-                            Entrant newEntrant = new Entrant();
-                            newEntrant.setLocation(null);
-                            newEntrant.setStatus(EntrantStatus.WAITING);
-                            newEntrant.setUser(currentUser);
-                            event.addToEntrantList(newEntrant);
-                            updateEventDB(event);
-                            changeWaitlistBtn(true);
-                            Log.d("EventDetailScreen", "User successfully joins waiting list");
-                        } else {
-                            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                            // Make entrant effectively final by using a final variable
-                            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                    .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                        EntrantLocation entrantLocation = null;
-                                        if (location != null) {
-                                            entrantLocation = new EntrantLocation();
-                                            entrantLocation.setLatitude(location.getLatitude());
-                                            entrantLocation.setLongitude(location.getLongitude());
-                                        }
-                                        Entrant newEntrant = new Entrant();
-                                        newEntrant.setLocation(entrantLocation);
-                                        newEntrant.setStatus(EntrantStatus.WAITING);
-                                        newEntrant.setUser(currentUser);
-                                        event.addToEntrantList(newEntrant);
-                                        updateEventDB(event);
-                                        changeWaitlistBtn(true);
-
-                                    });
-                            // User is not in waiting list, so join the waitlist
-                        }
-                    } else {
-                        // User is in waiting list, so leave the waitlist
-                        event.removeEntrant(entrant);
-                        updateEventDB(event);
-                        changeWaitlistBtn(false);
-                        Log.d("EventDetailScreen", "User successfully left waiting list");
-                    }
-                    Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
-
-
+                    joinOrLeaveWaitlist(event, v);
                 } else {
                     // Failed to load event; hide loading and show error
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -342,9 +358,83 @@ public class EventDetailScreenFragment extends Fragment {
 
     }
 
-    private void updateEventDB(Event event){
+    private void updateEventDB(Event event, OnCompleteListener<Void> listener){
         Database db = Database.getDatabase();
-        db.updateEvent(event, task -> {});
+        db.updateEvent(event, listener);
+    }
+
+    /**
+     * Joins or leave waitlist function
+     * @param event Event to join/leave waitlist from
+     * @param v View to obtain context from
+     */
+    private void joinOrLeaveWaitlist(Event event, View v) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
+        Entrant entrant = event.genEntrantIfExists(currentUser);
+        if (entrant == null) {
+            // User is not in waiting list, so join the waitlist
+            // Optimistically load waitlist button as joined already
+            changeWaitlistBtn(true);
+            binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
+            //Get geo entrantLocation
+            Context context = v.getContext();
+            //If Event Geo location requirement is off or device is not allowing geo location, save null as location
+            if (!event.isGeolocationRequirement()) {
+                Entrant newEntrant = new Entrant();
+                newEntrant.setLocation(null);
+                newEntrant.setStatus(EntrantStatus.WAITING);
+                newEntrant.setUser(currentUser);
+                event.addToEntrantList(newEntrant);
+                updateEventDB(event, task -> {
+                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                    if (!task.isSuccessful()) {
+                        changeWaitlistBtn(false);
+                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.d("EventDetailScreen", "User successfully joined waiting list");
+                });
+            } else {
+                if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                    // Make entrant effectively final by using a final variable
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                            .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                EntrantLocation entrantLocation = null;
+                                if (location != null) {
+                                    entrantLocation = new EntrantLocation();
+                                    entrantLocation.setLatitude(location.getLatitude());
+                                    entrantLocation.setLongitude(location.getLongitude());
+                                }
+                                Entrant newEntrant = new Entrant();
+                                newEntrant.setLocation(entrantLocation);
+                                newEntrant.setStatus(EntrantStatus.WAITING);
+                                newEntrant.setUser(currentUser);
+                                event.addToEntrantList(newEntrant);
+                                updateEventDB(event, task -> {
+                                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                                    if (!task.isSuccessful()) {
+                                        changeWaitlistBtn(false);
+                                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    Log.d("EventDetailScreen", "User successfully joined waiting list");
+                                });
+                            });
+                } else {
+                    Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            // User is in waiting list, so leave the waitlist
+            event.removeEntrant(entrant);
+            updateEventDB(event, task -> {});
+            changeWaitlistBtn(false);
+            Log.d("EventDetailScreen", "User successfully left waiting list");
+        }
     }
 
     /**
@@ -364,6 +454,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param action the action to remove from the database
      */
     private void removeAction(String action) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         // Inflate the layout
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         View dialogAdminRemoveAction = inflater
@@ -425,7 +518,7 @@ public class EventDetailScreenFragment extends Fragment {
                             // Set the event poster url to null in the DB
                             event.setEventPosterUrl(null);
                             // Update event in DB and bind
-                            updateEventDB(event);
+                            updateEventDB(event, task1 -> {});
                             bindEvent(event);
                         } else {
                             // Show toast on image removal fail
@@ -467,6 +560,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param qrBitmap Bitmap to pass to ImageView to display
      */
     private void showQRCodeDialog(Bitmap qrBitmap) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         Dialog dialog = new Dialog(requireContext());
 
         // CreateImageView
@@ -486,6 +582,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param eventName The name of the event used for the filename
      */
     private void saveQRCodeToDownloads(Bitmap qrBitmap, String eventName) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         if (qrBitmap == null) {
             Toast.makeText(requireContext(), "QR Code is empty", Toast.LENGTH_SHORT).show();
             return;
@@ -532,6 +631,9 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(
@@ -551,6 +653,40 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Shows the finalized or cancelled text based on the status of the entrant
+     * @param status the status of the entrant (either FINALIZED or CANCELLED)
+     */
+    private void showFinalizedOrCancelledText(EntrantStatus status) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
+        binding.contentGroupCancelledOrFinalized.setVisibility(View.VISIBLE);
+        // Hide join waitlist/edit event button
+        binding.navigationBarButton.setVisibility(View.GONE);
+
+        // Check which status it is (finalized or cancelled) and show the correct text respectively
+        if (status.equals(EntrantStatus.FINALIZED)) {
+            binding.cancelledOrFinalizedText.setText("FINALIZED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.dark_grey));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.light_grey));
+        } else if (status.equals(EntrantStatus.CANCELLED)) {
+            binding.cancelledOrFinalizedText.setText("CANCELLED");
+            binding.cancelledOrFinalizedText
+                    .setTextColor(ContextCompat.getColor(requireContext(),R.color.black));
+            binding.cancelledOrFinalizedText
+                    .setBackgroundTintList(ContextCompat
+                            .getColorStateList(requireContext(), R.color.important_field));
+        }
+    }
+
+    /**
+     * Updates the chosen entrant buttons based on the status of the entrant
+     * @param status the status of the entrant (CHOSEN)
+     */
     private void showChosenEntrantButtons(EntrantStatus status) {
         if (status.equals(EntrantStatus.CHOSEN)) {
             binding.ChosenEntrantButtonContainer.setVisibility(View.VISIBLE);
@@ -594,6 +730,10 @@ public class EventDetailScreenFragment extends Fragment {
      * @param event details to fill the page with
      */
     private void bindEvent(Event event) {
+        if (getActivity() == null) {
+            return; // prevent app from crashing when user spams reloading the fragment
+        }
+
         // Get event name, description, location, waitlist and chosen capacity
         String eventName = event.getName();
         String eventDesc = event.getDescription();
@@ -614,11 +754,11 @@ public class EventDetailScreenFragment extends Fragment {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         // format times
-        String formattedEventStartTime = event.getEventStartTime().format(formatter);
-        String formattedEventEndTime = event.getEventEndTime().format(formatter);
-        String formattedRegEndTime = event.getRegistrationEndTime().format(formatter);
-        String formattedRegStartTime = event.getRegistrationStartTime().format(formatter);
-        String formattedInvAccTime = event.getInvitationAcceptanceDeadline().format(formatter);
+        String formattedEventStartTime = event.getEventStartTime()==null? "": event.getEventStartTime().format(formatter);
+        String formattedEventEndTime = event.getEventEndTime()==null? "":  event.getEventEndTime().format(formatter);
+        String formattedRegEndTime = event.getRegistrationEndTime()==null? "":  event.getRegistrationEndTime().format(formatter);
+        String formattedRegStartTime = event.getRegistrationStartTime()==null? "":  event.getRegistrationStartTime().format(formatter);
+        String formattedInvAccTime = event.getInvitationAcceptanceDeadline()==null? "":  event.getInvitationAcceptanceDeadline().format(formatter);
 
         // Error Checking for event and registration times. (Don't think we need, may remove later)
         if (formattedEventStartTime == null || formattedEventEndTime == null || formattedRegEndTime == null || formattedRegStartTime == null || formattedInvAccTime == null) {

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.UserEventHistoryFragment">
+    tools:context=".View.UserEventPostersFragment">
 
     <ProgressBar
-        android:id="@+id/loading_user_event_history"
+        android:id="@+id/loading_all_profiles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,12 +17,12 @@
 
     <!-- Group referencing all content to HIDE while loading the DB info  -->
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/content_group_events_ui"
+        android:id="@+id/content_group_all_profiles"
         android:visibility="gone"
         app:constraint_referenced_ids="
             userEventHistoryBackButton,
-            userEventHistoryTitle,
-            userEventHistoryListView"
+            userTitle,
+            allPostersList"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -32,41 +32,38 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:padding="8dp"
-        android:contentDescription="@string/back_button_text"
-        android:src="@drawable/back_icon"
         android:background="@drawable/round_button"
+        android:contentDescription="@string/back_button_text"
+        android:padding="8dp"
+        android:src="@drawable/back_icon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/userEventHistoryTitle"
-        android:layout_width="match_parent"
+        android:id="@+id/userTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:padding="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text=""
+        android:text="User's images"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/userEventHistoryBackButton"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintStart_toEndOf="@+id/userEventHistoryBackButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/userEventHistoryListView"
-        android:padding="8dp"
+        android:id="@+id/allPostersList"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="600dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/rounded_list_item_v2"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="12dp"
+        android:background="@drawable/rounded_list_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.65"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userEventHistoryTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/userTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

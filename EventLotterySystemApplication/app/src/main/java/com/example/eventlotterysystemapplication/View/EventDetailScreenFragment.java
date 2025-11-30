@@ -215,7 +215,7 @@ public class EventDetailScreenFragment extends Fragment {
                     // If user == waiting && event registration is ended, hide join waitlist and display registration closed
                     if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
                         LocalDateTime timeNow = LocalDateTime.now();
-                        LocalDateTime registrationStartTime = event.getRegistrationStartTime();
+                        LocalDateTime registrationStartTime = event.getRegistrationEndTime();
                         if (timeNow.isAfter(registrationStartTime)) {
                             binding.navigationBarButton.setVisibility(View.GONE);
 
@@ -280,7 +280,7 @@ public class EventDetailScreenFragment extends Fragment {
             showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
 
             // Update DB
-            updateEventDB(event);
+            updateEventDB(event, task -> {});
         });
         // Decline Button
         binding.declineChosenEntrantButton.setOnClickListener(v -> {
@@ -294,7 +294,7 @@ public class EventDetailScreenFragment extends Fragment {
             showFinalizedOrCancelledText(EntrantStatus.CANCELLED);
 
             // Update DB
-            updateEventDB(event);
+            updateEventDB(event, task -> {});
             LotterySelector lotterySelector = new LotterySelector();
             try {
                 lotterySelector.drawReplacementUser(event, false);
@@ -341,61 +341,17 @@ public class EventDetailScreenFragment extends Fragment {
                 return;
             }
 
+            // Use local event if there is one already
+            if (event != null) {
+                joinOrLeaveWaitlist(event, v);
+                return;
+            }
+
+            // Fetch event if there is no local event stored
             Database.getDatabase().getEvent(eventId, taskEvent -> {
                 if (taskEvent.isSuccessful()) {
                     Event event = taskEvent.getResult();
-
-                    Entrant entrant = event.genEntrantIfExists(currentUser);
-                    if (entrant == null) {
-                        //Get geo entrantLocation
-                        Context context = v.getContext();
-                        //If Event Geo location requirement is off or device is not allowing geo location, save null as location
-                        if (!event.isGeolocationRequirement()) {
-                            Entrant newEntrant = new Entrant();
-                            newEntrant.setLocation(null);
-                            newEntrant.setStatus(EntrantStatus.WAITING);
-                            newEntrant.setUser(currentUser);
-                            event.addToEntrantList(newEntrant);
-                            updateEventDB(event);
-                            changeWaitlistBtn(true);
-                            Log.d("EventDetailScreen", "User successfully joins waiting list");
-                        } else {
-                            if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-                                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                                // Make entrant effectively final by using a final variable
-                                fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                                        .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                            EntrantLocation entrantLocation = null;
-                                            if (location != null) {
-                                                entrantLocation = new EntrantLocation();
-                                                entrantLocation.setLatitude(location.getLatitude());
-                                                entrantLocation.setLongitude(location.getLongitude());
-                                            }
-                                            Entrant newEntrant = new Entrant();
-                                            newEntrant.setLocation(entrantLocation);
-                                            newEntrant.setStatus(EntrantStatus.WAITING);
-                                            newEntrant.setUser(currentUser);
-
-                                            event.addToEntrantList(newEntrant);
-                                            updateEventDB(event);
-                                            changeWaitlistBtn(true);
-                                        });
-                            } else {
-                                Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
-                                        Toast.LENGTH_LONG).show();
-                            }
-                            // User is not in waiting list, so join the waitlist
-                        }
-                    } else {
-                        // User is in waiting list, so leave the waitlist
-                        event.removeEntrant(entrant);
-                        updateEventDB(event);
-                        changeWaitlistBtn(false);
-                        Log.d("EventDetailScreen", "User successfully left waiting list");
-                    }
-                    Log.d(TAG, "After button press, Waiting list: " + event.getEntrantList());
-
-
+                    joinOrLeaveWaitlist(event, v);
                 } else {
                     // Failed to load event; hide loading and show error
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -407,9 +363,80 @@ public class EventDetailScreenFragment extends Fragment {
 
     }
 
-    private void updateEventDB(Event event){
+    private void updateEventDB(Event event, OnCompleteListener<Void> listener){
         Database db = Database.getDatabase();
-        db.updateEvent(event, task -> {});
+        db.updateEvent(event, listener);
+    }
+
+    /**
+     * Joins or leave waitlist function
+     * @param event Event to join/leave waitlist from
+     * @param v View to obtain context from
+     */
+    private void joinOrLeaveWaitlist(Event event, View v) {
+        Entrant entrant = event.genEntrantIfExists(currentUser);
+        if (entrant == null) {
+            // User is not in waiting list, so join the waitlist
+            // Optimistically load waitlist button as joined already
+            changeWaitlistBtn(true);
+            binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
+            //Get geo entrantLocation
+            Context context = v.getContext();
+            //If Event Geo location requirement is off or device is not allowing geo location, save null as location
+            if (!event.isGeolocationRequirement()) {
+                Entrant newEntrant = new Entrant();
+                newEntrant.setLocation(null);
+                newEntrant.setStatus(EntrantStatus.WAITING);
+                newEntrant.setUser(currentUser);
+                event.addToEntrantList(newEntrant);
+                updateEventDB(event, task -> {
+                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                    if (!task.isSuccessful()) {
+                        changeWaitlistBtn(false);
+                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.d("EventDetailScreen", "User successfully joined waiting list");
+                });
+            } else {
+                if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                    // Make entrant effectively final by using a final variable
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                            .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                EntrantLocation entrantLocation = null;
+                                if (location != null) {
+                                    entrantLocation = new EntrantLocation();
+                                    entrantLocation.setLatitude(location.getLatitude());
+                                    entrantLocation.setLongitude(location.getLongitude());
+                                }
+                                Entrant newEntrant = new Entrant();
+                                newEntrant.setLocation(entrantLocation);
+                                newEntrant.setStatus(EntrantStatus.WAITING);
+                                newEntrant.setUser(currentUser);
+                                event.addToEntrantList(newEntrant);
+                                updateEventDB(event, task -> {
+                                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                                    if (!task.isSuccessful()) {
+                                        changeWaitlistBtn(false);
+                                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    Log.d("EventDetailScreen", "User successfully joined waiting list");
+                                });
+                            });
+                } else {
+                    Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            // User is in waiting list, so leave the waitlist
+            event.removeEntrant(entrant);
+            updateEventDB(event, task -> {});
+            changeWaitlistBtn(false);
+            Log.d("EventDetailScreen", "User successfully left waiting list");
+        }
     }
 
     /**
@@ -490,7 +517,7 @@ public class EventDetailScreenFragment extends Fragment {
                             // Set the event poster url to null in the DB
                             event.setEventPosterUrl(null);
                             // Update event in DB and bind
-                            updateEventDB(event);
+                            updateEventDB(event, task1 -> {});
                             bindEvent(event);
                         } else {
                             // Show toast on image removal fail

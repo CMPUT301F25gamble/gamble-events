@@ -1,5 +1,6 @@
 package com.example.eventlotterysystemapplication.Controller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -7,9 +8,12 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -48,6 +52,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         this.statuses = statuses;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -55,6 +60,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.event_list_item, parent, false);
         }
+        final View rowView = view; // used for getting the event when user clicks on one of its tags
 
         Event event = events.get(position);
 
@@ -68,6 +74,35 @@ public class EventAdapter extends ArrayAdapter<Event> {
         title.setText(event.getName());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         deadline.setText("Registration End Time: " + event.getRegistrationEndTime().format(formatter));
+
+        tags.setOnTouchListener(new View.OnTouchListener() {
+            boolean isScrolling = false;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isScrolling = false;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        isScrolling = true;
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        if (!isScrolling) {
+                            Log.d("Tags", "item clicked");
+                            ((AdapterView<?>) parent).performItemClick(
+                                    rowView,
+                                    position,
+                                    getItemId(position)
+                            );
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
 
         // OPTIONAL: USED FOR User events history screen
         if (statuses != null && position < statuses.size()) {

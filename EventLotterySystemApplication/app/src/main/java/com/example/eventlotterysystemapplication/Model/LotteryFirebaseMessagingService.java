@@ -28,6 +28,7 @@ import com.google.firebase.messaging.RemoteMessage;
  * push notification from Firebase
  */
 public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
+    private int notificationId = 1;
 
     /**
      * The function that is called whenever a messaging event has occurred
@@ -108,7 +109,8 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("LotteryFirebaseMessagingService", "Message Received");
 
         //TODO add a dynamic notificationID system
-        int notificationId = 1;
+
         notificationManager.notify(notificationId, builder.build());
+        notificationId++;
     }
 }

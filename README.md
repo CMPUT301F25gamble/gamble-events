@@ -1,5 +1,7 @@
 # Eventure
 
+![](https://github.com/CMPUT301F25gamble/gamble-events/blob/main/wiki_images/app_logo.png)
+
 ## Project Description
 Eventure is an Android application used for signing up for events through a lottery system. It ensures people are able to sign up for these events fairly and not have to sit refreshing a webpage until they can get a chance at reserving a spot. 
 

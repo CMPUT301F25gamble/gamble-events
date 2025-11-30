@@ -189,7 +189,7 @@ public class FinalEntrantListFragment extends Fragment {
             // Write each user's name on their own line, numbered
             int i = 1;
             for (User u : users) {
-                if (u.getPhoneNumber() != null || u.getPhoneNumber().isEmpty()) {
+                if (u.getPhoneNumber() != null || !u.getPhoneNumber().isEmpty()) {
                     writer.write(i + ". " + u.getName() + ", " + u.getEmail() + ", " + u.getPhoneNumber() + "\n");
                     ++i;
                 } else {

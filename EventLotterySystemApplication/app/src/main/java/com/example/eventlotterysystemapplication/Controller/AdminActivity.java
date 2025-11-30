@@ -64,9 +64,6 @@ public class AdminActivity extends AppCompatActivity {
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
-
-//        BottomNavigationView bottomNavigationView = binding.adminBottomNavMenu;
-//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
 }

@@ -70,9 +70,6 @@ public class ContentActivity extends AppCompatActivity {
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
-
-//        BottomNavigationView bottomNavigationView = binding.bottomNavMenu;
-//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
     @Override

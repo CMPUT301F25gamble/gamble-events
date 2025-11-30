@@ -144,11 +144,6 @@ public class EventDetailScreenFragment extends Fragment {
             backButton.setOnClickListener(v -> {
                 getActivity().finish();
             });
-        } else if (getActivity() instanceof AdminActivity) {
-            backButton.setOnClickListener(v -> {
-                NavHostFragment.findNavController(this)
-                        .navigateUp();
-            });
         } else {
             backButton.setOnClickListener(v -> {
                 NavHostFragment.findNavController(this)

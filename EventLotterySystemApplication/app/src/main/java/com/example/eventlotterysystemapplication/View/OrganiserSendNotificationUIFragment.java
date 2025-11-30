@@ -59,7 +59,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 .fromBundle(getArguments());
 
         notificationType = args.getNotificationType();
-        eventId = args.getEventId();
+        eventId = args.getEventID();
 
         Log.d("OrganiserSendNotificationUIFragment", "EventId: " + eventId);
         Log.d("OrganiserSendNotificationUIFragment", "NotificationType: " + notificationType);

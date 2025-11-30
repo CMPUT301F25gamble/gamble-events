@@ -138,7 +138,8 @@ public class Database {
                     tcs.setResult(users.get(0));
                 } else {
                     Log.e("Database", "More than one user with same device");
-                    tcs.setException(new IllegalStateException("More than one user with same device"));
+                    //tcs.setException(new IllegalStateException("More than one user with same device"));
+                    tcs.setResult(users.get(0));
                 }
             } else {
                 Log.e("Database", task.getException().toString());

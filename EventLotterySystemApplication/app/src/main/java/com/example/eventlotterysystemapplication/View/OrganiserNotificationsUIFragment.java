@@ -45,7 +45,7 @@ public class OrganiserNotificationsUIFragment extends Fragment {
         OrganiserNotificationsUIFragmentArgs args = OrganiserNotificationsUIFragmentArgs
                 .fromBundle(getArguments());
 
-        eventId = args.getEventId();
+        eventId = args.getEventID();
 
         Log.d("OrganiserNotificationsUIFragment", "Event ID: " + eventId);
     }

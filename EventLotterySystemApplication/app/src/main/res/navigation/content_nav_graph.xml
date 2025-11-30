@@ -28,7 +28,7 @@
                 android:defaultValue="false"/>
         </action>
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             android:defaultValue="none" />
     </fragment>
@@ -72,7 +72,7 @@
             android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             app:nullable="true" />
         <action
@@ -128,7 +128,7 @@
         android:label="event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen">
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"/>
         <action
             android:id="@+id/action_event_detail_screen_to_events_ui_fragment"

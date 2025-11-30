@@ -116,7 +116,7 @@ public class CreateOrEditEventFragment extends Fragment {
 
         // Get eventId if the organizer is editing the event
         if (getArguments() != null) {
-            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventId();
+            eventId = CreateOrEditEventFragmentArgs.fromBundle(getArguments()).getEventID();
         }
     }
 

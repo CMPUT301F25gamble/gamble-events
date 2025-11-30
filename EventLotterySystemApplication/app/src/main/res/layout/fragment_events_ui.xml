@@ -32,6 +32,7 @@
         android:visibility="gone"
         app:constraint_referenced_ids="
             myEventsButton,
+            myRegisterEventsButton,
             createEventButton"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

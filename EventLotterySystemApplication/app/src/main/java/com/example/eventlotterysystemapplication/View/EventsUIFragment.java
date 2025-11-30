@@ -105,7 +105,7 @@ public class EventsUIFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventId();
+        eventId = args.getEventID();
         Log.d("EventsUIFragment", "Event Id: " + eventId);
     }
 
@@ -223,16 +223,17 @@ public class EventsUIFragment extends Fragment {
         }
 
         if (eventID != null) {
-            for (Event event : filteredEventList) {
-                if (event.getEventID().equals(eventID)) {
+            getActivity().getIntent().removeExtra("eventID");
+//            for (Event event : filteredEventList) {
+//                if (event.getEventID().equals(eventID)) {
                     Bundle args = new Bundle();
                     args.putString("eventID", eventID);
-                    args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
+                    args.putBoolean("isOwnedEvent", false);
                     NavHostFragment.findNavController(this)
                             .navigate(R.id.event_detail_screen, args);
-                    break;
-                }
-            }
+//                    break;
+//                }
+//            }
         }
 
         // Filter dialog

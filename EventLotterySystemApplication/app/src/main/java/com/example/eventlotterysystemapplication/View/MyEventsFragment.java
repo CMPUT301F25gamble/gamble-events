@@ -70,6 +70,9 @@ public class MyEventsFragment extends Fragment {
         if (bundle!=null ) {
             registeredEvents = MyEventsFragmentArgs.fromBundle(getArguments()).getRegisteredEvents();
         }
+        if(registeredEvents){
+            binding.myEventsText.setText(R.string.my_registered_events_button_text);
+        }
 
         return binding.getRoot();
     }

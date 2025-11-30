@@ -144,7 +144,7 @@ public class EventsUIFragment extends Fragment {
                         .navigate(R.id.action_events_ui_fragment_to_event_detail_screen, args);
             }
 
-            eventId = null; // prevents back button not usable since its an infinite loop otherwise
+            eventId = null; // prevents back button from not being usable since it constantly navigates to event detail screen otherwise
         }
 
         if (isAdminMode) {

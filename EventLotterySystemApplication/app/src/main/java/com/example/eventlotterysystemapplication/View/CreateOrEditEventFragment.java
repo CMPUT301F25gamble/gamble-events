@@ -598,6 +598,7 @@ public class CreateOrEditEventFragment extends Fragment {
 
     /**
      * Uploads the event poster image file to the storage bucket
+     * Deletes the previous poster image file if there existed one
      * @param event Event object needed for eventId and setting downloadUrl
      */
     private void uploadEventPosterToStorage(Event event) {
@@ -611,6 +612,52 @@ public class CreateOrEditEventFragment extends Fragment {
 
         String eventID = event.getEventID();
         ImageStorage imageStorage = ImageStorage.getInstance();
+
+        // Delete old poster url if it existed (since if old image was .gif and new image is .png) then
+        // the old .gif will still exist (doesn't get overwritten)
+        String oldPosterDownloadUrl = event.getEventPosterUrl();
+        if (oldPosterDownloadUrl != null && !oldPosterDownloadUrl.isEmpty()) {
+            // Delete the previous event poster
+            imageStorage.deleteEventPoster(oldPosterDownloadUrl, deleteTask -> {
+                if (!deleteTask.isSuccessful()) {
+                    Log.e(TAG, "Failed to delete old image in bucket");
+                    return;
+                }
+
+                // Upload new poster
+                imageStorage.uploadEventPoster(
+                        eventID,
+                        posterFile,
+                        imageTask -> {
+                            if (imageTask.isSuccessful()) {
+                                Uri downloadUrl = imageTask.getResult();
+                                String posterDownloadUrl = downloadUrl.toString();
+                                event.setEventPosterUrl(posterDownloadUrl);
+
+                                database.updateEvent(event, task -> {
+                                    if (task.isSuccessful()) {
+                                        // Return to events page
+//                                navigateFromCreateEditEvent(event);
+                                        NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                                .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                                    }
+                                });
+
+                            } else {
+                                Toast.makeText(getContext(), "Poster upload to Storage Bucket failed.", Toast.LENGTH_SHORT).show();
+                                // Return to events page anyways as event is created
+//                        navigateFromCreateEditEvent(event);
+                                NavHostFragment.findNavController(CreateOrEditEventFragment.this)
+                                        .navigate(R.id.action_create_or_edit_event_fragment_to_events_ui_fragment);
+                            }
+                        }
+                );
+            });
+
+            return;
+        }
+
+        // Upload poster anyways if there wasn't an old image
         imageStorage.uploadEventPoster(
                 eventID,
                 posterFile,

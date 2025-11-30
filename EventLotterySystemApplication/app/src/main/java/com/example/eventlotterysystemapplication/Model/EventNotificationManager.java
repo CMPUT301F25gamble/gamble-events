@@ -206,5 +206,13 @@ public class EventNotificationManager {
         });
     }
 
-    // TODO do a notification deleteEvent
+    public static void notifyAdmin(User recipient, User admin, String title, String body){
+        Notification notification = new Notification(admin.getUserID(), null, title, body, "adminNotification");
+
+        Database.getDatabase().addNotification(notification, task -> {
+            if (!recipient.isOptOutAdminNotifications()) {
+                notification.sendNotification(recipient);
+            }
+        });
+    }
 }

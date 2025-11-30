@@ -16,6 +16,7 @@ public class NotificationChannelFactory {
         checkAndCreateNotificationChannel(context,"cancelledListNotification");
         checkAndCreateNotificationChannel(context, "finalizedListNotification");
         checkAndCreateNotificationChannel(context, "manualNotification");
+        checkAndCreateNotificationChannel(context, "adminNotification");
         // TODO notification deleteEvent
     }
 
@@ -46,8 +47,10 @@ public class NotificationChannelFactory {
             description = "This notification channel is used to notify entrants in the chosen list";
         } else if (channelName.equals("finalizedListNotification")){
             description = "This notification channel is used to notify entrants in the finalized list";
-        } else {
+        } else if (channelName.equals("manualNotification")){
             description = "This notification channel is used to notify entrants who are drawn manually";
+        } else {
+            description = "This notification channel is used to notify users if admins intervened with the user or their content";
         }
 
         if (notificationChannel == null) {

@@ -85,7 +85,14 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         * the notification itself as buttons, therefore we have two different ways in which the
         * notification is built
         */
-        if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification") || channelName.equals("manualNotification")) {
+        if (channelName.equals("adminNotification")) {
+            builder = new NotificationCompat.Builder(this, channelName)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
+                    .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
+                    .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);
+        } else if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification") || channelName.equals("manualNotification")) {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification

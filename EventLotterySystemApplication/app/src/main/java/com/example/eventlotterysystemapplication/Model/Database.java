@@ -24,6 +24,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -137,7 +138,8 @@ public class Database {
                     tcs.setResult(users.get(0));
                 } else {
                     Log.e("Database", "More than one user with same device");
-                    tcs.setException(new IllegalStateException("More than one user with same device"));
+                    //tcs.setException(new IllegalStateException("More than one user with same device"));
+                    tcs.setResult(users.get(0));
                 }
             } else {
                 Log.e("Database", task.getException().toString());
@@ -360,7 +362,7 @@ public class Database {
         eventDocRef.get().addOnCompleteListener(eventTask -> {
             if (!eventTask.isSuccessful() || !eventTask.getResult().exists()) {
                 listener.onComplete(Tasks.forException(
-                        new IllegalStateException("Event not found or retrieval failed")
+                        new IllegalStateException("Event not found or retrieval failed: " + eventID)
                 ));
                 return;
             }
@@ -429,7 +431,6 @@ public class Database {
                 registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         tcs.setResult(null);
-                        return;
                     }
 
                     // Start Entrant Status Logic, DO NOT REMOVE
@@ -448,19 +449,21 @@ public class Database {
                     EntrantStatus finalStatus = status;
                     // End Entrant Status Logic, DO NOT REMOVE
 
-                    getEvent(eventDocSnapshot.getId(), task -> {
-                        if (task.isSuccessful()){
-                            Log.d("Database", "Successfully retrieved event from reference");
-                            Event event = task.getResult();
-                            userEventsHistory.add(event);
-                            userStatuses.add(finalStatus);
-                            tcs.setResult(null);
-                        } else {
-                            Log.e("Database", "Failed to retrieve event");
-                            tcs.setException(task.getException());
-                        }
-                    });
-                }).addOnFailureListener(e -> tcs.setException(e));
+                    if (documentSnapshot.exists()){
+                        getEvent(eventDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                Log.d("Database", "Successfully retrieved event from reference");
+                                Event event = task.getResult();
+                                userEventsHistory.add(event);
+                                userStatuses.add(finalStatus);
+                                tcs.setResult(null);
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
                 getUserEventsHistoryList.add(tcs.getTask());
             }
 
@@ -681,6 +684,36 @@ public class Database {
     }
 
     /**
+     * Sets the event poster url field on an event to NULL for a given poster download url that does not point to a image anymore
+     * @param posterUrl A deleted poster image url that needs to be removed on the corresponding event as well
+     * @param listener An OnCompleteListener that will be called when the null setting operation finishes
+     */
+    public void removeEventPosterUrl(String posterUrl, OnCompleteListener<Void> listener) {
+        eventRef.whereEqualTo("eventPosterUrl", posterUrl).get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("Database", "Could not find or remove poster url: " + posterUrl);
+                listener.onComplete(Tasks.forException(task.getException()));
+                return;
+            }
+
+            QuerySnapshot qs = task.getResult();
+
+            if (qs.isEmpty()) {
+                Log.d("Database", "No event document found containing this poster url: " + posterUrl);
+                listener.onComplete(Tasks.forResult(null));
+                return;
+            }
+
+            // Use a Batch to update the document(s) and commit atomically at the end
+            WriteBatch batch = eventRef.getFirestore().batch();
+            for (DocumentSnapshot ds : qs.getDocuments()) {
+                batch.update(ds.getReference(), "eventPosterUrl", null);
+            }
+            batch.commit().addOnCompleteListener(listener);
+        });
+    }
+
+    /**
      * Given some notificationID, retrieve the notification object from the database
      * @param notificationID The notificationID we are querying against
      * @param listener An OnCompleteListener that will be called when the operation finishes
@@ -757,37 +790,6 @@ public class Database {
             Tasks.whenAllComplete(getUserNotificationHistoryList).addOnCompleteListener(done -> {
                 listener.onComplete(Tasks.forResult(userNotificationHistory));
             });
-        });
-    }
-
-    /**
-     * This method is specific for allowing us to add to the recipient collection of the redraw of a
-     * particular event, here check if the event already has a redraw notification, and if it does
-     * we return that object, otherwise we return an exception indicating that a new redraw
-     * notification object should be created
-     * @param eventID The event we want to check for redraws
-     * @param listener An OnCompleteListener that will be called when the operation finishes
-     */
-    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
-        Query redrawNotificationQuery = notificationRef.where(Filter.and(
-                Filter.equalTo("eventID", eventID),
-                Filter.equalTo("channelName", "lotteryRedrawNotification")
-        ));
-
-        redrawNotificationQuery.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
-                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
-                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
-
-                if (notifications.size() > 0){
-                    listener.onComplete(Tasks.forResult(notifications.get(0)));
-                } else {
-                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-                }
-            } else {
-                Log.e("Database", "Failed to query database");
-                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-            }
         });
     }
 
@@ -904,7 +906,7 @@ public class Database {
             event.setEventPosterUrl(doc.getString("eventPosterUrl"));
         }
 
-        if (doc.getLong("maxWaitingListCapacity").intValue() > 0) {
+        if (doc.getLong("maxWaitingListCapacity").intValue() > 0 || doc.getLong("maxWaitingListCapacity").intValue() == -1) {
             event.setMaxWaitingListCapacity(doc.getLong("maxWaitingListCapacity").intValue());
         }
         if (doc.getLong("maxFinalListCapacity").intValue() > 0) {

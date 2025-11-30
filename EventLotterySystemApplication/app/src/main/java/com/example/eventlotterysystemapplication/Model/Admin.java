@@ -61,11 +61,21 @@ public class Admin extends User{
         // DO NOT REMOVE LISTENER, ITS USED FOR ADMIN
         imageStorage.deleteEventPoster(imageUrl, task -> {
             if (task.isSuccessful()) {
-                Log.d("Admin", "Removed image");
+                Log.d("Admin", "Removed image on storage bucket");
             } else {
-                Log.e("Admin", "Cannot remove image");
+                Log.e("Admin", "Cannot remove image on storage bucket");
             }
-            listener.onComplete(task); // Notify caller
+
+            // Also set the eventPosterUrl field to null after deleting the image
+            db.removeEventPosterUrl(imageUrl, dbTask -> {
+                if (dbTask.isSuccessful()) {
+                    Log.d("Admin", "Removed event poster url on database as well");
+                } else {
+                    Log.e("Admin", "Cannot remove event poster url on database");
+                }
+
+                listener.onComplete(dbTask); // Notify caller
+            });
         });
     }
 

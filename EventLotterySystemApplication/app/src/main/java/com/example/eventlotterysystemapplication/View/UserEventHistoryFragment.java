@@ -158,6 +158,38 @@ public class UserEventHistoryFragment extends Fragment {
                 eventAdapter = new EventAdapter(requireContext(), events, statuses);
                 binding.userEventHistoryListView.setAdapter(eventAdapter);
 
+                binding.userEventHistoryListView.setOnItemClickListener((parent, view, position, id) -> {
+                    Event selectedEvent = events.get(position);
+
+                    int hostId = isAdminMode
+                            ? R.id.admin_nav_host_fragment
+                            : R.id.content_nav_host_fragment;
+
+                    NavHostFragment navHostFragment =
+                            (NavHostFragment) requireActivity()
+                                    .getSupportFragmentManager()
+                                    .findFragmentById(hostId);
+
+                    if (navHostFragment == null) {
+                        Log.e("NAV", "NavHostFragment is NULL for hostId=" + hostId);
+                        return;
+                    }
+
+                    NavController navController = navHostFragment.getNavController();
+
+                    // ---- NAVIGATION ----
+                    // Use the correct action depending on admin mode
+                    Bundle args = new Bundle();
+                    args.putString("eventID", selectedEvent.getEventID());
+
+                    if (isAdminMode) {
+                        navController.navigate(R.id.action_userEventHistoryFragment_to_eventDetailScreenFragment, args);
+                    } else {
+                        navController.navigate(R.id.action_user_event_history_fragment_to_event_detail_screen, args);
+                    }
+                });
+
+
                 // Hide loading and show content after fetch completes
                 binding.loadingUserEventHistory.setVisibility(View.GONE);
                 binding.contentGroupEventsUi.setVisibility(View.VISIBLE);

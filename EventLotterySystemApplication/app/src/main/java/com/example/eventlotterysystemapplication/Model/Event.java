@@ -793,6 +793,10 @@ public class Event {
         }
     }
 
+    public void setEntrantList(List<Entrant> entrantList) {
+        this.entrantList = entrantList;
+    }
+
     /**
      * A getter for the entrant waiting list
      * @return The entrant list object

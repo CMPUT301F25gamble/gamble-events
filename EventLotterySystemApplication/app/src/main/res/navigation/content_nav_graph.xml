@@ -28,7 +28,7 @@
                 android:defaultValue="false"/>
         </action>
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             android:defaultValue="none" />
     </fragment>
@@ -72,7 +72,7 @@
             android:id="@+id/action_create_or_edit_event_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             app:nullable="true" />
         <action
@@ -84,6 +84,10 @@
         android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
         android:label="my_events_fragment"
         tools:layout="@layout/fragment_my_events" >
+        <argument
+            android:name="registeredEvents"
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
             app:destination="@id/events_ui_fragment" />
@@ -114,6 +118,9 @@
         <action
             android:id="@+id/action_user_event_history_fragment_to_profile_ui_fragment"
             app:destination="@id/profile_ui_fragment" />
+        <action
+            android:id="@+id/action_user_event_history_fragment_to_event_detail_screen"
+            app:destination="@id/event_detail_screen" />
     </fragment>
     <fragment
         android:id="@+id/event_detail_screen"
@@ -121,7 +128,7 @@
         android:label="event_detail_screen"
         tools:layout="@layout/fragment_event_detail_screen">
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"/>
         <action
             android:id="@+id/action_event_detail_screen_to_events_ui_fragment"
@@ -132,6 +139,9 @@
         <action
             android:id="@+id/action_event_detail_screen_to_viewNotificationFragment"
             app:destination="@id/viewNotificationFragment" />
+        <action
+            android:id="@+id/action_event_detail_screen_to_user_event_history_fragment"
+            app:destination="@id/user_event_history_fragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsTOSFragment"
@@ -164,5 +174,21 @@
         <action
             android:id="@+id/action_viewNotificationFragment_to_event_detail_screen"
             app:destination="@id/event_detail_screen" />
+    </fragment>
+    <fragment
+        android:id="@+id/my_registered_events_fragment"
+        android:name="com.example.eventlotterysystemapplication.View.MyEventsFragment"
+        android:label="My Registered Events"
+        tools:layout="@layout/fragment_my_events" >
+        <argument
+            android:name="registeredEvents"
+            app:argType="boolean"
+            android:defaultValue="true"/>
+        <action
+            android:id="@+id/action_my_events_fragment_to_events_ui_fragment"
+            app:destination="@id/events_ui_fragment" />
+        <action
+            android:id="@+id/action_my_events_fragment_to_my_event_detail_screen"
+            app:destination="@id/my_event_detail_screen" />
     </fragment>
 </navigation>

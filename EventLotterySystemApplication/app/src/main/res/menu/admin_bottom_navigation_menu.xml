@@ -8,7 +8,7 @@
 
     <item android:title="@string/browse_images"
         android:icon="@drawable/images_icon"
-        android:id="@+id/example">
+        android:id="@+id/allEventPostersUserFragment">
     </item>
 
     <item android:title="@string/bottom_menu_event_text"

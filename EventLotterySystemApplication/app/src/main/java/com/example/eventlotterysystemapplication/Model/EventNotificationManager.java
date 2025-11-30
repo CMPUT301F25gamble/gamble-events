@@ -90,40 +90,44 @@ public class EventNotificationManager {
                 + " because someone else declined their invitataion. Make sure to accept or decline " +
                 "the invitation by" + event.getInvitationAcceptanceDeadlineString();
 
-        Database.getDatabase().getRedrawNotification(event.getEventID(), task -> {
-            if (task.isSuccessful()){
-                Notification notification = task.getResult();
 
-                Database.getDatabase().addNotification(notification, task1 -> {
-                    if (task1.isSuccessful()){
-                        if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
-                    		notification.sendNotification(entrant.getUser());
-                		}
-                    } else {
-                        Log.e("EventNotificationManager", "Could not save notification to database");
-                    }
-                });
+        Notification notification =  new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
+        Database.getDatabase().addNotification(notification, task1 -> {
+            if (task1.isSuccessful()){
+                if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                    notification.sendNotification(entrant.getUser());
+                }
             } else {
-                Notification notification =  new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
-                Database.getDatabase().addNotification(notification, task1 -> {
-                    if (task1.isSuccessful()){
-                        if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
-                            notification.sendNotification(entrant.getUser());
-                        }
-                    } else {
-                        Log.e("EventNotificationManager", "Could not save notification to database");
-                    }
-                });
+                Log.e("EventNotificationManager", "Could not save notification to database");
             }
         });
     }
 
-    /**
-     * Used to allow the organizer to send custom notifications to users in the waiting list
-     * @param event The event that the organizer is sending notifications for
-     * @param title The title of the notification
-     * @param body The body of the notification
-     */
+    public static void notifyLotteryManualDraw(Entrant entrant, Event event){
+        String notificationTitle = "Congratulations, you have won the lottery manual draw";
+        String notificationBody = "Congratulations, you have been selected to join " + event.getName()
+                + ". Make sure to accept or decline the invitation by"
+                + event.getInvitationAcceptanceDeadlineString();
+
+
+        Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), notificationTitle, notificationBody, "lotteryRedrawNotification");
+        Database.getDatabase().addNotification(notification, task1 -> {
+            if (task1.isSuccessful()) {
+                if (!entrant.getUser().isOptOutLotteryStatusNotifications()) {
+                    notification.sendNotification(entrant.getUser());
+                }
+            } else {
+                Log.e("EventNotificationManager", "Could not save notification to database");
+            }
+        });
+    }
+
+            /**
+             * Used to allow the organizer to send custom notifications to users in the waiting list
+             * @param event The event that the organizer is sending notifications for
+             * @param title The title of the notification
+             * @param body The body of the notification
+             */
     public static void notifyWaitingList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "waitingListNotification");
 

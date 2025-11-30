@@ -113,7 +113,7 @@
         android:id="@+id/goToEventButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/red"
+        android:backgroundTint="@color/green"
         android:text="Go to Event"
         android:textColor="@color/black"
         android:textSize="12sp"

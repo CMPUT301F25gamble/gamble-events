@@ -57,13 +57,16 @@ public class AdminActivity extends AppCompatActivity {
 
             NavOptions navOptions = new NavOptions.Builder()
                     // Main fix here
-                    .setPopUpTo(R.id.admin_nav_graph, true)
+                    .setPopUpTo(destinationId, true)
                     .build();
 
             // Second arg is null because there is no start args
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
+
+//        BottomNavigationView bottomNavigationView = binding.adminBottomNavMenu;
+//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
 }

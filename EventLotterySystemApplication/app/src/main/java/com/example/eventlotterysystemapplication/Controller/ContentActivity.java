@@ -70,6 +70,9 @@ public class ContentActivity extends AppCompatActivity {
             navController.navigate(destinationId, null, navOptions);
             return true;
         });
+
+//        BottomNavigationView bottomNavigationView = binding.bottomNavMenu;
+//        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
     @Override
@@ -89,9 +92,9 @@ public class ContentActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         Bundle startArgs = new Bundle();
-        if (intent != null && intent.hasExtra("eventId")) {
-            startArgs.putString("eventId", intent.getStringExtra("eventId"));
-            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventId"));
+        if (intent != null && intent.hasExtra("eventID")) {
+            startArgs.putString("eventID", intent.getStringExtra("eventID"));
+            Log.d("ContentActivity", "eventId: " + intent.getStringExtra("eventID"));
         }
 
 

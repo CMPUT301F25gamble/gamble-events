@@ -23,7 +23,7 @@
             android:id="@+id/action_eventsUIFragment_to_eventDetailScreenFragment"
             app:destination="@id/eventDetailScreenFragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string"
             android:defaultValue="none" />
     </fragment>
@@ -83,7 +83,7 @@
             android:id="@+id/action_eventDetailScreenFragment_to_myEventsFragment"
             app:destination="@id/myEventsFragment" />
         <argument
-            android:name="eventId"
+            android:name="eventID"
             app:argType="string" />
         <argument
             android:name="isOwnedEvent"

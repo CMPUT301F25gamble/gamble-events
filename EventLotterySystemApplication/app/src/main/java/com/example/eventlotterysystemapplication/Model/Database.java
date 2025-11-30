@@ -138,7 +138,8 @@ public class Database {
                     tcs.setResult(users.get(0));
                 } else {
                     Log.e("Database", "More than one user with same device");
-                    tcs.setException(new IllegalStateException("More than one user with same device"));
+                    //tcs.setException(new IllegalStateException("More than one user with same device"));
+                    tcs.setResult(users.get(0));
                 }
             } else {
                 Log.e("Database", task.getException().toString());
@@ -430,7 +431,6 @@ public class Database {
                 registration.document(userId).get().addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         tcs.setResult(null);
-                        return;
                     }
 
                     // Start Entrant Status Logic, DO NOT REMOVE
@@ -449,19 +449,21 @@ public class Database {
                     EntrantStatus finalStatus = status;
                     // End Entrant Status Logic, DO NOT REMOVE
 
-                    getEvent(eventDocSnapshot.getId(), task -> {
-                        if (task.isSuccessful()){
-                            Log.d("Database", "Successfully retrieved event from reference");
-                            Event event = task.getResult();
-                            userEventsHistory.add(event);
-                            userStatuses.add(finalStatus);
-                            tcs.setResult(null);
-                        } else {
-                            Log.e("Database", "Failed to retrieve event");
-                            tcs.setException(task.getException());
-                        }
-                    });
-                }).addOnFailureListener(e -> tcs.setException(e));
+                    if (documentSnapshot.exists()){
+                        getEvent(eventDocSnapshot.getId(), task -> {
+                            if (task.isSuccessful()){
+                                Log.d("Database", "Successfully retrieved event from reference");
+                                Event event = task.getResult();
+                                userEventsHistory.add(event);
+                                userStatuses.add(finalStatus);
+                                tcs.setResult(null);
+                            } else {
+                                Log.e("Database", "Failed to retrieve event");
+                                tcs.setException(task.getException());
+                            }
+                        });
+                    }
+                });
                 getUserEventsHistoryList.add(tcs.getTask());
             }
 
@@ -788,37 +790,6 @@ public class Database {
             Tasks.whenAllComplete(getUserNotificationHistoryList).addOnCompleteListener(done -> {
                 listener.onComplete(Tasks.forResult(userNotificationHistory));
             });
-        });
-    }
-
-    /**
-     * This method is specific for allowing us to add to the recipient collection of the redraw of a
-     * particular event, here check if the event already has a redraw notification, and if it does
-     * we return that object, otherwise we return an exception indicating that a new redraw
-     * notification object should be created
-     * @param eventID The event we want to check for redraws
-     * @param listener An OnCompleteListener that will be called when the operation finishes
-     */
-    public void getRedrawNotification(String eventID, OnCompleteListener<Notification> listener){
-        Query redrawNotificationQuery = notificationRef.where(Filter.and(
-                Filter.equalTo("eventID", eventID),
-                Filter.equalTo("channelName", "lotteryRedrawNotification")
-        ));
-
-        redrawNotificationQuery.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
-                List<Notification> notificationList = task.getResult().toObjects(Notification.class);
-                ArrayList<Notification> notifications = new ArrayList<>(notificationList);
-
-                if (notifications.size() > 0){
-                    listener.onComplete(Tasks.forResult(notifications.get(0)));
-                } else {
-                    listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-                }
-            } else {
-                Log.e("Database", "Failed to query database");
-                listener.onComplete(Tasks.forException(new IllegalArgumentException()));
-            }
         });
     }
 

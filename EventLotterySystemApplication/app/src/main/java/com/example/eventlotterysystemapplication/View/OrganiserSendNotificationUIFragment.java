@@ -59,7 +59,7 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 .fromBundle(getArguments());
 
         notificationType = args.getNotificationType();
-        eventId = args.getEventId();
+        eventId = args.getEventID();
 
         Log.d("OrganiserSendNotificationUIFragment", "EventId: " + eventId);
         Log.d("OrganiserSendNotificationUIFragment", "NotificationType: " + notificationType);
@@ -105,6 +105,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                 notificationHeader.setText("Cancelled Entrants Notification");
                 channelName = "cancelledListNotification";
                 break;
+            case "finalized":
+                notificationHeader.setText("Finalized Entrants Notification");
+                channelName = "finalizedListNotification";
+                break;
         }
 
         sendNotificationButton.setOnClickListener(v -> {
@@ -138,8 +142,10 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                                 EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
                                 break;
                             case "cancelled":
-                                EventNotificationManager.notifyChosenList(task.getResult(), messageTitle, messageContent);
+                                EventNotificationManager.notifyCancelledList(task.getResult(), messageTitle, messageContent);
                                 break;
+                            case "finalized":
+                                EventNotificationManager.notifyFinalizedList(task.getResult(), messageTitle, messageContent);
                         }
                     } else {
                         // TODO

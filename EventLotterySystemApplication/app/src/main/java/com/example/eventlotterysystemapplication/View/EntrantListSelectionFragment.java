@@ -45,7 +45,7 @@ public class EntrantListSelectionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs args = com.example.eventlotterysystemapplication.View.EventDetailScreenFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventId();
+        eventId = args.getEventID();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class EntrantListSelectionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Get the eventID from the intent
-        String eventId = requireActivity().getIntent().getStringExtra("eventId");
+        String eventId = requireActivity().getIntent().getStringExtra("eventID");
         Bundle bundle = new Bundle();
         bundle.putString("eventID", eventId);
 

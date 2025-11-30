@@ -41,6 +41,7 @@ import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.LotterySelector;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Controller.EventTagsAdapter;
@@ -106,7 +107,7 @@ public class EventDetailScreenFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventDetailScreenFragmentArgs args = EventDetailScreenFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventId();
+        eventId = args.getEventID();
         //isOwnedEvent = args.toBundle().getBoolean("isOwnedEvent", false);
         Log.d(TAG, "Event ID: " + eventId + ", isOwnedEvent=" + isOwnedEvent);
         if(currentUser==null) {
@@ -270,7 +271,9 @@ public class EventDetailScreenFragment extends Fragment {
         // Accept Button
         binding.acceptChosenEntrantButton.setOnClickListener(v -> {
             // Accept invitation
-            entrant.setStatus(EntrantStatus.FINALIZED);
+//            entrant.setStatus(EntrantStatus.FINALIZED);
+
+            event.addEntrantToFinalizedList(entrant);
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
             // Display status on screen
@@ -282,7 +285,9 @@ public class EventDetailScreenFragment extends Fragment {
         // Decline Button
         binding.declineChosenEntrantButton.setOnClickListener(v -> {
             // Decline invitation
-            entrant.setStatus(EntrantStatus.CANCELLED);
+//            entrant.setStatus(EntrantStatus.CANCELLED);
+            event.addEntrantToCancelledList(entrant);
+
             binding.contentGroupChosenEntrant.setVisibility(View.GONE);
 
             // Display status on screen
@@ -290,6 +295,12 @@ public class EventDetailScreenFragment extends Fragment {
 
             // Update DB
             updateEventDB(event);
+            LotterySelector lotterySelector = new LotterySelector();
+            try {
+                lotterySelector.drawReplacementUser(event, false);
+            } catch (IllegalStateException e){
+                Log.d(TAG, "Could not schedule a redraw");
+            }
         });
 
         // Remove Event Button (Only in admin mode)
@@ -324,7 +335,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Navigate to edit event page if the user is the organizer of the event
             if (isOwnedEvent) {
                 Bundle args = new Bundle();
-                args.putString("eventId", eventId);
+                args.putString("eventID", eventId);
                 NavHostFragment.findNavController(EventDetailScreenFragment.this)
                         .navigate(R.id.create_or_edit_event_fragment, args);
                 return;

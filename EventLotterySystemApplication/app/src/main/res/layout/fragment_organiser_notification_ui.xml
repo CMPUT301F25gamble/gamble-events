@@ -44,5 +44,14 @@
         android:textColor="@color/app_grey"
         android:layout_marginTop="4dp"/>
 
+    <Button
+        android:id="@+id/finalized_entrants_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_beige"
+        android:text="@string/finalized_entrants_text"
+        android:textColor="@color/app_grey"
+        android:layout_marginTop="4dp"/>
+
 
 </LinearLayout>

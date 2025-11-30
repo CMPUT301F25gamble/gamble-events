@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/notificationTextHeader"
+        android:id="@+id/NotifsText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
@@ -47,22 +47,14 @@
         tools:layout_editor_absoluteX="16dp" />
 
     <CheckBox
+        android:id="@+id/lotteryNotificationsOptIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Opt-in for all notifications on lottery status"
+        android:text="Opt out for all notifications on lottery status"
         android:textSize="16sp"
-        />
-
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Opt in for specific notifications"
-        android:textSize="16sp"
-        />
+ />
 
     <TextView
         android:layout_width="match_parent"
@@ -77,11 +69,12 @@
         tools:layout_editor_absoluteX="16dp" />
 
     <CheckBox
+        android:id="@+id/adminNotificationsOptIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Opt in for notifications from App Admins"
+        android:text="Opt out for notifications from App Admins"
         android:textSize="16sp"
         />
 
@@ -98,21 +91,13 @@
         tools:layout_editor_absoluteX="16dp" />
 
     <CheckBox
+        android:id="@+id/organiserNotificationsOptIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Opt in for all notifications from Organizers"
+        android:text="Opt out for all notifications from Organizers"
         android:textSize="16sp"
         />
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Opt in for specific notifications"
-        android:textSize="16sp"
-        />
-    
 </LinearLayout>

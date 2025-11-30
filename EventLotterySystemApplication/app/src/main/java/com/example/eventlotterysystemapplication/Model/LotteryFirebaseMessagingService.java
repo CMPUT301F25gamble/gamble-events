@@ -71,7 +71,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this, ContentActivity.class);
 
         // add eventId to the intent
-        intent.putExtra("eventId", remoteMessage.getData().get("eventID"));
+        intent.putExtra("eventID", remoteMessage.getData().get("eventID"));
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -85,7 +85,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         * the notification itself as buttons, therefore we have two different ways in which the
         * notification is built
         */
-        if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification")) {
+        if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification") || channelName.equals("manualNotification")) {
             builder = new NotificationCompat.Builder(this, channelName)
                     .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification

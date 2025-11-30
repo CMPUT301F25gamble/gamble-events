@@ -105,7 +105,7 @@ public class EventsUIFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventsUIFragmentArgs args = EventsUIFragmentArgs.fromBundle(getArguments());
-        eventId = args.getEventId();
+        eventId = args.getEventID();
         Log.d("EventsUIFragment", "Event Id: " + eventId);
     }
 
@@ -133,7 +133,7 @@ public class EventsUIFragment extends Fragment {
         // If an event id was passed in from admin notifications, navigate to selected event
         if (!eventId.equals("none")) {
             Bundle args = new Bundle();
-            args.putString("eventId", eventId);
+            args.putString("eventID", eventId);
             if (isAdminMode) {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_eventsUIFragment_to_eventDetailScreenFragment, args);
@@ -156,15 +156,25 @@ public class EventsUIFragment extends Fragment {
             // Non-admin buttons
             binding.createEventButton.setOnClickListener(v -> {
                 Bundle args = new Bundle();
-                args.putString("eventId", null);
+                args.putString("eventID", null);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_events_ui_fragment_to_create_or_edit_event_fragment, args);
             });
 
-            // My Events button navigates to my events page
+             // My Events button navigates to my events page
             binding.myEventsButton.setOnClickListener(v -> {
+                Bundle args = new Bundle();
+                args.putBoolean("registeredEvents", false);
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.my_events_fragment);
+            });
+
+			// My Registered Events button navigates to my registered events page
+            binding.myRegisterEventsButton.setOnClickListener(v -> {
+                Bundle args = new Bundle();
+                args.putBoolean("registeredEvents", true);
+                NavHostFragment.findNavController(this)
+                        .navigate(R.id.my_registered_events_fragment,args);
             });
 
             // Show loading and hide content until it is fetched
@@ -190,7 +200,7 @@ public class EventsUIFragment extends Fragment {
         binding.eventsList.setOnItemClickListener((parent, v, position, id) -> {
             Event event = filteredEventList.get(position);
             Bundle args = new Bundle();
-            args.putString("eventId", event.getEventID());
+            args.putString("eventID", event.getEventID());
             args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
             Log.d("EventsUIFragment", "isOwnedEvent = " + event.getOrganizerID().equals(userId));
             Log.d("EventsUIFragment", "eventId = " + event.getEventID());
@@ -213,16 +223,17 @@ public class EventsUIFragment extends Fragment {
         }
 
         if (eventID != null) {
-            for (Event event : filteredEventList) {
-                if (event.getEventID().equals(eventID)) {
+            getActivity().getIntent().removeExtra("eventID");
+//            for (Event event : filteredEventList) {
+//                if (event.getEventID().equals(eventID)) {
                     Bundle args = new Bundle();
-                    args.putString("eventId", eventID);
-                    args.putBoolean("isOwnedEvent", event.getOrganizerID().equals(userId));
+                    args.putString("eventID", eventID);
+                    args.putBoolean("isOwnedEvent", false);
                     NavHostFragment.findNavController(this)
                             .navigate(R.id.event_detail_screen, args);
-                    break;
-                }
-            }
+//                    break;
+//                }
+//            }
         }
 
         // Filter dialog

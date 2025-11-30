@@ -22,8 +22,11 @@ import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentMyEventsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 
@@ -41,6 +44,8 @@ public class MyEventsFragment extends Fragment {
     // Admin flow
     private String userId;
     private boolean isAdminMode;
+
+    private boolean registeredEvents;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -60,6 +65,14 @@ public class MyEventsFragment extends Fragment {
         isAdminMode = AdminSession.getAdminMode();
         Log.d("ProfileUIFragment",
                 "userId arg = " + userId + "; isAdminMode = " + isAdminMode);
+// Get registeredEvents if the organizer is editing the event
+        Bundle bundle = getArguments();
+        if (bundle!=null ) {
+            registeredEvents = MyEventsFragmentArgs.fromBundle(getArguments()).getRegisteredEvents();
+        }
+        if(registeredEvents){
+            binding.myEventsText.setText(R.string.my_registered_events_button_text);
+        }
 
         return binding.getRoot();
     }
@@ -125,46 +138,93 @@ public class MyEventsFragment extends Fragment {
 
         // Firestore: Only events where organizerID == uid
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Event")
-            .whereEqualTo("organizerID", uid)
-            .get()
-            .addOnSuccessListener(qs -> {
-                myEventNames.clear();
-                myEventDocIds.clear();
 
-                for (DocumentSnapshot doc : qs.getDocuments()) {
-                    String myEventName = doc.getString("name");
 
-                    // Fallback on the doc ID if event name is missing
-                    if (myEventName == null) {
-                        myEventName = doc.getId();
-                        myEventNames.add(myEventName);
-                    } else {
-                        myEventNames.add(myEventName);
-                    }
+        Query query = null;
+        if(registeredEvents){
+            query = db.collectionGroup("Registration")
+                    .whereEqualTo("userID", uid);
+            query.get()
+                    .addOnSuccessListener(qs -> {
+                        myEventNames.clear();
+                        myEventDocIds.clear();
 
-                    // Add docId in parallel list
-                    myEventDocIds.add(doc.getId());
-                }
-                // Notify the adapter that the data set has changed
-                myEventNamesAdapter.notifyDataSetChanged();
+                        for (DocumentSnapshot regDoc : qs.getDocuments()) {
+                            DocumentReference eventRef = regDoc.getReference().getParent().getParent();
+                            eventRef.get().addOnSuccessListener(eventDoc -> {
+                                if (eventDoc.exists()) {
+                                    String myEventName = eventDoc.getString("name");
+                                    if (myEventName == null) {
+                                        myEventName = eventDoc.getId();
+                                        myEventNames.add(myEventName);
+                                    } else {
+                                        myEventNames.add(myEventName);
+                                    }
+                                    // Add docId in parallel list
+                                    myEventDocIds.add(eventDoc.getId());
+                                    // Notify the adapter that the data set has changed
+                                    myEventNamesAdapter.notifyDataSetChanged();
+                                } else {
+                                    Log.d("TAG", "Event document does not exist");
+                                }
+                            });
 
-                // Hide loading and show content
-                binding.loadingMyEvents.setVisibility(View.GONE);
-                binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
-            })
-                // Hide loading and add a listener to handle errors
-                .addOnFailureListener(e -> {
-                    binding.loadingMyEvents.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
-                });
+                            // Fallback on the doc ID if event name is missing
 
+                        }
+
+                        // Hide loading and show content
+                        binding.loadingMyEvents.setVisibility(View.GONE);
+                        binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
+
+                    })
+                    // Hide loading and add a listener to handle errors
+                    .addOnFailureListener(e -> {
+                        binding.loadingMyEvents.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                    });
+
+        }else {
+            query = db.collection("Event");
+            query = query.whereEqualTo("organizerID", uid);
+            query.get()
+                    .addOnSuccessListener(qs -> {
+                        myEventNames.clear();
+                        myEventDocIds.clear();
+
+                        for (DocumentSnapshot doc : qs.getDocuments()) {
+                            String myEventName = doc.getString("name");
+
+                            // Fallback on the doc ID if event name is missing
+                            if (myEventName == null) {
+                                myEventName = doc.getId();
+                                myEventNames.add(myEventName);
+                            } else {
+                                myEventNames.add(myEventName);
+                            }
+
+                            // Add docId in parallel list
+                            myEventDocIds.add(doc.getId());
+                        }
+                        // Notify the adapter that the data set has changed
+                        myEventNamesAdapter.notifyDataSetChanged();
+
+                        // Hide loading and show content
+                        binding.loadingMyEvents.setVisibility(View.GONE);
+                        binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
+                    })
+                    // Hide loading and add a listener to handle errors
+                    .addOnFailureListener(e -> {
+                        binding.loadingMyEvents.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                    });
+        }
         // Handle the on click event for each list item
         binding.myEventsListView.setOnItemClickListener((parent, v, position, id) -> {
             String eventId = myEventDocIds.get(position); // docIds parallel list we built
             // Bundle to indicate that we are coming from MyEventsFragment
             Bundle args = new Bundle();
-            args.putString("eventId", myEventDocIds.get(position));
+            args.putString("eventID", myEventDocIds.get(position));
             // DEFAULT VALUE
             args.putBoolean("isOwnedEvent", false); // Does not matter since you're admin
 
@@ -174,10 +234,18 @@ public class MyEventsFragment extends Fragment {
             } else {
                 // Launch RegisterActivity as a fresh task and clear the old one
                 Intent intent = new Intent(requireContext(), EditEventActivity.class);
-                intent.putExtra("eventId", eventId);
+                intent.putExtra("eventID", eventId);
                 intent.putExtra("isOwnedEvent", true);
                 startActivity(intent);
             }
         });
+    }
+
+    public boolean isRegisteredEvents() {
+        return registeredEvents;
+    }
+
+    public void setRegisteredEvents(boolean registeredEvents) {
+        this.registeredEvents = registeredEvents;
     }
 }

@@ -599,47 +599,9 @@
             android:inputType="number"
             />
 
-        <TextView
-            android:id="@+id/createOrEditEventSetNotifsText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/set_event_settings_text"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold" />
-
         <CheckBox
             android:id="@+id/checkbox_enableGeolocation"
             android:text="@string/enable_geolocation_text"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:id="@+id/checkbox_notifyEntrant"
-            android:text="@string/notify_entrant_of_successful_waitlist_enrollment_text"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:id="@+id/checkbox_notifySelectedEntrant"
-            android:text="@string/notify_selected_entrant_text"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:id="@+id/checkbox_notifySignUpConfirmation"
-            android:text="@string/notify_selected_entrant_success_text"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:id="@+id/checkbox_notifyCancelled"
-            android:text="@string/notify_entrant_if_they_have_cancelled_text"
             android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

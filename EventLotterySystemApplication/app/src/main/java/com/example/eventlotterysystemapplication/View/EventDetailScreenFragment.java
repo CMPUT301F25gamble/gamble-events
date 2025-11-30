@@ -375,8 +375,8 @@ public class EventDetailScreenFragment extends Fragment {
         if (entrant == null) {
             // User is not in waiting list, so join the waitlist
             // Optimistically load waitlist button as joined already
-            changeWaitlistBtn(true);
-            binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
+            //changeWaitlistBtn(true);
+            //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
             //Get geo entrantLocation
             Context context = v.getContext();
             //If Event Geo location requirement is off or device is not allowing geo location, save null as location
@@ -387,13 +387,15 @@ public class EventDetailScreenFragment extends Fragment {
                 newEntrant.setUser(currentUser);
                 event.addToEntrantList(newEntrant);
                 updateEventDB(event, task -> {
-                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
                     if (!task.isSuccessful()) {
-                        changeWaitlistBtn(false);
                         Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                        changeWaitlistBtn(false);
                     Log.d("EventDetailScreen", "User successfully joined waiting list");
+                        //return;
+                    }else{
+                        changeWaitlistBtn(true);
+                    }
                 });
             } else {
                 if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
@@ -413,16 +415,20 @@ public class EventDetailScreenFragment extends Fragment {
                                 newEntrant.setUser(currentUser);
                                 event.addToEntrantList(newEntrant);
                                 updateEventDB(event, task -> {
-                                    binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
                                     if (!task.isSuccessful()) {
-                                        changeWaitlistBtn(false);
                                         Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                                        return;
+                                        changeWaitlistBtn(false);
+                                       // return;
+                                    }else{
+                                        changeWaitlistBtn(true);
                                     }
                                     Log.d("EventDetailScreen", "User successfully joined waiting list");
                                 });
                             });
                 } else {
+                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                    changeWaitlistBtn(false);
                     Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
                             Toast.LENGTH_LONG).show();
                 }
@@ -430,9 +436,17 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             // User is in waiting list, so leave the waitlist
             event.removeEntrant(entrant);
-            updateEventDB(event, task -> {});
+            updateEventDB(event, task -> {
+                //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                if (!task.isSuccessful()) {
+                    Toast.makeText(getContext(), "Could not remove waitlist", Toast.LENGTH_SHORT).show();
+                    changeWaitlistBtn(true);
+                    // return;
+                }else{
             changeWaitlistBtn(false);
+                }
             Log.d("EventDetailScreen", "User successfully left waiting list");
+            });
         }
     }
 

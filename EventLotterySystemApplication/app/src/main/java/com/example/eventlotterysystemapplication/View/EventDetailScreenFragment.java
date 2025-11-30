@@ -215,8 +215,8 @@ public class EventDetailScreenFragment extends Fragment {
                     // If user == waiting && event registration is ended, hide join waitlist and display registration closed
                     if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
                         LocalDateTime timeNow = LocalDateTime.now();
-                        LocalDateTime registrationStartTime = event.getRegistrationStartTime();
-                        if (timeNow.isAfter(registrationStartTime)) {
+                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                        if (timeNow.isAfter(registrationEndTime)) {
                             binding.navigationBarButton.setVisibility(View.GONE);
 
                             // Change registration closed to not selected image

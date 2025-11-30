@@ -3,6 +3,7 @@ package com.example.eventlotterysystemapplication.View;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.eventlotterysystemapplication.AdminSession;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
+import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.FragmentMyEventsBinding;
@@ -29,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays the user's current events that they are organising
@@ -142,48 +146,34 @@ public class MyEventsFragment extends Fragment {
 
         Query query = null;
         if(registeredEvents){
-            query = db.collectionGroup("Registration")
-                    .whereEqualTo("userID", uid);
-            query.get()
-                    .addOnSuccessListener(qs -> {
-                        myEventNames.clear();
-                        myEventDocIds.clear();
-
-                        for (DocumentSnapshot regDoc : qs.getDocuments()) {
-                            DocumentReference eventRef = regDoc.getReference().getParent().getParent();
-                            eventRef.get().addOnSuccessListener(eventDoc -> {
-                                if (eventDoc.exists()) {
-                                    String myEventName = eventDoc.getString("name");
-                                    if (myEventName == null) {
-                                        myEventName = eventDoc.getId();
-                                        myEventNames.add(myEventName);
-                                    } else {
-                                        myEventNames.add(myEventName);
-                                    }
-                                    // Add docId in parallel list
-                                    myEventDocIds.add(eventDoc.getId());
-                                    // Notify the adapter that the data set has changed
-                                    myEventNamesAdapter.notifyDataSetChanged();
-                                } else {
-                                    Log.d("TAG", "Event document does not exist");
-                                }
-                            });
-
-                            // Fallback on the doc ID if event name is missing
-
+            Database database = Database.getDatabase();
+            database.getUserEventsHistory(uid, task -> {
+                if (task.isSuccessful()) {
+                    // Create new Array list
+                    Pair<List<Event>, List<EntrantStatus>> result = task.getResult();
+                    List<Event> events = result.first;
+                    List<EntrantStatus> statuses = result.second;
+                    myEventNames.clear();
+                    myEventDocIds.clear();
+                    int eventCount=events.size();
+                    for(int cnt=0;cnt<eventCount;cnt++ ) {
+                        Event event = events.get(cnt);
+                        String myEventName = event.getName();
+                        EntrantStatus entrantStatus = statuses.get(cnt);
+                        if (myEventName != null && EntrantStatus.CHOSEN.equals(entrantStatus)) {
+                            myEventNames.add(myEventName);
+                            myEventDocIds.add(event.getEventID());
+                            // Notify the adapter that the data set has changed
+                            myEventNamesAdapter.notifyDataSetChanged();
                         }
+                    }
+                }
+            });
 
-                        // Hide loading and show content
-                        binding.loadingMyEvents.setVisibility(View.GONE);
-                        binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
-
-                    })
-                    // Hide loading and add a listener to handle errors
-                    .addOnFailureListener(e -> {
-                        binding.loadingMyEvents.setVisibility(View.GONE);
-                        Toast.makeText(requireContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
-                    });
-
+            // Fallback on the doc ID if event name is missing
+            // Hide loading and show content
+            binding.loadingMyEvents.setVisibility(View.GONE);
+            binding.contentGroupMyEvents.setVisibility(View.VISIBLE);
         }else {
             query = db.collection("Event");
             query = query.whereEqualTo("organizerID", uid);

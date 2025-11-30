@@ -3,10 +3,14 @@ package com.example.eventlotterysystemapplication;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import android.util.Log;
 
+import com.example.eventlotterysystemapplication.Model.Entrant;
 import com.example.eventlotterysystemapplication.Model.EntrantList;
+import com.example.eventlotterysystemapplication.Model.EntrantLocation;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.android.gms.tasks.Task;
@@ -54,7 +58,6 @@ public class EventUnitTest {
     }
 
     public Event mockEvent1(){
-        EntrantList entrantList = mock(EntrantList.class);
         Event event = new Event(
                 "Twice concert watch party",
                 "We love Twice",
@@ -66,23 +69,11 @@ public class EventUnitTest {
                 "2025-11-01T23:59",
                 "2025-11-10T23:59",
                 "2025-11-12T23:59",
-                entrantList,
                 50,
-                20
+                20,
+                false
         );
         return event;
-    }
-
-    public User mockOrganizer1(){
-        User organizer = new User(
-                "Best Organizer",
-                "organizer@organizer.com",
-                "123-456-7890",
-                "fNnBwGwhaYStDGG6S3vs8sB52PU2",
-                "new token"
-        );
-        organizer.setUserID(organizer.getDeviceID());
-        return organizer;
     }
 
     public User mockEntrant1(){
@@ -109,53 +100,10 @@ public class EventUnitTest {
         return entrant;
     }
 
-    public User mockEntrant3(){
-        User entrant = new User(
-                "Best Entrant 3",
-                "entrant@entrant.com",
-                "123-456-7890",
-                "testDeviceIDmockEntrant3",
-                "new token"
-        );
-        entrant.setUserID(entrant.getDeviceID());
-        return entrant;
-    }
-
-    public User mockEntrant4(){
-        User entrant = new User(
-                "Best Entrant 4",
-                "entrant@entrant.com",
-                "123-456-7890",
-                "testDeviceIDmockEntrant4",
-                "new token"
-        );
-        entrant.setUserID(entrant.getDeviceID());
-        return entrant;
-    }
-
-    public User mockEntrant5(){
-        User entrant = new User(
-                "Best Entrant 5",
-                "entrant@entrant.com",
-                "123-456-7890",
-                "testDeviceIDmockEntrant5",
-                "new token"
-        );
-        entrant.setUserID(entrant.getDeviceID());
-        return entrant;
-    }
-
     @Test
     public void testParseTimestamps(){
-        final Task<Event> mockCreateEventTask = mock(Task.class);
 
         Event event = mockEvent1();
-
-        event.setEventStartTime(null);
-        event.setEventEndTime(null);
-        event.setRegistrationStartTime(null);
-        event.setRegistrationEndTime(null);
-        event.setInvitationAcceptanceDeadline(null);
 
         event.parseTimestamps();
 
@@ -206,374 +154,201 @@ public class EventUnitTest {
     }
 
     @Test
-    public void testSetRecurringEvent() {
-        Event event = mockEvent1();
-        event.setIsRecurring(true);
-
-        assertTrue(event.getIsRecurring());
-    }
-
-    @Test
-    public void testSetRecurringFrequency() {
-        Event event = mockEvent1();
-        event.setIsRecurring(true);
-        event.setRecurringFrequency(1);
-
-        assertEquals(1, event.getRecurringFrequency());
-    }
-
-    @Test
-    public void testSetInvalidRecurringFrequency() {
-        Event event = mockEvent1();
-        event.setIsRecurring(true);
-
-        assertThrows(IllegalArgumentException.class, () -> event.setRecurringFrequency(5));
-    }
-
-    @Test
-    public void testGetRecurringFrequencyString() {
-        Event event = mockEvent1();
-        event.setIsRecurring(true);
-        event.setRecurringFrequency(3);
-
-        assertEquals("Monthly", event.displayRecurrenceFrequency());
-    }
-
-    @Test
-    public void testSetEntrantListValues(){
-        Event event = mockEvent1();
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.setEntrantListValues(new ArrayList<>(Arrays.asList(new User[]{mockEntrant1(), mockEntrant2()})), 0);
-        event.setEntrantListValues(new ArrayList<>(Arrays.asList(new User[]{mockEntrant3()})), 1);
-        event.setEntrantListValues(new ArrayList<>(Arrays.asList(new User[]{mockEntrant4()})), 2);
-        event.setEntrantListValues(new ArrayList<>(Arrays.asList(new User[]{mockEntrant5()})), 3);
-
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-
-        assertThrows(IllegalArgumentException.class, () -> event.setEntrantListValues(new ArrayList<>(Arrays.asList(new User[]{mockEntrant3()})), 4));
-
-    }
-
-    @Test
     public void testAddToEntrantList(){
         Event event = mockEvent1();
+        User user = mockEntrant1();
+        EntrantLocation location = mock(EntrantLocation.class);
+        Entrant entrant1 = new Entrant();
+        entrant1.setUser(user);
+        entrant1.setLocation(location);
+        entrant1.setStatus(EntrantStatus.WAITING);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        User entrant1 = mockEntrant1();
+        event.addToEntrantList(entrant1);
 
-        event.addToEntrantList(entrant1, 0);
-        event.addToEntrantList(mockEntrant2(), 0);
-        event.addToEntrantList(mockEntrant3(), 1);
-        event.addToEntrantList(mockEntrant4(), 2);
-        event.addToEntrantList(mockEntrant5(), 3);
-
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-
-
-        assertThrows(IllegalArgumentException.class, () -> event.addToEntrantList(mockEntrant1(), 4));
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
     }
 
     @Test
     public void testRemoveFromEntrantList(){
         Event event = mockEvent1();
+        User user = mockEntrant1();
+        EntrantLocation location = mock(EntrantLocation.class);
+        Entrant entrant1 = new Entrant();
+        entrant1.setUser(user);
+        entrant1.setLocation(location);
+        entrant1.setStatus(EntrantStatus.WAITING);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        User entrant1 = mockEntrant1();
+        event.addToEntrantList(entrant1);
 
-        event.addToEntrantList(entrant1, 0);
-        event.addToEntrantList(mockEntrant2(), 0);
-        event.addToEntrantList(mockEntrant3(), 1);
-        event.addToEntrantList(mockEntrant4(), 2);
-        event.addToEntrantList(mockEntrant5(), 3);
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
+        assertTrue(event.removeEntrant(entrant1));
 
-
-        assertThrows(IllegalArgumentException.class, () -> event.addToEntrantList(mockEntrant1(), 4));
-
-        assert(!mockEntrant1().equals(mockEntrant2()));
-
-        event.removeFromEntrantList(mockEntrant1(), 0);
-        event.removeFromEntrantList(mockEntrant3(), 1);
-        event.removeFromEntrantList(mockEntrant4(), 2);
-        event.removeFromEntrantList(mockEntrant5(), 3);
-        event.removeFromEntrantList(mockEntrant1(), 0);
-        event.removeFromEntrantList(mockEntrant1(), 3);
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-    }
-
-    @Test
-    public void testJoinWaitingList(){
-        Event event = mockEvent1();
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant1());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant1());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant2());
-
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.addToEntrantList(mockEntrant3(), 1);
-
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant3());
-
-        assertEquals (2, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
     }
 
     @Test
     public void testJoinChosenList(){
         Event event = mockEvent1();
+        EntrantLocation location = mock(EntrantLocation.class);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        User user = mockEntrant1();
+        Entrant entrant1 = new Entrant();
+        entrant1.setUser(user);
+        entrant1.setLocation(location);
+        entrant1.setStatus(EntrantStatus.WAITING);
 
-        event.joinWaitingList(mockEntrant1());
+        User user2 = mockEntrant2();
+        Entrant entrant2 = new Entrant();
+        entrant2.setUser(user2);
+        entrant2.setLocation(location);
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinChosenList(mockEntrant1());
+        event.addToEntrantList(entrant1);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinWaitingList(mockEntrant2());
+        event.addEntrantToChosenList(entrant1);
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (1, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinChosenList(mockEntrant3());
+        // Attempts to add a user that is not in the waitlist to chosen list
+        assertThrows(Exception.class, () -> event.addEntrantToChosenList(entrant2));
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.addToEntrantList(mockEntrant4(), 1);
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (2, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinChosenList(mockEntrant4());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (2, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.addToEntrantList(mockEntrant5(), 2);
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (2, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinChosenList(mockEntrant5());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (1, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
     }
 
     @Test
     public void testJoinCancelledList(){
         Event event = mockEvent1();
+        EntrantLocation location = mock(EntrantLocation.class);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        User user = mockEntrant1();
+        Entrant entrant1 = new Entrant();
+        entrant1.setUser(user);
+        entrant1.setLocation(location);
+        entrant1.setStatus(EntrantStatus.WAITING);
 
-        event.joinWaitingList(mockEntrant1());
+        User user2 = mockEntrant2();
+        Entrant entrant2 = new Entrant();
+        entrant2.setUser(user2);
+        entrant2.setLocation(location);
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinCancelledList(mockEntrant1());
+        event.addToEntrantList(entrant1);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinWaitingList(mockEntrant2());
+        // Attempts to add entrant that is not chosen to cancelled list
+        event.addEntrantToCancelledList(entrant1);
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        event.joinCancelledList(mockEntrant3());
+        // Now add entrant to chosen list
+        event.addEntrantToChosenList(entrant1);
+        event.addEntrantToCancelledList(entrant1);
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (2, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (1, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
+
+        // Attempts to add a user that is not in the waitlist to cancelled list
+        assertThrows(Exception.class, () -> event.addEntrantToCancelledList(entrant2));
+
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (1, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
     }
 
     @Test
     public void testJoinFinalizedList(){
         Event event = mockEvent1();
+        EntrantLocation location = mock(EntrantLocation.class);
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        User user = mockEntrant1();
+        Entrant entrant1 = new Entrant();
+        entrant1.setUser(user);
+        entrant1.setLocation(location);
+        entrant1.setStatus(EntrantStatus.WAITING);
 
-        event.joinWaitingList(mockEntrant1());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        event.addToEntrantList(entrant1);
 
-        event.joinChosenList(mockEntrant1());
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (1, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        // Attempts to add an entrant who is not chosen to the finalized list
+        event.addEntrantToFinalizedList(entrant1);
 
-        event.joinFinalizedList(mockEntrant1());
+        assertEquals (1, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
+        // Now add the entrant to chosen list
+        event.addEntrantToChosenList(entrant1);
 
-        event.joinCancelledList(mockEntrant3());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (1, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (0, event.getEntrantFinalizedList().size());
 
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
+        event.addEntrantToFinalizedList(entrant1);
 
-        event.joinFinalizedList(mockEntrant3());
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-
-        event.joinFinalizedList(mockEntrant4());
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant5());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-
-        event.joinFinalizedList(mockEntrant5());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (1, event.getUserCancelledList().size());
-        assertEquals (1, event.getUserFinalizedList().size());
-    }
-
-    @Test
-    public void testLeaveWaitingList(){
-        Event event = mockEvent1();
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.joinWaitingList(mockEntrant1());
-
-        assertEquals (1, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.leaveWaitingList(mockEntrant1());
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.leaveWaitingList(mockEntrant1());
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
-
-        event.leaveWaitingList(mockEntrant2());
-
-        assertEquals (0, event.getUserWaitingList().size());
-        assertEquals (0, event.getUserChosenList().size());
-        assertEquals (0, event.getUserCancelledList().size());
-        assertEquals (0, event.getUserFinalizedList().size());
+        assertEquals (0, event.getEntrantWaitingList().size());
+        assertEquals (0, event.getEntrantChosenList().size());
+        assertEquals (0, event.getEntrantCancelledList().size());
+        assertEquals (1, event.getEntrantFinalizedList().size());
     }
 
     @After

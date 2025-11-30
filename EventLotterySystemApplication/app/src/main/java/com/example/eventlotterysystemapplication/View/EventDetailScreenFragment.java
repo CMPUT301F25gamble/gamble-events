@@ -341,6 +341,8 @@ public class EventDetailScreenFragment extends Fragment {
                 return;
             }
 
+            binding.navigationBarButton.setEnabled(false);
+            binding.navigationBarButton.setText("Wait...");
             Database.getDatabase().getEvent(eventId, taskEvent -> {
                 if (taskEvent.isSuccessful()) {
                     Event event = taskEvent.getResult();
@@ -399,6 +401,7 @@ public class EventDetailScreenFragment extends Fragment {
                 } else {
                     // Failed to load event; hide loading and show error
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    binding.navigationBarButton.setEnabled(true);
                     Toast.makeText(requireContext(), "Failed to load event",
                             Toast.LENGTH_LONG).show();
                 }
@@ -597,6 +600,7 @@ public class EventDetailScreenFragment extends Fragment {
      * @param userInWaitlist Boolean whether user is in waitlist of event or not
      */
     private void changeWaitlistBtn(boolean userInWaitlist) {
+        binding.navigationBarButton.setEnabled(true);
         if (isOwnedEvent) {
             binding.navigationBarButton.setText("Edit Event");
             binding.navigationBarButton.setBackgroundTintList(

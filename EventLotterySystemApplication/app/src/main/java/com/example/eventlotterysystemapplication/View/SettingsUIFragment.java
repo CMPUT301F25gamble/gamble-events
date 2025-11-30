@@ -66,16 +66,6 @@ public class SettingsUIFragment extends Fragment {
         Button tosButton = binding.tosButton;
         Button adminViewButton = binding.adminViewButton;
 
-        // set the admin view text
-        if (getActivity() instanceof ContentActivity) {
-            adminViewButton.setText("Switch to Admin View");
-        } else {
-            adminViewButton.setText("Switch to User View");
-            // Reset admin mode and user ID
-            AdminSession.setAdminMode(false);
-            AdminSession.setSelectedUserId(null);
-        }
-
         // Set click listeners
         notificationSettingsButton.setOnClickListener(v -> {
             // Navigate to notification settings fragment
@@ -102,6 +92,19 @@ public class SettingsUIFragment extends Fragment {
                 User adminUser = task.getResult();
                 binding.contentGroupSettingsScreen.setVisibility(View.VISIBLE);
                 adminViewButton.setVisibility(adminUser.isAdmin() ? View.VISIBLE : View.GONE);
+
+                if (getActivity() instanceof ContentActivity) {
+                    adminViewButton.setText("Switch to Admin View");
+                } else {
+                    adminViewButton.setText("Switch to User View");
+                    // Reset admin mode and user ID
+                    AdminSession.setAdminMode(false);
+                    AdminSession.setSelectedUserId(null);
+
+                    // Hide notification settings and important information button in admin mode
+                    notificationSettingsButton.setVisibility(View.GONE);
+                    tosButton.setVisibility(View.GONE);
+                }
 
             } else {
                 Toast.makeText(getContext(), "Error getting user", Toast.LENGTH_SHORT).show();

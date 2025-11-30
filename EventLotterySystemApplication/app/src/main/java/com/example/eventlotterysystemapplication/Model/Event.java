@@ -97,9 +97,8 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
-     * @param geolocationRequirement
+     * @param geolocationRequirement Boolean representing if geolocation requirement is enabled
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
@@ -147,8 +146,8 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
+     * @param geolocationRequirement Boolean representing if geolocation requirement is enabled
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
@@ -178,25 +177,11 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.geolocationRequirement = geolocationRequirement;
-
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
-
     }
-
-
-
 
     /**
      * Parses the timestamp objects and saves them into the LocalDateTime objects
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseTimestamps() {
         if (eventStartTimeTS != null)
             eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();

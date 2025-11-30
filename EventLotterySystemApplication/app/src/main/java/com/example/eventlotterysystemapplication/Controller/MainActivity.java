@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        checkNotificationPermission();
+
         NotificationChannelFactory.createNotificationChannels(this);
 
         // Check if app was opened via QR code / deep link

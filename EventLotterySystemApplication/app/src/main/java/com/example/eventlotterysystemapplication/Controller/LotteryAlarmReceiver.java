@@ -11,6 +11,10 @@ import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.LotterySelector;
 
+/**
+ * When the scheduled alarm triggers, this class contains the functionality needed to call the draw
+ * function for the event
+ */
 public class LotteryAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

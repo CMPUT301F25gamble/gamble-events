@@ -30,6 +30,10 @@ import com.example.eventlotterysystemapplication.R;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * This class is the ArrayAdapter that is used to display the lists of events in a well organized
+ * and visually appealing format
+ */
 public class EventAdapter extends ArrayAdapter<Event> {
 
     private final Context context;
@@ -38,13 +42,23 @@ public class EventAdapter extends ArrayAdapter<Event> {
     // OPTIONAL: used for User events history screen
     private List<EntrantStatus> statuses = null;
 
+    /**
+     * The constructor for the EventAdapter
+     * @param context A context object representing the current state of the system
+     * @param events The List containing all of the events that we want to display
+     */
     public EventAdapter(Context context, List<Event> events) {
         super(context, R.layout.event_list_item, events);
         this.context = context;
         this.events = events;
     }
 
-    // Used ONLY FOR user events history screen
+    /**
+     * This constructor is used ONLY FOR user events history screen
+     * @param context A context object representing the current state of the system
+     * @param events The List containing all of the events that we want to display
+     * @param statuses The list containing all of the user statuses of the entrants
+     */
     public EventAdapter(Context context, List<Event> events, List<EntrantStatus> statuses) {
         super(context, R.layout.event_list_item, events);
         this.context = context;

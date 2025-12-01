@@ -22,7 +22,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-
+/**
+ * When an event is scheduled, this class schedules the alarm on the organizer's phone to call the
+ * draw at the event registration deadline for the next users
+ */
 public class LotteryDrawScheduler {
 
     public void scheduleNewLotteryDraw(Context context, Event event) {
@@ -36,6 +39,16 @@ public class LotteryDrawScheduler {
     public void scheduleRemoveLotteryDraw(Context context, Event event) {
         scheduleLotteryDraw(context,event, false,true);
     }
+
+    /**
+     * Schedules a lottery draw alarm to trigger at a later date and time
+     * @param context A context object representing the current state of the system
+     * @param event The event that we are scheduling the alarm for
+     * @param update A boolean that represents whether or not we are updating a current event
+     *               scheduled alarm
+     * @param remove A boolean that represents whether or not we are trying to remove a current
+     *               event scheduled alarm
+     */
     @SuppressLint("ScheduleExactAlarm")
     @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     public void scheduleLotteryDraw(Context context, Event event, boolean update, boolean remove) {

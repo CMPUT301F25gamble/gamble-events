@@ -29,6 +29,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 
 import java.util.List;
 
+/**
+ * This fragment uses a google maps API to display a mapview of where all entrants joined the
+ * waiting list from, where we navigate from {@link EntrantListSelectionFragment}
+ */
 public class EntrantMapsFragment extends Fragment {
 
     private String eventID;

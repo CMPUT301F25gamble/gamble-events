@@ -26,8 +26,10 @@ public class RegisterScreenFragment extends Fragment {
 
     private FragmentRegisterScreenBinding binding;
 
+    /**
+     * Required empty public constructor
+     */
     public RegisterScreenFragment() {
-        // Required empty public constructor
     }
 
     public static RegisterScreenFragment newInstance() {

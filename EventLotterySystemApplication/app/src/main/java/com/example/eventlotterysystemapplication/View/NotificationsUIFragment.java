@@ -37,8 +37,10 @@ public class NotificationsUIFragment extends Fragment {
     private ArrayAdapter<String> notificationTitlesAdapter;
     private final String TAG = "NotificationsUIFragment";
 
+    /**
+     * Required empty public constructor
+     */
     public NotificationsUIFragment() {
-        // Required empty public constructor
     }
 
     public static NotificationsUIFragment newInstance() {
@@ -88,6 +90,9 @@ public class NotificationsUIFragment extends Fragment {
         });
     }
 
+    /**
+     * If the user wants to refresh their notifications listview page, they can do so here
+     */
     private void updateNotifications() {
         // Clear previous notifications
         notificationIds.clear();

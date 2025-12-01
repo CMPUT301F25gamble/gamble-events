@@ -93,10 +93,10 @@ public class EventDetailScreenFragment extends Fragment {
 
     private User currentUser;
 
-
-    public EventDetailScreenFragment() {
-        // Required empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public EventDetailScreenFragment() {}
 
     public static EventDetailScreenFragment newInstance() {
         EventDetailScreenFragment fragment = new EventDetailScreenFragment();
@@ -719,6 +719,11 @@ public class EventDetailScreenFragment extends Fragment {
         });
     }
 
+    /**
+     * Gets the event from the database
+     * @param callback A callback for when the asynchronous operation of getting back the event is
+     *                 done
+     */
     private void getEvent(OnCompleteListener<Event> callback) {
         Database db = Database.getDatabase();
 

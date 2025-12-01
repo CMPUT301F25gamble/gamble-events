@@ -86,6 +86,9 @@ public class AdminNotificationsFragment extends Fragment {
         });
     }
 
+    /**
+     * Refreshes the currently displayed list of notifications
+     */
     private void updateNotificationList() {
         notificationTitlesList.clear();
         notificationIdList.clear();

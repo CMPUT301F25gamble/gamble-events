@@ -533,6 +533,7 @@ public class EventDetailScreenFragment extends Fragment {
         }
     }
 
+
     /**
      * Shows Generate QR Code button in event details screen if current user is the organizer of the event
      */

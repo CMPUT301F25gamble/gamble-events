@@ -870,7 +870,7 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             // Enable button
             binding.navigationBarButton.setEnabled(true);
-            changeWaitlistBtn(false); // or update button based on user's waitlist status
+//            changeWaitlistBtn(false); // or update button based on user's waitlist status
         }
     }
 

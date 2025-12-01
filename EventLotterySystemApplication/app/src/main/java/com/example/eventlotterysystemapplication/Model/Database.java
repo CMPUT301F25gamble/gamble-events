@@ -134,12 +134,11 @@ public class Database {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
                 List<User> users = querySnapshot.toObjects(User.class);
-                if (users.size() == 1) {
+                if (users.size() >= 1) {
                     tcs.setResult(users.get(0));
                 } else {
                     Log.e("Database", "More than one user with same device");
-                    //tcs.setException(new IllegalStateException("More than one user with same device"));
-                    tcs.setResult(users.get(0));
+                    tcs.setException(new IllegalStateException("More than one user with same device"));
                 }
             } else {
                 Log.e("Database", task.getException().toString());

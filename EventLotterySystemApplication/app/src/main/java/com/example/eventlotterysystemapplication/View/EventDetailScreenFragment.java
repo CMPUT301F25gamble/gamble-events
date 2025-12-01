@@ -396,7 +396,6 @@ public class EventDetailScreenFragment extends Fragment {
             // Optimistically load waitlist button as joined already
             boolean error = validateEventForNewEntrant(v.getContext());
             if (!error) {
-                changeWaitlistBtn(true);
                 //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
                 //Get geo entrantLocation
                 Context context = v.getContext();
@@ -869,8 +868,8 @@ public class EventDetailScreenFragment extends Fragment {
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
         } else {
             // Enable button
-            binding.navigationBarButton.setEnabled(true);
-            changeWaitlistBtn(false); // or update button based on user's waitlist status
+           // binding.navigationBarButton.setEnabled(true);
+            //changeWaitlistBtn(false); // or update button based on user's waitlist status
         }
     }
 

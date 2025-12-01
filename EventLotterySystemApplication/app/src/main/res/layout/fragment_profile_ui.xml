@@ -128,24 +128,25 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- All Buttons -->
+
     <EditText
         android:id="@+id/profile_phone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_list_item"
         android:drawableStart="@drawable/edit_icon"
         android:padding="8dp"
         android:textColor="@color/black"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_button_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/profile_button_container" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- All Buttons -->
     <ImageButton
         android:id="@+id/admin_profile_back_button"
         android:layout_width="wrap_content"
@@ -161,53 +162,55 @@
 
     <LinearLayout
         android:id="@+id/profile_button_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="96dp"
         android:orientation="vertical"
         android:paddingTop="10dp"
         android:paddingBottom="2dp"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/update_profile_button"
             android:layout_width="170dp"
             android:layout_height="70dp"
-            android:backgroundTint="@color/grey"
-            android:text="@string/update_profile_button"
-            android:elevation="8dp"
-            android:translationZ="8dp"
-            android:textSize="16dp"
             android:layout_gravity="center_horizontal"
-            android:textStyle="bold" />
+            android:backgroundTint="@color/grey"
+            android:elevation="8dp"
+            android:text="@string/update_profile_button"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:translationZ="8dp" />
 
         <Button
             android:id="@+id/user_profile_events"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="User's Events"
             android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/blue" />
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/blue"
+            android:text="User's Events" />
 
         <Button
             android:id="@+id/profile_history_button"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/profile_history_button"
-            android:backgroundTint="@color/blue" />
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/blue"
+            android:text="@string/profile_history_button" />
 
         <Button
             android:id="@+id/delete_profile_button"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/delete_profile_button_text"
-            android:backgroundTint="@color/important_field" />
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/important_field"
+            android:text="@string/delete_profile_button_text" />
     </LinearLayout>
 
 

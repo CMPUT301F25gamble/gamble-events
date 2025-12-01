@@ -62,7 +62,7 @@ public class SettingsUIFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Log.d("SettingsUIFragment", "AdminSession: " + AdminSession.getAdminMode());
         // Get buttons
         Button notificationSettingsButton = binding.notificationSettingsButton;
         Button tosButton = binding.tosButton;
@@ -100,8 +100,6 @@ public class SettingsUIFragment extends Fragment {
                 } else {
                     adminViewButton.setText("Switch to User View");
                     // Reset admin mode and user ID
-                    AdminSession.setAdminMode(false);
-                    AdminSession.setSelectedUserId(null);
 
                     // Hide notification settings and important information button in admin mode
                     notificationSettingsButton.setVisibility(View.GONE);
@@ -126,6 +124,9 @@ public class SettingsUIFragment extends Fragment {
                 startActivity(goToAdminViewIntent);
                 getActivity().finish();
             } else {
+                // Set admin view to false and then go back to content activity
+                AdminSession.setAdminMode(false);
+                AdminSession.setSelectedUserId(null);
                 Intent goToEntrantViewIntent = new Intent(requireContext(), ContentActivity.class);
                 startActivity(goToEntrantViewIntent);
                 getActivity().finish();

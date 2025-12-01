@@ -16,6 +16,10 @@ import com.example.eventlotterysystemapplication.R;
 import com.example.eventlotterysystemapplication.databinding.ActivityAdminBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+/**
+ *  AdminActivity hosts the admin section
+ *  Sets up the admin navigation bar
+ * */
 public class AdminActivity extends AppCompatActivity {
 
     private ActivityAdminBinding binding;

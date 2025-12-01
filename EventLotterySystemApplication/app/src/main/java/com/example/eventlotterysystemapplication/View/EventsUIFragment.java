@@ -147,7 +147,7 @@ public class EventsUIFragment extends Fragment {
             eventId = null; // prevents back button from not being usable since it constantly navigates to event detail screen otherwise
         }
 
-        if (isAdminMode) {
+        if (requireActivity() instanceof AdminActivity) {
             // Show loading and hide content until data is fetched from db
             binding.loadingEventUi.setVisibility(View.VISIBLE);
             binding.contentGroupEventsUi.setVisibility(View.GONE);

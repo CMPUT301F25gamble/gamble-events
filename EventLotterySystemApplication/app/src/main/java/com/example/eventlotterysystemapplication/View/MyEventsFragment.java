@@ -16,6 +16,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventlotterysystemapplication.AdminSession;
+import com.example.eventlotterysystemapplication.Controller.ContentActivity;
 import com.example.eventlotterysystemapplication.Controller.EditEventActivity;
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.EntrantStatus;
@@ -222,11 +223,18 @@ public class MyEventsFragment extends Fragment {
                 NavHostFragment.findNavController(MyEventsFragment.this)
                         .navigate(R.id.action_myEventsFragment_to_eventDetailScreenFragment, args);
             } else {
-                // Launch RegisterActivity as a fresh task and clear the old one
-                Intent intent = new Intent(requireContext(), EditEventActivity.class);
-                intent.putExtra("eventID", eventId);
-                intent.putExtra("isOwnedEvent", true);
-                startActivity(intent);
+                if (!registeredEvents) {
+                    // Launch RegisterActivity as a fresh task and clear the old one
+                    Intent intent = new Intent(requireContext(), EditEventActivity.class);
+                    intent.putExtra("eventID", eventId);
+                    intent.putExtra("isOwnedEvent", true);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(requireContext(), ContentActivity.class);
+                    intent.putExtra("eventID", eventId);
+                    intent.putExtra("isOwnedEvent", false);
+                    startActivity(intent);
+                }
             }
         });
     }

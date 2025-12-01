@@ -396,7 +396,7 @@ public class EventDetailScreenFragment extends Fragment {
             // Optimistically load waitlist button as joined already
             boolean error = validateEventForNewEntrant(v.getContext());
             if (!error) {
-                changeWaitlistBtn(true);
+//                changeWaitlistBtn(true);
                 //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
                 //Get geo entrantLocation
                 Context context = v.getContext();

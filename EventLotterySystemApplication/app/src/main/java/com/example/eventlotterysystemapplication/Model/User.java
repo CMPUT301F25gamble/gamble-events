@@ -35,6 +35,7 @@ public class User{
      * @param email The email of the user
      * @param phoneNumber The phone number of the user
      * @param deviceID The deviceID of the user
+     * @param deviceToken The Firebase Messaging Service device token used to send notifications
      */
     public User(String name, String email, String phoneNumber , String deviceID, String deviceToken) {
         this.name = name;
@@ -47,6 +48,19 @@ public class User{
         this.optOutSpecificNotifications = false;
         this.optOutAdminNotifications = false;
     }
+    /**
+     * A constructor for the User object that contains the attributes that can be set as we create
+     * the user object
+     * @param name The name of the user
+     * @param email The email of the user
+     * @param phoneNumber The phone number of the user
+     * @param deviceID The deviceID of the user
+     * @param deviceToken The Firebase Messaging Service device token used to send notifications
+     * @param optOutLotteryStatusNotifications Whether user would like to receive lottery status notification or not
+     * @param optOutSpecificNotifications Whether user would like to receive specific notification or not
+     * @param optOutAdminNotifications Whether user would like to receive admin notification or not
+     */
+
 
     public User(String name, String email, String phoneNumber , String deviceID, String deviceToken,
                 boolean optOutLotteryStatusNotifications, boolean optOutSpecificNotifications,
@@ -141,10 +155,18 @@ public class User{
         this.deviceID = deviceID;
     }
 
+    /**
+     * Gets the deviceToken of the user
+     * @return A string of the deviceToken
+     */
     public String getDeviceToken() {
         return deviceToken;
     }
 
+    /**
+     * Sets the deviceToken of the user
+     * @param deviceToken A string of the deviceToken
+     */
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
     }
@@ -165,17 +187,37 @@ public class User{
         this.admin = admin;
     }
 
+    /**
+     * Getter for optOutLotteryStatusNotifications
+     * @return True if we opt out, false otherwise
+     */
+
     public boolean isOptOutLotteryStatusNotifications() {
         return optOutLotteryStatusNotifications;
     }
+
+    /**
+     * Setter for optOutLotteryStatusNotifications
+     * @param optOutLotteryStatusNotifications True if we opt out, false otherwise
+     */
 
     public void setOptOutLotteryStatusNotifications(boolean optOutLotteryStatusNotifications) {
         this.optOutLotteryStatusNotifications = optOutLotteryStatusNotifications;
     }
 
+    /**
+     * Getter for optOutSpecificNotifications
+     * @return True if we opt out, false otherwise
+     */
+
     public boolean isOptOutSpecificNotifications() {
         return optOutSpecificNotifications;
     }
+
+    /**
+     * Setter for optOutSpecificNotifications
+     * @param optOutSpecificNotifications True if we opt out, false otherwise
+     */
 
     public void setOptOutSpecificNotifications(boolean optOutSpecificNotifications) {
         this.optOutSpecificNotifications = optOutSpecificNotifications;
@@ -225,10 +267,19 @@ public class User{
         });
     }
 
+    /**
+     * Getter for optOutSpecificNotifications
+     * @return True if we opt out, false otherwise
+     */
+
     public boolean isOptOutAdminNotifications() {
         return optOutAdminNotifications;
     }
 
+    /**
+     * Setter for optOutLotteryStatusNotifications
+     * @param optOutAdminNotifications True if we opt out, false otherwise
+     */
     public void setOptOutAdminNotifications(boolean optOutAdminNotifications) {
         this.optOutAdminNotifications = optOutAdminNotifications;
     }

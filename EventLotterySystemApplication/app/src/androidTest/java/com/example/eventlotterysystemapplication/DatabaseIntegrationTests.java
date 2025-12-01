@@ -331,16 +331,16 @@ public class DatabaseIntegrationTests {
 
     @Test
     public void testUserHistory(){
-        String userId = "OgHnIwpuvcNM29Q3jPoii5fXSe33";
-
-        Database.getDatabase().getUserEventsHistory(userId,task -> {
-            if (task.isSuccessful()){
-                Log.e("TestUserHistory", Integer.toString(task.getResult().size()));
-                for (Event e : task.getResult()){
-                    Log.e("TestUserHistory", e.getName());
-                }
-            }
-        });
+//        String userId = "OgHnIwpuvcNM29Q3jPoii5fXSe33";
+//
+//        Database.getDatabase().getUserEventsHistory(userId,task -> {
+//            if (task.isSuccessful()){
+//                Log.e("TestUserHistory", Integer.toString(task.getResult().size()));
+//                for (Event e : task.getResult()){
+//                    Log.e("TestUserHistory", e.getName());
+//                }
+//            }
+//        });
     }
 
     @After

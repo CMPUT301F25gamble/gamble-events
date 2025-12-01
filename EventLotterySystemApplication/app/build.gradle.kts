@@ -86,6 +86,4 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.android.gms:play-services-maps:19.2.0")
 
-    // Javadocs, should leave commented out
-//    implementation(files("D:/Android/Sdk/platforms/android-36/android.jar"))
 }

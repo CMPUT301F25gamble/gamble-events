@@ -92,7 +92,7 @@
         android:padding="8dp"
         tools:text="@string/event_detail_screen_name_text"
         android:textAlignment="viewStart"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
     <ImageView
         android:id="@+id/eventImage"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/event_detail_image_text"
         android:background="@drawable/rounded_list_item"

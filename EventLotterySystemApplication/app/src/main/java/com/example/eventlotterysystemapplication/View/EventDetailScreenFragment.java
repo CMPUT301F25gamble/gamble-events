@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -191,7 +192,6 @@ public class EventDetailScreenFragment extends Fragment {
                 changeWaitlistBtn(entrant != null &&
                         entrant.getStatus() == EntrantStatus.WAITING);
 
-
                 binding.loadingEventDetailScreen.setVisibility(View.GONE);
                 if (isAdminMode) {
                     binding.contentGroupAdminEventsDetailScreen.setVisibility(View.VISIBLE);
@@ -206,49 +206,55 @@ public class EventDetailScreenFragment extends Fragment {
                     // Show join waitlist/edit event button
                     binding.contentGroupEventsDetailScreen.setVisibility(View.VISIBLE);
                     showGenerateQRCodeButton();
+                    if(!isOwnedEvent){
+                        if(entrant!=null) { // i.e. entrant is already registered with event
+                            // If user == waiting && event registration is ended, hide join waitlist and display registration closed
+                            if (entrant.getStatus() == EntrantStatus.WAITING) {
+                                LocalDateTime timeNow = LocalDateTime.now();
+                                LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                                if (timeNow.isAfter(registrationEndTime)) {
+                                    binding.navigationBarButton.setVisibility(View.GONE);
+                                    // Change registration closed to not selected image
+                                    binding.registrationClosedText.setImageResource(R.drawable.not_selected);
+                                    binding.registrationClosedText.setVisibility(View.VISIBLE);
+                                }
+                            }
 
-                    // If user == waiting && event registration is ended, hide join waitlist and display registration closed
-                    if (entrant != null && entrant.getStatus() == EntrantStatus.WAITING) {
-                        LocalDateTime timeNow = LocalDateTime.now();
-                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
-                        if (timeNow.isAfter(registrationEndTime)) {
-                            binding.navigationBarButton.setVisibility(View.GONE);
-
-                            // Change registration closed to not selected image
-                            binding.registrationClosedText.setImageResource(R.drawable.not_selected);
-                            binding.registrationClosedText.setVisibility(View.VISIBLE);
+                            // If the user is in the chosen list, show the chosen button
+                            else if (entrant.getStatus() == EntrantStatus.CHOSEN) {
+                                LocalDateTime timeNow = LocalDateTime.now();
+                                LocalDateTime acceptanceDeadline = event.getInvitationAcceptanceDeadline();
+                                if (timeNow.isAfter(acceptanceDeadline)) {
+                                    //entrant.setStatus(EntrantStatus.CANCELLED);
+                                    event.addEntrantToCancelledList(entrant);
+                                    showFinalizedOrCancelledText(entrant.getStatus());
+                                    updateEventDB(event,task2-> {
+                                    });
+                                }else{
+                                    showChosenEntrantButtons(entrant.getStatus());
+                                }
+                            }
+                            // If user status == finalized, display finalized text
+                            else {
+                                showFinalizedOrCancelledText(entrant.getStatus());
+                            }
+                        }else{ //if entrant is null i.e. first time visiting the event - check for reg end time
+                            // Check if registration has ended
+                            LocalDateTime timeNow =  LocalDateTime.now();
+                            LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+                            if (timeNow.isAfter(registrationEndTime) && !isOwnedEvent) {
+                                binding.registrationClosedText.setVisibility(View.VISIBLE);
+                                binding.navigationBarButton.setVisibility(View.GONE);
+                            }else{
+                                int waitListCapacity = event.getMaxWaitingListCapacity();
+                                if(waitListCapacity > 0 &&  event.getEntrantWaitingList().size() >= waitListCapacity) {
+                                    binding.navigationBarButton.setText("Capacity Full");
+                                    binding.navigationBarButton.setBackgroundColor(Color.GRAY);
+                                    // Change registration closed to not selected image
+                                    binding.navigationBarButton.setEnabled(false);
+                                }
+                            }
                         }
-                    }
-
-                    // If the user is in the chosen list, show the chosen button
-                    if (entrant != null && entrant.getStatus() == EntrantStatus.CHOSEN) {
-                        showChosenEntrantButtons(entrant.getStatus());
-
-                        // Check if registration has ended
-                        LocalDateTime timeNow = LocalDateTime.now();
-                        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
-                        if (timeNow.isAfter(registrationEndTime)) {
-                            binding.registrationClosedText.setVisibility(View.VISIBLE);
-                            binding.navigationBarButton.setVisibility(View.GONE);
-                            binding.ChosenEntrantButtonContainer.setVisibility(View.GONE);
-                            binding.navigationBarButton.setVisibility(View.GONE);
-                        }
-                    }
-                    // If user status == finalized, display finalized text
-                    else if (entrant != null && entrant.getStatus() == EntrantStatus.FINALIZED) {
-                        showFinalizedOrCancelledText(entrant.getStatus());
-                    }
-                    // If user status == cancelled, display cancelled text
-                    else if (entrant != null && entrant.getStatus() == EntrantStatus.CANCELLED) {
-                        showFinalizedOrCancelledText(entrant.getStatus());
-                    }
-
-                    // Check if registration has ended
-                    LocalDateTime timeNow =  LocalDateTime.now();
-                    LocalDateTime registrationEndTime = event.getRegistrationEndTime();
-                    if (timeNow.isAfter(registrationEndTime) && !isOwnedEvent) {
-                        binding.registrationClosedText.setVisibility(View.VISIBLE);
-                        binding.navigationBarButton.setVisibility(View.GONE);
                     }
                 }
             } else {
@@ -267,16 +273,32 @@ public class EventDetailScreenFragment extends Fragment {
         binding.acceptChosenEntrantButton.setOnClickListener(v -> {
             // Accept invitation
 //            entrant.setStatus(EntrantStatus.FINALIZED);
-
-            event.addEntrantToFinalizedList(entrant);
-            binding.contentGroupChosenEntrant.setVisibility(View.GONE);
-
-            // Display status on screen
-            showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
-
-            // Update DB
-            updateEventDB(event, task -> {});
+            Database.getDatabase().getEvent(eventId, taskEvent -> {
+                if (taskEvent.isSuccessful()) {
+                    event = taskEvent.getResult();
+                    bindEvent(event);
+                    LocalDateTime timeNow = LocalDateTime.now();
+                    LocalDateTime acceptanceDeadline = event.getInvitationAcceptanceDeadline();
+                    if (timeNow.isAfter(acceptanceDeadline)) {
+                        //entrant.setStatus(EntrantStatus.CANCELLED);
+                        event.addEntrantToCancelledList(entrant);
+                        showFinalizedOrCancelledText(entrant.getStatus());
+                        updateEventDB(event, task2 -> {
+                        });
+                        Toast.makeText(v.getContext(),"Sorry, the invitation acceptance period has been ended.",Toast.LENGTH_LONG);
+                    }else{
+                        event.addEntrantToFinalizedList(entrant);
+                        binding.contentGroupChosenEntrant.setVisibility(View.GONE);
+                        // Display status on screen
+                        showFinalizedOrCancelledText(EntrantStatus.FINALIZED);
+                        // Update DB
+                        updateEventDB(event, task -> {
+                        });
+                    }
+                }
+            });
         });
+
         // Decline Button
         binding.declineChosenEntrantButton.setOnClickListener(v -> {
             // Decline invitation
@@ -339,16 +361,18 @@ public class EventDetailScreenFragment extends Fragment {
             binding.navigationBarButton.setEnabled(false);
             binding.navigationBarButton.setText("Wait...");
             // Use local event if there is one already
-            if (event != null) {
-                joinOrLeaveWaitlist(event, v);
-                return;
-            } else {
-                // Failed to load event; hide loading and show error
-                binding.loadingEventDetailScreen.setVisibility(View.GONE);
-                binding.navigationBarButton.setEnabled(true);
-                Toast.makeText(requireContext(), "Failed to load event",
-                        Toast.LENGTH_LONG).show();
-            }
+            Database.getDatabase().getEvent(eventId, taskEvent -> {
+                if (taskEvent.isSuccessful()) {
+                    event = taskEvent.getResult();
+                    bindEvent(event);
+                    joinOrLeaveWaitlist(event, v);
+                } else {
+                    // Failed to load event; hide loading and show error
+                    binding.loadingEventDetailScreen.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Failed to load event",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
         });
     }
 
@@ -370,65 +394,69 @@ public class EventDetailScreenFragment extends Fragment {
         if (entrant == null) {
             // User is not in waiting list, so join the waitlist
             // Optimistically load waitlist button as joined already
-            //changeWaitlistBtn(true);
-            //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
-            //Get geo entrantLocation
-            Context context = v.getContext();
-            //If Event Geo location requirement is off or device is not allowing geo location, save null as location
-            if (!event.isGeolocationRequirement()) {
-                Entrant newEntrant = new Entrant();
-                newEntrant.setLocation(null);
-                newEntrant.setStatus(EntrantStatus.WAITING);
-                newEntrant.setUser(currentUser);
-                event.addToEntrantList(newEntrant);
-                updateEventDB(event, task -> {
-                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                        changeWaitlistBtn(false);
-                    Log.d("EventDetailScreen", "User successfully joined waiting list");
-                        //return;
-                    }else{
-                        changeWaitlistBtn(true);
-                    }
-                });
-            } else {
-                if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-                    FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
-                    // Make entrant effectively final by using a final variable
-                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
-                            .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
-                                EntrantLocation entrantLocation = null;
-                                if (location != null) {
-                                    entrantLocation = new EntrantLocation();
-                                    entrantLocation.setLatitude(location.getLatitude());
-                                    entrantLocation.setLongitude(location.getLongitude());
-                                }
-                                Entrant newEntrant = new Entrant();
-                                newEntrant.setLocation(entrantLocation);
-                                newEntrant.setStatus(EntrantStatus.WAITING);
-                                newEntrant.setUser(currentUser);
-                                event.addToEntrantList(newEntrant);
-                                updateEventDB(event, task -> {
-                                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
-                                    if (!task.isSuccessful()) {
-                                        Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                                        changeWaitlistBtn(false);
-                                       // return;
-                                    }else{
-                                        changeWaitlistBtn(true);
-                                    }
-                                    Log.d("EventDetailScreen", "User successfully joined waiting list");
-                                });
-                            });
+            boolean error = validateEventForNewEntrant(v.getContext());
+            if (!error) {
+                changeWaitlistBtn(true);
+                //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
+                //Get geo entrantLocation
+                Context context = v.getContext();
+                //If Event Geo location requirement is off or device is not allowing geo location, save null as location
+                if (!event.isGeolocationRequirement()) {
+                    Entrant newEntrant = new Entrant();
+                    newEntrant.setLocation(null);
+                    newEntrant.setStatus(EntrantStatus.WAITING);
+                    newEntrant.setUser(currentUser);
+                    event.addToEntrantList(newEntrant);
+                    updateEventDB(event, task -> {
+                        //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                            changeWaitlistBtn(false);
+                            Log.d("EventDetailScreen", "User successfully joined waiting list");
+                            Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                            //return;
+                        }else{
+                            changeWaitlistBtn(true);
+                        }
+                    });
                 } else {
-                    //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
-                    changeWaitlistBtn(false);
-                    Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
-                            Toast.LENGTH_LONG).show();
+                    if ((ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(v.getContext());
+                        // Make entrant effectively final by using a final variable
+                        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null)
+                                .addOnSuccessListener(ContextCompat.getMainExecutor(context), location -> {
+                                    EntrantLocation entrantLocation = null;
+                                    if (location != null) {
+                                        entrantLocation = new EntrantLocation();
+                                        entrantLocation.setLatitude(location.getLatitude());
+                                        entrantLocation.setLongitude(location.getLongitude());
+                                    }
+                                    Entrant newEntrant = new Entrant();
+                                    newEntrant.setLocation(entrantLocation);
+                                    newEntrant.setStatus(EntrantStatus.WAITING);
+                                    newEntrant.setUser(currentUser);
+                                    event.addToEntrantList(newEntrant);
+                                    updateEventDB(event, task -> {
+                                        //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                                            changeWaitlistBtn(false);
+                                            // return;
+                                        }else{
+                                            changeWaitlistBtn(true);
+                                        }
+                                        Log.d("EventDetailScreen", "User successfully joined waiting list");
+                                    });
+                                });
+                    } else {
+                        //binding.navigationBarButton.setEnabled(true); // re-enable waitlist button
+                        changeWaitlistBtn(false);
+                        Toast.makeText(requireContext(), "Geolocation is required, enable geolocation in phone settings",
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-        } else {
+        } else { //if entrant is not null
             // User is in waiting list, so leave the waitlist
             event.removeEntrant(entrant);
             updateEventDB(event, task -> {
@@ -438,9 +466,9 @@ public class EventDetailScreenFragment extends Fragment {
                     changeWaitlistBtn(true);
                     // return;
                 }else{
-            changeWaitlistBtn(false);
+                    changeWaitlistBtn(false);
                 }
-            Log.d("EventDetailScreen", "User successfully left waiting list");
+                Log.d("EventDetailScreen", "User successfully left waiting list");
             });
         }
     }
@@ -731,6 +759,7 @@ public class EventDetailScreenFragment extends Fragment {
             Log.d(TAG, "Fetching event from DB...");
             db.getEvent(eventId, task ->  {
                 if (task.isSuccessful()) {
+                    event = task.getResult();
                     callback.onComplete(task);
                 } else {
                     Log.e(TAG, "Error fetching event from database");
@@ -808,7 +837,7 @@ public class EventDetailScreenFragment extends Fragment {
                     .into(binding.eventImage);
         } else {
             // Set the image template to default image
-             binding.eventImage.setImageResource(R.drawable.image_template);
+            binding.eventImage.setImageResource(R.drawable.image_template);
         }
 
         // Debugging
@@ -841,5 +870,34 @@ public class EventDetailScreenFragment extends Fragment {
             binding.navigationBarButton.setEnabled(true);
             changeWaitlistBtn(false); // or update button based on user's waitlist status
         }
+    }
+
+    public boolean validateEventForNewEntrant(Context context) {
+
+        LocalDateTime timeNow = LocalDateTime.now();
+        LocalDateTime registrationEndTime = event.getRegistrationEndTime();
+        String errorMessage = "";
+        boolean error = false;
+        if (timeNow.isAfter(registrationEndTime)) {
+            error = true;
+            binding.registrationClosedText.setVisibility(View.VISIBLE);
+            binding.navigationBarButton.setVisibility(View.GONE);
+            errorMessage = "Sorry, registration time has been ended.";
+        }
+        if (!error) {
+            int waitListCapacity = event.getMaxWaitingListCapacity();
+            if (waitListCapacity > 0 && event.getEntrantWaitingList().size() >= waitListCapacity) {
+                error=true;
+                binding.navigationBarButton.setText("Capacity Full");
+                binding.navigationBarButton.setBackgroundColor(Color.GRAY);
+                binding.navigationBarButton.setEnabled(false);
+                errorMessage = "Sorry, waiting list capacity is full.";
+            }
+        }
+        if (error) {
+            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG);
+        }
+
+        return error;
     }
 }

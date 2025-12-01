@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="32dp"
+    android:paddingBottom="56dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:background="@drawable/popup_background">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dialogEventDetailsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="12dp"
+        android:gravity="center"
+        android:text="Events Details"
+        android:textStyle="bold"
+        android:textSize="24sp" />
+
+    <!-- User's name -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogEventLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="Location: "
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/enterLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="TEMP LOCATION"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- User's Email -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogEventPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="Event Period: "
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/enterEventPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="blank to blank"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- User's Phone Number -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogRegistrationPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Registration Period: " />
+
+        <TextView
+            android:id="@+id/enterRegistrationPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="blank to blank"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogAcceptBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Accept invitation by: " />
+
+        <TextView
+            android:id="@+id/enterAcceptBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="blank"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogEntrantsInWaitlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Entrants in Waitlist: " />
+
+        <TextView
+            android:id="@+id/enterEntrantsInWaitlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="#"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialogEventCapacity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Event Capacity: " />
+
+        <TextView
+            android:id="@+id/enterEventCapacity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="#"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Back button  -->
+    <Button
+        android:id="@+id/dialogBackButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/app_grey"
+        android:text="@string/back_button_text" />
+
+</LinearLayout>

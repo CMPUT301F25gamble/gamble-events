@@ -567,9 +567,11 @@ public class EventDetailScreenFragment extends Fragment {
                 case "organizer":
                     // Fetch Organizer by organizerID
                     Database.getDatabase().getUser(organizerID, taskOrganizer -> {
+                        if(taskOrganizer.isSuccessful()) {
                         User organizer = taskOrganizer.getResult();
                         // Admin confirms remove organizer from DB
                         Admin.removeOrganizer(organizer);
+                        }
                     });
                     // Show toast that organizer has been removed
                     Toast.makeText(requireContext(), "Organizer removed",

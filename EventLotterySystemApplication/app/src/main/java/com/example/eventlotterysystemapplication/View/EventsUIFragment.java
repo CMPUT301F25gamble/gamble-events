@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -381,6 +382,7 @@ public class EventsUIFragment extends Fragment {
 
                                     // After adding all events, update filtered list and UI
                                     if (eventList.size() == qs.getDocuments().size()) {
+                                        eventList.sort(Comparator.comparing(Event::getRegistrationEndTime).reversed());
                                         filteredEventList.clear();
                                         filteredEventList.addAll(eventList);
                                         eventAdapter.notifyDataSetChanged();
@@ -422,6 +424,7 @@ public class EventsUIFragment extends Fragment {
 
             if (task.isSuccessful()) {
                 List<Event> availableEvents = task.getResult();
+                availableEvents.sort(Comparator.comparing(Event::getRegistrationEndTime));
                 Log.d("Database", String.valueOf(availableEvents.size()));
                 eventList.clear();
                 if (availableEvents != null) {

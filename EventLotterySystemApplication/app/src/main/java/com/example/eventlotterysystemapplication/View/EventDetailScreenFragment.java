@@ -268,6 +268,63 @@ public class EventDetailScreenFragment extends Fragment {
             }
         });
 
+        // On click show event details button
+        binding.infoContainer.setOnClickListener(v -> {
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_event_detail_screen, null);
+
+            AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                    .create();
+
+            // Show rounded corners
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+            // FORMAT TIMES (OLD LOGIC)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+            String formattedEventStartTime = event.getEventStartTime()==null ? "" : event.getEventStartTime().format(formatter);
+            String formattedEventEndTime   = event.getEventEndTime()==null ? "" : event.getEventEndTime().format(formatter);
+            String formattedRegStartTime   = event.getRegistrationStartTime()==null ? "" : event.getRegistrationStartTime().format(formatter);
+            String formattedRegEndTime     = event.getRegistrationEndTime()==null ? "" : event.getRegistrationEndTime().format(formatter);
+            String formattedInvAccTime     = event.getInvitationAcceptanceDeadline()==null ? "" : event.getInvitationAcceptanceDeadline().format(formatter);
+
+            // BIND DIALOG VIEWS
+            TextView locationText     = dialogView.findViewById(R.id.enterLocation);
+            TextView eventPeriodText  = dialogView.findViewById(R.id.enterEventPeriod);
+            TextView regPeriodText    = dialogView.findViewById(R.id.enterRegistrationPeriod);
+            TextView acceptByText     = dialogView.findViewById(R.id.enterAcceptBy);
+            TextView waitlistText     = dialogView.findViewById(R.id.enterEntrantsInWaitlist);
+            TextView capacityText     = dialogView.findViewById(R.id.enterEventCapacity);
+
+            // Fetch waitlist, capacity, and chosen capacity
+            int eventCurrentWaitlist = event.getEntrantWaitingList().size();
+            int eventWaitlistCapacity = event.getMaxWaitingListCapacity();
+            int eventChosenCapacity = event.getMaxFinalListCapacity();
+
+            //  SET VALUES (OLD LOGIC)
+            locationText.setText(event.getPlace());
+            eventPeriodText.setText(formattedEventStartTime + " to " + formattedEventEndTime);
+            regPeriodText.setText(formattedRegStartTime + " to " + formattedRegEndTime);
+            acceptByText.setText(formattedInvAccTime);
+
+            if (eventWaitlistCapacity <= 0) {
+                waitlistText.setText(String.valueOf(eventCurrentWaitlist));
+            } else {
+                waitlistText.setText(eventCurrentWaitlist + "/" + eventWaitlistCapacity);
+            }
+
+            capacityText.setText(String.valueOf(eventChosenCapacity));
+
+            //  BACK BUTTON
+            dialogView.findViewById(R.id.dialogBackButton).setOnClickListener(view2 -> {
+                dialog.dismiss();
+            });
+
+            // Show dialog
+            dialog.show();
+        });
+
         // Chosen Entrant Buttons //
         // Accept Button
         binding.acceptChosenEntrantButton.setOnClickListener(v -> {
@@ -787,9 +844,6 @@ public class EventDetailScreenFragment extends Fragment {
         String eventName = event.getName();
         String eventDesc = event.getDescription();
         String eventLoc = event.getPlace();
-        int eventCurrentWaitlist = event.getEntrantWaitingList().size();
-        int eventWaitlistCapacity = event.getMaxWaitingListCapacity();
-        int eventChosenCapacity = event.getMaxFinalListCapacity();
 
         // Error Checking for null name, desc, and location. (Don't think we need, may remove later)
         if (eventName == null || eventDesc == null || eventLoc == null) {
@@ -799,7 +853,6 @@ public class EventDetailScreenFragment extends Fragment {
         // Set UI event name, description, and location
         binding.eventNameText.setText(eventName);
         binding.eventDetailsDescText.setText(eventDesc);
-        binding.eventLocationText.setText(eventLoc);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         // format times
@@ -814,18 +867,6 @@ public class EventDetailScreenFragment extends Fragment {
             Toast.makeText(requireContext(), "Missing event registration time details", Toast.LENGTH_LONG).show();
             return;
         }
-        // set periods
-        binding.eventPeriodText.setText(formattedEventStartTime + " to " + formattedEventEndTime);
-        binding.eventRegPeriodText.setText(formattedRegStartTime + " to " + formattedRegEndTime);
-        binding.eventInvitationDLText.setText(formattedInvAccTime);
-
-        // set capacities
-        if (eventWaitlistCapacity <= 0) {
-            binding.waitlistText.setText(String.valueOf(eventCurrentWaitlist));
-        } else {
-            binding.waitlistText.setText(eventCurrentWaitlist + "/" + eventWaitlistCapacity);
-        }
-        binding.chosenCapText.setText(String.valueOf(eventChosenCapacity));
 
         // Fetch tags from event
         // Get tags

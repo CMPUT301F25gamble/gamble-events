@@ -6,7 +6,17 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+/**
+ * This class is follows the factory method pattern to create all of the notification channels in
+ * one place instead of all over the program, making it really easy to add more notification
+ * channels as needed
+ */
 public class NotificationChannelFactory {
+
+    /**
+     * Creates all of the default notification channels
+     * @param context A context object representing the current state of the system
+     */
     public static void createNotificationChannels(Context context){
         checkAndCreateNotificationChannel(context, "lotteryWinNotification");
         checkAndCreateNotificationChannel(context,"lotteryLoseNotification");
@@ -21,7 +31,7 @@ public class NotificationChannelFactory {
 
     /**
      * In case the notification channel does not already exist, we want to be able to add it to the
-     * list of notification channels
+     * list of notification channels. If it is a default one, we add a description to it
      * @param channelName The notification channel we want to check if already exists
      */
     public static void checkAndCreateNotificationChannel(Context context, String channelName) {
@@ -29,7 +39,7 @@ public class NotificationChannelFactory {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NotificationManager.class);
         NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelName);
 
-        String description;
+        String description = "New channel";
 
         if (channelName.equals("lotteryWinNotification")) {
             description = "This notification channel is used to notify entrants for lottery selection";
@@ -46,7 +56,7 @@ public class NotificationChannelFactory {
             description = "This notification channel is used to notify entrants in the chosen list";
         } else if (channelName.equals("finalizedListNotification")){
             description = "This notification channel is used to notify entrants in the finalized list";
-        } else {
+        } else if (channelName.equals("manualNotification")){
             description = "This notification channel is used to notify entrants who are drawn manually";
         }
 
@@ -61,6 +71,12 @@ public class NotificationChannelFactory {
         }
     }
 
+    /**
+     * We create a new notification channel
+     * @param context A context object representing the current state of the system
+     * @param channelName The name of the notification channel
+     * @param description The description of the notification channel
+     */
     private void createNotificationChannel(Context context, String channelName, String description) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 

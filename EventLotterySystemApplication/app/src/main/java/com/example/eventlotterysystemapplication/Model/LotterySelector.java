@@ -86,11 +86,16 @@ public class LotterySelector {
     public void drawAcceptedUsers(Event event) {
         int finalListCapacity = event.getMaxFinalListCapacity();
         List<Entrant> waitingList = event.getEntrantWaitingList();
+        List<Entrant> chosenList = event.getEntrantChosenList();
+        List<Entrant> cancelledList = event.getEntrantCancelledList();
+        List<Entrant> finalizedList = event.getEntrantFinalizedList();
 
         if (waitingList.size() <= finalListCapacity) {
             // Don't need to draw randomly since under capacity so EVERYONE IS ACCEPTED WOOHOO
             for (Entrant e : waitingList) {
-                event.addEntrantToChosenList(e); // add entrants to chosen list
+                if (event.getEntrantChosenList().size() + event.getEntrantFinalizedList().size() < finalListCapacity) {
+                    event.addEntrantToChosenList(e); // add entrants to chosen list
+                }
             }
 
             EventNotificationManager.notifyInitialLotterySelection(event);
@@ -101,7 +106,9 @@ public class LotterySelector {
             // subList returns a view (a reference) and not a copy
 
             for (Entrant e : waitingList.subList(0, finalListCapacity)) {
-                event.addEntrantToChosenList(e); // add entrants to chosen list
+                if (event.getEntrantChosenList().size() + event.getEntrantFinalizedList().size() < finalListCapacity) {
+                    event.addEntrantToChosenList(e); // add entrants to chosen list
+                }
             }
 
             EventNotificationManager.notifyInitialLotterySelection(event);

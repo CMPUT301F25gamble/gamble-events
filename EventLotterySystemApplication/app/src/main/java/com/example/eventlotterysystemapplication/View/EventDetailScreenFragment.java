@@ -276,6 +276,7 @@ public class EventDetailScreenFragment extends Fragment {
             Database.getDatabase().getEvent(eventId, taskEvent -> {
                 if (taskEvent.isSuccessful()) {
                     event = taskEvent.getResult();
+                    entrant = event.genEntrantIfExists(currentUser);
                     bindEvent(event);
                     LocalDateTime timeNow = LocalDateTime.now();
                     LocalDateTime acceptanceDeadline = event.getInvitationAcceptanceDeadline();
@@ -364,8 +365,9 @@ public class EventDetailScreenFragment extends Fragment {
             Database.getDatabase().getEvent(eventId, taskEvent -> {
                 if (taskEvent.isSuccessful()) {
                     event = taskEvent.getResult();
+                    entrant = event.genEntrantIfExists(currentUser);
                     bindEvent(event);
-                    joinOrLeaveWaitlist(event, v);
+                    joinOrLeaveWaitlist(v);
                 } else {
                     // Failed to load event; hide loading and show error
                     binding.loadingEventDetailScreen.setVisibility(View.GONE);
@@ -383,10 +385,9 @@ public class EventDetailScreenFragment extends Fragment {
 
     /**
      * Joins or leave waitlist function
-     * @param event Event to join/leave waitlist from
      * @param v View to obtain context from
      */
-    private void joinOrLeaveWaitlist(Event event, View v) {
+    private void joinOrLeaveWaitlist(View v) {
         if (getActivity() == null) {
             return; // prevent app from crashing when user spams reloading the fragment
         }
@@ -396,7 +397,6 @@ public class EventDetailScreenFragment extends Fragment {
             // Optimistically load waitlist button as joined already
             boolean error = validateEventForNewEntrant(v.getContext());
             if (!error) {
-                changeWaitlistBtn(true);
                 //binding.navigationBarButton.setEnabled(false); // disable join waitlist button so user can't spam it
                 //Get geo entrantLocation
                 Context context = v.getContext();
@@ -412,11 +412,12 @@ public class EventDetailScreenFragment extends Fragment {
                         if (!task.isSuccessful()) {
                             Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
                             changeWaitlistBtn(false);
-                            Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                        }else{
-                            changeWaitlistBtn(true);
                             Log.d("EventDetailScreen", "User successfully joined waiting list");
+                            Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
+                            //return;
+                        }else{
                             bindEvent(event);
+                            changeWaitlistBtn(true);
                         }
                     });
                 } else {
@@ -443,10 +444,10 @@ public class EventDetailScreenFragment extends Fragment {
                                             changeWaitlistBtn(false);
                                             // return;
                                         }else{
-                                            changeWaitlistBtn(true);
-                                            Log.d("EventDetailScreen", "User successfully joined waiting list");
                                             bindEvent(event);
+                                            changeWaitlistBtn(true);
                                         }
+                                        Log.d("EventDetailScreen", "User successfully joined waiting list");
                                     });
                                 });
                     } else {
@@ -465,9 +466,10 @@ public class EventDetailScreenFragment extends Fragment {
                 if (!task.isSuccessful()) {
                     Toast.makeText(getContext(), "Could not remove waitlist", Toast.LENGTH_SHORT).show();
                     changeWaitlistBtn(true);
+                    // return;
                 }else{
-                    changeWaitlistBtn(false);
                     bindEvent(event);
+                    changeWaitlistBtn(false);
                 }
                 Log.d("EventDetailScreen", "User successfully left waiting list");
             });
@@ -569,9 +571,9 @@ public class EventDetailScreenFragment extends Fragment {
                     // Fetch Organizer by organizerID
                     Database.getDatabase().getUser(organizerID, taskOrganizer -> {
                         if(taskOrganizer.isSuccessful()) {
-                        User organizer = taskOrganizer.getResult();
-                        // Admin confirms remove organizer from DB
-                        Admin.removeOrganizer(organizer);
+                            User organizer = taskOrganizer.getResult();
+                            // Admin confirms remove organizer from DB
+                            Admin.removeOrganizer(organizer);
                         }
                     });
                     // Show toast that organizer has been removed
@@ -763,6 +765,7 @@ public class EventDetailScreenFragment extends Fragment {
             db.getEvent(eventId, task ->  {
                 if (task.isSuccessful()) {
                     event = task.getResult();
+                    entrant = event.genEntrantIfExists(currentUser);
                     callback.onComplete(task);
                 } else {
                     Log.e(TAG, "Error fetching event from database");
@@ -870,9 +873,8 @@ public class EventDetailScreenFragment extends Fragment {
             binding.navigationBarButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
         } else {
             // Enable button
-            binding.navigationBarButton.setEnabled(true);
-            // Update the waitlist button colors and text based on if the user is in the waitlist
-            changeWaitlistBtn(event.getEntrantWaitingList().contains(entrant));
+            // binding.navigationBarButton.setEnabled(true);
+            //changeWaitlistBtn(false); // or update button based on user's waitlist status
         }
     }
 

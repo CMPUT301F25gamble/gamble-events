@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                                         String storedToken = currentUser.getDeviceToken();
                                         if (storedToken == null || !storedToken.equals(token)) {
                                             currentUser.setDeviceToken(token);
+                                            Log.d("FirebaseToken", currentUser.getDeviceToken());
                                             database.modifyUser(currentUser, task2 -> {
                                                 if (!task2.isSuccessful()) {
                                                     Log.e("Database", "Cannot modify user while updating token");

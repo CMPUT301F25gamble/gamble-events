@@ -2,6 +2,10 @@ package com.example.eventlotterysystemapplication.Model;
 
 import java.util.HashMap;
 
+/**
+ * EntrantListLocationTracking extends EntrantList to track users along with their
+ * joining latitude and longitude for waiting, chosen, cancelled, and finalized lists.
+ */
 public class EntrantListLocationTracking extends EntrantList{
     private HashMap<User, Double> joiningLatitude;
     private HashMap<User, Double> joiningLongitude;

@@ -40,8 +40,10 @@ public class ViewNotificationFragment extends Fragment {
     private final Database database = Database.getDatabase();
     private final String TAG = this.getClass().getSimpleName();
 
+    /**
+     * Required empty public constructor
+     */
     public ViewNotificationFragment() {
-        // Required empty public constructor
     }
 
     public static ViewNotificationFragment newInstance() {

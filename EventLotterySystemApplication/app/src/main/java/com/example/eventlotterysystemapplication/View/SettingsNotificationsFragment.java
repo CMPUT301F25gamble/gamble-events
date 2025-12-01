@@ -32,8 +32,10 @@ public class SettingsNotificationsFragment extends Fragment {
     private FragmentSettingsNotificationsBinding binding;
     private Database database = Database.getDatabase();
 
+    /**
+     * Required empty public constructor
+     */
     public SettingsNotificationsFragment() {
-        // Required empty public constructor
     }
 
     public static SettingsNotificationsFragment newInstance() {

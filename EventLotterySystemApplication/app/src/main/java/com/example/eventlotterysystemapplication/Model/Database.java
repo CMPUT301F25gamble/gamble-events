@@ -134,12 +134,11 @@ public class Database {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
                 List<User> users = querySnapshot.toObjects(User.class);
-                if (users.size() == 1) {
+                if (users.size() >= 1) {
                     tcs.setResult(users.get(0));
                 } else {
                     Log.e("Database", "More than one user with same device");
-                    //tcs.setException(new IllegalStateException("More than one user with same device"));
-                    tcs.setResult(users.get(0));
+                    tcs.setException(new IllegalStateException("More than one user with same device"));
                 }
             } else {
                 Log.e("Database", task.getException().toString());
@@ -755,7 +754,11 @@ public class Database {
         });
     }
 
-    // TODO Add get notifications from a given recipient
+    /**
+     * Retrieves all notifications that the user is a recipient of
+     * @param userId The user's ID
+     * @param listener An OnCompleteListener used to retrieve a list of notifications
+     */
     public void getUserNotificationHistory(String userId, OnCompleteListener<List<Notification>> listener){
         notificationRef.get().addOnSuccessListener(notificationSnapshot -> {
             List<Task<Notification>> getUserNotificationHistoryList = new ArrayList<>();

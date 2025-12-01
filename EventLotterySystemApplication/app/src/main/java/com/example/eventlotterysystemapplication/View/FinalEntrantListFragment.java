@@ -150,7 +150,6 @@ public class FinalEntrantListFragment extends Fragment {
 
     /**
      * Exports a CSV file to the device's public Downloads folder.
-     *
      * @param eventName The event name used for the CSV header and filename
      * @param users     The list of users to write into the CSV
      */
@@ -189,7 +188,7 @@ public class FinalEntrantListFragment extends Fragment {
             // Write each user's name on their own line, numbered
             int i = 1;
             for (User u : users) {
-                if (u.getPhoneNumber() != null) {
+                if (u.getPhoneNumber() != null || !u.getPhoneNumber().isEmpty()) {
                     writer.write(i + ". " + u.getName() + ", " + u.getEmail() + ", " + u.getPhoneNumber() + "\n");
                     ++i;
                 } else {

@@ -88,7 +88,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         */
         if (channelName.equals("lotteryWinNotification") || channelName.equals("lotteryRedrawNotification") || channelName.equals("manualNotification")) {
             builder = new NotificationCompat.Builder(this, channelName)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
+                    .setSmallIcon(R.mipmap.ic_launcher_round) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
                     .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
                     .setContentIntent(pendingIntent) // Pending intent triggered when tapped
@@ -96,7 +96,7 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
                     .setPriority(NotificationCompat.PRIORITY_HIGH);
         } else {
             builder = new NotificationCompat.Builder(this, channelName)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground) // Notification icon
+                    .setSmallIcon(R.mipmap.ic_launcher_round) // Notification icon
                     .setContentTitle(remoteMessage.getNotification().getTitle()) // Title displayed in the notification
                     .setContentText(remoteMessage.getNotification().getBody()) // Text displayed in the notification
                     .setContentIntent(pendingIntent) // Pending intent triggered when tapped
@@ -107,8 +107,6 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         // Display the notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         Log.d("LotteryFirebaseMessagingService", "Message Received");
-
-        //TODO add a dynamic notificationID system
 
         notificationManager.notify(notificationId, builder.build());
         notificationId++;

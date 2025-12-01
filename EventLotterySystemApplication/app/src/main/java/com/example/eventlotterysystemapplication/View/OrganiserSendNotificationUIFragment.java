@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -129,6 +130,8 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
 
                 Log.d(TAG, "Sent notification button clicked");
 
+                sendNotificationButton.setText("Wait...");
+                sendNotificationButton.setEnabled(false);
                 Database.getDatabase().getEvent(eventId, task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "EventRetrieved");
@@ -147,9 +150,12 @@ public class OrganiserSendNotificationUIFragment extends Fragment {
                             case "finalized":
                                 EventNotificationManager.notifyFinalizedList(task.getResult(), messageTitle, messageContent);
                         }
+                        Toast.makeText(getContext(), "Notification successfully sent.", Toast.LENGTH_LONG);
                     } else {
-                        // TODO
+                        Toast.makeText(getContext(), "Could not find event details.", Toast.LENGTH_LONG);
                     }
+                    sendNotificationButton.setText(R.string.send_notification_button_text);
+                    sendNotificationButton.setEnabled(true);
                 });
             }
         });

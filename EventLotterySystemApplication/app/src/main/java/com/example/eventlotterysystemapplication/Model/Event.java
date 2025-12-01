@@ -97,9 +97,8 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
-     * @param geolocationRequirement
+     * @param geolocationRequirement Boolean representing if geolocation requirement is enabled
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, ArrayList<String> eventTags, String organizerID, LocalDateTime eventStartTime, LocalDateTime eventEndTime,
                  LocalDateTime registrationStartTime, LocalDateTime registrationEndTime, LocalDateTime invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
@@ -147,8 +146,8 @@ public class Event {
      * @param maxWaitingListCapacity The maximum capacity of the waiting list, or -1 if there's no limit
      * @param maxFinalListCapacity The maximum number of people who can be chosen for the event by
      *                             the lottery system
+     * @param geolocationRequirement Boolean representing if geolocation requirement is enabled
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Event(String name, String description, String place, String[] eventTags, String organizerID, String eventStartTime, String eventEndTime,
                  String registrationStartTime, String registrationEndTime, String invitationAcceptanceDeadline,
                  int maxWaitingListCapacity, int maxFinalListCapacity, Boolean geolocationRequirement){
@@ -178,25 +177,11 @@ public class Event {
         this.maxFinalListCapacity = maxFinalListCapacity;
         this.maxWaitingListCapacity = maxWaitingListCapacity; // Default as no limit
         this.geolocationRequirement = geolocationRequirement;
-
-        Database db = Database.getDatabase();
-        db.getUser(organizerID, task -> {
-            if (task.isSuccessful()) {
-                this.organizer = task.getResult();
-            } else {
-                Log.e("Event", "Cannot get user info");
-            }
-        });
-
     }
-
-
-
 
     /**
      * Parses the timestamp objects and saves them into the LocalDateTime objects
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void parseTimestamps() {
         if (eventStartTimeTS != null)
             eventStartTime = eventStartTimeTS.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -485,12 +470,19 @@ public class Event {
         this.recurringFrequency = recurringFrequency;
     }
 
-
+    /**
+     * A getter for the geolocation requirement boolean
+     * @return The geolocation requirement
+     */
     @PropertyName("geolocationRequirement")
     public Boolean isGeolocationRequirement() {
         return Objects.requireNonNullElse(geolocationRequirement, false);
     }
 
+    /**
+     * A setter for the geolocation requirement boolean
+     * @param geolocationRequirement The geolocation requirement
+     */
     @PropertyName("geolocationRequirement")
     public void setGeolocationRequirement(Boolean geolocationRequirement) {
         this.geolocationRequirement = geolocationRequirement;
@@ -725,6 +717,11 @@ public class Event {
         }
     }
 
+    /**
+     * Gets the list of entrants for this event, where each entrant object contains relevant
+     * metadata about the user joining the event
+     * @return The list of entrants
+     */
     @Exclude
     public List<Entrant> getEntrantList() {
         if(entrantList==null){
@@ -734,8 +731,8 @@ public class Event {
     }
 
     /**
-     * A getter for the entrant list
-     * @param entrantStatus
+     * A getter for the entrant list, given some status
+     * @param entrantStatus The status of entrants that you want to query
      * @return The entrant list object
      */
     @Exclude
@@ -793,6 +790,10 @@ public class Event {
         }
     }
 
+    /**
+     * Sets the entrant list of the event
+     * @param entrantList The entrant list that you would like to set to be the event's entrant list
+     */
     public void setEntrantList(List<Entrant> entrantList) {
         this.entrantList = entrantList;
     }
@@ -835,8 +836,8 @@ public class Event {
 
 
     /**
-     * A getter for the user list
-     * @param entrantStatus
+     * A getter for the users that are in the entrant list, based on some status
+     * @param entrantStatus The status that you want to query the entrantList off of
      * @return The user list object
      */
     @Exclude
@@ -883,19 +884,24 @@ public class Event {
         return getUserListByStatus(EntrantStatus.FINALIZED);
     }
 
-
+    /**
+     * Adds user to the entrantList, given their geolocation value
+     * @param user The user that wants to join as an entrant
+     * @param entrantLocation The location that the entrant joined the waiting list from
+     */
     @Exclude
-    public void addToEntrantList(User user, EntrantLocation entrantLocation) throws IllegalArgumentException {
+    public void addToEntrantList(User user, EntrantLocation entrantLocation){
         Entrant entrant = new Entrant();
         entrant.setUser(user);
         entrant.setStatus(EntrantStatus.WAITING);
         entrant.setLocation(entrantLocation);
         addToEntrantList(entrant);
     }
+
     /**
-     * Adds a user to one of the entrant lists, based on which list is specified in the list
-     * argument.
-     * @param entrant The user to be added to one of the entrant lists
+     * Adds a user to the entrant list as a waiting user, given that they don't exist in the current
+     * list already
+     * @param entrant The user to be added to the waiting list
      */
     @Exclude
     public void addToEntrantList(Entrant entrant) throws IllegalArgumentException {
@@ -904,6 +910,11 @@ public class Event {
         }
     }
 
+    /**
+     * Given that the user is currently in the waiting list, they can then be added to the chosen
+     * list, as per how the lifecycle of the event should go
+     * @param entrant The entrant that wants to join the chosen list
+     */
     public void addEntrantToChosenList(Entrant entrant){
         if (entrant.getStatus().equals(EntrantStatus.WAITING) && isEntrantExists(entrant)){
             entrant.setStatus(EntrantStatus.CHOSEN);
@@ -912,6 +923,11 @@ public class Event {
         }
     }
 
+    /**
+     * Given that the user is currently in the chosen list, they can then be added to the cancelled
+     * list, as per how the lifecycle of the event should go
+     * @param entrant The entrant that wants to join the cancelled list
+     */
     public void addEntrantToCancelledList(Entrant entrant){
         if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
             entrant.setStatus(EntrantStatus.CANCELLED);
@@ -920,6 +936,11 @@ public class Event {
         }
     }
 
+    /**
+     * Adds the entrant to the finalized list, given that they are in the chosen list already, as
+     * per how the lifecycle of the event should go
+     * @param entrant The entrant that wants to join the finalized list
+     */
     public void addEntrantToFinalizedList(Entrant entrant){
         if (entrant.getStatus().equals(EntrantStatus.CHOSEN) && isEntrantExists(entrant)){
             entrant.setStatus(EntrantStatus.FINALIZED);
@@ -928,6 +949,11 @@ public class Event {
         }
     }
 
+    /**
+     * Checks if the entrant exists in the current entrant list already
+     * @param entrant The entrant that we want to check for membership in the entrantList
+     * @return True if the entrant exists, false otherwise
+     */
     @Exclude
     public boolean isEntrantExists(Entrant entrant){
         for(Entrant entrant1:getEntrantList()){
@@ -938,6 +964,12 @@ public class Event {
         return false;
     }
 
+    /**
+     * Returns the entrant object from the entrantList, given that the user that is being used to
+     * query exists in the list as an entrant object
+     * @param user The user that we want to query the entrantList for
+     * @return The entrant object containing the user if the user exists, otherwise null
+     */
     @Exclude
     public Entrant genEntrantIfExists(User user){
         for(Entrant entrant:getEntrantList()){
@@ -948,7 +980,11 @@ public class Event {
         return null;
     }
 
-
+    /**
+     * Removes the entrant from the entrantList
+     * @param entrant The entrant that we would like to remove
+     * @return True if we could remove them, false otherwise
+     */
     @Exclude
     public boolean removeEntrant(Entrant entrant){
         for(Entrant entrant1:getEntrantList()){

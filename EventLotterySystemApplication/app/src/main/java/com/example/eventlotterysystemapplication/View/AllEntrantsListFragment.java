@@ -105,7 +105,10 @@ public class AllEntrantsListFragment extends Fragment {
         }
     }
 
-    // Private method to help with loading the data into the ListView
+    /**
+     * Private method to help with loading the data into the ListView
+     * @param event The event whose entrants we want to load into a list
+     */
     private void loadAllEntrantsIntoList(Event event) {
         // List for all entrants
         ArrayList<CharSequence> data = new ArrayList<>();

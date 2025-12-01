@@ -21,6 +21,11 @@ import com.example.eventlotterysystemapplication.databinding.FragmentAllProfiles
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This fragment displays all of the possible profiles for the admin
+ * Will fetch all users from the database to display in the listview
+ * Navigated to from {@link com.example.eventlotterysystemapplication.Controller.AdminActivity}
+ */
 public class AllProfilesFragment extends Fragment {
     private FragmentAllProfilesBinding binding;
     private List<User> allUsers = new ArrayList<>();
@@ -74,7 +79,10 @@ public class AllProfilesFragment extends Fragment {
         });
     }
 
-    // Private method to help with loading the data into the ListView
+    /**
+     * Private method to help with loading the data into the ListView
+     * @param users The list of users that we want to load into the arrayadapter
+     */
     private void loadProfilesIntoList(List<User> users) {
         // Prevents crashing when repeatedly spamming the navbar if the fragment hasnt loaded in yet
         if (getContext() == null) {

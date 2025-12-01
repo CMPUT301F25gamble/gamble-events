@@ -108,8 +108,6 @@ public class LotteryFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         Log.d("LotteryFirebaseMessagingService", "Message Received");
 
-        //TODO add a dynamic notificationID system
-
         notificationManager.notify(notificationId, builder.build());
         notificationId++;
     }

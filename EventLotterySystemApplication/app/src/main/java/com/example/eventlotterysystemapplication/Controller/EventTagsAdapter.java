@@ -22,7 +22,10 @@ public class EventTagsAdapter extends RecyclerView.Adapter<EventTagsAdapter.TagV
 
     private final List<String> tags;
 
-    // constructor
+    /**
+     * Constructor
+     * @param tags The list of tags we want to display
+     */
     public EventTagsAdapter(List<String> tags) {
         this.tags = tags;
     }
@@ -48,8 +51,10 @@ public class EventTagsAdapter extends RecyclerView.Adapter<EventTagsAdapter.TagV
         return tags.size();
     }
 
-    // For holder reusability, instead of inflating each time
-    // Each TagViewHolder holds references to the views inside one Tag
+    /**
+     * For holder reusability, instead of inflating each time, each TagViewHolder holds references
+     * to the views inside one Tag
+     */
     static class TagViewHolder extends RecyclerView.ViewHolder {
         TextView tagText;
         TagViewHolder(View itemView) {

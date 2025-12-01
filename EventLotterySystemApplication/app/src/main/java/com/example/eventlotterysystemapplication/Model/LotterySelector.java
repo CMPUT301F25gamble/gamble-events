@@ -22,7 +22,12 @@ import com.google.firebase.Timestamp;
 
 public class LotterySelector {
 
-
+    /**
+     * This function is called by the LotteryAlarmReceiver to process the alarm and call the lottery
+     * draw for the initial lottery selection
+     * @param context A context object representing the current state of the system
+     * @param eventId The eventID of the event that we are drawing for
+     */
     public void processLotteryDraw(Context context, String eventId) {
 
         Database db = Database.getDatabase();
@@ -50,8 +55,7 @@ public class LotterySelector {
                 Toast.makeText(context, "Event " + event.getName() + " is already drawn or no one register for it.", Toast.LENGTH_LONG).show();
             }
 
-
-
+            // we call a draw for all accepted users
             drawAcceptedUsers(event);
 
             List<Entrant> acceptedUsers = event.getEntrantChosenList();
@@ -62,6 +66,7 @@ public class LotterySelector {
                 event.addEntrantToChosenList(entrant);
             }
 
+            // update the event stored in the database
             db.updateEvent(event,task1 ->  {
                 // Error check if task is not successful
                 if (!task1.isSuccessful()) {
@@ -105,9 +110,10 @@ public class LotterySelector {
     }
 
     /**
-     * Draw a replacement user from the waiting list
-     * if one of the users on the accepted list dropped out
+     * Draw a replacement user from the waiting list if one of the users on the accepted list
+     * dropped out, or we can also use this to draw a single user if they were drawn manually
      * @param event Event containing waiting list and accepted list of users
+     * @param manual A boolean determining whether or not this is a manual draw
      * @return A user to add to accepted list that was originally on waiting list
      * @throws IllegalStateException When the accepted list is identical to the waiting list
      * (cannot draw a unique replacement user)

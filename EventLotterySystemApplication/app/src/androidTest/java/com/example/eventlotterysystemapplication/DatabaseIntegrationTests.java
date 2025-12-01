@@ -9,12 +9,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.example.eventlotterysystemapplication.Model.Database;
 import com.example.eventlotterysystemapplication.Model.EntrantList;
+import com.example.eventlotterysystemapplication.Model.EntrantStatus;
 import com.example.eventlotterysystemapplication.Model.Event;
 import com.example.eventlotterysystemapplication.Model.User;
 import com.google.firebase.firestore.CollectionReference;
@@ -180,35 +182,9 @@ public class DatabaseIntegrationTests {
                 createdUserIds.add(userID);
 
                 // Creates events for the user
-                Event event1 = new Event(
-//                        "Wizard Training",
-//                        "Learn how to pass your midterms",
-//                        "Online",
-//                        new String[]{"magic", "training"},
-//                        userID,
-//                        "2025-11-15T14:00",
-//                        "2025-11-15T16:00",
-//                        "2025-11-01T23:59",
-//                        "2025-11-10T23:59",
-//                        "2025-11-12T23:59",
-//                        50,
-//                        20
-                );
+                Event event1 = new Event();
 
-                Event event2 = new Event(
-//                        "Skiing",
-//                        "Everyone should go skiing at Kicking Horse",
-//                        "Kicking Horse Resort",
-//                        new String[]{"ski", "outdoors"},
-//                        userID,
-//                        "2025-12-20T09:00",
-//                        "2025-12-20T12:00",
-//                        "2025-11-15T23:59",
-//                        "2025-11-30T23:59",
-//                        "2025-12-05T23:59",
-//                        30,
-//                        10
-                );
+                Event event2 = new Event();
 
                 database.addEvent(event1, task1 -> {
                     if (task1.isSuccessful()){
@@ -335,16 +311,17 @@ public class DatabaseIntegrationTests {
 
         Database.getDatabase().getUserEventsHistory(userId,task -> {
             if (task.isSuccessful()){
-                Log.e("TestUserHistory", Integer.toString(task.getResult().size()));
-                for (Event e : task.getResult()){
-                    Log.e("TestUserHistory", e.getName());
+                Pair<List<Event>, List<EntrantStatus>> result = task.getResult();
+                List<Event> events = result.first;
+                for (Event e : events){
+                    Log.d("TestUserHistory", e.getName());
                 }
             }
         });
     }
 
     @After
-    public void tearDown() throws InterruptedException {
+    public void tearDown() {
         // Deletes any users and events created during tests
         if (createdUserIds.isEmpty() && createdEventIds.isEmpty()) {
             return;

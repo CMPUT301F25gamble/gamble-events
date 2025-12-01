@@ -18,6 +18,7 @@ import com.example.eventlotterysystemapplication.Model.LotterySelector;
 public class LotteryAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        // send a command to the lotterySelector class
         String eventId = intent.getStringExtra("eventID");
         LotterySelector lotterySelector = new LotterySelector();
         lotterySelector.processLotteryDraw(context,eventId);

@@ -343,7 +343,7 @@ public class EventDetailScreenFragment extends Fragment {
                         showFinalizedOrCancelledText(entrant.getStatus());
                         updateEventDB(event, task2 -> {
                         });
-                        Toast.makeText(v.getContext(),"Sorry, the invitation acceptance period has been ended.",Toast.LENGTH_LONG);
+                        Toast.makeText(v.getContext(),"Sorry, the invitation acceptance period has been ended.",Toast.LENGTH_LONG).show();
                     }else{
                         event.addEntrantToFinalizedList(entrant);
                         binding.contentGroupChosenEntrant.setVisibility(View.GONE);

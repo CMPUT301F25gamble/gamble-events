@@ -32,7 +32,8 @@
             update_profile_button,
             delete_profile_button,
             user_profile_events,
-            profile_history_button"
+            profile_history_button,
+            profile_button_container"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
 
@@ -47,79 +48,85 @@
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/profile_name_header"/>
 
     <TextView
         android:id="@+id/profile_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="@string/name_prompt_text"
-        android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_header" />
+        tools:layout_editor_absoluteY="114dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_name"/>
 
     <TextView
         android:id="@+id/profile_emailer_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="@string/email_prompt_text"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
+        tools:layout_editor_absoluteY="204dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_email"
+        />
 
     <TextView
         android:id="@+id/profile_phone_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="@string/phone_prompt_text"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_email" />
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_phone"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/profile_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
+        android:drawableStart="@drawable/edit_icon"
+        android:padding="8dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:drawableStart="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name_header" />
+        tools:layout_editor_absoluteY="145dp"
+        app:layout_constraintBottom_toTopOf="@+id/profile_emailer_header"/>
 
     <EditText
         android:id="@+id/profile_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
         android:background="@drawable/rounded_list_item"
+        android:drawableStart="@drawable/edit_icon"
+        android:padding="8dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:drawableStart="@drawable/edit_icon"
+        app:layout_constraintBottom_toTopOf="@+id/profile_phone_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_emailer_header" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/profile_phone"
@@ -136,7 +143,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_phone_header" />
+        app:layout_constraintBottom_toTopOf="@+id/profile_button_container" />
 
     <!-- All Buttons -->
     <ImageButton
@@ -152,49 +159,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/update_profile_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/profile_button_container"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="2dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="136dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/grey"
-        android:text="@string/update_profile_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
-
-    <Button
-        android:id="@+id/delete_profile_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/important_field"
-        android:text="@string/delete_profile_button_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_history_button" />
-
-    <Button
-        android:id="@+id/user_profile_events"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/blue"
-        android:text="User's Events"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/update_profile_button" />
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <Button
-        android:id="@+id/profile_history_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="136dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/blue"
-        android:text="@string/profile_history_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_profile_events" />
+        <Button
+            android:id="@+id/update_profile_button"
+            android:layout_width="170dp"
+            android:layout_height="70dp"
+            android:backgroundTint="@color/grey"
+            android:text="@string/update_profile_button"
+            android:elevation="8dp"
+            android:translationZ="8dp"
+            android:textSize="16dp"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/user_profile_events"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="User's Events"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/blue" />
+
+        <Button
+            android:id="@+id/profile_history_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/profile_history_button"
+            android:backgroundTint="@color/blue" />
+
+        <Button
+            android:id="@+id/delete_profile_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/delete_profile_button_text"
+            android:backgroundTint="@color/important_field" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

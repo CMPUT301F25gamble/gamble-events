@@ -103,6 +103,11 @@ public class EventNotificationManager {
         });
     }
 
+    /**
+     * Sends a notification to all entrants that were drawn from the manual notification
+     * @param entrant The user who has been selected by the lottery
+     * @param event The event they have been selected for
+     */
     public static void notifyLotteryManualDraw(Entrant entrant, Event event){
         String notificationTitle = "Congratulations, you have won the lottery manual draw";
         String notificationBody = "Congratulations, you have been selected to join " + event.getName()
@@ -122,12 +127,12 @@ public class EventNotificationManager {
         });
     }
 
-            /**
-             * Used to allow the organizer to send custom notifications to users in the waiting list
-             * @param event The event that the organizer is sending notifications for
-             * @param title The title of the notification
-             * @param body The body of the notification
-             */
+    /**
+     * Used to allow the organizer to send custom notifications to users in the waiting list
+     * @param event The event that the organizer is sending notifications for
+     * @param title The title of the notification
+     * @param body The body of the notification
+     */
     public static void notifyWaitingList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "waitingListNotification");
 
@@ -190,6 +195,12 @@ public class EventNotificationManager {
         });
     }
 
+    /**
+     * Used to allow the organizer to send custom notifications to users in the finalized list
+     * @param event The event that the organizer is sending notifications for
+     * @param title The title of the notification
+     * @param body The body of the notification
+     */
     public static void notifyFinalizedList(Event event, String title, String body){
         Notification notification = new Notification(event.getOrganizerID(), event.getEventID(), title, body, "finalizedListNotification");
 

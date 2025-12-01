@@ -152,6 +152,11 @@ public class CreateOrEditEventFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /**
+     * Given some starting input text for the place the event will be held at, this function will
+     * add a list of suggestions for places from the placesClient
+     * @param query The initial query the user has put for the place of the event
+     */
     private void fetchPredictions(String query) {
         // Build request
         FindAutocompletePredictionsRequest request =
@@ -687,6 +692,11 @@ public class CreateOrEditEventFragment extends Fragment {
         );
     }
 
+    /**
+     * Is used when we want to navigate away from the create or edit event screen to the previous
+     * screen
+     * @param event The event we want to navigate back to
+     */
     private void navigateFromCreateEditEvent(Event event){
         if (fetchedEvent != null) {
             NavHostFragment.findNavController(CreateOrEditEventFragment.this)
@@ -744,6 +754,13 @@ public class CreateOrEditEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Attaches a datetime picker to a button so that the user can use a UI datetime picker instead
+     * of manually typing out the date and time
+     * @param button The button that will open the datetime picker
+     * @param textView The textview that will be updated from the datetime picker
+     * @param view The current view that we are in
+     */
     private void attachDateTimePicker(FloatingActionButton button, TextView textView, View view) {
         button.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
@@ -776,6 +793,12 @@ public class CreateOrEditEventFragment extends Fragment {
         });
     }
 
+    /**
+     * A helper function used to make sure that the dates happen in chronological order
+     * @param startDateTime The datetime that should happen first
+     * @param endDateTime The datetime that should happen after
+     * @return True if start is before end, false otherwise
+     */
     private boolean validateDateCompare(LocalDateTime startDateTime, LocalDateTime endDateTime){
         boolean valid = true;
         if (startDateTime!=null && endDateTime!=null && !endDateTime.isAfter(startDateTime)) {

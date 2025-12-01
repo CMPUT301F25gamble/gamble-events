@@ -1,5 +1,9 @@
 package com.example.eventlotterysystemapplication;
 
+/**
+ * This class represents the data that is associated with an admin, such as whether or not they are
+ * in admin mode or not, or their userID
+ */
 public class AdminSession {
     private static boolean isAdminMode = false;
     private static String selectedUserId = null;

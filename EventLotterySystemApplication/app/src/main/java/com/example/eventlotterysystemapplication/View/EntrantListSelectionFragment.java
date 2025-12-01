@@ -31,10 +31,16 @@ public class EntrantListSelectionFragment extends Fragment {
 
     private FragmentEntrantListSelectionBinding binding;
     private String eventId;
-    public EntrantListSelectionFragment() {
-        // required empty constructor
-    }
 
+    /**
+     * Required empty constructor
+     */
+    public EntrantListSelectionFragment() {}
+
+    /**
+     * Creates a new instance of the fragment
+     * @return A new EntrantListSelectionFragment
+     */
     public static EntrantListSelectionFragment newInstance() {
         EntrantListSelectionFragment fragment = new EntrantListSelectionFragment();
         Bundle args = new Bundle();
@@ -104,8 +110,6 @@ public class EntrantListSelectionFragment extends Fragment {
             NavHostFragment.findNavController(EntrantListSelectionFragment.this).navigate(R.id.action_entrantListSelectionFragment_to_my_event_enterants_map, bundle3);
         });
         binding.pendingMapButton.setVisibility(View.GONE);
-
-        // TODO figure out some way to check if geolocation requirement is enabled
 
         Database.getDatabase().getEvent(eventId, task -> {
             if (task.isSuccessful()){

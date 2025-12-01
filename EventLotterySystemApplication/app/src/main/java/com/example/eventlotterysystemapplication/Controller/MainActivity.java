@@ -61,8 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        // Ask the user device to enable notifications if they are not enabled already
         checkNotificationPermission();
 
+        // Create all of the notification channels the application will need, if they are not
+        // already created
         NotificationChannelFactory.createNotificationChannels(this);
 
         // Check if app was opened via QR code / deep link
@@ -79,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             eventID = null;
         }
-
-        NotificationChannelFactory.createNotificationChannels(this);
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Turn off the decor fitting system windows, which allows us to handle insets)
@@ -117,14 +118,18 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
                                 });
+                                // This is when the application is opened from tapping a
+                                // notification or a deep link
                                 if (eventID != null) {
                                     Log.d(TAG, "Device registered. Going to event detail fragment.");
                                     goToContentActivityWithEvent(eventID);
                                 } else {
+                                    // Device is in database but was not opened with an eventID
                                     Log.d(TAG, "Device registered. Going to content activity.");
                                     goToContentActivity();
                                 }
                             } else {
+                                // User's deviceID not found in the database
                                 Log.d(TAG, "Device not registered. Going to registration activity.");
                                 goToRegisterActivity();
                             }
@@ -163,8 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * On Request permission result - after allowing or rejecting the notification permission request.
-     * @param requestCode The request code passed in {@link #requestPermissions(
-     * android.app.Activity, String[], int)}
+     * @param requestCode The request code passed in {@link #requestPermissions(android.app.Activity, String[], int)}
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
      *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
@@ -206,6 +210,11 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * If the application is opened from a deep link or a notification tap, go to the event detail
+     * screen
+     * @param eventID The eventID of the event whose detail screen we want to navigate to
+     */
     private void goToContentActivityWithEvent(String eventID) {
         Intent goToContentIntentWithEvent = new Intent(this, ContentActivity.class);
         goToContentIntentWithEvent.putExtra("eventID", eventID); // pass the QR code event ID

@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.eventlotterysystemapplication.databinding.ActivityRegisterBinding;
 
 /**
- * Register activity for the app where a first time user can input their informatiion and register
+ * Register activity for the app where a first time user can input their information and register
  * their account based on device identification
  */
 

@@ -28,8 +28,10 @@ public class OrganiserNotificationsUIFragment extends Fragment {
 
     private FragmentOrganiserNotificationUiBinding binding;
 
+    /**
+     * Required empty constructor
+     */
     public OrganiserNotificationsUIFragment() {
-        // Required empty constructor
     }
 
     public static OrganiserNotificationsUIFragment newInstance() {

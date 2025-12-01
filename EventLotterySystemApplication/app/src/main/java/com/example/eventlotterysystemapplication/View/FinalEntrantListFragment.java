@@ -150,7 +150,6 @@ public class FinalEntrantListFragment extends Fragment {
 
     /**
      * Exports a CSV file to the device's public Downloads folder.
-     *
      * @param eventName The event name used for the CSV header and filename
      * @param users     The list of users to write into the CSV
      */

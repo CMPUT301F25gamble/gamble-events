@@ -104,7 +104,7 @@ public class ImageStorage {
      * (PREFERRED WAY) Given a poster image download url that is stored on the event object,
      * delete that poster image on the storage bucket
      * @param posterDownloadUrl The poster download url (formatted like
-     *                          https://firebasestorage.googleapis.com/v0/b/cmput301-gamblers.firebasestorage.app/o/...jpg?alt=media&token=...)
+     *                          {@literal https://firebasestorage.googleapis.com/v0/b/cmput301-gamblers.firebasestorage.app/o/...jpg?alt=media&token=...})
      * @param listener A void OnCompleteListener that will be called upon delete task completion
      * @return An asynchronous void task used ONLY for integration testing purposes. Please do not
      * use the return result to access the task, use the OnCompleteListener instead :)

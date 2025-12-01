@@ -36,8 +36,10 @@ public class SettingsUIFragment extends Fragment {
 
     Database database = Database.getDatabase();
 
+    /**
+     * Required empty public constructor
+     */
     public SettingsUIFragment () {
-        // Required empty public constructor
     }
 
     public static SettingsUIFragment newInstance() {

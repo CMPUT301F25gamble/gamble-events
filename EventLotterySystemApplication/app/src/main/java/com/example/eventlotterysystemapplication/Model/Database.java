@@ -755,7 +755,11 @@ public class Database {
         });
     }
 
-    // TODO Add get notifications from a given recipient
+    /**
+     * Retrieves all notifications that the user is a recipient of
+     * @param userId The user's ID
+     * @param listener An OnCompleteListener used to retrieve a list of notifications
+     */
     public void getUserNotificationHistory(String userId, OnCompleteListener<List<Notification>> listener){
         notificationRef.get().addOnSuccessListener(notificationSnapshot -> {
             List<Task<Notification>> getUserNotificationHistoryList = new ArrayList<>();

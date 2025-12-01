@@ -23,8 +23,10 @@ public class SettingsTOSFragment extends Fragment {
 
     private FragmentSettingsTosBinding binding;
 
+    /**
+     * Required empty public constructor
+     */
     public SettingsTOSFragment() {
-        // Required empty public constructor
     }
 
     public static SettingsTOSFragment newInstance(String param1, String param2) {

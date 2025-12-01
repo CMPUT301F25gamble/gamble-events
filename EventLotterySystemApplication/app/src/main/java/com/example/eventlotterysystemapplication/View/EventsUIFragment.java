@@ -51,7 +51,6 @@ import java.util.Objects;
  * Allows the user to click on any event in the list to open up a detailed view of the event in
  * {@link EventDetailScreenFragment}
  */
-
 public class EventsUIFragment extends Fragment {
 
     /* Don't change the char 'i' in the name, Android Studio never generated

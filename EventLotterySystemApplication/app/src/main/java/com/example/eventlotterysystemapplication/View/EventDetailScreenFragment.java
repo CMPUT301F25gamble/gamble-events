@@ -412,11 +412,11 @@ public class EventDetailScreenFragment extends Fragment {
                         if (!task.isSuccessful()) {
                             Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
                             changeWaitlistBtn(false);
-                            Log.d("EventDetailScreen", "User successfully joined waiting list");
                             Toast.makeText(context, "Could not join waitlist", Toast.LENGTH_SHORT).show();
-                            //return;
                         }else{
                             changeWaitlistBtn(true);
+                            Log.d("EventDetailScreen", "User successfully joined waiting list");
+                            bindEvent(event);
                         }
                     });
                 } else {
@@ -444,8 +444,9 @@ public class EventDetailScreenFragment extends Fragment {
                                             // return;
                                         }else{
                                             changeWaitlistBtn(true);
+                                            Log.d("EventDetailScreen", "User successfully joined waiting list");
+                                            bindEvent(event);
                                         }
-                                        Log.d("EventDetailScreen", "User successfully joined waiting list");
                                     });
                                 });
                     } else {
@@ -464,9 +465,9 @@ public class EventDetailScreenFragment extends Fragment {
                 if (!task.isSuccessful()) {
                     Toast.makeText(getContext(), "Could not remove waitlist", Toast.LENGTH_SHORT).show();
                     changeWaitlistBtn(true);
-                    // return;
                 }else{
                     changeWaitlistBtn(false);
+                    bindEvent(event);
                 }
                 Log.d("EventDetailScreen", "User successfully left waiting list");
             });
@@ -870,7 +871,8 @@ public class EventDetailScreenFragment extends Fragment {
         } else {
             // Enable button
             binding.navigationBarButton.setEnabled(true);
-            changeWaitlistBtn(false); // or update button based on user's waitlist status
+            // Update the waitlist button colors and text based on if the user is in the waitlist
+            changeWaitlistBtn(event.getEntrantWaitingList().contains(entrant));
         }
     }
 

@@ -82,7 +82,6 @@ public class LotterySelector {
     /**
      * Draws N users from the waiting list where N is min(waitingListLength, maxFinalizedListCapacity)
      * @param event Event containing waiting list for users
-     * @return The list of randomly accepted users to event
      */
     public void drawAcceptedUsers(Event event) {
         int finalListCapacity = event.getMaxFinalListCapacity();

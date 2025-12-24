@@ -668,6 +668,14 @@ public class Database {
      */
     public void deleteEvent(Event event, OnCompleteListener<Void> listener){
         DocumentReference eventDocRef = eventRef.document(event.getEventID());
+
+        // Remove the event poster image from the storage if there exists one
+        eventDocRef.get().addOnSuccessListener(ds -> {
+            if (ds.get("eventPosterUrl") != null) {
+                ImageStorage.getInstance().deleteEventPoster(ds.getString("eventPosterUrl"), task -> {});
+            }
+        });
+
         CollectionReference regRef = eventDocRef.collection("Registration");
         regRef.get().addOnSuccessListener(querySnapshot -> {
             List<Task<Void>> deleteTasks = new ArrayList<>();
@@ -679,7 +687,7 @@ public class Database {
                 eventDocRef.delete().addOnCompleteListener(listener)
                         .addOnFailureListener(e -> Log.e("Database", "Failed to delete event", e));
             });
-        }).addOnFailureListener(e -> Log.e("Database", "Fail to get the event"));
+        }).addOnFailureListener(e -> Log.e("Database", "Fail to get the registration document"));
     }
 
     /**
